@@ -1,0 +1,109 @@
+﻿<div id="ModalStatusHaisya" data-haisya_id="0" data-anken-id="0" style="">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="form-group">
+          <label style="color: #ff00dc; font-weight: bold;">配車のステータス</label>
+          <div style="margin-top: 5px; margin-left: 5px; font-weight: bold;">
+            <input type="radio" name="status" value="1" checked>配車済み(暫定)　
+            <input type="radio" name="status" value="0">配車済み(確定)
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer" style="display:block; margin-top: 1.5rem;">
+        <button type="button" class="btn btn-success" onclick="submitUnassignAnken(); return false;" style="float: left;">配車解除</button>
+        <button type="button" class="btn btn-secondary" onclick="closeHasiyaStatusModel(); return false;" style="float: right;">閉じる</button>
+        <button type="button" class="btn btn-primary" onclick="updateStatusHaisya(); return false;" style="float: right; margin-right: 0.5rem;">変更</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  /**
+   *　配車ステータスの更新処理
+   * */
+  function updateStatusHaisya() {
+    $('#ModalStatusHaisya').find('.modal-footer .btn-primary').attr("disabled", true)
+    //setLoading(true);
+    const Haisya_ID = $('#ModalStatusHaisya').data('haisya-id');
+    const Anken_ID = $('#ModalStatusHaisya').data('anken-id');
+    const Status = $('input[name="status"]:checked').val();
+    $.post('@Url.RouteUrl("Default", new { controller = "Haisya", Action = "UpdateStatusHaisya" })',
+      {
+        Haisya_ID,
+        Status
+      }).done(async function (response) {
+        if (response.errorMessage != null) {
+          await alertError(`【エラー】${response.errorMessage}`);
+          return false;
+        } else {
+          await alertInfo(`ステータスを更新しました`);
+          checkEnableContact(Anken_ID);
+          return;
+        }
+      }).fail(async function (xhr) {
+        await alertError(`【ネットワークエラー】:${xhr}`);
+        console.log(xhr);
+        return false;
+      }).always(function (xhr, msg) {
+        //setLoading(false);
+        console.log(xhr, msg);
+        dataListDisplay(true);
+        closeHasiyaStatusModel();
+      });
+  }
+
+
+  /**　配車ステータス更新モーダル画面を閉じる　 */
+  function closeHasiyaStatusModel() {
+    //$('#ModalStatusHaisya').find('.modal').modal('hide');
+    $('#ModalStatusHaisya').dialog('close');
+    $('#ModalStatusHaisya').hide();
+  };
+
+
+   /**
+   * 配車解除処理
+   */
+  async function submitUnassignAnken() {
+
+    const Haisya_ID = $('#ModalStatusHaisya').data('haisya-id');
+    const Anken_ID = $('#ModalStatusHaisya').data('anken-id');
+    const AnkenDisplay_ID = $('#ModalStatusHaisya').data('ankendisplay-id');
+
+    closeHasiyaStatusModel();
+
+    var resultMsg = await alertYesNoMsg(null, "この案件の割り当てを解除しますか？", "warning", "解除");
+    if (resultMsg == false) { return false; }
+    id = `${Haisya_ID}-${Anken_ID}-${AnkenDisplay_ID}`;
+    createLoaderBlock(id);
+    $.post('@Url.RouteUrl("Default", new { controller = "Haisya", Action = "UnassignHaisyaData" })', {
+      Haisya_ID,
+      Anken_ID,
+      AnkenDisplay_ID,
+    }).done(async function (response) {
+      if (response.errorMessage != null) {
+        //var errorObject = JSON.parse(response.errorMessage);
+        await alertError('【エラー】' + response.errorMessage);
+        await dataListDisplay(true);
+        return false;
+      } else {
+        await alertSuccess(`案件を割り当て解除しました`);
+        await dataListDisplay(false);
+        return;
+      }
+    }).fail(function (xhr) {
+          console.log(xhr);
+    }).always(function (xhr, msg) {
+      if (typeof removeLoaderBlock === "function") {
+        removeLoaderBlock(id);
+      }
+
+      dataListDisplay(true);
+    });
+
+  };
+
+</script>

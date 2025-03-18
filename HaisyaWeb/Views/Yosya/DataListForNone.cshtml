@@ -1,0 +1,112 @@
+﻿@model HaisyaWeb.Models.YosyaModel.YosyaDataListModel
+
+
+@if (Model.CustomerBranchList.Count() == 0)
+{
+  <div style="width: 100%; background: #3366CC ">
+    <h4 style="text-align:left; margin-left: 20px;color: white;">データ無し</h4>
+  </div>
+}
+
+@{
+  var list = Model.CustomerBranchList.OrderBy(m => m.Customer_Branch_Code).ToList();
+}
+
+@foreach (var group in list)
+{
+  var iCount = Model.CustomerSyaryoList.Where(m => m.Customer_ID == group.Customer_ID).Count();
+  <div type="button" class="btn btn-primary btn-sm" style="width: 100%; padding: 0;" data-bs-toggle="collapse" data-bs-target="#tblCollapseInfo-@(group.Customer_Branch_ID)" aria-expanded="false" aria-controls="tblCollapseInfo-@(group.Customer_Branch_ID)">
+    <h4 style="padding: 0rem 2rem;"><span class="" style="float: left; width: 50%; white-space: nowrap; text-align: left;">@(group.Customer_Branch_Code + " " + group.Customer_Branch_Name_Abbr + " (" + iCount + ")")</span><span style="float:right;">▼</span></h4>
+  </div>
+
+  <div id="tblCollapseInfo-@(group.Customer_Branch_ID)" class="container collapse" style="padding: 5px; border-collapse: collapse;">
+    @{
+      var listData = Model.CustomerSyaryoList.Where(m => m.Customer_Branch_ID == group.Customer_Branch_ID).OrderBy(m => m.Syasyu).ThenBy(m => m.Kata).ThenBy(m => m.Syaban_Number).ToList();
+    }
+
+    <table id="myTableDriver-@(group.Customer_Branch_ID)" class="ex_table-tokuisaki table-bordered border-info" width="90%" border="1" style="float: right;">
+      <thead style="background-color: lightgray;  ">
+        <tr align="center">
+
+          <th class="ex-table-th" style="width: 200px; vertical-align: middle; background-color: white; border-left: hidden; border-bottom: hidden; border-top: hidden;">
+            <button class="btn btn-warning btnAddNew" style="padding:0;width: 90%;" date-id="@(group.Customer_Branch_ID)" onclick="submitModal('@(group.Customer_Branch_ID)','0', '0'); return false;">乗務員追加</button>
+          </th>
+
+          <th class="ex-table-th" style="width: 200px; vertical-align: middle;">選択</th>
+
+
+          <th class="ex-table-th" style="width: 100px; text-align: center;">
+            社員コード
+          </th>
+          <th class="ex-table-th" style="width : auto;">
+            乗務員名
+          </th>
+          <th class="ex-table-th" style="width: 100px; text-align: center; ">
+            担当開始日
+          </th>
+          <th class="ex-table-th" style="width: 100px; text-align: center; ">
+            担当終了日
+          </th>
+          <th class="ex-table-th" style="width: 100px; text-align: center;">
+            車種
+          </th>
+          <th class="ex-table-th" style="width: 100px; text-align: center;">
+            型
+          </th>
+          <th class="ex-table-th" style="width: 150px; text-align: center;">
+            車番
+          </th>
+          <th class="ex-table-th" style="width: 100px; text-align: center; ">
+            車輌開始日
+          </th>
+          <th class="ex-table-th" style="width: 100px; text-align: center; ">
+            車輌終了日
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var item in listData)
+        {
+          <tr style="font-weight: bold; height: 20px;">
+            <td style="border-left: hidden; border-bottom: hidden;"></td>
+            <td style="vertical-align: middle; padding: 0.2rem 1rem; display: flex;">
+              <button class="btn btn-success" style="width: 50%; padding:0;" onclick="submitModal('@(item.Customer_Branch_ID)','@(item.Customer_Driver_ID)', '@(item.Customer_DriverSyaryo_ID)'); return false;">修正</button>
+              <button class="btn btn-info" style="width: 50%; padding:0;margin-left: 0.5rem;" onclick="submitModal('@(item.Customer_Branch_ID)','@(item.Customer_Driver_ID)', '0'); return false;">車輌追加</button>
+            </td>
+
+            <td style="text-align: center;">@(item.Employee_Number)</td>
+            <td style="text-align: left; padding: 0 0 0 1rem; white-space: nowrap; ">
+              @Html.DisplayFor(modelItem => item.Display_Name)
+            </td>
+            <td style="text-align:center;">
+              @Convert.ToDateTime(item.From_Date).ToString("yy/MM/dd")
+            </td>
+            <td style="text-align:center;">
+              @if (item.To_Date != null)
+              {
+                @Convert.ToDateTime(item.To_Date).ToString("yy/MM/dd")
+              }
+            </td>
+            <td style="text-align: center;">@(item.Syasyu)</td>
+            <td style="text-align: center;">@(item.Kata)</td>
+            <td style="text-align: center;">@(item.Syaban_Chiiki) @(item.Syaban_Bunrui) @(item.Syaban_Kana) @(item.Syaban_Number)</td>
+            <td style="text-align:center;">
+              @Convert.ToDateTime(item.Start_Date).ToString("yy/MM/dd")
+            </td>
+            <td style="text-align:center;">
+              @if (item.To_Date != null)
+              {
+                @Convert.ToDateTime(item.End_Date).ToString("yy/MM/dd")
+              }
+            </td>
+
+          </tr>
+        }
+
+      </tbody>
+    </table>
+
+
+  </div>
+
+}

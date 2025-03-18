@@ -1,0 +1,394 @@
+﻿@model AnkenModel.AnkenReferenceYosyaRegModel
+
+
+@{
+  Layout = "_ModalLayout";
+}
+
+
+<style>
+  .btn-senzoku-select {
+    width: 80px;
+    padding: 0 1rem !important;
+  }
+
+  .header-senzokuReg {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+
+  #table-YosyaReg tbody tr th {
+    vertical-align: baseline;
+  }
+</style>
+
+
+<div class="modal-content">
+  <div class="model-body">
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmYosyaReg", @class = "contact-form", @style = "padding: 0;", @onsubmit = "return false;" }))
+    {
+    <div id="hidden" hidden>
+      @Html.TextBoxFor(model => model.UserID)
+      @Html.TextBoxFor(model => model.CompanyID)
+      @Html.TextBoxFor(model => model.AnkenDisplayID)
+      @Html.TextBoxFor(model => model.Yosya.Yosya_Shiharai_Kubun)
+      @Html.TextBoxFor(model => model.Yosya.Yosya_Count)
+    </div>
+
+      <div class="row" style="margin-right: 1px; padding: 0 0.2rem;">
+        <div class="col-12" style="padding-right: 0;">
+          <div class="container header-senzokuReg" style="">
+            <div>
+              <h4>@(Model.Title)</h4>
+            </div>
+            <div style="display: flex; align-items: center;">
+              <label style="margin-right: 1rem; font-weight:bold;">傭車数</label>
+              <div class="radio-group" style="">
+                <input type="radio" class="btn-check" name="num_of_YosyaCount" id="optYosyaCount1" value="1"><label class="btn btn-outline-danger" for="optYosyaCount1">第1</label>
+                <input type="radio" class="btn-check" name="num_of_YosyaCount" id="optYosyaCount2" value="2"><label class="btn btn-outline-danger" for="optYosyaCount2">第2</label>
+              </div>
+            </div>
+            <div>
+              <button class="btn btn-primary" style="float:right;" onclick="YosyaRegExec(); return false;">@(Model.BtnCaption)</button>
+            </div>
+          </div>
+
+          <div id="div1">
+            <table id="table-YosyaReg" class="table table-striped-columns table-bordered border-primary" border="1" style="margin-top: 0.5rem;">
+              <thead>
+                <tr style="background-color: aquamarine;">
+                  <th align="center" style="text-align: center; width: 150px;">項目名</th>
+                  <th align="center" style="text-align: center; width: auto">値</th>
+                  <th align="center" style="text-align: center; width: 150px;">説明</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr hidden>
+                  <th>Haisya_ID</th>
+                  <td>@Html.TextBoxFor(model => Model.Yosya.Haisya_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px;" })</td>
+                  <td></td>
+                </tr>
+                <tr hidden>
+                  <th>Company_ID</th>
+                  <td>@Html.TextBoxFor(model => Model.Yosya.Yosya_Sort, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px;" })</td>
+                </tr>
+                <tr hidden>
+                  <th style="color: red;">運送フラグ</th>
+                  <td>
+                    @Html.CheckBoxFor(model => Model.UnsoFlg, new { @class = "form-control text-left form-check-input", @style = "height: 20px;" })
+                    @Html.HiddenFor(model => Model.Yosya.Unso_Flg, new { @class = "form-control text-end", @onblur = "", @style = "" })
+                  </td>
+                  <td></td>
+                </tr>
+
+                <tr>
+                  <th>支払情報</th>
+                  <td colspan="2" style="display:flex;">
+                    <div class="radio-group" style="">
+                      <input type="radio" class="btn-check" name="num_of_SeikyuKubun" id="optSeikyuKubun0" value="0"><label class="btn btn-outline-danger" for="optSeikyuKubun0">確定</label>
+                      <input type="radio" class="btn-check" name="num_of_SeikyuKubun" id="optSeikyuKubun1" value="1"><label class="btn btn-outline-danger" for="optSeikyuKubun1">暫定</label>
+                    </div>
+                    @Html.TextBoxFor(model => model.Yosya.Yosya_Shiharai_Money, "{0:N0}", new { @class = "form-control text-end inputbox", @style = "margin-left: 0; width: 150px; margin-left: 1rem;", @onblur = "kanmaChange(this);" })<span style="align-content: center;">円</span>
+                  </td>
+                </tr>
+                <tr style="height: 2rem;">
+                </tr>
+
+                <tr id="trDriver">
+                  <th style="">第１傭車乗務員</th>
+                  <td style="display:flex;">
+                    <button id="btnYosya" class="btn btn-success" style="width: 100px;">傭車選択</button>
+                    @Html.TextBoxFor(model => Model.Yosya.YosyaDriver_ID, null, new { @class = "form-control", @style = "width: 0px; padding: 0;" })
+                    @Html.TextBoxFor(model => Model.YosyaDriverName, null, new { @readonly = "readonly", @class = "form-control", @style = "width: 60%;" })
+                  </td>
+                  <td></td>
+                </tr>
+
+                <tr>
+                  <th>第１傭車会社</th>
+                  <td style="display:flex;">
+                    <button id="btnCustomerBranch" class="btn btn-success" style="width: 100px;">傭車選択</button>
+                    @Html.TextBoxFor(model => Model.Yosya.Yosya_Branch_ID, null, new { @class = "form-control", @style = "width: 0px; padding: 0;" })
+                    @Html.TextBoxFor(model => Model.YosyaBranchName, null, new { @readonly = "readonly", @class = "form-control", @style = "width: 60%;" })
+                  </td>
+                </tr>
+
+                <tr id="trTantou">
+                  <th>第１傭車担当</th>
+                  <td style="display:flex;">
+                    <button id="btnCustomerTantou" class="btn btn-success" style="width: 100px;">傭車選択</button>
+                    @Html.TextBoxFor(model => Model.Yosya.Yosya_Tantou_ID, null, new { @class = "form-control", @style = "width: 0px; padding: 0;" })
+                    @Html.TextBoxFor(model => Model.YosyaTantouName, null, new { @readonly = "readonly", @class = "form-control", @style = "width: 60%;" })
+                  </td>
+                  <td></td>
+                </tr>
+
+
+                <tr id="trSyaryo">
+                  <th>第１傭車車輌</th>
+                  <td style="display:flex;">
+                    @Html.TextBoxFor(model => Model.Yosya.YosyaDriverSyaryo_ID, null, new { @class = "form-control", @style = "width: 0px; padding: 0;" })
+                    @Html.TextBoxFor(model => Model.YosyaDriverSyaryoName, null, new { @readonly = "readonly", @class = "form-control", @style = "width: 60%;" })
+                  </td>
+                  <td></td>
+                </tr>
+
+                <tr class="trNo2">
+                  <th>第２傭車会社名</th>
+                  <td style="display:flex;">
+                    @Html.TextBoxFor(model => Model.Yosya.Yosya_No2_Company_Name, null, new { @class = "form-control", @style = "width: 60%;" })
+                  </td>
+                  <td>直接入力</td>
+                </tr>
+                <tr class="trNo2">
+                  <th>第２傭車乗務員名</th>
+                  <td style="display:flex;">
+                    @Html.TextBoxFor(model => Model.Yosya.Yosya_No2_Driver_Name, null, new { @class = "form-control", @style = "width: 60%;" })
+                  </td>
+                  <td>直接入力</td>
+                </tr>
+                <tr class="trNo2">
+                  <th>第２傭車車種車番</th>
+                  <td style="display: flex; align-items: center;">
+                    <label>車種</label>
+                    @Html.TextBoxFor(model => Model.Yosya.Yosya_No2_Syasyu, null, new { @class = "form-control", @style = "width: 150px;" })
+                    <label style="margin-left:2rem;">車番</label>
+                    @Html.TextBoxFor(model => Model.Yosya.Yosya_No2_Car_Number, null, new { @class = "form-control", @style = "width: 100px;" })
+                  </td>
+                  <td>直接入力</td>
+                </tr>
+                
+                <tr class="trNo2">
+                  <th>第２傭車電話番号</th>
+                  <td style="display:flex;">
+                    @Html.TextBoxFor(model => Model.Yosya.Yosya_No2_Phone, null, new { @class = "form-control", @style = "width: 60%;" })
+                  </td>
+                  <td>直接入力</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+      </div>
+    }
+  </div>
+</div>
+
+<script>
+
+  $(function () {
+
+    var radio = document.getElementsByName('num_of_SeikyuKubun');
+    for (let i = 0; i < radio.length; i++) {
+      if (radio.item(i).value == $('#Yosya_Yosya_Shiharai_Kubun').val()) {
+        radio.item(i).checked = true;
+      }
+    };
+    
+
+    radio = document.getElementsByName('num_of_YosyaCount');
+    for (let i = 0; i < radio.length; i++) {
+      if (radio.item(i).value == $('#Yosya_Yosya_Count').val()) {
+        radio.item(i).checked = true;
+      }
+    };
+    ChangeDisplay($('#Yosya_Yosya_Count').val(), 0);
+
+    $('input[name="num_of_SeikyuKubun"]').on('change', function () {
+      let val = $(this).val();
+      $('#Yosya_Yosya_Shiharai_Kubun').val(val);
+    });
+
+    $('input[name="num_of_YosyaCount"]').on('change', function () {
+      let val = $(this).val();
+      $('#Yosya_Yosya_Count').val(val);
+      ChangeDisplay(val);
+    });
+
+    $('#btnYosya').on('click', function (event) {
+      openCommonDialogForCustomerDriver($('#CompanyID').val(), 0, 0, 0);
+      return false;
+    });
+
+    $('#btnCustomerBranch').on('click', function (event) {
+      openCommonDialogForCustomer($('#CompanyID').val(), $('#UserID').val(), $('#Yosya_Yosya_Branch_ID').val(), 1);
+      return false;
+    });
+
+    $('#btnCustomerTantou').on('click', function (event) {
+      let branchId = $('#Yosya_Yosya_Branch_ID').val();
+      if (branchId == 0) {
+        alertInputError("まず傭車会社を選択してください。");
+        return false;
+      }
+      openCommonDialogForCustomerTantou($('#CompanyID').val(), $('#UserID').val(), $('#Yosya_Yosya_Branch_ID').val(), $('#Yosya_Yosya_Tantou_ID').val());
+      return false;
+    });
+
+  });
+
+  function ChangeDisplay(val, noval = 1) {
+    if (val == '2') {
+      $('#trDriver').hide();
+      $('#div2').show();
+      $('#trTantou').show();
+      $('#btnCustomerBranch').show();
+      $('#trSyaryo').hide();
+      $('.trNo2').show();
+    } else {
+      $('#trTantou').hide();
+      $('#trDriver').show();
+      $('#btnCustomerBranch').hide();
+      $('#trSyaryo').show();
+      $('#trDriver').show();
+      $('.trNo2').hide();
+    }
+
+    if (noval == 1) {
+      $('#Yosya_YosyaDriver_ID').val(0);
+      $('#YosyaDriverName').val('');
+
+      $('#Yosya_Yosya_Branch_ID').val(0);
+      $('#YosyaBranchName').val('');
+
+      $('#Yosya_YosyaDriverSyaryo_ID').val(0);
+      $('#YosyaDriverSyaryoName').val('');
+
+      $('#Yosya_Yosya_No2_Company_Name').val('');
+      $('#Yosya_Yosya_No2_Driver_Name').val('');
+      $('#Yosya_Yosya_No2_Syasyu').val('');
+      $('#Yosya_Yosya_No2_Car_Number').val('');
+      $('#Yosya_Yosya_No2_Phone').val('');
+
+    }
+  };
+
+  /**
+ * 共通得意先選択ダイアログで一覧選択されたときのCallBack関数
+ * */
+  function selectCustomerSelectedCallBack(obj) {
+
+    $('#Yosya_Yosya_Branch_ID').val(obj["Customer_Branch_ID"]);
+    $('#Yosya_Yosya_Branch_Code').val(obj["Customer_Branch_Code"]);
+    $('#YosyaBranchName').val(obj["Customer_Branch_Name_Abbr"]);
+    $('#ModalCommonDialog').dialog('close');
+  };
+
+  /**
+ * 共通得意先担当選択ダイアログで一覧選択されたときのCallBack関数
+ * */
+  function selectCustomerTantouSelectedCallBack(obj) {
+
+    $('#Yosya_Yosya_Tantou_ID').val(obj["Tantou_ID"]);
+    $('#YosyaTantouName').val(obj["Tantou_Name_Abbr"]);
+    $('#ModalCommonDialog').dialog('close');
+  };
+
+  /**
+   *　傭車乗務員選択ボタン押下時
+   * @@param CustomerID
+   * @@param CustomerName
+   */
+  function selectCustomerDriverSelectedCallBack(obj) {
+    $('#Yosya_YosyaDriver_ID').val(obj["Customer_Driver_ID"]);
+    $('#YosyaDriverName').val(obj["Display_Name"]);
+
+    $('#Yosya_Yosya_Branch_ID').val(obj["Customer_Branch_ID"]);
+    $('#YosyaBranchName').val(obj["customerBranch.Customer_Branch_Name_Abbr"]);
+
+    var syaryoDisp = obj["Syasyu"] + obj["Kata"] + '  ' + obj["FULL_SYABAN"];
+
+    $('#Yosya_YosyaDriverSyaryo_ID').val(obj["Customer_DriverSyaryo_ID"]);
+    $('#YosyaDriverSyaryoName').val(syaryoDisp);
+
+  };
+
+
+  /**
+   * 専属情報登録処理
+   * */
+  function YosyaRegExec() {
+    event.preventDefault();
+
+    if (varidationCheckForYosya()) {
+      return false;
+    }
+
+    //Formの参照を取る
+    var $form = $('#frmYosyaReg');
+
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "AnkenReference", Action = "JsonRegisterYosyaDriver" })',
+      type: 'post',
+      data: $form.serialize(),
+    }).done(function (response) {
+      if (response.errorMessage != null) {
+        alertError("【エラー】" + response.errorMessage);
+        return false;
+      } else {
+        let obj = response.haisyaData;
+        
+        var disp = obj["SYABAN"] + " " + obj["Syasyu_Disp"] + " " + obj["Driver_Name"];
+        alert(obj);
+        if (obj["Yosya_Count"] == 2) {
+          disp = "第1：" + obj["Yosya_Display1"] + "　第2：" + obj["Yosya_Display2"];
+        }
+        SetDriverInfo($('#AnkenDisplayID').val(), disp);
+        return false;
+      }
+    }).fail(function (xhr) {
+      alertError('【ネットワークエラー】:' + xhr);
+        console.log(xhr);
+        return false;
+    }).always(function (xhr, msg) {
+        console.log(xhr, msg);
+    });
+
+  };
+
+  function varidationCheckForYosya() {
+
+    if ($('#Yosya_Yosya_Count').val() == 2) {
+
+      if (!($('#Yosya_Yosya_Branch_ID').val() != null && $('#Yosya_Yosya_Branch_ID').val() > 0)) {
+        alertInputError("第１傭車担当が選択されていません");
+        $('#YosyaBranchName').css('background-color', 'lightcoral');
+        return true;
+      } else {
+        $('#YosyaBranchName').css('background-color', 'white');
+      }
+
+      if (!($('#Yosya_Yosya_No2_Company_Name').val() != null && $('#Yosya_Yosya_No2_Company_Name').val().length > 0)) {
+        alertInputError("第２傭車会社名が選択されていません");
+        $('#Yosya_Yosya_No2_Company_Name').css('background-color', 'lightcoral');
+        return true;
+      } else {
+        $('#Yosya_Yosya_No2_Company_Name').css('background-color', 'white');
+      }
+
+      
+
+    } else {
+
+      if (!($('#Yosya_YosyaDriver_ID').val() != null && $('#Yosya_YosyaDriver_ID').val() > 0)) {
+        alertInputError("第１傭車乗務員が選択されていません");
+        $('#YosyaDriverName').css('background-color', 'lightcoral');
+        return true;
+      } else {
+        $('#YosyaDriverName').css('background-color', 'white');
+      }
+
+    }
+
+
+   
+    return false;
+
+  };
+
+
+</script>
+<script src="~/js/EnterKeyCancel.js"></script>

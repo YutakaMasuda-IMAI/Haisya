@@ -1,0 +1,300 @@
+﻿@using Newtonsoft.Json
+@model HaisyaWeb.Models.ShitabaraiApprovalModel.DataListModel
+@{
+  Layout = "_Layout";
+  ViewData["Title"] = "下払問合せ変更承認";
+}
+
+<head>
+  <link href="~/css/Entry.css" rel="stylesheet" />
+  <style>
+    .detail-list {
+      background-color: #d5d5d5;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="hiddenItem" hidden>
+    @Html.HiddenFor(model => Model.Search.SelectDay)
+  </div>
+
+  <div id="hedder" class="row">
+    <div class="table-div">
+      <table class="head-button">
+        <tr>
+          <td width="350px"><h3 id="labelTitle" class="heading-40">下払問合せ変更承認</h3></td>
+          <td></td>
+          <td style="text-align:right;"><button class="btn btn-outline-warning" style="width:100px;" onClick="returnToMainView(); return false;">一覧に戻る</button></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "Form" }))
+  {
+    <div class="table-div">
+      <table id="select" class="list" border="1">
+        <thead>
+          <tr align="center">
+            <th class="detail-list" width="100px">下払年月</th>
+            <th class="detail-list" width="100px">締日</th>
+            <th class="detail-list" width="100px">確認方法</th>
+            <th class="detail-list" width="100px">ステータス</th>
+            <th class="detail-list" width="100px">金額変更</th>
+            <th class="detail-list" width="200px">下払担当</th>
+            <th class="detail-list">傭車</th>
+            <th class="detail-list" width="120px">明細件数</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td align="center">
+              @(Model.ShitabaraiCheckData?.Shiharai_Month.ToString("yyyy/MM/dd"))
+            </td>
+            <td align="center">
+              @(Model.ShitabaraiCheckData?.Shime_Day)日
+            </td>
+            <td align="center">
+              @(Model.ShitabaraiCheckData?.Inquiry_Status == 1 ? "WEB":"帳票" )
+            </td>
+            <td align="center">
+              @{
+                string Check_Status = "";
+                Check_Status = Model.ShitabaraiCheckData?.Check_Status == 0 ? "発行済み" :
+                          Model.ShitabaraiCheckData?.Check_Status == 1 ? "確認中" :
+                          Model.ShitabaraiCheckData?.Check_Status == 2 ? "確認済" :
+                          Model.ShitabaraiCheckData?.Check_Status == 4 ? "承認済" :
+                          "";
+              }
+              @Check_Status
+            </td>
+            <td align="center">
+              @{
+                string shiharaiChanged = Model.ShitabaraiCheckData?.Shiharai_Changed == 0 ? "なし" : "あり";
+              }
+              @shiharaiChanged
+            </td>
+            <td>@(Model.ShitabaraiCheckData?.SHIHARAI_TANTOU)</td>
+            <td>@(Model.ShitabaraiCheckData?.Yosya_Name)</td>
+            <td align="right">
+              @Convert.ToInt32(Model.ShitabaraiCheckData?.Meisai_Count).ToString("#,0")
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  }
+
+  <div class="table-div" style="margin-top:10px;">
+    <table id="tblCollapse" class="list" border="1">
+      <thead>
+        <tr align="center">
+          <th class="detail-list" width="100px" rowspan="2">運賃計</th>
+          <th class="detail-list" width="100px" rowspan="2">立替計</th>
+          <th class="detail-list" width="100px" rowspan="2">案件件数</th>
+          <th class="detail-list" width="100px" rowspan="2">請求確定件数</th>
+          <th class="detail-list" width="100px" rowspan="2">暫定件数</th>
+          <th class="detail-list" width="100px" rowspan="2">仮件数</th>
+          <th class="detail-list" width="100px" rowspan="2">税区分</th>
+          <th class="detail-list">送信アドレス１</th>
+          <th class="detail-list" width="200px">電話番号１</th>
+          <th class="detail-list" width="200px">FAX番号１</th>
+        </tr>
+        <tr align="center">
+          <th class="detail-list">送信アドレス２</th>
+          <th class="detail-list">電話番号２</th>
+          <th class="detail-list">FAX番号２</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td align="right" rowspan="2">@Convert.ToInt32(Model.ShitabaraiCheckData?.ShiharaiUnchin).ToString("#,0")</td>
+          <td align="right" rowspan="2">@Convert.ToInt32(Model.ShitabaraiCheckData?.Tatekaekin).ToString("#,0")</td>
+          <td align="right" rowspan="2">@Convert.ToInt32(Model.ShitabaraiCheckData?.Anken_Count).ToString("#,0")</td>
+          <td align="right" rowspan="2">@Convert.ToInt32(Model.ShitabaraiCheckData?.Kakutei_Count).ToString("#,0")</td>
+          <td align="right" rowspan="2">@Convert.ToInt32(Model.ShitabaraiCheckData?.Zantei_Count).ToString("#,0")</td>
+          <td align="right" rowspan="2">@Convert.ToInt32(Model.ShitabaraiCheckData?.Kari_Count).ToString("#,0")</td>
+          <td align="center" rowspan="2">
+            @(Model.ShitabaraiCheckData?.Zei_Kubun == 0 ? "課税" : Model.ShitabaraiCheckData?.Zei_Kubun == 1 ? "非課税" : "")
+          </td>
+          <td align="center">@(Model.ShitabaraiCheckData?.Mail_Address1)&nbsp;</td>
+          <td align="center">@(Model.ShitabaraiCheckData?.Phone1)</td>
+          <td align="center">@(Model.ShitabaraiCheckData?.Fax1)</td>
+        </tr>
+        <tr>
+          <td align="center">@(Model.ShitabaraiCheckData?.Mail_Address2)&nbsp;</td>
+          <td align="center">@(Model.ShitabaraiCheckData?.Phone2)</td>
+          <td align="center">@(Model.ShitabaraiCheckData?.Fax2)</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="category-title">集計値</div>
+  <div class="table-div" style="margin-top:5px;">
+    <table id="total" class="list">
+      <thead>
+        <tr align="center">
+          <th class="detail-list" width="100px">前回下払額</th>
+          <th class="detail-list" width="100px">今回支払額</th>
+          <th class="detail-list" width="140px">（内　値引・調整）</th>
+          <th class="detail-list" width="100px">繰越残高</th>
+          <th class="detail-list" width="100px">課税対象額</th>
+          <th class="detail-list" width="100px">消費税額</th>
+          <th class="detail-list" width="100px">今回下払額</th>
+          <th class="detail-list" width="100px">下払合計額</th>
+          <td style="border:none;"></td>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td align="right">
+            @Convert.ToInt32(Model.PrintShitabarai.前月残).ToString("#,0")
+          </td>
+          <td align="right">
+            @Convert.ToInt32(Model.PrintShitabarai.今回支払金額).ToString("#,0")
+          </td>
+          <td align="right">
+            @* TODO:データベースを対応する *@
+            @* @(Model.SyuukeiData.Discount) *@
+          </td>
+          <td align="right">
+            @Convert.ToInt32(Model.PrintShitabarai.繰越金額).ToString("#,0")
+          </td>
+          <td align="right">
+            @Convert.ToInt32(Model.PrintShitabarai.課税支払金額).ToString("#,0")
+          </td>
+          <td align="right">
+            @Convert.ToInt32(Model.PrintShitabarai.消費税額).ToString("#,0")
+          </td>
+          <td align="right">
+            @Convert.ToInt32(Model.PrintShitabarai.今回支払額).ToString("#,0")
+          </td>
+          <td align="right">
+            @Convert.ToInt32(Model.PrintShitabarai.運賃合計計).ToString("#,0")
+          </td>
+          <td style="border:none;"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-div">
+    <div id="FixAmountApprovalDetail_ClaimDataList" style="margin-top: 25px;"></div>
+  </div>
+</body>
+
+
+<script>
+  const weeks = ['日', '月', '火', '水', '木', '金', '土'];
+
+  $(window).on('load', function () {
+    var disp = new Date($('#Search_SelectDay').val());
+
+    /** 日付を文字列にフォーマットする */
+    var formatted = `${disp.getFullYear()}\年${(disp.getMonth() + 1).toString().padStart(2, '0')}\月`.replace(
+      /\n|\r/g,
+      '',
+    );
+    $('input#TargetDayLavel').val(formatted);
+    $('input#TargetDayLavel_To').val(formatted);
+
+    dataListDisplay();
+  });
+
+  /// <summary>
+  /// データの表示
+  /// </summary>
+  function dataListDisplay() {
+    var checkShitabaraiID = '@Model.ShitabaraiCheckData.Check_Shitabarai_ID';
+    var printShitabaraiID = '@Model.PrintShitabarai.Print_Shitabarai_ID';
+
+    $.post(
+      '@Url.RouteUrl("Default", new { controller = "ShitabaraiApproval", Action = "JsonGetDataListForFixApprovalDetail" })',
+      {
+        Check_Shitabarai_ID: checkShitabaraiID,
+        Print_Shitabarai_ID: printShitabaraiID,
+      },
+      function (data) {
+        $('#FixAmountApprovalDetail_ClaimDataList').html(data.partialView);
+      },
+    );
+  }
+
+  function ModalClose() {
+    $('#ModalHere').find('.modal').modal('hide');
+  }
+
+  /// <summary>
+  /// リスト画面に戻る
+  /// </summary>
+  function backMenuForDataList() {
+    var form = document.createElement('form');
+    form.action =
+      '@Url.RouteUrl("Default", new { controller = "ShitabaraiApproval", Action = "FixAmountApprovalIndex" })';
+    form.method = 'POST';
+
+    // body に追加
+    document.body.appendChild(form);
+
+    var html = '';
+    html +=
+      '      <input type="hidden" id="SelectDay" name="SelectDay" value="' +
+      $('#Search_SelectDay').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectTantou" name="SelectTantou" value="' +
+      $('#Search_SelectTantou').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectShimebi" name="SelectShimebi" value="' +
+      $('#Search_SelectShimebi').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectSeikyuTantou" name="SelectSeikyuTantou" value="' +
+      $('#Search_SelectSeikyuTantou').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectZeiKubun" name="SelectZeiKubun" value="' +
+      $('#Search_SelectZeiKubun').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectHakkouKubun" name="SelectHakkouKubun" value="' +
+      $('#Search_SelectHakkouKubun').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectKingakuHenkou" name="SelectKingakuHenkou" value="' +
+      $('#Search_SelectKingakuHenkou').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectTokuisakiID" name="SelectTokuisakiID" value="' +
+      $('#Search_SelectTokuisakiID').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectTokuisakiIDTo" name="SelectTokuisakiIDTo" value="' +
+      $('#Search_SelectTokuisakiIDTo').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="BackMenuAction" name="BackMenuAction" value="' +
+      $('#Search_BackMenuAction').val() +
+      '" />';
+
+    form.innerHTML = html;
+    form.submit();
+  }
+
+  function returnToMainView() {
+    var searchData = @Html.Raw(JsonConvert.SerializeObject(Model.Search2));
+
+    var searchJson = JSON.stringify(searchData);
+
+    var form = document.createElement('form');
+    form.action = '@Url.RouteUrl("Default", new { controller = "ShitabaraiInquiryModifyList", Action = "Index" })';
+    form.method = 'POST';
+    form.innerHTML += '<input type="hidden" id="Search" name="Search" value=\'' + searchJson + "' />";
+
+    document.body.appendChild(form);
+    form.submit();
+  }
+</script>

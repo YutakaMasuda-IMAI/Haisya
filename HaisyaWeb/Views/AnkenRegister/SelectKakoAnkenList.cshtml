@@ -1,0 +1,110 @@
+﻿@model AnkenModel.SelectKakoAnkenListDto
+
+
+<head>
+  <link href="~/css/Anken.css" rel="stylesheet" />
+
+  <style>
+  </style>
+</head>
+
+<body class="container">
+
+
+  <div>
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmMain" }))
+    {
+      <div id="hiddenItem" hidden>
+        @Html.HiddenFor(model => Model.Company_ID)
+        @Html.HiddenFor(model => Model.Search.SelectTab)
+        @Html.HiddenFor(model => Model.Search.SelectGroup)
+        @Html.HiddenFor(model => Model.Search.SelectDay)
+        @Html.HiddenFor(model => Model.Search.SelectMonth)
+        @Html.HiddenFor(model => Model.Search.BackMenuAction)
+
+        @Html.HiddenFor(model => Model.SelectMonth_From)
+        @Html.HiddenFor(model => Model.SelectMonth_To)
+      </div>
+      <div id="hedder" class="" style="margin-bottom: -20px;">
+        
+        <table id="tblKakoAnkenSelectList" class="table jbc-table table-hedder" style="padding: 0;">
+              <tbody>
+            @foreach (var item in Model.AnkenDataLists)
+            {
+              string startDate = Convert.ToDateTime(item.StartDatetime).ToString("yy/MM/dd");
+                <tr>
+                  <td style="padding: 0.1rem;">
+                    <button class="btn btn-dark" style="width: 99%;">
+                      <div style="padding: 0px 0px 0px 2px; margin: 0; background: none; width: 100%; line-height: initial; text-align: left; font-size: x-small; ">
+                        @Html.DisplayFor(modelItem => item.KokyakuName) : @Convert.ToDouble(item.GrossAmount).ToString("#,##0円")
+                        <br>
+                        <div style="display: inline-flex; float: left; font-size: xx-small;">
+                          @startDate : @Html.DisplayFor(modelItem => item.SyasyuDisplay2) : @Html.DisplayFor(modelItem => item.StartAddressDisplay3) ⇒ @Html.DisplayFor(modelItem => item.EndAddressDisplay3)
+                        </div>
+                        <div style="display: inline-flex; font-size: xx-small;">
+                          @Html.DisplayFor(modelItem => item.Luggage)
+                        </div>
+
+                      </div>
+                    </button>
+                  </td>
+
+                  <td hidden>@Html.TextBoxFor(modelItem => item.Anken_ID, null, new { @readonly = "readonly", })</td>
+                  <td hidden>@Html.TextBoxFor(modelItem => item.KokyakuName, null, new { @readonly = "readonly", })</td>
+                  <td hidden>@Html.TextBoxFor(modelItem => item.SyasyuDisplay2, null, new { @readonly = "readonly", })</td>
+                  <td hidden>@Html.TextBoxFor(modelItem => item.StartAddressDisplay3, null, new { @readonly = "readonly", })</td>
+                  <td hidden>@Html.TextBoxFor(modelItem => item.EndAddressDisplay3, null, new { @readonly = "readonly", })</td>
+                  <td hidden>@Html.TextBoxFor(modelItem => item.Luggage, null, new { @readonly = "readonly", })</td>
+                  <td hidden>@Html.TextBoxFor(modelItem => item.GrossAmount, null, new { @readonly = "readonly", })</td>
+                </tr>
+            }
+              </tbody>
+            </table>
+          </div>
+    }
+  </div>
+
+  <div id="DataList" style="margin-top: 20px;">
+  </div>
+
+</body>
+
+
+<script>
+
+  $(function () {
+
+
+    $('#tblKakoAnkenSelectList tbody tr').on('click', function () {
+
+      var data = "";
+
+      let obj = {};
+
+      for (var i = 1; i < $(this).find('td').length; i++) {
+
+        data += $(this).find('td').eq(i).find('input').attr('name').replace('item.', '') + ';;;;' + $(this).find('td').eq(i).find('input').attr('value') + ';;;;';
+
+        var name = $(this).find('td').eq(i).find('input').attr('name').replace('item.', '');
+        var val = $(this).find('td').eq(i).find('input').attr('value');
+
+        obj[name] = val;
+
+      }
+
+      //alert(data);
+
+      btnSelectKakoAnkenOnClick(obj);
+
+      return false;
+
+    });
+
+
+
+
+
+  });
+
+
+</script>

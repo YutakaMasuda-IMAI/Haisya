@@ -1,0 +1,366 @@
+﻿@model SettingModel.SyaryoModalDto
+
+@{
+  Layout = "_LayoutForSettingModal";
+  //HaisyaWeb.Dto.M_Syaryo_Local syaryo = Model.M_Syaryo;
+}
+
+<style>
+  /*  .float-left {
+    float: left;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }
+
+  .float-right {
+    float: right;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }*/
+
+  .readonly {
+    background-color: lightgray;
+  }
+</style>
+
+
+<div role="dialog" aria-hidden="true" tabindex="-1" class="modal fade" style="z-index: 1240;" data-backdrop="static" >
+  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:850px;">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: gainsboro;">
+        <h1 class="modal-title fs-3" id="exampleModalLabel">@(Model.Title)</h1>
+        <button type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
+      </div>
+      <div class="model-body">
+        <form id="form1">
+          <div id="hidden" hidden>
+            @Html.HiddenFor(model => Model.BtnCaption)
+            @Html.HiddenFor(model => Model.Title)
+          </div>
+          <div class="contents-wrap-middle" style="margin: 10px;">
+            <h4 class="">注意</h4>
+            <span>
+              ・「車種」「型」が登録キーとなり、登録すると「車種」「型」は変更不可です。<br>
+              ・注）「型（統計用）」を変更した場合は、乗務員に設定している車輌設定の変更が必要です。<br>
+              ・一度データを登録すると物理削除は出来ません。「非表示フラグ」を立ててください。
+            </span>
+          </div>
+          <table class="table table-striped-columns table-bordered border-primary" border="1" style="margin: 10px; width:96%;">
+            <thead>
+              <tr style="background-color: aquamarine;">
+                <th align="center" style="text-align: center;" width="100px">項目名</th>
+                <th align="center" style="text-align: center;" width="200px">値</th>
+                <th align="center" style="text-align: center;" width="300px">例</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr hidden>
+                <th>車輌ID</th>
+                <td>@Html.TextBoxFor(model => Model.M_Syaryo.Syaryo_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px; padding: 0;" })</td>
+                <td></td>
+              </tr>
+              <tr hidden>
+                <th>会社ID</th>
+                <td>@Html.TextBoxFor(model => Model.M_Syaryo.Company_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px; padding: 0;" })</td>
+                <td></td>
+              </tr>
+              <tr hidden>
+                <th>並び順</th>
+                <td>@Html.TextBoxFor(model => Model.M_Syaryo.SortOrder, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px; padding: 0;" })</td>
+                <td></td>
+              </tr>
+              <tr>
+                <th style="color: red;">車種</th>
+                @if (Model.M_Syaryo.SortOrder == 0)
+                {
+                  <td>@Html.TextBoxFor(model => Model.M_Syaryo.SYASYU, null, new { @class = "form-control", @style = "width: 100px; padding: 0;" })</td>
+                }
+                else
+                {
+                  <td>@Html.TextBoxFor(model => Model.M_Syaryo.SYASYU, null, new { @readonly = "readonly", @class = "form-control readonly", @style = "width: 100px; padding: 0;" })</td>
+                }
+                <td>10t ※英数は半角</td>
+              </tr>
+              <tr>
+                <th style="color: red;">型</th>
+                @if (Model.M_Syaryo.SortOrder == 0)
+                {
+                  <td>@Html.TextBoxFor(model => Model.M_Syaryo.KATA, null, new { @class = "form-control", @style = "width: 100px; padding: 0;" })</td>
+                }
+                else
+                {
+                  <td>@Html.TextBoxFor(model => Model.M_Syaryo.KATA, null, new { @readonly = "readonly", @class = "form-control readonly", @style = "width: 100px; padding: 0;" })</td>
+                }
+                <td>平　※英数は半角</td>
+              </tr>
+              <tr>
+                <th style="color: red;">型(統計用)</th>
+                <td>
+                  @Html.DropDownListFor(model => model.M_Syaryo.Kata_ID, new SelectList(Model.KataSelectList, "Value", "Text", "Selected"), "型を選択", new { @class = "form-control list dropDownList", @style = "padding: 0; width: 70%" })
+                  @*@if (Model.M_Syaryo.SortOrder == 0)
+    {
+      @Html.DropDownListFor(model => model.M_Syaryo.Kata_ID, new SelectList(Model.KataSelectList, "Value", "Text", "Selected"), "型を選択", new { @class = "form-control list dropDownList", @style = "padding: 0; width: 70%" })
+    }
+    else
+    {
+      @Html.DropDownListFor(model => model.M_Syaryo.Kata_ID, new SelectList(Model.KataSelectList, "Value", "Text", "Selected"), "型を選択", new { @class = "form-control list dropDownList readonly", @style = "padding: 0; width: 70%; pointer-events: none;" })
+    }*@
+                </td>
+                  <td>値変更時は、乗務員車輌設定内容の変更が必要</td>
+                </tr>
+              <tr>
+                <th style="color: red;">車種サイズ</th>
+                <td>
+                  @Html.DropDownListFor(model => model.M_Syaryo.SIZE, new SelectList(Model.SyaryoSizeSelectList, "Value", "Text", "Selected"), "車種サイズを選択", new { @class = "form-control list dropDownList", @style = "padding: 0; width: 70%" })
+                  @Html.ValidationMessageFor(model => model.M_Syaryo.SIZE, "", new { id = "SelectTollSyasyu", @class = "text -danger align-middle" })
+                </td>
+                <td width="300px">小型車/中型車/大型車/トレーラ等</td>
+              </tr>
+              <tr>
+                <th style="color: red;">車種表示</th>
+                <td>@Html.TextBoxFor(model => Model.M_Syaryo.SyasyuDisplay, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td>１０ｔ平ボディ車</td>
+              </tr>
+              <tr>
+                <th style="color: red;">型表示</th>
+                <td>@Html.TextBoxFor(model => Model.M_Syaryo.KataDisplay, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td>平ボディ車</td>
+              </tr>
+              <tr>
+                <th style="color: red;">料金車種</th>
+                <td>
+                  @Html.DropDownListFor(model => model.M_Syaryo.TOLL_TYPE, new SelectList(Model.TollSyasyuSelectList, "Value", "Text", "Selected"), "料金車種を選択", new { @class = "form-control list dropDownList", @style = "padding: 0; width: 100%" })
+                  @Html.ValidationMessageFor(model => model.M_Syaryo.TOLL_TYPE, "", new { id = "SelectTollSyasyu", @class = "text -danger align-middle" })
+                </td>
+                <td width="300px">通行料金算出時に使用される車種を指定</td>
+              </tr>
+              <tr>
+                <th style="color: red;">詳細車種</th>
+                <td>
+                  @Html.DropDownListFor(model => model.M_Syaryo.CARDETAILINFO, new SelectList(Model.DetailSyasyuSelectList, "Value", "Text", "Selected"), "詳細車種を選択", new { @class = "form-control list dropDownList", @style = "padding: 0; width: 100%" })
+                  @Html.ValidationMessageFor(model => model.M_Syaryo.CARDETAILINFO, "", new { id = "SelectDetailSyasyu", @class = "text-danger align-middle" })
+                </td>
+                <td width="300px">規制考慮、二段階Uターン回避に使用する車種を指定</td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <table width="100%" style="margin: 0px; padding: 0px;">
+                    <tr>
+                      <th style="width: 100px; text-align: right;">長さ</th>
+                      <td style="width: 80px;">@Html.TextBoxFor(model => Model.M_Syaryo.LONG, null, new { @class = "form-control text-end", @style = "width: 80px; margin-right:0px; padding: 0;", @onblur = "" })</td>
+                      <th>cm</th>
+                      <th style="width: 100px; text-align: right;">横幅</th>
+                      <td style="width: 80px;">@Html.TextBoxFor(model => Model.M_Syaryo.WIDTH, null, new { @class = "form-control text-end", @style = "width: 80px; padding: 0;", @onblur = "" })</td>
+                      <th>cm</th>
+                      <th style="width: 100px; text-align: right;">高さ</th>
+                      <td style="width: 80px;">@Html.TextBoxFor(model => Model.M_Syaryo.HEIGHT, null, new { @class = "form-control text-end", @style = "width: 80px; padding: 0;", @onblur = "" })</td>
+                      <th>cm</th>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <table width="100%" style="margin: 0px; padding: 0px;">
+                    <tr>
+                      <th style="width: 100px; text-align: right;">最大積載量</th>
+                      <td style="width: 80px;">@Html.TextBoxFor(model => Model.M_Syaryo.MAX_LOAD_CAPA, null, new { @class = "form-control text-end", @style = "width: 80px; padding: 0;", @onblur = "" })</td>
+                      <td>kg</td>
+                      <th style="width: 100px; text-align: right;">車両重量</th>
+                      <td style="width: 80px;">@Html.TextBoxFor(model => Model.M_Syaryo.CAR_WEIGHT, null, new { @class = "form-control text-end", @style = "width: 80px; padding: 0;", @onblur = "" })</td>
+                      <td>kg</td>
+                      <th style="width: 100px; text-align: right;">車両総重量</th>
+                      <td style="width: 80px;">@Html.TextBoxFor(model => Model.M_Syaryo.CAR_GROSS_WEIGHT, null, new { @class = "form-control text-end", @style = "width: 80px; padding: 0;", @onblur = "" })</td>
+                      <td>kg</td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+              <tr>
+                <th>平均燃費</th>
+                <td class="">@Html.TextBoxFor(model => Model.M_Syaryo.AVG_FUEL_COSTS, "{0:0.00}", new { @class = "form-control text-end", @style = "width: 100px; padding: 0;", @onblur = "kanmaChange(this);" })</td>
+                <td>3.35　※小数第二位</td>
+              </tr>
+              <tr>
+                <th>非表示フラグ</th>
+                <td class="">@Html.CheckBoxFor(model => Model.M_Syaryo.HIDDEN_FLG, new { @class = "form-control text-left form-check-input" })</td>
+                <td>オンにすると、登録時に選択不可。</td>
+              </tr>
+              <tr>
+                <th>最終更新日</th>
+                <td>@Convert.ToDateTime(Model.M_Syaryo.UP_DATE).ToString("yyyy/MM/dd HH:mm:ss")</td>
+                <td hidden>@Html.TextBoxFor(model => Model.M_Syaryo.UP_DATE, null, new { @class = "form-control text-end" })</td>
+              </tr>
+            </tbody>
+          </table>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+  $(function () {
+    setTimeout(function () {
+      $('.modal-backdrop')
+        .not('.modal-stack')
+        .css('z-index', 1239)
+        .addClass('modal-stack');
+    }, 0);
+
+
+  });
+
+  function regExec() {
+
+    if (varidationCheck()) {
+      return false;
+    }
+
+    //Formの参照を取る
+    var $form = $('#form1');
+
+    //alert($form.serialize());
+
+    $.ajax({
+          url: '@Url.RouteUrl("Default", new { controller = "Setting", Action = "SyaryoRegExec" })',
+          type: 'post',
+          data: $form.serialize(),
+        }).done(function (response) {
+            if (response.errorMessage != null && response.errorMessage !== '') {
+              alertError(`【エラー】${response.errorMessage}`);
+              return false;
+          } else {
+            closeModelAndRefresh();
+            return false;
+          }
+        }).fail(function (xhr) {
+          alert('【ネットワークエラー】:' + xhr);
+            console.log(xhr);
+            return false;
+        }).always(function (xhr, msg) {
+            console.log(xhr, msg);
+        });
+
+  }
+
+
+
+
+  function varidationCheck() {
+
+    if (!($('#M_Syaryo_SYASYU').val() != null && $('#M_Syaryo_SYASYU').val().length > 0)) {
+      alert("車種が入力されていません");
+      $('#M_Syaryo_SYASYU').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#M_Syaryo_SYASYU').css('background-color', 'white');
+    }
+
+    if (!($('#M_Syaryo_KATA').val() != null && $('#M_Syaryo_KATA').val().length > 0)) {
+      alert("型が入力されていません");
+      $('#M_Syaryo_KATA').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#M_Syaryo_KATA').css('background-color', 'white');
+    }
+
+    if (!($('#M_Syaryo_SIZE').val() != null && $('#M_Syaryo_SIZE').val().length > 0)) {
+      alert("車種サイズが入力されていません");
+      $('#M_Syaryo_SIZE').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#M_Syaryo_SIZE').css('background-color', 'white');
+    }
+
+    if (!($('#M_Syaryo_SyasyuDisplay').val() != null && $('#M_Syaryo_SyasyuDisplay').val().length > 0)) {
+      alert("車種表示が入力されていません");
+      $('#M_Syaryo_SyasyuDisplay').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#M_Syaryo_SyasyuDisplay').css('background-color', 'white');
+    }
+
+    if (!($('#M_Syaryo_KataDisplay').val() != null && $('#M_Syaryo_KataDisplay').val().length > 0)) {
+      alert("型表示が入力されていません");
+      $('#M_Syaryo_KataDisplay').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#M_Syaryo_KataDisplay').css('background-color', 'white');
+    }
+
+    if ($('#M_Syaryo_SortOrder').val() == 0) {
+      if (varidationCheckForOverlap($('#M_Syaryo_SYASYU').val(), $('#M_Syaryo_KATA').val())) {
+        alert("入力の車種・型は既に登録されています");
+        $('#M_Syaryo_SYASYU').css('background-color', 'lightcoral');
+        $('#M_Syaryo_KATA').css('background-color', 'lightcoral');
+        return true;
+      } else {
+        $('#M_Syaryo_SYASYU').css('background-color', 'white');
+        $('#M_Syaryo_KATA').css('background-color', 'white');
+      }
+    }
+
+
+    return false;
+
+  };
+
+  @*function selectCode(codeID) {
+
+      $.post('@Url.RouteUrl("Default", new { controller = "Tool", Action = "SelectCodeIndex" })',
+      {
+        codeID: codeID,
+      })
+      .done(function (response) {
+        if (response.message != null) {
+          alert("【エラー】" + response.message);
+          return false;
+        } else {
+          alert("【done】" + response.partialView);
+          $("#ModalHereModal").html(response.partialView);
+          //$('#ModalHereModal').modal('show');
+          $("#ModalHereModal").find('.modal').modal('show');
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+          console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+          console.log(xhr, msg);
+      });
+
+  };*@
+
+  //returnSelectCode(codeID, codeData, codeName, Code_Name_abbr)
+  //{
+  //  switch (codeID) {
+  //    case "1":
+  //      $('#M_Syaryo_TOLL_TYPE').val(codeData);
+  //      break;
+  //    case "2":
+  //      $('#M_Syaryo_CARDETAILINFO').val(codeData);
+  //      break;
+  //    default:
+  //      break;
+  //  }
+
+  //  closeModalModal();
+  //};
+
+  //function closeModalModal() {
+  //  $('#ModalHereModal').modal('hide');
+  //  $("#ModalHereModal").html('');
+  //};
+
+
+</script>

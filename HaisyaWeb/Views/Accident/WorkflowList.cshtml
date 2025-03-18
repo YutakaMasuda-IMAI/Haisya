@@ -1,0 +1,54 @@
+@model HaisyaWeb.Dto.WorkFlowList
+@if(Model.Jiko_WorkFlow_Base_ID != 0){
+  @if (Model.Jiko_ID != 0){
+    <div class="workflow-list">
+      <div class="category-title">ワークフロー履歴</div>
+      <table class="list" style="margin-top:5px;">
+        <thead>
+          <tr>
+            <th class="bgcolor">対象者</th>
+            <th class="bgcolor" style="width:80px;">状況</th>
+            <th class="bgcolor" style="width:80px;">日付</th>
+          </tr>
+        </thead>
+        <tbody id="WorkFlowLogListTableBody">
+          @if (Model.WorkFlowLogList != null)
+          {
+            @foreach (var item in Model.WorkFlowLogList)
+            {
+              <tr>
+                <td>@item.Display_Name</td>
+                <td style="text-align:center;">@item.Approval_Name</td>
+                <td style="text-align:center;">@(item.Approval_Datetime.HasValue ? item.Approval_Datetime.Value.ToString("yyyy/MM/dd") : "")</td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  } else {
+  <div class="workflow-list">
+    <div class="category-title">ワークフロールート</div>
+      <table class="list" style="margin-top:5px;">
+        <thead>
+          <tr>
+            <th class="bgcolor" width="200px">ルート名</th>
+            <th class="bgcolor">対象者</th>
+          </tr>
+        </thead>
+        <tbody id="WorkFlowRouteListTableBody">
+        @if (Model.WorkFlowRouteList != null)
+        {
+          @foreach (var item in Model.WorkFlowRouteList)
+          {
+            <tr>
+              <td>@item.Route_Name</td>
+              <td>@item.Display_Name</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+  }
+}

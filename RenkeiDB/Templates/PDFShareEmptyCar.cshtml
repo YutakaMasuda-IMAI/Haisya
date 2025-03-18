@@ -1,0 +1,278 @@
+﻿@using RenkeiDB.Data
+@model List<T_Share_Syaryo>
+@{
+    var todayStr = DateTime.Now.ToString("yyyy年M月dd日");
+}
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>空車車輛共有一覧</title>
+    <style>
+        @@media print {
+            body, html {
+                width: 297mm; /* A4 landscape */
+                height: 210mm; /* A4 landscape */
+            }
+        }
+
+        @@page {
+            size: A4 landscape;
+            margin: 5m;
+        }
+        /* 請求書１のCSS */
+        *:where(:not(html, iframe, canvas, img, svg, video, audio):not(svg *, symbol *)) {
+            all: unset;
+            display: revert;
+        }
+        /* Preferred box-sizing value */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        /* Reapply the pointer cursor for anchor tags */
+        a, button {
+            cursor: revert;
+        }
+        /* Remove list styles (bullets/numbers) */
+        ol, ul, menu {
+            list-style: none;
+        }
+        /* For images to not be able to exceed their container */
+        img {
+            max-width: 100%;
+        }
+        /* removes spacing between cells in tables */
+        table {
+            border-collapse: collapse;
+        }
+        /* Safari - solving issue when using user-select:none on the body text input doesn't working */
+        input, textarea {
+            -webkit-user-select: auto;
+        }
+        /* revert the 'white-space' property for textarea elements on Safari */
+        textarea {
+            white-space: revert;
+        }
+        /* minimum style to allow to style meter element */
+        meter {
+            -webkit-appearance: revert;
+            appearance: revert;
+        }
+            /* reset default text opacity of input placeholder */
+            meter::placeholder {
+                color: unset;
+            }
+            /* fix the feature of 'hidden' attribute.
+                                                           display:revert; revert to element instead of attribute */
+            meter:where([hidden]) {
+                display: none;
+            }
+            /* revert for bug in Chromium browsers
+                                                           - fix for the content editable attribute will work properly.
+                                                           - webkit-user-select: auto; added for Safari in case of using user-select:none on wrapper element*/
+            meter:where([contenteditable]:not([contenteditable="false"])) {
+                -moz-user-modify: read-write;
+                -webkit-user-modify: read-write;
+                overflow-wrap: break-word;
+                -webkit-line-break: after-white-space;
+                -webkit-user-select: auto;
+            }
+            /* apply back the draggable feature - exist only in Chromium and Safari */
+            meter:where([draggable="true"]) {
+                -webkit-user-drag: element;
+            }
+
+        .bill {
+            /* width: 297mm; */
+            height: auto;
+            font-family: "ＭＳ Ｐゴシック", serif;
+            font-size: 13px;
+            line-height: 1.3;
+            /* backgound-colorの有効化 */
+            -webkit-print-color-adjust: exact;
+        }
+            /* 最後のページで改ページが入らないように制御 */
+            .bill:last-child {
+                page-break-after: auto;
+            }
+
+        .bill .total-bill {
+            padding-left: 0;
+        }
+
+            .bill .total-bill .total-table-wrapper {
+                overflow: hidden;
+            }
+
+                .bill .total-bill .total-table-wrapper table {
+                    float: left;
+                    margin: 0 20px 0px 0px;
+                }
+
+                    .bill .total-bill .total-table-wrapper table:last-child {
+                        margin-right: 0;
+                    }
+                /* Clear the last floated element */
+                .bill .total-bill .total-table-wrapper::after {
+                    content: "";
+                    display: table;
+                    clear: both;
+                }
+
+                .bill .total-bill .total-table-wrapper table td {
+                    padding: 3px;
+                    border: 1px solid #000;
+                    vertical-align: middle;
+                    text-align: center;
+                }
+
+        /* 共通のテーブルスタイル */
+        .bill table {
+            width: 100%;
+            /* margin-inline: auto; */
+            margin: auto;
+            border-top: 1px solid #000;
+            border-collapse: collapse;
+        }
+
+            .bill table td, .bill table th {
+                border-left: 1px solid #000;
+                border-right: 1px solid #000;
+                padding-left: 5px;
+                padding-right: 5px;
+                line-height: 140%;
+                text-align: right; /* セルはデフォルトで右寄せ */
+                break-inside: avoid; /* テーブルの行で改ページ禁止 */
+                page-break-inside: avoid;
+            }
+
+        /* テーブルヘッダー */
+        .bill table thead th {
+            border-left: 1px solid #000;
+            border-right: 1px solid #000;
+            padding: 2px;
+        }
+
+        .bill table tbody tr {
+            page-break-inside: avoid !important;
+            -webkit-column-break-inside: avoid;
+            break-inside: avoid;
+            -webkit-region-break-inside: avoid;
+            page-break-after: auto !important;
+            border-top: 1px solid #fff;
+        }
+
+        .bill table thead tr th {
+            background-color: #d9d9d9;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+            /* padding-block: 2px; */
+            padding: 2px;
+        }
+
+        /* テーブルボディ */
+        .bill table tbody tr td {
+            word-break: break-all;
+            word-wrap: break-word;
+            font-size: 12.34px;
+            white-space: normal;
+            overflow: hidden;
+            vertical-align: top;
+            
+            page-break-inside: avoid;
+            page-break-after: auto;
+        }
+
+        .bill table tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+            .bill .head-wrapper {
+                display: table;
+                width: 100%;
+            }
+
+                .bill .head-wrapper .title-wrapper {
+                    text-align: center;
+                    display: table-cell;
+                    vertical-align: bottom;
+                }
+
+                    .bill .head-wrapper .title-wrapper .title {
+                        font-size: 30px;
+                        font-weight: bold;
+                    }
+
+                .bill .head-wrapper .date-wrapper {
+                    position: absolute;
+                    top: 15px;
+                    right: 10px;
+                    font-size: 16px;
+                    vertical-align: bottom;
+                }
+
+    </style>
+</head>
+<body class="bill">
+    <div class="head-wrapper" style="position: relative;">
+        <div class="date-wrapper">@todayStr</div>
+        <div class="title-wrapper">
+            <div>
+                <h2 class="title">空車車輛共有一覧</h2>
+                <br />
+            </div>
+        </div>
+    </div>
+    <div class="total-bill">
+        <div class="total-table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 8%">車輛公開№</th>
+                        <th style="width: 8%">車種</th>
+                        <th style="width: 6%">空車日</th>
+                        <th style="width: 10%">空車場所</th>
+                        <th style="width: 10%">行先</th>
+                        <th style="width: 10%">会社名</th>
+                        <th style="width: 10%">グループ</th>
+                        <th style="width: 10%">特記事項</th>
+                        <th style="width: 12%">装備</th>
+                        <th style="width: 6%">積載量</th>
+                        <th style="width: 10%">最大積載量</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var shareEmptyCar = Model;
+                    }
+                    @foreach (var item in shareEmptyCar)
+                    {
+                        <tr>
+                            <td>@item?.Share_Syaryo_No</td>
+                            <td>@item?.Share_Syaryo_Detail?.SyasyuDisplay</td>
+                            <td>@item?.Share_Syaryo_Detail?.Empty_Car_Day.ToString("yyyy/MM/dd")</td>
+                            <td>@item?.Share_Syaryo_Detail?.Empty_Address</td>
+                            <td>@item?.Share_Syaryo_Detail?.Dest_Address</td>
+                            <td>@item?.CompanyBranch?.Branch_Name_Abbr</td>
+                            <td>@item?.CompanyUserGroup?.Display_Name</td>
+                            <td>@item?.Share_Syaryo_Detail?.Remarks</td>
+                            <td>@item?.Share_Syaryo_Detail?.EquipmentDisplay</td>
+                            @{
+                                string weight = @item?.Share_Syaryo_Detail?.Syaryo_Weight.ToString("#,0.##");
+                                string totalWeight = @item?.Share_Syaryo_Detail?.Syaryo_Total_Weight.ToString("#,0.##");
+                            }
+                            <td style="text-align:right">@weight</td>
+                            <td style="text-align:right">@totalWeight</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

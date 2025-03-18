@@ -1,0 +1,39 @@
+@model DailyReportModel.DailyReportRegistrationDetailModel
+
+<div class="other-paid-list">
+  <table>
+    <thead>
+      <tr>
+      <th style="width:120px;">項目名</th>
+      <th style="width:auto;">発</th>
+      <th style="width: auto;">着</th>
+      <th style="width:120px;">料金</th>
+      <th style="width:120px;">負担選択</th>
+      </tr>
+    </thead>
+    <tbody>
+    @{ var index = 0; } 
+    @if(Model.NippouTollOther != null) {
+      @foreach (var item in Model.NippouTollOther)
+      {
+        <tr data-index="@index">
+          <td onclick="OtherPaidModal(this, @index);" style="cursor: pointer;text-align:center;">
+            @Model.GroupUserSelectList.FirstOrDefault(x => x.Value == item.Toll_Kubun.ToString())?.Text
+          </td>
+          <td onclick="OtherPaidModal(this, @index);" style="cursor: pointer;">@item.Start_Name</td>
+          <td onclick="OtherPaidModal(this, @index);" style="cursor: pointer;">@item.End_Name</td>
+          <td onclick="OtherPaidModal(this, @index);" style="cursor: pointer; text-align: right;">@string.Format("{0:N0}", item.Toll_Fee)</td>
+          <td>
+            @Html.DropDownListFor(
+                m => item.Futan_Kubun, 
+                new SelectList(Model.FutanKubunList, "Value", "Text"), 
+                new { @class = "form-control list text-center", onchange = $"onOtherPaidFutanKubunChange(this, {index})" }
+              )
+          </td>
+        </tr>
+        index++;
+      }
+    }
+    </tbody>
+  </table>
+</div>

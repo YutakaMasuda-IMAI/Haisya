@@ -1,0 +1,1348 @@
+@model DailyReportModel.DailyReportRegistrationDetailModel
+
+<head>
+  <meta charset="UTF-8">
+  <style>
+  </style>
+</head>
+
+
+<div style="padding:5px 5px 5px 15px;">
+  <div hidden>
+    @Html.TextBoxFor(model => Model.NippouStayDegitakoIdList)
+    @Html.HiddenFor(model => Model.NippouKaisoDegitakoIdList)
+    @Html.HiddenFor(model => Model.KUDGSIRIdList)
+    @Html.HiddenFor(model => Model.NippouApproval.Nippou_Approval_ID)
+
+    @Html.HiddenFor(model => Model.NippouApproval.Approval_Group_ID)
+    @Html.HiddenFor(model => Model.NippouApproval.Limit_DateTime)
+    @Html.HiddenFor(model => Model.NippouApproval.Order_Memo)
+  </div>
+
+  <div class="heading-21" style="font-weight: bold; width: 100%; margin-top: 1rem;">
+    <h3 id="labelTitle" class="heading-40" style="width: 100%;">運転日報登録修正</h3>
+    <div style="border: 1px solid #000000; width: 100%; height: 100px; overflow: auto; ">
+      @Html.DisplayFor(model => model.SeikyuRemarks)
+    </div>
+  </div>
+  <div class="header-buttons" style="margin-top:1rem;">
+    <table width="100%">
+      <tr>
+        <td><button class="btn btn-outline-dark" style="width: 150px;" onclick="ProvisionalRegistrationWithConfirm()">仮登録</button></td>
+        <td><button class="btn btn-outline-success" style="width:150px;" onclick="CertificationRequestModal()">登録(承認依頼)</button></td>
+        <td><button class="btn btn-outline-danger" style="width: 150px;" onclick="ApprovalRegistration()">登録(承認)</button></td>
+        <td><button class="btn btn-outline-secondary" style="width: 150px;" onclick="salesEntry()">売上入力</button></td>
+        <td align="right"><button class="btn btn-outline-warning" style="width: 150px;" onclick="btnCloseOnClick(); return false;">閉じる</button></td>
+      </tr>
+    </table>
+  </div>
+  <div class="row" style="margin-top:0.5rem;">
+    <div class="col-4">
+      @if (Model.HaisyaDataList.Haisya_Kubun != 2)
+      {
+        <div class="radio-container">
+          @Html.RadioButtonFor(m => m.Nippou.RenkeiStatus, 0, new { id = "digitalTachograph" }) <label for="digitalTachograph">デジタコ連携</label>
+          @Html.RadioButtonFor(m => m.Nippou.RenkeiStatus, 1, new { id = "manualEntry" }) <label for="manualEntry">手入力</label>
+        </div>
+      }
+      else
+      {
+        <div style="display:none"><input type="checkbox" id="manualEntry" name="manualEntry" value="1" checked />手入力</div>
+      }
+    </div>
+    <div class="col-8">
+      <div class="header">
+        <div></div>
+        <div>
+          <button class="btn btn-outline-primary" style="width: 200px;" onclick="OvernightModal();" id="btnOvernightModal">泊まり設定</button>
+          <button class="btn btn-outline-primary" style="width: 200px;" onclick="EmptyCarModal();" id="btnEmptyCarModal">空車回送設定</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <br />
+
+  <button type="button" class="btn btn-primary btn-sm" style="width: 100%; padding: 0;" data-bs-toggle="collapse" data-bs-target="#divCollapseHighway" aria-expanded="false" aria-controls="divCollapseHighway">
+    <div style="padding: 0rem 2rem;"><span class="size17" style="float:left;">高速代</span><span style="float:right;">▼</span></div>
+  </button>
+  <div id="divCollapseHighway" class="container collapse show" style="padding: 0; border-collapse: collapse; ">
+    <div class="header">
+      <div></div>
+      <button class="btn btn-outline-info" style="width:250px;" onclick="HighwayDataModal(this, -1);" id="highwayButton">高速情報追加</button>
+      <div class="all-setting">
+        <div style="text-align: center;">一括設定</div>
+        <div class="highway-buttons2">
+          @if (Model.HaisyaDataList.Haisya_Kubun != 2)
+          {
+            <button class="btn btn-outline-dark" style="width:100px;" id="personalButton" onclick="changeFutanKubun(1)">個人負担</button>
+          }
+          <button class="btn btn-outline-dark" style="width:100px;" id="companyButton" onclick="changeFutanKubun(2)">会社負担</button>
+          <button class="btn btn-outline-dark" style="width:100px;" id="clientButton" onclick="changeFutanKubun(3)">荷主負担</button>
+        </div>
+      </div>
+    </div>
+    <div class="highway-list">
+      <table class="table table-HaisyaWeb">
+        <thead class="table-active">
+          <tr>
+            <th style="width:200px;">開始日時</th>
+            <th style="width:300px;">開始道路名</th>
+            <th>開始IC名</th>
+            <th style="width:150px;">精算区分名</th>
+            <th style="width:120px;">料金</th>
+            <th style="width:120px;" rowspan="2">負担選択</th>
+            <th style="width:60px;" rowspan="2">保存</th>
+          </tr>
+          <tr>
+            <th>終了日時</th>
+            <th>終了道路名</th>
+            <th>終了IC名</th>
+            <th>読取NO</th>
+            <th>走行距離</th>
+          </tr>
+        </thead>
+        <tbody id="highwayDataTable" style="display: none;">
+          @{
+            var index = 0;
+          }
+          @foreach (var item in Model.NippouTollDegitako)
+          {
+            <tr data-index="@index" style="border-bottom: 0.05em dashed #cfcfcf;">
+              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer; text-align: center;">@Html.DisplayFor(modelItem => item.開始日時)</td>
+              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;">@Html.DisplayFor(modelItem => item.開始道路名)</td>
+              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;">@Html.DisplayFor(modelItem => item.開始IC名)</td>
+              <td onclick="HighwayDataModal(this, @index);" hidden><input type="hidden" id="start-ic" value="@item.開始IC名" /></td>
+              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer; text-align: center;">@Html.DisplayFor(modelItem => item.精算区分名)</td>
+              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer; text-align: right;">@String.Format("{0:N0}", item.料金)円</td>
+              <td rowspan="2" style="align-content: center; text-align: center; border-bottom: 1px solid #000000; padding: 0;">
+                @Html.DropDownListFor(
+                     m => item.Futan_Kubun,
+                     new SelectList(Model.FutanKubunList, "Value", "Text"),
+                     new { @class = "form-control list text-center", @id = "entry" }
+                 )
+              </td>
+              <td rowspan="2" style="align-content: center; text-align: center; border-bottom: 1px solid #000000; padding: 0; "><button class="highway-button" onClick="saveHighwayDataFutanKubunChange(@index)">保存</button></td>
+            </tr>
+            <tr data-index="@index" onclick="HighwayDataModal(this, @index);" >
+              <td style="cursor: pointer; text-align: center;">@Html.DisplayFor(modelItem => item.終了日時)</td>
+              <td style="cursor: pointer;">@Html.DisplayFor(modelItem => item.終了道路名)</td>
+              <td hidden><input type="hidden" id="end-ic" value="@item.終了IC名" /></td>
+              <td style="cursor: pointer;" class="end-ic">@Html.DisplayFor(modelItem => item.終了IC名)</td>
+              <td style="cursor: pointer; text-align: center;">@Html.DisplayFor(modelItem => item.読取NO)</td>
+              <td style="cursor: pointer; text-align: right;">@Html.DisplayFor(modelItem => item.走行距離)km</td>
+            </tr>
+            index++;
+          }
+        </tbody>
+        <tbody id="nippouTollTable" style="display: none;">
+          @{
+            index = 0;
+          }
+          @foreach (var item1 in Model.NippouToll)
+          {
+            <tr data-index="@index" style="border-bottom: 0.05em dashed #cfcfcf;">
+              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer; text-align: center;">@Html.DisplayFor(modelItem => item1.開始日時)</td>
+              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;">@Html.DisplayFor(modelItem => item1.開始道路名)</td>
+              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;">@Html.DisplayFor(modelItem => item1.開始IC名)</td>
+              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;"></td>
+              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer; text-align: right;">@String.Format("{0:N0}", item1.料金)円</td>
+              <td rowspan="2">
+                @Html.DropDownListFor(
+                   m => item1.Futan_Kubun,
+                   new SelectList(Model.FutanKubunList, "Value", "Text"),
+                   new { @class = "form-control list text-center", @id = "entry", onchange = $"onNippouTollFutanKubunChange(this, {index})" }
+               )
+              </td>
+              <td rowspan="2"><button class="highway-button" onClick="saveNippouTollDataChange(@index)">保存</button></td>
+            </tr>
+            <tr data-index="@index">
+              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer; text-align: center;">@Html.DisplayFor(modelItem => item1.終了日時)</td>
+              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;">@Html.DisplayFor(modelItem => item1.終了道路名)</td>
+              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;">@Html.DisplayFor(modelItem => item1.終了IC名)</td>
+              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;"></td>
+              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer; text-align: right;">@Html.DisplayFor(modelItem => item1.走行距離)km</td>
+            </tr>
+            index++;
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <br />
+
+  <button type="button" class="btn btn-primary btn-sm" style="width: 100%; padding: 0;" data-bs-toggle="collapse" data-bs-target="#divCollapseOtherPaid" aria-expanded="false" aria-controls="divCollapseOtherPaid">
+    <div style="padding: 0rem 2rem;"><span class="size17" style="float:left;">その他有料代</span><span style="float:right;">▼</span></div>
+  </button>
+  <div id="divCollapseOtherPaid" class="container collapse show" style="padding: 0; border-collapse: collapse; ">
+    <div class="header">
+      <div></div>
+      <div>
+        <button class="btn btn-outline-info" style="width:100px;" onclick="OtherPaidModal(this, -1);">追加</button>
+      </div>
+    </div>
+    <div class="other-paid-list">
+      <table class="table table-HaisyaWeb">
+        <thead class="table-active">
+          <tr>
+            <th style="width:120px;">項目名</th>
+            <th style="width: auto;">発</th>
+            <th style="width: auto;">着</th>
+            <th style="width:120px;">料金</th>
+            <th style="width:120px;">負担選択</th>
+          </tr>
+        </thead>
+        <tbody>
+          @{ var otherIndex = 0; }
+          @if (Model.NippouTollOther != null)
+          {
+            @foreach (var item in Model.NippouTollOther)
+            {
+              <tr data-index="@otherIndex">
+                <td onclick="OtherPaidModal(this, @otherIndex);" style="cursor: pointer;text-align:center;">
+                  @Model.GroupUserSelectList.FirstOrDefault(x => x.Value == item.Toll_Kubun.ToString())?.Text
+                </td>
+                <td onclick="OtherPaidModal(this, @otherIndex);" style="cursor: pointer;">@item.Start_Name</td>
+                <td onclick="OtherPaidModal(this, @otherIndex);" style="cursor: pointer;">@item.End_Name</td>
+                <td onclick="OtherPaidModal(this, @otherIndex);" style="cursor: pointer; text-align: right;">@string.Format("{0:N0}", item.Toll_Fee)円</td>
+                <td>
+                  @Html.DropDownListFor(
+                       m => item.Futan_Kubun,
+                       new SelectList(Model.FutanKubunList, "Value", "Text"),
+                       new { @class = "form-control list text-center", onchange = $"onOtherPaidFutanKubunChange(this, {otherIndex})" }
+                   )
+                </td>
+              </tr>
+              otherIndex++;
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <br />
+</div>
+
+
+<script>
+
+  if (typeof NippouToll === 'undefined') {
+    var NippouToll = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouToll))') || [];
+  } else {
+    NippouToll = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouToll))') || [];
+  }
+  if (typeof OtherPaidData === 'undefined') {
+    var OtherPaidData = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouTollOther))') || [];
+  } else {
+    OtherPaidData = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouTollOther))') || [];
+  }
+  var NippouApproval = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouApproval))');
+  var NippouStay = JSON.parse('@Html.Raw(Json.Serialize(Model.Nippou_Stay))');
+  var NippouKaiso = JSON.parse('@Html.Raw(Json.Serialize(Model.Nippou_Kaiso))');
+  var NippouStayDegitakoIdList = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouStayDegitakoIdList))') || [];
+  var NippouKaisoDegitakoIdList = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouKaisoDegitakoIdList))') || [];
+  var InitialDisplayNippouTollOther = JSON.parse('@Html.Raw(Json.Serialize(Model.InitialDisplayNippouTollOther))') || [];
+  var InitialDisplayNippouToll = JSON.parse('@Html.Raw(Json.Serialize(Model.InitialDisplayNippouToll))') || [];
+  var HighwayData = JSON.parse('@Html.Raw(Json.Serialize(Model.HighwayData))') || [];
+  var NippouTollDegitako = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouTollDegitako))') || [];
+
+  // 変更内容があるかどうかのデータチェック
+  function DataCheck() {
+    let nippouKaisoDegitakoIdList = $('#NippouKaisoDegitakoIdList').val() || "";
+    const nippouKaisoDegitakoIdListInt = nippouKaisoDegitakoIdList.split(",")
+      .map(function(item) {
+        return parseInt(item, 10);
+      })
+      .filter(function(item) {
+        return !isNaN(item);
+      });
+
+    let nippouStayDegitakoIdList = $('#NippouStayDegitakoIdList').val() || "";
+
+    const nippouStayDegitakoIdListInt = nippouStayDegitakoIdList.split(",")
+      .map(function(item) {
+        return parseInt(item, 10);
+      })
+      .filter(function(item) {
+        return !isNaN(item);
+      });
+    const isStayIdListEqual = compareArrays(NippouStayDegitakoIdList, nippouStayDegitakoIdListInt);
+
+    if (!isStayIdListEqual) {
+      return false;
+    }
+
+    const isKaisoIdListEqual = compareArrays(NippouKaisoDegitakoIdList, nippouKaisoDegitakoIdListInt);
+
+    // Change 負担選択 at 高速代
+    if (!compareFutanKubun(InitialDisplayNippouToll, NippouToll)) {
+      return false;
+    }
+
+    // Change 負担選択 at その他有料代
+    if (!compareFutanKubun(InitialDisplayNippouTollOther, OtherPaidData)) {
+      return false;
+    }
+
+    if (!isKaisoIdListEqual) {
+      return false;
+    }
+    // 泊まり設定の比較
+    if ((NippouStay.start_Datetime || '') !== $('#Nippou_Stay_Start_Datetime').val()) return false;
+    if ((NippouStay.end_Datetime || '') !== $('#Nippou_Stay_End_Datetime').val()) return false;
+    if ((NippouStay.start_ShikuName || '') !== $('#Nippou_Stay_Start_ShikuName').val()) return false;
+    if ((NippouStay.end_ShikuName || '') !== $('#Nippou_Stay_End_ShikuName').val()) return false;
+
+    const formIntervalTime = $('#Nippou_Stay_Interval_Time').val();
+    if ((NippouStay.interval_Time === null && formIntervalTime !== '') ||
+      (NippouStay.interval_Time !== null && parseInt(formIntervalTime) !== NippouStay.interval_Time)) {
+      return false;
+    }
+
+    const formDllowance = parseFloat($('#Nippou_Stay_Dllowance').val() || 0);
+    if (NippouStay.dllowance !== formDllowance) return false;
+
+
+    // 空車回送設定の比較
+    if ((NippouKaiso.start_Datetime || '') !== $('#Nippou_Kaiso_Start_Datetime').val()) return false;
+    if ((NippouKaiso.end_Datetime || '') !== $('#Nippou_Kaiso_End_Datetime').val()) return false;
+    if ((NippouKaiso.start_ShikuName || '') !== $('#Nippou_Kaiso_Start_ShikuName').val()) return false;
+    if ((NippouKaiso.end_ShikuName || '') !== $('#Nippou_Kaiso_End_ShikuName').val()) return false;
+    if ((NippouKaiso.commnet || '') !== $('#Nippou_Kaiso_Commnet').val()) return false;
+
+    // distanceの比較
+    const formDistance = $('#Nippou_Kaiso_Distance').val();
+    if ((NippouKaiso.distance === null && formDistance !== '') ||
+      (NippouKaiso.distance !== null && parseInt(formDistance) !== NippouKaiso.distance)) {
+      return false;
+    }
+
+    // dllowanceの比較
+    const formKaisoDllowance = parseFloat($('#Nippou_Kaiso_Dllowance').val() || 0);
+    if (NippouKaiso.dllowance !== formKaisoDllowance) return false;
+
+    if (!compareLists(NippouToll, InitialDisplayNippouToll)) {
+      return false;
+    }
+
+    // その他有料代の比較
+    if (!compareLists(OtherPaidData, InitialDisplayNippouTollOther)) {
+      return false;
+    }
+
+    return true;
+  }
+
+    function compareFutanKubun(array1, array2) {
+        if (array1.length !== array2.length) return false;
+
+        return array1.every((obj1, index) => obj1.futan_Kubun === array2[index].futan_Kubun);
+    }
+
+    function compareArrays(arr1, arr2) {
+    if (arr1.length !== arr2.length) {
+      return false;
+    }
+
+    // 配列をソートしてから比較
+    const sortedArr1 = [...arr1].sort();
+    const sortedArr2 = [...arr2].sort();
+
+    for (let i = 0; i < sortedArr1.length; i++) {
+      if (sortedArr1[i] !== sortedArr2[i]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  function compareObjects(obj1, obj2) {
+    return obj1.Toll_Kubun === obj2.Toll_Kubun &&
+      obj1.Start_Name === obj2.Start_Name &&
+      obj1.End_Name === obj2.End_Name &&
+      obj1.Toll_Fee === obj2.Toll_Fee;
+  }
+
+  function compareLists(list1, list2) {
+    if (list1.length !== list2.length) return false;
+    for (let i = 0; i < list1.length; i++) {
+      if (!compareObjects(list1[i], list2[i])) return false;
+    }
+    return true;
+  }
+
+  $(function () {
+    //ラジオボタンの表示・非表示を制御
+    var isManualEntry = $('#manualEntry').is(':checked') || @(Model.HaisyaDataList.Haisya_Kubun == 2 ? "true" : "false");
+    $('#distanceInputContainer').toggle(isManualEntry);
+    //案件情報の表示・非表示を制御
+    var isManualEntry = $('#digitalTachograph').is(':checked') && @(Model.HaisyaDataList.Haisya_Kubun != 2 ? "true" : "false");
+    $('#distanceContainer').toggle(isManualEntry);
+    $('#digitalTachograph, #manualEntry').change(function() {
+      var isManualEntry = $('#manualEntry').is(':checked') || @(Model.HaisyaDataList.Haisya_Kubun == 2 ? "true" : "false");
+      $('#distanceInputContainer').toggle(isManualEntry);
+      var isManualEntry = $('#digitalTachograph').is(':checked') && @(Model.HaisyaDataList.Haisya_Kubun != 2 ? "true" : "false");
+      $('#distanceContainer').toggle(isManualEntry);
+    });
+    $('#NippouStayDegitakoIdList').val(@Html.Raw(Json.Serialize(Model.NippouStayDegitakoIdList)));
+    $('#NippouKaisoDegitakoIdList').val(@Html.Raw(Json.Serialize(Model.NippouKaisoDegitakoIdList)));
+  });
+
+  $(document).ready(function() {
+    $('#digitalTachograph, #manualEntry').change(updateTableVisibility);
+
+    updateTableVisibility();
+    updateNippouDetails();
+  });
+
+  function updateNippouDetails(){
+    $('#Nippou_Kaiso_Start_Datetime').val('@Model.Nippou_Kaiso?.Start_Datetime');
+    $('#Nippou_Kaiso_Start_ShikuName').val('@Html.Raw(Model.Nippou_Kaiso?.Start_ShikuName)');
+    $('#Nippou_Kaiso_End_Datetime').val('@Model.Nippou_Kaiso?.End_Datetime');
+    $('#Nippou_Kaiso_End_ShikuName').val('@Html.Raw(Model.Nippou_Kaiso?.End_ShikuName)');
+    $('#Nippou_Kaiso_Disatnce').val('@Model.Nippou_Kaiso?.Distance');
+    $('#Nippou_Kaiso_Dllowance').val('@Model.Nippou_Kaiso?.Dllowance');
+    $('#Nippou_Kaiso_Day').val('@Model.Nippou_Kaiso?.Day');
+    $('#Nippou_Kaiso_Commnet').val('@Html.Raw(Model.Nippou_Kaiso?.Commnet)');
+
+    $('#Nippou_Stay_Start_Datetime').val('@Model.Nippou_Stay?.Start_Datetime');
+    $('#Nippou_Stay_End_Datetime').val('@Model.Nippou_Stay?.End_Datetime');
+    $('#Nippou_Stay_Start_ShikuName').val('@Html.Raw(Model.Nippou_Stay?.Start_ShikuName)');
+    $('#Nippou_Stay_End_ShikuName').val('@Html.Raw(Model.Nippou_Stay?.End_ShikuName)');
+    $('#Nippou_Stay_Interval_Time').val('@Model.Nippou_Stay?.Interval_Time');
+    $('#Nippou_Stay_Dllowance').val('@Model.Nippou_Stay?.Dllowance');
+    $('#Nippou_Stay_Day').val('@Model.Nippou_Stay?.Day');
+  }
+  function updateTableVisibility() {
+    var isManualEntry = $('#manualEntry').is(':checked') || @(Model.HaisyaDataList.Haisya_Kubun == 2 ? "true" : "false");
+    var isDigitalTachograph = $('#digitalTachograph').is(':checked') && @(Model.HaisyaDataList.Haisya_Kubun != 2 ? "true" : "false");
+
+    if (isManualEntry) {
+      $('#highwayDataTable').hide();
+      $('#nippouTollTable').show();
+      $('#btnOvernightModal').hide();
+      $('#btnEmptyCarModal').hide();
+    } else if (isDigitalTachograph) {
+      $('#nippouTollTable').hide();
+      $('#highwayDataTable').show();
+      $('#btnOvernightModal').show();
+      $('#btnEmptyCarModal').show();
+    }
+  }
+
+  // その他有料代のモーダル表示
+  function OtherPaidModal(tr, rowIndex) {
+    event.preventDefault();
+    let otherPaidData;
+
+    if (rowIndex >= 0 && Array.isArray(OtherPaidData) && OtherPaidData[rowIndex]) {
+      otherPaidData = OtherPaidData[rowIndex];
+    } else {
+
+      otherPaidData = {};
+    }
+
+
+    $.post('@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "OtherPaidModal" })', {
+        NippouTollOther: JSON.stringify(otherPaidData),
+        rowIndex: rowIndex
+      })
+      .done(function(response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】" + response.partialView);
+          $("#ModalHere").html(response.partialView);
+          $("#ModalHere").find('.modal').modal('show');
+          return false;
+        }
+      })
+      .fail(function(xhr) {
+        console.log(xhr);
+      })
+      .always(function(xhr, msg) {
+        //console.log(xhr, msg);
+        //alert(msg);
+      });
+  };
+  //その他有料代のレコードの追加・更新処理
+  function saveOtherPaidList() {
+    if (!validateOtherPaidForm()) {
+      return;
+    }
+    event.preventDefault();
+    const index = $("#recordIndex").val();
+    const otherPaidData = {
+      Toll_Kubun: $("#tollKubun").val(),
+      Start_Name: $("#departure").val(),
+      End_Name: $("#arrival").val(),
+      Toll_Fee: $("#fee").val(),
+      Futan_Kubun: $("#futanKubun").val(),
+    };
+
+    if (!Array.isArray(OtherPaidData)) {
+      OtherPaidData = [];
+    }
+
+    if (index == -1) {
+      // Add new record
+      OtherPaidData.push(otherPaidData);
+    } else {
+      // Update existing record
+      OtherPaidData[index] = otherPaidData;
+    }
+    postOtherPaidList(OtherPaidData);
+  };
+
+  // その他有料代のデータチェック
+  function validateOtherPaidForm() {
+    let isValid = true;
+    if ($("#entry").val() === "") {
+      alertError("項目を選択してください。", "入力エラー");
+      isValid = false;
+    }
+
+    if ($('#departure').val().trim() === "") {
+      alertError("発を入力してください。", "入力エラー");
+      isValid = false;
+    }
+
+    if ($('#arrival').val().trim() === "") {
+      alertError("着を入力してください。", "入力エラー");
+      isValid = false;
+    }
+
+    if ($('#fee').val().trim() === "") {
+      alertError("料金を入力してください。", "入力エラー");
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  function changeFutanKubun(value) {
+    event.preventDefault();
+    if ($('#manualEntry').is(':checked')) {
+      var dropdowns = document.querySelectorAll('#nippouTollTable select[id^="entry"]');
+      dropdowns.forEach(function (dropdown, index) {
+        dropdown.value = value;
+        onNippouTollFutanKubunChange(dropdown, index);
+      });
+    }
+    else {
+      var dropdowns = document.querySelectorAll('#highwayDataTable select[id^="entry"]');
+      dropdowns.forEach(function (dropdown, index) {
+        dropdown.value = value;
+        onHighwayDataFutanKubunChange(dropdown, index);
+      });
+    }
+  }
+  //レコードの削除処理
+  function deleteOtherPaidList() {
+    const index = $("#recordIndex").val();
+    OtherPaidData.splice(index, 1);
+    postOtherPaidList(OtherPaidData);
+  };
+
+  //その他有料代のリストの更新
+  function postOtherPaidList(otherPaidData) {
+
+    $.post('@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "UpdateOtherPaidData" })', {
+        NippouTollOther: otherPaidData,
+        HaisyaDataList: @Html.Raw(Json.Serialize(Model.HaisyaDataList)),
+      })
+      .done(function(response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】" + response.partialView);
+          $('#ModalHere').find('.modal').modal('hide');
+          $("#ModalHere").html('');
+          updateOtherPaidList(response.partialView);
+          return false;
+        }
+      })
+      .fail(function(xhr) {
+        console.log(xhr);
+      })
+      .always(function(xhr, msg) {
+        //console.log(xhr, msg);
+        //alert(msg);
+      });
+  };
+
+  function updateOtherPaidList(partialView) {
+    $(".other-paid-list").html(partialView);
+  }
+
+  //高速情報追加のモーダル表示
+  function HighwayDataModal(tr, rowIndex) {
+    event.preventDefault();
+
+    var row = $(`#highwayDataTable tr[data-index="${rowIndex}"]`);
+
+    var selectedRowIndex = NippouToll.findIndex(record =>
+      record.開始IC名 === row.find('#start-ic').val() &&
+      record.終了IC名 === row.find('#end-ic').val()
+    );
+
+    if (rowIndex >= 0 && selectedRowIndex < 0){
+      return;
+    }
+    const nippouToll = NippouToll[selectedRowIndex];
+
+    $.post('@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "HighwayDataModal" })', {
+        nippouToll: JSON.stringify(nippouToll),
+        rowIndex: rowIndex
+      })
+      .done(function(response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】" + response.partialView);
+          $("#ModalHere").html(response.partialView);
+          $("#ModalHere").find('.modal').modal('show');
+          return false;
+        }
+      })
+      .fail(function(xhr) {
+        console.log(xhr);
+      })
+      .always(function(xhr, msg) {
+        console.log(xhr, msg);
+        //alert(msg);
+      });
+  };
+  //高速情報追加のレコードの追加・更新処理
+  function saveHighwayList() {
+    if (!validateHighwayListForm()) {
+      return; // 必須フィールドが空の場合は処理を中断
+    }
+    var feeInput = $("#fee");
+    feeInput.val(feeInput.val().replace(/,/g, ""));
+    event.preventDefault();
+    const index = $("#recordIndex").val();
+
+    if (index == -1) {
+      // Add new record
+
+      const highwayData = {
+        開始日時: $("#startDatetime").val(),
+        開始道路名: $("#startRoadName").val(),
+        終了道路名: $("#endRoadName").val(),
+        終了日時: $("#endDatetime").val(),
+        開始IC名: $("#startICName").val(),
+        終了IC名: $("#endICName").val(),
+        料金: feeInput.val(),
+        futan_Kubun: 0,
+        sort: Math.max(NippouTollDegitako.length, NippouToll.length)
+      };
+      NippouToll.push(highwayData);
+    } else {
+      // Update existing record
+
+      NippouToll[index].開始日時 = $("#startDatetime").val();
+      NippouToll[index].開始道路名 = $("#startRoadName").val();
+      NippouToll[index].終了道路名 = $("#endRoadName").val();
+      NippouToll[index].終了日時 = $("#endDatetime").val();
+      NippouToll[index].開始IC名 = $("#startICName").val();
+      NippouToll[index].終了IC名 = $("#endICName").val();
+      NippouToll[index].料金 = feeInput.val();
+
+    }
+    postHighwayList(NippouToll);
+    closeHighwayList();
+  };
+  //レコードの削除処理
+  function deleteHighwayList() {
+    const index = $("#recordIndex").val();
+    NippouToll.splice(index, 1);
+
+    postHighwayList(NippouToll);
+  };
+
+  //高速情報追加のリストの更新
+  function postHighwayList(NippouToll) {
+    var data = JSON.stringify({
+      NippouToll: NippouToll,
+      HighwayData: HighwayData,
+      InitialDisplayNippouToll: InitialDisplayNippouToll,
+      HaisyaDataList: @Html.Raw(Json.Serialize(Model.HaisyaDataList)),
+      Nippou: @Html.Raw(Json.Serialize(Model.Nippou)),
+      SyasyuID: 0,
+      Company_ID: 0,
+      Anken_ID: 0,
+      AnkenDisplay_ID: 0,
+      Index: 0,
+      SelectedFutanKubun: 0
+    });
+    $.post('@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "UpdateHighwayData" })', {
+        paramStr: data
+    })
+    .done(function(response) {
+      if (response.message != null) {
+          alertError(`【エラー】${response.message}`);
+          return false;
+      } else {
+        //alert("【done】" + response.partialView);
+        $('#ModalHere').find('.modal').modal('hide');
+        $("#ModalHere").html('');
+        updateHighwayList(response.partialView);
+        $('#nippouTollTable').show();
+        return false;
+      }
+    })
+    .fail(function(xhr) {
+      console.log(xhr);
+    })
+    .always(function(xhr, msg) {
+      //console.log(xhr, msg);
+      //alert(msg);
+    });
+  };
+
+  // 高速情報追加のデータチェック
+  function validateHighwayListForm() {
+    let isValid = true;
+    let alertMessage = "";
+
+    if ($('#startDatetime').val().trim() === "") {
+      alertMessage = "開始日時を選択してください。";
+      isValid = false;
+    }
+
+    if ($('#endDatetime').val().trim() === "") {
+      if (alertMessage !== "") {
+        alertMessage = alertMessage + "<br>";
+      }
+      alertMessage = alertMessage + "終了日時を選択してください。";
+      isValid = false;
+    }
+
+    if ($('#startICName').val().trim() === "") {
+      if (alertMessage !== "") {
+        alertMessage = alertMessage + "<br>";
+      }
+      alertMessage = alertMessage + "開始IC名を入力してください。";
+      isValid = false;
+    }
+
+    if ($('#endICName').val().trim() === "") {
+      if (alertMessage !== "") {
+        alertMessage = alertMessage + "<br>";
+      }
+      alertMessage = alertMessage + "終了IC名を入力してください。";
+      isValid = false;
+    }
+
+    if ($('#fee').val().trim() === "") {
+      if (alertMessage !== "") {
+        alertMessage = alertMessage + "<br>";
+      }
+      alertMessage = alertMessage + "料金を入力してください。";
+      isValid = false;
+    }
+
+    if (isValid == false) {
+      alertCustomInputError(alertMessage, "入力エラー");
+    }
+    return isValid;
+  }
+
+  // 高速情報追加のリストの更新
+  function updateHighwayList(partialView) {
+    $(".highway-list").html(partialView);
+  }
+
+  // 泊まり設定のモーダル表示
+  function OvernightModal() {
+    event.preventDefault();
+
+    let nippouStayDegitakoIdList = $('#NippouStayDegitakoIdList').val() || "";
+
+    const nippouStayDegitakoIdListInt = nippouStayDegitakoIdList.split(",")
+      .map(function(item) {
+        return parseInt(item, 10);
+      })
+      .filter(function(item) {
+        return !isNaN(item);
+      });
+
+    const data = {
+      Nippou_Stay: {
+        Start_Datetime: $('#Nippou_Stay_Start_Datetime').val(),
+        End_Datetime: $('#Nippou_Stay_End_Datetime').val(),
+        Start_ShikuName: $('#Nippou_Stay_Start_ShikuName').val(),
+        End_ShikuName: $('#Nippou_Stay_End_ShikuName').val(),
+        Interval_Time: parseInt($('#Nippou_Stay_Interval_Time').val()),
+        Dllowance: ($('#Nippou_Stay_Dllowance').val() || 0),
+        Day: ($('#Nippou_Stay_Day').val() || 0),
+      },
+      NippouStayDegitakoIdList: nippouStayDegitakoIdListInt,
+
+      DisplayName: $('#DisplayName').val(),
+      SyabanNumber: $('#SyabanNumber').val(),
+    };
+
+    let $form = $('#frmMain');
+
+    $.post('@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "OvernightModal" })', {
+        OvernightModalData: JSON.stringify(data)
+      })
+      .done(function(response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          $("#ModalHere").html(response.partialView);
+          $("#ModalHere").find('.modal').modal('show');
+          return false;
+        }
+      })
+      .fail(function(xhr) {
+        console.log(xhr);
+      })
+      .always(function(xhr, msg) {});
+  };
+
+  // 承認依頼のモーダルの表示
+  function CertificationRequestModal() {
+    event.preventDefault();
+
+    $.post('@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "CertificationRequestModal" })',
+      {
+          Nippou_ID: @Html.Raw(Json.Serialize(Model.Nippou_ID)),
+          Nippou_Approval_ID: @Html.Raw(Json.Serialize(Model.NippouApproval.Nippou_Approval_ID)),
+              Approval_Group_ID: $("#NippouApproval_Approval_Group_ID").val(),
+              FormattedLimitDate:$("#NippouApproval_Limit_DateTime").val(),
+                  Comment: $("#NippouApproval_Order_Memo").val(),
+      })
+      .done(function(response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          $("#ModalHere").html(response.partialView);
+          $("#ModalHere").find('.modal').modal('show');
+          return false;
+        }
+      })
+      .fail(function(xhr) {
+        console.log(xhr);
+      })
+      .always(function(xhr, msg) {});
+  };
+
+  // 空車回送設定のモーダル表示
+  function EmptyCarModal() {
+    event.preventDefault();
+
+    let nippouKaisoDegitakoIdList = $('#NippouKaisoDegitakoIdList').val() || "";
+
+    const nippouKaisoDegitakoIdListInt = nippouKaisoDegitakoIdList.split(",")
+      .map(function(item) {
+        return parseInt(item, 10);
+      })
+      .filter(function(item) {
+        return !isNaN(item);
+      });
+
+    const data = {
+      Nippou_Kaiso: {
+        Start_Datetime: $('#Nippou_Kaiso_Start_Datetime').val(),
+        End_Datetime: $('#Nippou_Kaiso_End_Datetime').val(),
+        Start_ShikuName: $('#Nippou_Kaiso_Start_ShikuName').val(),
+        End_ShikuName: $('#Nippou_Kaiso_End_ShikuName').val(),
+        Distance: parseInt($('#Nippou_Kaiso_Distance').val()),
+        Dllowance: ($('#Nippou_Kaiso_Dllowance').val() || 0),
+        Commnet: ($('#Nippou_Kaiso_Commnet').val())
+      },
+      NippouKaisoDegitakoIdList: nippouKaisoDegitakoIdListInt,
+    };
+
+    $.post('@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "EmptyCarModal" })', {
+        EmptyCarModalData: JSON.stringify(data)
+      })
+      .done(function(response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          $("#ModalHere").html(response.partialView);
+          $("#ModalHere").find('.modal').modal('show');
+          return false;
+        }
+      })
+      .fail(function(xhr) {
+        console.log(xhr);
+      })
+      .always(function(xhr, msg) {});
+  };
+
+  //空車回送設定時の選択したレコードの終了日時以降のデータのみを表示
+  function filterHighwayList(endDatetime) {
+    $(".highway-list tbody tr:nth-child(odd)").each(function() {
+      var row = $(this);
+      var rowEndDatetime = new Date(row.find("td:nth-child(1)").text());
+      if (rowEndDatetime >= endDatetime) {
+        row.show();
+        row.next().show();
+      } else {
+        row.hide();
+        row.next().hide();
+      }
+    });
+  }
+
+  //空車回送設定時の選択したレコードの終了日時以降のデータのみを表示
+  function filterAnkenList(endDatetime) {
+    $(".anken-list tbody tr:nth-child(odd)").each(function() {
+      var row = $(this);
+      var rowEndDatetime = new Date(row.find("td:nth-child(1)").text());
+      if (rowEndDatetime >= endDatetime) {
+        row.show();
+        row.next().show();
+      } else {
+        row.hide();
+        row.next().hide();
+      }
+    });
+  }
+
+  // 仮登録ボタン押下時の処理
+  function ProvisionalRegistration(ApprovalStatus = 0) {
+    event.preventDefault();
+    let nippouKaisoDegitakoIdList = $('#NippouKaisoDegitakoIdList').val() || "";
+
+    const nippouKaisoDegitakoIdListInt = nippouKaisoDegitakoIdList.split(",")
+      .map(function(item) {
+        return parseInt(item, 10);
+      })
+      .filter(function(item) {
+        return !isNaN(item);
+      });
+
+    let nippouStayDegitakoIdList = $('#NippouStayDegitakoIdList').val() || "";
+    const nippouStayDegitakoIdListInt = nippouStayDegitakoIdList.split(",")
+      .map(function(item) {
+        return parseInt(item, 10);
+      })
+      .filter(function(item) {
+        return !isNaN(item);
+      });
+
+    let KUDGSIRIdList = $('#KUDGSIRIdList').val() || [];
+    if (!Array.isArray(KUDGSIRIdList)) {
+      KUDGSIRIdList = [KUDGSIRIdList];
+    }
+
+    const KUDGSIRIdListInt = KUDGSIRIdList
+      .map(function(item) {
+        return parseInt(item, 10);
+      })
+      .filter(function(item) {
+        return !isNaN(item);
+      });
+    const data = {
+      Nippou_ID: @Html.Raw(Json.Serialize(Model.Nippou_ID)),
+      HaisyaDataList: @Html.Raw(Json.Serialize(Model.HaisyaDataList)),
+      NippouTollOther: OtherPaidData,
+      NippouToll: NippouToll,
+      Nippou_Stay: {
+        Start_Datetime: $('#Nippou_Stay_Start_Datetime').val(),
+        End_Datetime: $('#Nippou_Stay_End_Datetime').val(),
+        Start_ShikuName: $('#Nippou_Stay_Start_ShikuName').val(),
+        End_ShikuName: $('#Nippou_Stay_End_ShikuName').val(),
+        Interval_Time: parseInt($('#Nippou_Stay_Interval_Time').val()),
+        Dllowance: ($('#Nippou_Stay_Dllowance').val() || 0),
+        Nippou_ID: @Html.Raw(Json.Serialize(Model.Nippou_ID)),
+        Day: $('#Nippou_Stay_Day').val()
+      },
+      NippouStayDegitakoIdList: nippouStayDegitakoIdListInt,
+      Nippou_Kaiso: {
+        Start_Datetime: $('#Nippou_Kaiso_Start_Datetime').val(),
+        End_Datetime: $('#Nippou_Kaiso_End_Datetime').val(),
+        Start_ShikuName: $('#Nippou_Kaiso_Start_ShikuName').val(),
+        End_ShikuName: $('#Nippou_Kaiso_End_ShikuName').val(),
+        Commnet: $('#Nippou_Kaiso_Commnet').val(),
+        Distance: parseFloat($('#Nippou_Kaiso_Distance').val()),
+        Dllowance: ($('#Nippou_Kaiso_Dllowance').val() || 0),
+        Nippou_ID: @Html.Raw(Json.Serialize(Model.Nippou_ID)),
+        Day: $('#Nippou_Kaiso_Day').val()
+      },
+      NippouKaisoDegitakoIdList: nippouKaisoDegitakoIdListInt,
+      KUDGSIRIdList: KUDGSIRIdListInt,
+      InitialDisplayNippouToll: InitialDisplayNippouToll,
+      AnkenDisplay: @Html.Raw(Json.Serialize(Model.AnkenDisplay)),
+      Nippou: {
+        RenkeiStatus: $('#digitalTachograph').is(':checked') ? 0 : 1,
+        ApprovalStatus: ApprovalStatus,
+        Nippou_ID: @Html.Raw(Json.Serialize(Model.Nippou_ID)),
+        Anken_ID: @Html.Raw(Json.Serialize(Model.Nippou.Anken_ID)),
+        AnkenDisplay_ID: @Html.Raw(Json.Serialize(Model.Nippou.AnkenDisplay_ID)),
+        Distance: $('#Nippou_Distance').val(),
+      },
+      NippouTollDegitako: NippouTollDegitako,
+      NippouApproval: {
+        Nippou_Approval_ID: @Html.Raw(Json.Serialize(Model.NippouApproval.Nippou_Approval_ID)),
+        Approval_Group_ID: $("#NippouApproval_Approval_Group_ID").val(),
+        Limit_DateTime:$("#NippouApproval_Limit_DateTime").val(),
+        Order_Memo: $("#NippouApproval_Order_Memo").val(),
+        Nippou_ID: @Html.Raw(Json.Serialize(Model.Nippou_ID))
+      }
+    }
+      console.log(JSON.stringify(data));
+    $.post('@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "ProvisionalRegistration" })', {
+        data: JSON.stringify(data)
+      })
+      .done(function(response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          showChangeTransitionDialog(Anken_ID)
+          return false;
+        }
+      })
+      .fail(function(xhr) {
+        console.log(xhr);
+      })
+      .always(function(xhr, msg) {});
+  };
+
+  // その他有料代の負担選択変更時の処理
+  function onOtherPaidFutanKubunChange(selectElement, index) {
+    var selectedValue = selectElement.value;
+    OtherPaidData[index].futan_Kubun = selectedValue;
+  }
+
+  // 高速情報の負担選択変更時の処理(手入力)
+  function onNippouTollFutanKubunChange(selectElement, index) {
+    var selectedValue = selectElement.value;
+    NippouToll[index].futan_Kubun = selectedValue;
+  }
+
+  // 高速情報の負担選択変更時の処理(デジタコ連携)
+  function onHighwayDataFutanKubunChange(selectElement, index) {
+    var selectedValue = selectElement.value;
+    if (index < NippouTollDegitako.length){
+      NippouTollDegitako[index].futan_Kubun = selectedValue;
+      NippouTollDegitako[index].sort = index;
+    }
+    else
+    {
+      var tollIndex = NippouToll.length >= NippouTollDegitako.length ? index : index - NippouTollDegitako.length;
+      NippouToll[tollIndex].futan_Kubun = selectedValue;
+      NippouToll[tollIndex].sort = index;
+    }
+  }
+
+  function saveHighwayDataFutanKubunChange(index) {
+    event.preventDefault();
+    var row = $(`#highwayDataTable tr[data-index="${index}"]`);
+    // HighwayDataから該当するindexの行を取得
+
+    var activeData = NippouTollDegitako;
+    var selectedRowIndex = NippouTollDegitako.findIndex(record =>
+      record.開始IC名 === row.find('#start-ic').val() &&
+      record.終了IC名 === row.find('#end-ic').val()
+    );
+
+    if (selectedRowIndex < 0){
+      selectedRowIndex = NippouToll.findIndex(record =>
+        record.開始IC名 === row.find('#start-ic').val() &&
+        record.終了IC名 === row.find('#end-ic').val()
+      );
+      activeData = NippouToll;
+    }
+    var selectedRow = activeData[selectedRowIndex];
+    // 選択された負担区分を取得
+    var selectedFutanKubun = row.find('select').val();
+
+    // T_Nippou_Tollモデルに合わせてデータを整形
+    var formattedData = {
+      nippou_Toll_ID: 0,
+      nippou_ID: 0,
+      sort: selectedRow.sort,
+      運行NO: selectedRow.運行NO || '',
+      読取日: selectedRow.読取日 ? new Date(selectedRow.読取日) : null,
+      事業所CD: null,
+      運行日: new Date(selectedRow.開始日時),
+      事業所名: selectedRow.事業所名 || '',
+      車輌CD: selectedRow.車輌CD || null,
+      車輌名: selectedRow.車輌名 || '',
+      乗務員CD: selectedRow.乗務員CD || null,
+      乗務員名: selectedRow.乗務員名 || '',
+      対象乗務員区分: null,
+      開始日時: selectedRow.開始日時 || null,
+      終了日時: selectedRow.終了日時 || null,
+      開始道路番号: selectedRow.開始道路番号 || '',
+      開始道路名: selectedRow.開始道路名 || '',
+      開始ETC番号: selectedRow.開始ETC番号 || '',
+      開始IC名: selectedRow.開始IC名 || '',
+      終了道路番号: selectedRow.終了道路番号 || '',
+      終了道路名: selectedRow.終了道路名 || '',
+      終了ETC番号: selectedRow.終了ETC番号 || '',
+      終了IC名: selectedRow.終了IC名 || '',
+      精算区分: null,
+      精算区分名: '',
+      料金: selectedRow.料金 || '',
+      走行距離: selectedRow.走行距離 || null,
+      高速車種区分: null,
+      高速車種区分名: '',
+      標準料金: null,
+      料金区分: null,
+      料金区分名: '',
+      futan_Kubun: parseInt(selectedFutanKubun),
+      insert_Datetime: new Date(),
+      insert_User: null,
+      update_Datetime: new Date(),
+      update_User: null
+    };
+
+    activeData[index].futan_Kubun = selectedFutanKubun;
+
+    var existingRecordIndex = NippouToll.findIndex(record =>
+      record.開始IC名 === formattedData.開始IC名 &&
+      record.終了IC名 === formattedData.終了IC名
+    );
+
+    if (existingRecordIndex !== -1) {
+      // 既存のレコードが見つかった場合、更新する
+      NippouToll[existingRecordIndex] = {
+        ...NippouToll[existingRecordIndex],
+          ...formattedData,
+          Nippou_Toll_ID: NippouToll[existingRecordIndex].Nippou_Toll_ID, // 既存のIDを保持
+          Update_Datetime: new Date() // 更新日時を現在の日時に設定
+      };
+    } else {
+      // 既存のレコードが見つからなかった場合、新しいレコードを追加
+      var KUDGSIRIdList = $('#KUDGSIRIdList').val().split(',');
+
+      // selectedRowのIDがすでにKUDGSIRIdListに含まれていない場合のみ追加
+      if (!KUDGSIRIdList.includes(selectedRow.id)) {
+        KUDGSIRIdList.push(selectedRow.id);
+      }
+
+      // 配列を再度文字列に変換して、inputの値を更新
+      $('#KUDGSIRIdList').val(KUDGSIRIdList.join(','));
+      NippouToll.push(formattedData);
+    }
+  }
+
+  function saveNippouTollDataChange(index) {
+    event.preventDefault();
+    var selectedRow = NippouToll[index];
+    // 見つかれば更新
+    if (!selectedRow)
+    {
+      // データの整形
+      var newEntry = {
+        Nippou_Toll_ID: 0,
+        Nippou_ID: 0,
+        Sort: 0,
+        DriverSyaryo_ID: 0,
+        Driver_ID: 0,
+        YosyaDriverSyaryo_ID: 0,
+        YosyaDriver_ID: 0,
+        Yosya_Branch_ID: 0,
+        運行NO: '',
+        読取日: null,
+        事業所CD: 0,
+        運行日: $(`#nippouTollTable tr[data-index="${index}"] td:nth-child(1)`).text() || null,
+        事業所名: '',
+        車輌CD: 0,
+        車輌名: '',
+        乗務員CD: 0,
+        乗務員名: '',
+        対象乗務員区分: 0,
+        開始日時: new Date($(`#nippouTollTable tr[data-index="${index}"] td:nth-child(1)`).text()) || null,
+        終了日時: new Date($(`#nippouTollTable tr[data-index="${index}"]:nth-child(2) td:nth-child(1)`).text()) || null,
+        開始道路番号: '',
+        開始道路名: $(`#nippouTollTable tr[data-index="${index}"] td:nth-child(2)`).text() || '',
+        開始ETC番号: '',
+        開始IC名: $(`#nippouTollTable tr[data-index="${index}"] td:nth-child(3)`).text() || '',
+        終了道路番号: '',
+        終了道路名: $(`#nippouTollTable tr[data-index="${index}"]:nth-child(2) td:nth-child(2)`).text() || '',
+        終了ETC番号: '',
+        終了IC名: $(`#nippouTollTable tr[data-index="${index}"]:nth-child(2) td:nth-child(3)`).text() || '',
+        精算区分: 0,
+        精算区分名: '',
+        料金: parseInt($(`#nippouTollTable tr[data-index="${index}"] td:nth-child(5)`).text()) || 0,
+        走行距離: parseFloat($(`#nippouTollTable tr[data-index="${index}"]:nth-child(2) td:nth-child(5)`).text()) || 0,
+        高速車種区分: 0,
+        高速車種区分名: '',
+        標準料金: 0,
+        料金区分: 0,
+        料金区分名: '',
+        Futan_Kubun: parseInt($(`#nippouTollTable tr[data-index="${index}"] select`).val()) || 0,
+        Insert_Datetime: new Date(),
+        Insert_User: 0,
+        Update_Datetime: new Date(),
+        Update_User: 0
+      };
+
+      // 配列に追加
+      NippouToll.push(newEntry);
+    }
+  }
+
+  function ProvisionalRegistrationWithConfirm() {
+    event.preventDefault();
+    alertYesNoMsg("確認", "仮登録します。よろしいですか。", "question", "はい", "いいえ")
+      .then(function(result) {
+        if (result) {
+          ProvisionalRegistration()
+
+        } else {}
+
+      })
+      .catch(function(error) {
+        console.error('Error in alertThreeButtonsMsg:', error);
+      });
+  }
+  // 承認ボタン押下時の処理
+  function ApprovalRegistration() {
+    event.preventDefault();
+
+    var comment = $('#Nippou_Kaiso_Commnet').val();
+    var dllowance = $('#Nippou_Stay_Dllowance').val();
+    let Distance = $('#Nippou_Distance').val();
+    if ($('#digitalTachograph').is(':checked')) {
+      if (!comment || !dllowance) {
+        alertError('泊まり設定　または　空車回送設定を行ってください');
+        return;
+      }
+    } else {
+    //  if (!Distance) {
+    //    alertError('日報情報の走行距離を入力してください');
+    //    return;
+    //  }
+    }
+
+    alertYesNoMsg("確認", "承認登録します。よろしいですか。", "question", "はい", "いいえ")
+      .then(function(result) {
+        if (result) {
+          ProvisionalRegistration(1)
+
+        } else {}
+
+      })
+      .catch(function(error) {
+        console.error('Error in alertThreeButtonsMsg:', error);
+      });
+  }
+
+  // 売上入力ボタン押下時の処理
+  function salesEntry() {
+    event.preventDefault();
+    if (DataCheck()) {
+      // DataCheckがtrueを返した場合
+      sendInputIndexForm()
+    } else {
+      // DataCheckがfalseを返した場合
+      showChangeConfirmationDialog();
+    }
+  }
+
+  // 案件修正ボタン押下時の処理
+  function CaseAmendments() {
+    event.preventDefault();
+    if (DataCheck()) {
+      // DataCheckがtrueを返した場合
+      submitAnkenEdit();
+    } else {
+      // DataCheckがfalseを返した場合
+      showChangeConfirmationDialog();
+    }
+  }
+
+  // 登録・更新後の確認モーダルの表示
+  function showChangeTransitionDialog(Anken_ID) {
+    alertYesNoMsg("登録・更新処理が完了しました", "画面を閉じますか？", "question", "はい", "いいえ")
+      .then(function(result) {
+        if (result) {
+          BackMenuOnClick();
+        } else {
+          reloadPage()
+        }
+
+      })
+      .catch(function(error) {
+        console.error('Error in alertThreeButtonsMsg:', error);
+      });
+  }
+
+  function sendInputIndexForm() {
+
+    var ankenId = @Html.Raw(Json.Serialize(Model.Anken_ID));
+    var processingCategory = @Html.Raw(Json.Serialize(Model.Uriage != null ? Model.Uriage.Reg_Kubun : 0));
+    var form = document.createElement('form');
+    form.id = 'customForm'; // Assign a unique ID to the form
+    form.action = '@Url.RouteUrl("Default", new { controller = "Sales", Action = "GetSales" })';
+    form.method = 'POST';
+
+    var hiddenAnkenId = document.createElement('input');
+    hiddenAnkenId.type = 'hidden';
+    hiddenAnkenId.name = 'Anken_ID';
+    hiddenAnkenId.value = ankenId;
+    form.appendChild(hiddenAnkenId);
+
+    // Create the hidden inputs
+    var hiddenNumOfInq = document.createElement('input');
+    hiddenNumOfInq.type = 'hidden';
+    hiddenNumOfInq.name = 'kubun';
+    hiddenNumOfInq.value = 0;
+    form.appendChild(hiddenNumOfInq);
+
+    var hiddenNumOfFilter = document.createElement('input');
+    hiddenNumOfFilter.type = 'hidden';
+    hiddenNumOfFilter.name = 'processingCategory';
+    hiddenNumOfFilter.value = processingCategory;
+    form.appendChild(hiddenNumOfFilter);
+
+    // Add the form to the body and submit it
+    document.body.appendChild(form);
+    form.submit();
+  }
+
+  async function btnCloseOnClick() {
+    event.preventDefault();
+    if (DataCheck()) {
+        // DataCheckがtrueを返した場合
+        BackMenuOnClick();
+    } else {
+        // DataCheckがfalseを返した場合
+        showChangeConfirmationDialog();
+    }
+    return false;
+  };
+
+  function BackMenuOnClick() {
+    // if ($('#WebViewFlg').val() == 0) {
+    //     logout();
+    // }
+    let form = document.createElement('form');
+    form.id = "formBackMenu";
+
+
+    form.action = '@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "Index" })';
+    form.method = 'POST';
+
+    // body に追加
+    document.body.appendChild(form);
+
+    let html = '';
+    html += '            <input type="hidden" id="SelectDay" name="SelectDay" value="' + $('#SelectDay').val() + '" />';
+
+    form.innerHTML = html;
+    form.submit();
+
+
+  };
+
+</script>

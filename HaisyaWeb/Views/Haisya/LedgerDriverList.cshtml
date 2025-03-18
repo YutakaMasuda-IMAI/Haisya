@@ -1,0 +1,238 @@
+﻿@model HaisyaWeb.Models.HaisyaModel.DataListModel
+
+@{
+    var groupDrivers = Model.DriverDataLists.GroupBy(d => Tuple.Create(d.SIZE, d.Kata, d.Kubun_Name)).OrderBy(d => d.Key.Item1).ThenBy(d => d.Key.Item2).ThenBy(d => d.Key.Item3);
+}
+
+<style>
+  #tableHaisyaDriverList {}
+  tableHaisyaDriverList tbody tr td {
+    white-space: nowrap;
+    overflow: hidden;
+  }
+</style>
+
+@foreach (var drivers in groupDrivers)
+{
+  <details class="accordion-005" position-relative open>
+    <summary>
+      <div class="row ledger-row" style="width: 100%;">
+        <div class="col-auto col-sm-auto">車種：@(drivers.Key.Item1)</div>
+        <div class="col-auto col-sm-auto">型：@(drivers.Key.Item2)</div>
+        <div class="col-auto col-sm-auto">区分：@(drivers.Key.Item3)</div>
+      </div>
+    </summary>
+    <div class="insert-loader">
+
+    </div>
+    <div>
+      <table id="tableHaisyaDriverList" class="table ex_DriverDataList table-primary" width="100%" style="" border="1">
+        <thead>
+          <tr align="center">
+            @if (drivers.ElementAt(0).YosyaKubun == 0)
+            {
+              <th align="center" style="width: 60px; max-width: 60px;">空車地</th>
+            }
+            <th align="center" style="width: 40px;">車種</th>
+            <th align="center" style="width: 30px; max-width: 30px;">車番</th>
+            <th align="center" style="width: 40px;">氏名</th>
+            <th align="center" style="width: 80px;">担当荷主</th>
+            @if (drivers.ElementAt(0).Driver_ID != 0)
+            {
+              <th align="center" style="width: 30px; max-width: 30px;">車庫</th>
+              <th align="center" style="width: 80px;">備考</th>
+            }
+            @*@if (drivers.ElementAt(0).Driver_ID == 0)
+          {
+            <th align="center">会社</th>
+          }*@
+          </tr>
+        </thead>
+        <tbody id="list-driver">
+          @{
+            var index = -1;
+            for (int i = 0; i < drivers.Count(); i++)
+            {
+              string remarks = drivers.ElementAt(i).Remark;
+              if (remarks == null && (drivers.ElementAt(i).HaisyaUnderData != null))
+              {
+                if (drivers.ElementAt(i).HaisyaUnderData.EndDatetime > DateTime.Parse(Model.SelectDay.ToString("yyyy/MM/dd 23:59:59")))
+                {
+                  remarks = "終日輸送中";
+                }
+                if (drivers.ElementAt(i).HaisyaUnderData.EndDatetime < DateTime.Parse(Model.SelectDay.ToString("yyyy/MM/dd 23:59:59")))
+                {
+                  remarks = drivers.ElementAt(i).HaisyaUnderData.EndDatetime.ToString("HH:mm卸し");
+                }
+              }
+
+              @foreach (var item in drivers.ElementAt(i).V_Ankens)
+              {
+                ++index;
+                bool EditFlg = Model.GroupUserList.Any(m => m.Group_ID == item.TantouID);
+                bool IsReported = false;
+
+                <tr style="font-size: 10px;" ondblclick="MonthScheduleCalendarModal('jisya', @(drivers.ElementAt(i).Driver_ID)); return false;" class="@(drivers.ElementAt(i).EditFlg ? "item_driver_draggable" : "item_driver") @(IsReported == true ? "item_anken_reported" : "")"
+                    @*data-id="@($"{drivers.ElementAt(i).Driver_ID}-{drivers.ElementAt(i).SyaryoManagement_ID}-{drivers.ElementAt(i).YosyaDriver_ID}-{drivers.ElementAt(i).YosyaDriverSyaryo_ID}")"*@
+                    data-i="@index"
+                    data-driver-syaryo-id="@(drivers.ElementAt(i).DriverSyaryo_ID)"
+                    data-driver-id="@(drivers.ElementAt(i).Driver_ID)"
+                    data-anken-id="@item.Anken_ID"
+                    data-employee-number="@item.Employee_Number"
+                    data-yosya-driver-syaryo-id="@(drivers.ElementAt(i).YosyaDriverSyaryo_ID)"
+                    data-yosya-driver-id="@(drivers.ElementAt(i).YosyaDriver_ID)"
+                    data-driversyaryo-id="@drivers.ElementAt(i).DriverSyaryo_ID"
+                    data-syaryomanage-id="@drivers.ElementAt(i).SyaryoManagement_ID"
+                    data-syaryomanage-id1="@drivers.ElementAt(i).SyaryoManagement_ID1"
+                    data-jisyayosyakubun="1">
+
+                  @if (drivers.ElementAt(i).YosyaKubun == 0)
+                  {
+                    <td class="item_driver_start_address" align="left" style="font-size: 10px;">
+                    </td>
+                  }
+                  <td align="center">
+                    @(drivers.ElementAt(i).Syasyu)
+                  </td>
+                  <td align="center">
+                    @(drivers.ElementAt(i).Syaban_Number)
+                  </td>
+                  <td align="center">
+                    @(drivers.ElementAt(i).Last_Name)
+                  </td>
+                  <td align="left">
+                    @(item.KokyakuName)
+                  </td>
+                  @if (drivers.ElementAt(i).JISYA_YOSYA_KUBUN == 1)
+                  {
+                    <td class="item_driver_buildingname_abbr" align="center" style="font-size:9px;">
+                      @(drivers.ElementAt(i).Branch_Name_Abbr)
+                    </td>
+                    <td align="left">
+                      @(remarks)
+                    </td>
+                  }
+                  else
+                  {
+                    <td class="item_driver_buildingname_abbr" align="center" style="font-size:9px;"></td>
+                    <td align="left"></td>
+                  }
+                </tr>
+              }
+
+              @if (drivers.ElementAt(i).V_Ankens.Count() == 0)
+              {
+                ++index;
+                var item = drivers.ElementAt(i);
+                string trStyle = "";
+
+                if (drivers.ElementAt(i).HaisyaUnderData != null && (drivers.ElementAt(i).HaisyaUnderData.EndDatetime > DateTime.Parse(Model.SelectDay.ToString("yyyy/MM/dd 23:59:59"))))
+                {
+                  trStyle = "background-color: lightgray;";
+                }
+
+
+                <tr style="font-size: 10px; @(trStyle)" ondblclick="MonthScheduleCalendarModal('jisya', @(drivers.ElementAt(i).Driver_ID)); return false;" class="@(drivers.ElementAt(i).EditFlg ? "item_driver_draggable" : "item_driver")"
+                    data-id="@($"{drivers.ElementAt(i).Driver_ID}-{drivers.ElementAt(i).SyaryoManagement_ID}-{drivers.ElementAt(i).YosyaDriver_ID}-{drivers.ElementAt(i).YosyaDriverSyaryo_ID}")"
+                    data-i="@index"
+                    data-yosya-driver-syaryo-id="@(item.YosyaDriverSyaryo_ID)"
+                    data-yosya-driver-id="@(item.YosyaDriver_ID)"
+                    data-driver-id="@item.Driver_ID"
+                    data-driver-syaryo-id="@(item.DriverSyaryo_ID)"
+                    data-syaryomanage-id="@item.SyaryoManagement_ID"
+                    data-syaryomanage-id1="@item.SyaryoManagement_ID1"
+                    data-jisyayosyakubun="1">
+
+                  @if (drivers.ElementAt(i).YosyaKubun == 0)
+                  {
+                    <td class="item_driver_start_address" align="left" style="font-size: 10px;">
+                    </td>
+                  }
+                  <td align="center">
+                    @(drivers.ElementAt(i).Syasyu)
+                  </td>
+                  <td align="center">
+                    @(drivers.ElementAt(i).Syaban_Number)
+                  </td>
+                  <td align="center">
+                    @(drivers.ElementAt(i).Last_Name)
+                  </td>
+                  <td align="left">
+                  </td>
+                  @if (drivers.ElementAt(i).JISYA_YOSYA_KUBUN == 1)
+                  {
+                    <td class="item_driver_buildingname_abbr" align="center" style="font-size:9px;">
+                      @(drivers.ElementAt(i).Branch_Name_Abbr)
+                    </td>
+                    <td align="left">
+                      @(remarks)
+                    </td>
+                  }
+                  else
+                  {
+                    <td class="item_driver_buildingname_abbr" align="center" style="font-size:9px;"></td>
+                    <td align="left"></td>
+                  }
+                </tr>
+              }
+            }
+          }
+
+        </tbody>
+      </table>
+    </div>
+
+  </details>
+}
+
+<script>
+  $(function () {
+
+		$(".item_driver_draggable, .item_driver").each(function () {
+			const DriverSyaryo_ID = $(this).data("driver-syaryo-id");
+			const YosyaDriverSyaryo_ID = $(this).data("yosya-driver-syaryo-id");
+			const Anken_ID = $(this).data("anken-id");
+			const Day = $('#Search_SelectDay').val();
+			const driver = $(this);
+			@* $.get('@Url.RouteUrl("Default", new { controller = "Haisya", Action = "GetDriverSEAddress" })',
+				{
+					DriverSyaryo_ID,
+					YosyaDriverSyaryo_ID,
+					Anken_ID,
+					Day,
+				},
+			).done(function (response) {
+				if (response.errorMessage != null) {
+					showErrorToast(`【エラー】${response.errorMessage}`);
+					return false;
+				} else {
+					driver.find(".item_driver_start_address").html(response?.data?.startAddress);
+					driver.find(".item_driver_buildingname_abbr").html(response?.data?.buildingName_Abbr);
+					return;
+				}
+			}).fail(function (xhr) {
+				showErrorToast(`【ネットワークエラー】:${xhr}`)
+				console.log(xhr);
+				return false;
+			}); *@
+		}); 
+
+
+    ///**
+    // * 選択行のドライバーの休暇、一覧備考画面を開く
+    // * */
+    //$('#tableHaisyaDriverList tbody tr').on('click', function () {
+
+    //  const Driver_ID = $(this).data("driver-id");
+    //  const employeeNumber = $(this).data("employee-number");
+
+    //  AttendanceModal(Driver_ID, employeeNumber );
+
+    //});
+
+  });
+
+
+  
+
+</script>

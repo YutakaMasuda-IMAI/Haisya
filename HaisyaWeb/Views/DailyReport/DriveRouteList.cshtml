@@ -1,0 +1,45 @@
+@model HaisyaWeb.Models.AnkenModel.DriveRouteListModel
+
+
+@if (Model.DriveRouteListData != null)
+{
+  @foreach (var item in Model.DriveRouteListData)
+  {
+    string routeType = item.routeType;
+    string routeTypeDisplay = "推奨";
+    switch (routeType)
+    {
+      case "1":
+        routeTypeDisplay = "一般道優先";
+        break;
+      case "2":
+        routeTypeDisplay = "道幅優先";
+        break;
+      case "3":
+        routeTypeDisplay = "距離優先";
+        break;
+      case "4":
+        routeTypeDisplay = "別ルート";
+        break;
+      default:
+        routeTypeDisplay = "推奨";
+        break;
+    }
+    <tr style="cursor: pointer;">
+      <td>@(routeTypeDisplay)</td>
+      <td style="text-align:center;">@Html.DisplayFor(modelItem => item.TotalTime)</td>
+      <td style="text-align:right;">@Convert.ToDouble(Math.Round(item.TotalDistance, 1, MidpointRounding.AwayFromZero)).ToString("#.0km")</td>
+      <td style="text-align:right;">@Convert.ToInt32(item.Totaltoll).ToString("#,0")</td>
+      <td style="text-align:right;">@Convert.ToInt32(item.StdTotalFreight).ToString("#,0")</td>
+      <td style="text-align:right;">@Convert.ToInt32(item.GrossAmountTotal).ToString("#,0")</td>
+    </tr>
+  }
+}
+
+<script>
+  $('#tableRoutList tbody tr').on('dblclick', function () {
+    SelectRouteList(
+      $(this).find('td,th').eq(0).text().trim(),
+    );
+  });
+</script>

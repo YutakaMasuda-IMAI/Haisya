@@ -1,0 +1,218 @@
+﻿@using System.Reflection;
+@using static HaisyaWeb.Models.OrderTicketModel;
+
+@model DataListModel
+
+@{
+  var index = 1;
+  var t = typeof(HaisyaDataList);
+  var l = Model?.DataDataLists ?? new();
+  var s = Model.SortParam.SortItemParam;
+  Func<HaisyaDataList, object> f = r => t.GetRuntimeProperty(s).GetValue(r, null);
+  l = "asc".Equals(Model.SortParam.SortOrder) ?
+      l.OrderBy(f).ThenBy(s => s.Anken_ID).ToList() :
+      l.OrderByDescending(f).ThenBy(s => s.Anken_ID).ToList();
+}
+
+@if (l.Count == 0)
+{
+  <div class="no-data-row">
+    <h4 class="no-data-row-text">データ無し</h4>
+  </div>
+}
+else
+{
+  <table id="myTable" class="table ex_DataList search-list" style="width: 100%;" border="1">
+    <thead>
+      <tr>
+        <th rowspan="2" width="70px">選択</th>
+        <th rowspan="2" width="200px">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.Customer_Name_Abbr))')">顧客</a>
+        </th>
+        <th rowspan="2" width="150px">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.Tantou_Name))')">配車担当</a>
+        </th>
+        <th class="haisya" width="160px">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.SYABAN))')">担当車番</a>
+        </th>
+        <th rowspan="2" width="80px">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.StartDatetime))')">積日</a>
+        </th>
+        <th rowspan="2" width="80px">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.EndDatetime))')">卸日</a>
+        </th>
+        <th rowspan="2" width="450px">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.StartAddressDisplay3))')">積地</a>
+        </th>
+        <th rowspan="2" width="450px">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.EndAddressDisplay3))')">卸地</a>
+        </th>
+        <th rowspan="2" width="150px">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.Daisuu))')">車種</a>
+        </th>
+        <th width="80px">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.ZanteiAmount))')">暫定金額</a>
+        </th>
+        <th class="haisya" width="100px">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.Yosya_Display1))')">傭車１</a>
+        </th>
+      </tr>
+      <tr>
+        <th>
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.Driver_Name))')">担当乗務員</a>
+        </th>
+        <th>
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.KakuteiAmount))')">確定金額</a>
+        </th>
+        <th>
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.Yosya_Display2))')">傭車２</a>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var item in l)
+      {
+        var color = index % 2 == 1 ? "row-even" : "row-odd";
+        <tr id="row_@index">
+          <td rowspan="2" class="@(color)" align="center">
+            <input type="checkbox" class="row-checkbox" data-index="@index" onclick="setSelectedIDs('@item.Haisya_ID', this.checked)" />
+          </td>
+          <td rowspan="2" class="@(color)">
+            @Html.DisplayFor(modelItem => item.Customer_Name_Abbr)
+          </td>
+          <td rowspan="2" class="@(color)">
+            @Html.DisplayFor(modelItem => item.Tantou_Name)
+          </td>
+          <td align="center" class="@(color)">
+            @Html.DisplayFor(modelItem => item.SYABAN)
+          </td>
+          <td rowspan="2" class="@(color)" align="center">
+            @item.StartDatetime.ToString("MM/dd")<br />
+            @item.StartDatetime.ToString("HH:mm")
+          </td>
+          <td rowspan="2" class="@(color)" align="center">
+            @item.EndDatetime.ToString("MM/dd")<br />
+            @item.EndDatetime.ToString("HH:mm")
+          </td>
+          <td rowspan="2" class="@(color)">
+            @Html.DisplayFor(modelItem => item.StartAddressDisplay3)
+          </td>
+          <td rowspan="2" class="@(color)">
+            @Html.DisplayFor(modelItem => item.EndAddressDisplay3)
+          </td>
+          <td rowspan="2" class="@(color)" align="center">
+            @Html.DisplayFor(modelItem => item.SyasyuDisplay2)<br />
+            @Convert.ToInt32(item.Daisuu).ToString("0台")
+          </td>
+          <td align="right" class="@(color)">
+            @Convert.ToInt32(item.ZanteiAmount).ToString("#,0")
+          </td>
+          <td align="center" class="@(color)">
+            @Html.DisplayFor(modelItem => item.Yosya_Display1)
+          </td>
+        </tr>
+        <tr>
+          <td align="center" class="@(color)">
+            @Html.DisplayFor(modelItem => item.Driver_Name)
+          </td>
+          <td align="right" class="@(color)">
+            @Convert.ToInt32(item.KakuteiAmount).ToString("#,0")
+          </td>
+          <td align="center" class="@(color)">
+            @Html.DisplayFor(modelItem => item.Yosya_Display2)
+          </td>
+        </tr>
+        index++;
+      }
+    </tbody>
+  </table>
+
+  <div style="display:none;">
+    <h3>受注札選択一覧</h3>
+    <h6 id="TargetDate"></h6>
+
+    <table class="table ex_DataList" border="1">
+      <thead>
+        <tr align="center">
+          <th id="selectionCell">選択</th>
+          <th>
+            <a style="">顧客</a>
+          </th>
+          <th>
+            <a style="">配車担当</a>
+          </th>
+          <th>
+            <a style="">担当車番</a>
+          </th>
+          <th style="font-size: 12px;">
+            <a style="">担当乗務員</a>
+          </th>
+          <th>
+            <a style="">積日</a>
+          </th>
+          <th>
+            <a style="">卸日</a>
+          </th>
+          <th>
+            <a style="">積地</a>
+          </th>
+          <th>
+            <a style="">卸地</a>
+          </th>
+          <th>
+            <a style="">車種</a>
+          </th>
+          <th>
+            <a style="">暫定金額</a>
+          </th>
+          <th>
+            <a style="">確定金額</a>
+          </th>
+          <th>
+            <a style="">傭車１</a>
+          </th>
+          <th>
+            <a style="">傭車２</a>
+          </th>
+          <th>
+            <a style="">傭車３</a>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    var selectedIds = localStorage.setItem('selectedIds', "") ?? "";
+
+    function setSelectedIDs(Haisya_ID, isChecked) {
+      if (isChecked) {
+        if (selectedIds == "") {
+          selectedIds += Haisya_ID;
+          localStorage.setItem('selectedIds', selectedIds);
+        } else if (Haisya_ID) {
+          selectedIds = localStorage.getItem('selectedIds') ?? "";
+          selectedIds += ',' + Haisya_ID;
+          localStorage.setItem('selectedIds', selectedIds);
+        }
+      } else {
+        const idsArray = selectedIds.split(',').filter(id => id !== Haisya_ID);
+        selectedIds = idsArray.join(',');
+        localStorage.setItem('selectedIds', selectedIds);
+      }
+    }
+
+    function set_sort(name) {
+      var n = $("#SortParam_SortItemParam").val();
+      if (name != n) {
+        $("#SortParam_SortOrder").val("asc");
+        $("#SortParam_SortItemParam").val(name);
+      }
+      var o = $("#SortParam_SortOrder").val();
+      $("#SortParam_SortOrder").val(o.indexOf("desc") != -1 ? "asc" : "desc");
+      dataListDisplay();
+    }
+  </script>
+}

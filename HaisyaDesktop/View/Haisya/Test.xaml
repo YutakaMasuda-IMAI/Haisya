@@ -1,0 +1,139 @@
+﻿<Window x:Class="HaisyaDesktop.View.Haisya.Test"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HaisyaDesktop.View.Haisya"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:dd="urn:gong-wpf-dragdrop"
+        mc:Ignorable="d"
+        Title="{Binding Title}" Height="600" Width="800">
+
+  <!--xmlns:Interactivity="clr-namespace:Reactive.Bindings.Interactivity;assembly=ReactiveProperty.WPF"-->
+
+  <Grid Margin="10">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="0"/>
+      <RowDefinition/>
+      <RowDefinition/>
+    </Grid.RowDefinitions>
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition/>
+      <ColumnDefinition/>
+    </Grid.ColumnDefinitions>
+
+    <Grid Grid.Row="0" Grid.Column="0" >
+    </Grid>
+
+
+    <Grid Grid.Row="1" Grid.Column="0">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="24"/>
+        <RowDefinition Height="24"/>
+        <RowDefinition/>
+      </Grid.RowDefinitions>
+      <TextBlock Grid.Row="0"
+                       Text="アプリ内でのDragDrop gong-wpf-dragdrop使用"
+                       VerticalAlignment="Bottom"
+                       TextDecorations="Underline"/>
+      <TextBlock Grid.Row="1"
+                       Text="Source ListBox"
+                       Margin="20,0,0,0"
+                       VerticalAlignment="Bottom"/>
+      <ListBox Grid.Row="2"
+                     Margin="20,0"
+                     BorderThickness="1"
+                     ItemsSource="{Binding SampleData.SampleLists}"
+                     DisplayMemberPath="SampleText"
+                     BorderBrush="DimGray"
+                     dd:DragDrop.IsDragSource="True"
+                     dd:DragDrop.UseDefaultDragAdorner="True"/>
+    </Grid>
+
+    <Grid Grid.Row="1" Grid.Column="1">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="24"/>
+        <RowDefinition Height="24"/>
+        <RowDefinition/>
+      </Grid.RowDefinitions>
+      <TextBlock Grid.Row="1"
+                       Text="Target ListBox"
+                       Margin="20,0,0,0"
+                       VerticalAlignment="Bottom"/>
+      <!--<ListBox Grid.Row="2"
+                     Margin="20,0"
+                     BorderThickness="1"
+                     DisplayMemberPath="SampleText"
+                     BorderBrush="DimGray"
+                     dd:DragDrop.IsDropTarget="True"
+                     dd:DragDrop.UseDefaultDragAdorner="True"/>-->
+
+      <ListBox  x:Name="ABC" Grid.Row="2"
+                     Margin="20,0"
+                     BorderThickness="1"
+                     BorderBrush="DimGray"
+                     ItemsSource="{Binding SampleData2.SampleLists}">
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <Grid x:Name="ASSSS" dd:DragDrop.IsDropTarget="{Binding IsDropTarget}"
+                              dd:DragDrop.IsDragSource="{Binding IsDragSource}"
+                              dd:DragDrop.DropHandler="{Binding GridCustomDropHandler}">
+              <dd:DragDrop.DragAdornerTemplate>
+                <DataTemplate>
+                  <Border BorderThickness="0.3"
+                                            BorderBrush="Blue"
+                                            Padding="10,2"
+                                            Background="AliceBlue">
+                    <TextBlock Text="{Binding SampleText}"/>
+                  </Border>
+                </DataTemplate>
+              </dd:DragDrop.DragAdornerTemplate>
+
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="30"/>
+                <ColumnDefinition Width="240"/>
+              </Grid.ColumnDefinitions>
+              <TextBlock x:Name="Number"
+                                       Grid.Column="0"
+                                       VerticalAlignment="Center"
+                                       Text="{Binding Number}"/>
+              <TextBlock x:Name="SampleId"
+                                           Grid.Column="1"
+                                           VerticalAlignment="Center"
+                                           Text="{Binding SampleId}"/>
+              <TextBlock x:Name="SampleText"
+                                           Grid.Column="2"
+                                           VerticalAlignment="Center"
+                                           Text="{Binding SampleText}"/>
+            </Grid>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+
+    </Grid>
+
+    <Grid Grid.Row="2" Grid.Column="1">
+      <Grid.RowDefinitions>
+        <RowDefinition/>
+        <RowDefinition/>
+      </Grid.RowDefinitions>
+      <TextBlock Grid.Row="0"
+                       Text="Target TextBox"
+                       Margin="20,0,0,0"
+                       VerticalAlignment="Bottom"/>
+      <TextBox Grid.Row="1"
+                     VerticalAlignment="Top"
+                     Margin="20,0"
+                     Text="{Binding DropdText.Value}"
+                     IsReadOnly="True"
+                     dd:DragDrop.IsDropTarget="True"
+                     dd:DragDrop.DropHandler="{Binding SampleData.TextBoxCustomDropHandler}"/>
+    </Grid>
+
+    
+    
+    
+    
+  </Grid>
+</Window>

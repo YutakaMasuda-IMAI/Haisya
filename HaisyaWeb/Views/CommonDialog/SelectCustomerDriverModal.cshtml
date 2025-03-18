@@ -1,0 +1,217 @@
+﻿@model CommonDialogModel.SelectCustomerDriverModel
+
+
+
+<style>
+  .div-area-customer-driver-dialog {
+    margin: auto;
+    flex-wrap: wrap;
+    display: flex;
+    padding: 0 5px 0 5px
+  }
+
+  .content_class-customer-driver-dialog {
+    width: 100%;
+  }
+
+  .table-CustomerDriverListDataModal {
+    overflow: auto;
+    /*width: 100%;*/
+    max-height: 700px;
+  }
+
+    .table-CustomerDriverListDataModal table {
+      margin: 0;
+      border-spacing: 0;
+      /*width: 100%;*/
+      font-size: 12px;
+    }
+
+    .table-CustomerDriverListDataModal th {
+      white-space: nowrap;
+      position: sticky;
+      top: -1px;
+      left: 0;
+      border-right: 1px solid #999;
+      border-bottom: 1px solid #999;
+      background-color: lemonchiffon;
+      text-align: center;
+      padding: 0.2rem 0 0.2rem 0;
+    }
+
+    .table-CustomerDriverListDataModal td {
+      white-space: nowrap;
+      padding: 2px;
+      border-right: 1px solid #999;
+      border-bottom: 1px solid #999;
+    }
+
+    .table-CustomerDriverListDataModal tr:first-child th {
+      border-top: 1px solid #999;
+    }
+
+    .table-CustomerDriverListDataModal th:first-child {
+      border-left: 1px solid #999;
+    }
+
+    .table-CustomerDriverListDataModal tr:first-child th:first-child {
+      z-index: 1;
+    }
+</style>
+
+
+<div id="hiddenItem" hidden>
+  @Html.HiddenFor(Model => Model.CompanyID)
+  @Html.HiddenFor(Model => Model.SelectedID)
+  @Html.HiddenFor(Model => Model.UserID)
+  @Html.HiddenFor(Model => Model.CustomerBranchID)
+  @Html.HiddenFor(Model => Model.NowUsingSyaryoFlg)
+</div>
+
+
+<div class="modal-dialog container" role="document" style="">
+  <div class="modal-content">
+    <div class="model-body">
+      <div class="div-area-customer-driver-dialog">
+        <div class="content_class-customer-driver-dialog">
+          <table class="table jbc-table table-borderless" style="padding: 0; background-color: whitesmoke;" border="1" width="100%">
+            <tbody>
+              <tr>
+                <td width="20px"></td>
+                <td class="col-sm-3">
+                  <label class="control-label align-self-center align-middle text-end" style="padding:0;">傭車コード：</label>
+                  <input type="text" id="txtCode" style="width: 150px; display: inline-block;" class="form-control" />
+                </td>
+                <td class="col-sm-3">
+                  <label class="control-label align-self-center align-middle text-end" style="padding:0;">検索キー：</label>
+                  <input type="text" id="txtKey" style="width: 150px; display: inline-block;" class="form-control" />
+                </td>
+                <td class="col-sm-4">
+                  <label class="control-label align-self-center align-middle text-end" style="padding:0;">電話(Fax)番号：</label>
+                  <input type="text" id="txtPhone" style="width: 150px; display: inline-block;" class="form-control" />
+                </td>
+                <td>
+                  <button style="width: 100px;" class="btn btn-primary align-items-end" onclick="listBranchDisplay();return false;">検索</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="row content-sarch">
+            <div id="tableCustomerDriverBranch" class="col-6 col-sm-6 table-CustomerDriverListDataModal dataList" style="height:500px; margin: 0;">
+            </div>
+            <div id="tableCustomerDriverSyaryo" class="col-6 col-sm-6 table-CustomerDriverListDataModal dataList" style="border-left: groove; height: 500px; margin: 0; padding-left: 0; width: 49%;">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+
+    $(function () {
+
+      ///得意先コードの条件変更時
+      $('#txtCode').on('change', function () {
+        listBranchDisplay();
+        return false;
+      });
+
+      ///得意先名の条件変更時
+      $('#txtKey').on('change', function () {
+        listBranchDisplay();
+        return false;
+      });
+
+      ///得意先電話番号の条件変更時
+      $('#txtPhone').on('change', function () {
+        listBranchDisplay();
+        return false;
+      });
+
+      listBranchDisplay();
+
+  });
+
+  /**
+   * 画面を閉じる
+   * selectSyaryoModalCloseCallBack
+   * */
+  function ModalCommonDialogClose() {
+    $('#ModalCommonDialog').html('');
+
+    if (typeof selectCustomerDriverModalCloseCallBack == 'function') {
+      // 関数があった場合の処理内容
+      selectCustomerDriverModalCloseCallBack();
+    }
+  };
+
+  /**
+   * 一覧データ選択時の処理
+   * selectSyaryoModalCloseCallBack
+   * @@param data
+   */
+  function selectOnClick(data) {
+
+    $('#ModalCommonDialog').html('');
+    $('#ModalCommonDialog').dialog("close");
+
+    //コールバック関数チェック
+    if (typeof selectCustomerDriverSelectedCallBack == 'function') {
+      // 関数があった場合の処理内容
+      selectCustomerDriverSelectedCallBack(data);
+    }
+  };
+
+  /**
+   * 傭車会社検索一覧の表示
+   * */
+  function listBranchDisplay() {
+
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "JsonGetCustomerBranchDataList" })',
+      {
+        code: $("#txtCode").val(),
+        key: $("#txtKey").val(),
+        phone: $("#txtPhone").val(),
+      },
+      function (data) {
+          if (response.message != null) {
+              alertError(`【エラー】${response.message}`);
+          }
+          else {
+              $('#tableCustomerDriverBranch').html(data.partialView);
+          }
+      }
+    );
+
+    };
+
+
+
+  /**
+   * 傭車車輌検索一覧の表示
+   * */
+  function listCustomerSyaryoDisplay(obj) {
+
+    alert(obj["Customer_Branch_ID"]);
+
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "JsonGetCustomerSyaryoDataList" })',
+      {
+        CustomerBranchID: obj["Customer_Branch_ID"]
+      },
+      function (data) {
+          if (data.message != null) {
+              alertError(`【エラー】${data.message}`);
+          }
+          else {
+              $('#tableCustomerDriverSyaryo').html(data.partialView);
+          }
+      }
+    );
+
+  };
+
+
+</script>

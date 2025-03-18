@@ -1,0 +1,94 @@
+﻿
+
+@{
+  Layout = "_Layout";
+}
+
+<link href="~/css/Master.css" rel="stylesheet" />
+<link href="~/css/Setting.css" rel="stylesheet" />
+<style>
+</style>
+
+
+<body data-spy="scroll" data-target="#navbar">
+
+  @*@using (Html.BeginForm(null, null, new { id = "frmMain" }))
+    {*@
+  <div id="ALL">
+    <div id="sub">
+      <div class="subInner clearfix">
+        <ul class="nav nav-tabs nav-tabs-jbc">
+          <li id="tab1" class="sub-btn active"><a class="" asp-area="" asp-controller="Setting" asp-action="CompanyMenu">会社設定</a></li>
+          <li id="tab2" class="sub-btn"><a class="" asp-area="" asp-controller="Setting" asp-action="EmployeeMenu">従業員設定</a></li>
+          <li id="tab3" class="sub-btn"><a class="" asp-area="" asp-controller="Setting" asp-action="LoginUserMenu">ログイン設定</a></li>
+          <li id="tab4" class="sub-btn"><a class="" asp-area="" asp-controller="Setting" asp-action="DriverMenu">乗務員設定</a></li>
+          <li id="tab5" class="sub-btn"><a class="" asp-area="" asp-controller="Setting" asp-action="AnkenMenu">案件設定</a></li>
+          <li id="tab6" class="sub-btn"><a class="" asp-area="" asp-controller="Setting" asp-action="HaisyaMenu">配車設定</a></li>
+        </ul>
+        @*<div class="navbar" style="margin-bottom: 0;">
+            <div class="navbar-inner" style="margin-left: auto; margin-right: auto; width: 100%; min-height: 38px; padding: 0;">
+              <ul class="nav" style="width: 1250px; margin: 0 auto; text-align: left; display: flex;">
+                <li id="tab1" class="active" id="adit-manage-step">
+                  <a class="" asp-area="" asp-controller="Setting" asp-action="CompanyMenu">会社設定</a>
+                </li>
+                <li id="tab2" >
+                  <a class="" asp-area="" asp-controller="Setting" asp-action="AnkenMenu">案件設定</a>
+                </li>
+                <li id="tab3">
+                  <a class="" asp-area="" asp-controller="Setting" asp-action="HaisyaMenu">配車設定</a>
+                </li>
+              </ul>
+            </div>
+          </div>*@
+
+        @*<nav class="navbar navbar-dark bg-primary mb-2">
+            <div class="collapse navbar-collapse" id="navbarNav3">
+              <ul class="navbar-nav">
+                <li id="tab1" class="navbar-brand active">
+                  <a class="nav-link" asp-area="" asp-controller="Setting" asp-action="CompanyMenu">会社設定</a>
+                </li>
+                <li id="tab2" class="nav-item">
+                  <a class="nav-link" asp-area="" asp-controller="Setting" asp-action="AnkenMenu">案件設定</a>
+                </li>
+                <li id="tab3" class="nav-item">
+                  <a class="nav-link" asp-area="" asp-controller="Setting" asp-action="HaisyaMenu">配車設定</a>
+                </li>
+              </ul>
+            </div>
+          </nav>*@
+
+      </div>
+    </div>
+    <div id="wrap">
+      <div id="wrap-inside">
+        <div role="main">
+          @RenderBody()
+        </div>
+      </div>
+    </div>
+  </div>
+  @*}*@
+
+  @await RenderSectionAsync("Scripts", required: false)
+</body>
+<script>
+  $(function () {
+    //$('#navbar').scrollspy({ offset: $(window).height() / 2 });
+    //$('#navbar').scrollspy({ offset: 60 });
+
+
+    $('.nav-btn').on('click', function () {
+      //alert("nav-btn");
+      $('.nav-btn').removeClass('active');
+      $(this).addClass('active');
+    });
+
+    $('.sub-btn').on('click', function () {
+      //alert("nav-btn");
+      $('.sub-btn').removeClass('active');
+      $(this).addClass('active');
+    });
+
+
+  });
+</script>

@@ -1,0 +1,19 @@
+version: '3.4'
+services:
+  sqlexpress:
+    container_name: web_application-sql-server
+    build:
+      context: ./docker
+      dockerfile: Dockerfile
+    environment:
+      MSSQL_PID: Express
+      ACCEPT_EULA: Y
+      SA_PASSWORD: P@ssw0rd
+    ports:
+      - 1435:1433
+    volumes:
+      - sqlexpress_data:/var/opt/mssql/data
+      - sqlexpress_backup:/var/opt/mssql/backup
+volumes:
+  sqlexpress_data:
+  sqlexpress_backup:

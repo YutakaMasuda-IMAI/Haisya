@@ -1,0 +1,234 @@
+﻿@model HaisyaWeb.Models.AnkenModel.PointRegisterDto
+
+@{
+//Layout = "_ModalLayout";
+}
+
+<style>
+  /*  .float-left {
+    float: left;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }
+
+  .float-right {
+    float: right;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }*/
+
+  .readonly {
+    background-color: lightgray;
+  }
+
+  .table-pointReg {
+
+  }
+    .table-pointReg tbody tr {
+      vertical-align: middle;
+    }
+</style>
+
+
+
+<div role="dialog" id="modal-option" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:700px;">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: gainsboro;">
+        <h1 class="modal-title fs-3" id="exampleModalLabel">地図ポイント保存</h1>
+        <button type="button" class="btn btn-primary" onclick="regExec(); return false;">登録</button>
+        <button type="button" class="btn btn-secondary" onclick="ModalClose(); return false;">閉じる</button>
+      </div>
+      <div class="model-body">
+        <form id="form1">
+          <div id="hidden" hidden>
+            @Html.HiddenFor(model => Model.CompanyID)
+            @Html.HiddenFor(model => Model.UserID)
+            @Html.HiddenFor(model => Model.SelectPointKubun)
+            @Html.HiddenFor(model => Model.PointData.Point_ID)
+            @Html.HiddenFor(model => Model.PointData.User_ID)
+            @Html.HiddenFor(model => Model.PointData.BuildingZid_Attr)
+            @Html.HiddenFor(model => Model.PointData.BuildingNameRead)
+            @Html.HiddenFor(model => Model.PointData.Address_Code)
+            @Html.HiddenFor(model => Model.PointData.Address_Level)
+          </div>
+          <div class="contents-wrap-middle" style="margin: 10px;">
+            <h4 class="">注意</h4>
+            <span>
+              ・一度データを登録すると物理削除は出来ません。「非表示フラグ」を立ててください。
+            </span>
+          </div>
+          <div>
+            <table class="table table-striped-columns table-bordered border-primary table-pointReg" border="1" style="margin: 10px; width:95%;">
+              <tbody>
+                <tr style="">
+                  <td colspan="3" style="">
+                    <div class="row">
+                      <div class="col-2" style="align-self: center;"><label style="color: #ff00dc; margin-left: 5px;">公開設定</label></div>
+                      <div class="col-1" style="align-self: center; text-align: end;"><input type="radio" name="num_of_filter" value="1"></div>
+                      <div class="col-2" style="align-self: center;"><span>個人</span></div>
+                      <div class="col-1" style="align-self: center; text-align: end;"><input type="radio" name="num_of_filter" value="2"></div>
+                      <div class="col-6">@Html.DropDownListFor(model => Model.PointData.Group_ID, new SelectList(Model.GroupSelectList, "Value", "Text", "Selected"), "配車グループを選択", new { @class = "list dropDownList", @style = "width: 95%;" })</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr style="">
+                  <th width="150px">ポイント名(必須)</th>
+                  <td>@Html.TextBoxFor(model => Model.PointData.BuildingName, null, new { @class = "form-control", @style = "width: 95%;" })</td>
+                </tr>
+                <tr style="">
+                  <th>郵便番号</th>
+                  <td>@Html.TextBoxFor(model => Model.PointData.Post_code, null, new { @readonly = "readonly", @class = "", @style = "width: 95%; border: none; padding: 0; background: none;" })</td>
+                </tr>
+                <tr style="">
+                  <th>住所</th>
+                  <td>@Html.TextBoxFor(model => Model.PointData.Address, null, new { @readonly = "readonly", @class = "", @style = "width: 95%; border: none; padding: 0; background: none;" })</td>
+                </tr>
+                <tr style="">
+                  <th>建物ZIP(地図)</th>
+                  <td>@Html.TextBoxFor(model => Model.PointData.BuildingZid, null, new { @readonly = "readonly", @class = "", @style = "width: 95%; border: none; padding: 0; background: none;" })</td>
+                </tr>
+                <tr style="">
+                  <td colspan="2">
+                    <div style="display: flex;">
+                      <label style="width: 150px;">緯度：</label>
+                      @Html.TextBoxFor(model => Model.PointData.Lat, null, new { @readonly = "readonly", @class = "", @style = "width: 95%; border: none; padding: 0;" })
+                      <label style="width: 150px;">経度：</label>
+                      @Html.TextBoxFor(model => Model.PointData.Lng, null, new { @readonly = "readonly", @class = "", @style = "width: 95%; border: none; padding: 0;" })
+                    </div>
+                  </td>
+                </tr>
+                <tr style="">
+                  <td colspan="2">
+                    <div style="display: flex;">
+                      <label style="width: 50px;">県：</label>
+                      @Html.TextBoxFor(model => Model.PointData.Address2, null, new { @readonly = "readonly", @class = "", @style = "width: 20%; border: none; padding: 0;" })
+                      <label style="width: 80px;">市区町村：</label>
+                      @Html.TextBoxFor(model => Model.PointData.Address3, null, new { @readonly = "readonly", @class = "", @style = "width: 20%;border: none; padding: 0;" })
+                      <label style="width: 50px;">町域：</label>
+                      @Html.TextBoxFor(model => Model.PointData.Address4, null, new { @readonly = "readonly", @class = "", @style = "width: 20%;border: none; padding: 0;" })
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+
+  $(function () {
+
+    $('input[name="num_of_filter"]').on('change', function () {
+      var val = $(this).val();
+      $('#SelectPointKubun').val(val);
+    });
+
+
+    var radio = document.getElementsByName('num_of_filter');
+    for (let i = 0; i < radio.length; i++) {
+      if (radio.item(i).value == $('#SelectPointKubun').val()) {
+        radio.item(i).checked = true;
+      }
+    };
+
+  });
+
+  function regExec() {
+
+    if (varidationCheck()) {
+      return false;
+    }
+
+    //Formの参照を取る
+    var $form = $('#form1');
+
+    //alert($form.serialize());
+
+    $.ajax({
+          url: '@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "PointRegForCheck" })',
+          type: 'post',
+          data: $form.serialize(),
+        }).done(function (response) {
+          if (response.errorMessage != null) {
+              alertError(`【エラー】${response.errorMessage}`);
+              return false;
+          } else {
+            //alert(response.result);
+            if (response.result == "True") {
+              var result = window.confirm('既に同じ建物が登録されています。上書きしますか？');
+              if (result) { regExecEx(); }
+              return false;
+            } else {
+              regExecEx();
+            }
+            return false;
+          }
+        }).fail(function (xhr) {
+          alert('【ネットワークエラー】:' + xhr);
+            console.log(xhr);
+            return false;
+        }).always(function (xhr, msg) {
+            console.log(xhr, msg);
+        });
+
+  };
+
+
+
+  function regExecEx() {
+
+    //Formの参照を取る
+    var $form = $('#form1');
+
+    $.ajax({
+          url: '@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "PointRegExec" })',
+          type: 'post',
+          data: $form.serialize(),
+        }).done(function (response) {
+          if (response.errorMessage != null) {
+              alertError(`【エラー】${response.errorMessage}`);
+              return false;
+          } else {
+            alert("登録処理が正常に終了しました。");
+            ModalClose();
+            return false;
+          }
+        }).fail(function (xhr) {
+          alert('【ネットワークエラー】:' + xhr);
+            console.log(xhr);
+            return false;
+        }).always(function (xhr, msg) {
+            console.log(xhr, msg);
+        });
+
+  };
+
+  function varidationCheck() {
+
+    if (!($('#PointData_BuildingName').val() != null && $('#PointData_BuildingName').val().length > 0)) {
+      alert("ポイント名は必須です");
+      $('#PointData_BuildingName').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#PointData_BuildingName').css('background-color', 'white');
+    }
+
+    return false;
+
+  };
+
+
+
+</script>

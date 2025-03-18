@@ -1,0 +1,280 @@
+﻿@model  SettingModel.SenzokuModalModel
+
+
+@{
+  Layout = "_ModalLayout";
+}
+
+
+<style>
+  .btn-senzoku-select {
+    width: 80px;
+    padding: 0 1rem !important;
+  }
+
+  .header-senzokuReg {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+</style>
+
+
+<div class="modal-dialog" role="document" style="">
+  <div class="modal-content">
+    @*<div class="modal-header" style="background-color: gainsboro;">
+      
+    </div>*@
+    <div class="model-body">
+      @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmSenzokuReg", @class = "contact-form", @style = "padding: 0;", @onsubmit = "return false;" }))
+      {
+        <div id="hidden" hidden>
+          @Html.TextBoxFor(model => model.UserID)
+          @Html.TextBoxFor(model => model.CompanyID)
+        </div>
+
+        <div class="row" style="margin-right: 1px; padding: 0 0.2rem;">
+          <div class="col-12" style="padding-right: 0;">
+            <div class="contents-wrap-middle" style="margin: 10px;">
+              <h4 class="">注意</h4>
+              <span>
+                ・一度データを登録すると物理削除は出来ません。「非表示フラグ」を立ててください。
+              </span>
+            </div>
+            <div class="container header-senzokuReg" style="">
+              <div>
+                <h4>@(Model.Title)</h4>
+              </div>
+              <div>
+                <button type="button" class="btn btn-primary" style="float:right;" onclick="SenzokuRegExec(); return false;">@(Model.BtnCaption)</button>
+              </div>
+            </div>
+            
+            <table class="table table-striped-columns table-bordered border-primary" border="1" style="margin: 10px; width:96%;">
+              <thead>
+                <tr style="background-color: aquamarine;">
+                  <th align="center" style="text-align: center;" width="100px">項目名</th>
+                  <th align="center" style="text-align: center;" width="40%">値</th>
+                  <th align="center" style="text-align: center;" width="100px">項目名</th>
+                  <th align="center" style="text-align: center;" width="40%">値</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr hidden>
+                  <th>SenzokuID</th>
+                  <td>@Html.TextBoxFor(model => Model.Senzoku.SenzokuID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px;" })</td>
+                  <th>Company_ID</th>
+                  <td>@Html.TextBoxFor(model => Model.Senzoku.Company_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px;" })</td>
+                </tr>
+                <tr>
+                  <th style="color: red;">担当配車</th>
+                  <td>
+                    @Html.DropDownListFor(model => model.Senzoku.Haisya_Group_ID, new SelectList(Model.GroupList, "Value", "Text", "Selected"), "担当配車を選択", new { @class = "form-control list dropDownList", @style = "width: auto" })
+                  </td>
+                  <th></th>
+                  <td></td>
+                </tr>
+                <tr>
+                  <th>顧客</th>
+                  <td style="display:flex;">
+                    <button id="btnKokyaku" class="btn btn-secondary btn-senzoku-select">選択</button>
+                    @Html.TextBoxFor(model => Model.Senzoku.KokyakuId, null, new { @class = "form-control", @style = "width: 0px; padding: 0;" })
+                    @Html.TextBoxFor(model => Model.KokyakuName, null, new { @readonly = "readonly", @class = "form-control", @style = "width: 60%;" })
+                  </td>
+                  <th>顧客担当</th>
+                  <td style="display:flex;">
+                    <button id="btnKokyakuTantou" class="btn btn-secondary btn-senzoku-select">選択</button>
+                    @Html.TextBoxFor(model => Model.Senzoku.KokyakuTantouId, null, new { @class = "form-control", @style = "width: 0px; padding: 0;" })
+                    @Html.TextBoxFor(model => Model.KokyakuTantouName, null, new { @readonly = "readonly", @class = "form-control", @style = "width: 60%;" })
+                  </td>
+                </tr>
+                <tr>
+                  <th style="color: red;">専属名</th>
+                  <td>@Html.TextBoxFor(model => Model.Senzoku.Senzoku_Name, null, new { @class = "form-control", @style = "width: 95%;" })</td>
+                  <th style="color: red;">表示名</th>
+                  <td>@Html.TextBoxFor(model => Model.Senzoku.Senzoku_Name_Abbr, null, new { @class = "form-control", @style = "width: 95%;" })</td>
+                </tr>
+                <tr>
+                  <th style="color: red;">請求区分</th>
+                  <td>
+                    @Html.DropDownListFor(model => model.Senzoku.Seikyu_Kubun, new SelectList(Model.SeikyuKubunList, "Value", "Text", "Selected"), "請求区分を選択", new { @class = "form-control list dropDownList", @style = "width: auto" })
+                  </td>
+                  <th style="color: red;">計算区分</th>
+                  <td>
+                    @Html.DropDownListFor(model => model.Senzoku.Calc_Kubun, new SelectList(Model.CalcKubunList, "Value", "Text", "Selected"), "計算区分を選択", new { @class = "form-control list dropDownList", @style = "width: auto" })
+                  </td>
+                </tr>
+                <tr>
+                  <th>月額</th>
+                  <td id="root">@Html.TextBoxFor(model => model.Senzoku.Monthly_Fee, "{0:N0}", new { @class = "form-control text-end", @style = "width: 100px;", @onblur = "kanmaChange(this);" })</td>
+                  <th>日額</th>
+                  <td id="root">@Html.TextBoxFor(model => model.Senzoku.Daily_Fee, "{0:N0}", new { @class = "form-control text-end", @style = "width: 100px;", @onblur = "kanmaChange(this);" })</td>
+                </tr>
+
+                <tr>
+                  <th>車種</th>
+                  <td colspan="3">
+                    <table width="100%" style="margin: 0px; padding: 0px;">
+                      <tr>
+                        <th style="width: 70px; text-align: right;">車種表示</th>
+                        <td style="width: 80px;">@Html.TextBoxFor(model => Model.Senzoku.SyasyuDisplay, null, new { @class = "form-control text-left", @style = "width: 100px;", @onblur = "" })</td>
+                        <th></th>
+                        <th style="width: 50px; text-align: right;">車種</th>
+                        <td style="width: 80px;">@Html.TextBoxFor(model => Model.Senzoku.Syasyu, null, new { @class = "form-control text-left", @style = "width: 100px; margin-right:0px;", @onblur = "" })</td>
+                        <th></th>
+                        <th style="width: 50px; text-align: right;">型</th>
+                        <td style="width: 80px;">@Html.TextBoxFor(model => Model.Senzoku.Kata, null, new { @class = "form-control text-left", @style = "width: 100px;", @onblur = "" })</td>
+                        <th></th>
+                        <th style="width: 50px; text-align: right;">サイズ</th>
+                        <td style="width: 80px;">@Html.TextBoxFor(model => Model.Senzoku.SyasyuSize, null, new { @class = "form-control text-left", @style = "width: 100px;", @onblur = "" })</td>
+                        <th></th>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+  $(function () {
+
+    $('#btnKokyaku').on('click', function (event) {
+      openCommonDialogForCustomer($('#CompanyID').val(), $('#UserID').val(), $('#Senzoku_KokyakuId').val());
+      return false;
+    });
+
+    $('#btnKokyakuTantou').on('click', function (event) {
+
+      let KokyakuId = $('#Senzoku_KokyakuId').val();
+      if (KokyakuId == 0) {
+        alertInputError("まず顧客を選択してください。");
+        return false;
+      }
+
+      openCommonDialogForCustomerTantou($('#CompanyID').val(), $('#UserID').val(), KokyakuId, 0);
+      return false;
+
+    });
+
+  });
+
+  /**
+   *　顧客選択ボタン押下時
+   * @@param CustomerID
+   * @@param CustomerName
+   */
+  function selectCustomerSelectedCallBack(obj) {
+    $('#Senzoku_KokyakuId').val(obj["Customer_Branch_ID"]);
+    $('#KokyakuName').val(obj["Customer_Branch_Name_Abbr"]);
+  };
+
+  /**
+   *　顧客担当選択ボタン押下時
+   * @@param CustomerID
+   * @@param TantouID
+   * @@param TantouName
+   */
+  function selectCustomerTantouSelectedCallBack(obj) {
+    $('#Senzoku_KokyakuTantouId').val(obj["Tantou_ID"]);
+    $('#KokyakuTantouName').val(obj["Tantou_Name_Abbr"]);
+  };
+
+  /**
+   * 専属情報登録処理
+   * */
+  function SenzokuRegExec() {
+
+    if (varidationCheckForSenzoku()) {
+      return false;
+    }
+
+    //Formの参照を取る
+    var $form = $('#frmSenzokuReg');
+
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "Setting", Action = "SenzokuRegExec" })',
+      type: 'post',
+      data: $form.serialize(),
+    }).done(function (response) {
+      if (response.errorMessage != null) {
+        alertError("【エラー】" + response.errorMessage);
+        return false;
+      } else {
+        closeModelAndRefresh();
+        return false;
+      }
+    }).fail(function (xhr) {
+      alertError('【ネットワークエラー】:' + xhr);
+        console.log(xhr);
+        return false;
+    }).always(function (xhr, msg) {
+        console.log(xhr, msg);
+    });
+
+  }
+
+  function varidationCheckForSenzoku() {
+
+    if (!($('#Senzoku_KokyakuId').val() != null && $('#Senzoku_KokyakuId').val() > 0)) {
+      alertInputError("顧客が選択されていません");
+      $('#KokyakuName').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#KokyakuName').css('background-color', 'white');
+    }
+
+    if (!($('#Senzoku_KokyakuTantouId').val() != null && $('#Senzoku_KokyakuTantouId').val() > 0)) {
+      alertInputError("顧客担当者が選択されていません");
+      $('#KokyakuTantouName').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#KokyakuTantouName').css('background-color', 'white');
+    }
+
+    if (!($('#Senzoku_Haisya_Group_ID').val() != null && $('#Senzoku_Haisya_Group_ID').val().length > 0)) {
+      alertInputError("担当配車が選択されていません");
+      $('#Senzoku_Haisya_Group_ID').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#Senzoku_Haisya_Group_ID').css('background-color', 'white');
+    }
+
+    if (!($('#Senzoku_SyasyuDisplay').val() != null && $('#Senzoku_SyasyuDisplay').val().length > 0)) {
+      alertInputError("型表示が入力されていません");
+      $('#Senzoku_SyasyuDisplay').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#Senzoku_SyasyuDisplay').css('background-color', 'white');
+    }
+
+    if (!($('#Senzoku_Senzoku_Name').val() != null && $('#Senzoku_Senzoku_Name').val().length > 0)) {
+      alertInputError("専属名が入力されていません");
+      $('#Senzoku_Senzoku_Name').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#Senzoku_Senzoku_Name').css('background-color', 'white');
+    }
+
+    if (!($('#Senzoku_Senzoku_Name_Abbr').val() != null && $('#Senzoku_Senzoku_Name_Abbr').val().length > 0)) {
+      alertInputError("専属表示名が入力されていません");
+      $('#Senzoku_Senzoku_Name_Abbr').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#Senzoku_Senzoku_Name_Abbr').css('background-color', 'white');
+    }
+
+    return false;
+
+  };
+
+
+</script>

@@ -1,0 +1,228 @@
+﻿@model AnkenModel.SenzokuSelectDriverModel
+
+
+@{
+  Layout = "_Layout";
+  ViewData["Title"] = "専属選択";
+}
+
+
+<head>
+  <meta charset="UTF-8">
+  <title>Display a map</title>
+  <link href="~/css/Anken.css" rel="stylesheet" />
+</head>
+
+<style>
+  .contact-form .btn {
+    height: 85%;
+    width: 45%;
+    margin-top: 0.8%;
+    font-size: 30px;
+  }
+
+  .contact-form .control-label {
+    font-size: 20px;
+    color: red;
+    margin-left: 5rem;
+  }
+</style>
+
+<body class="">
+  <div class="container">
+    <div hidden>
+      @Html.HiddenFor(model => Model.SelectDay)
+      @Html.HiddenFor(model => Model.SelectTantou)
+      @Html.HiddenFor(model => Model.SelectSyasyu)
+      @Html.HiddenFor(model => Model.SelectKata)
+      @Html.HiddenFor(model => Model.SelectGroup)
+      @Html.HiddenFor(model => Model.BackMenuAction)
+      @Html.HiddenFor(model => Model.SelectMonth)
+    </div>
+
+    <div id="divTitle" style="height: 40px; padding: 0; margin: 0 0 5px 0; width: 100%; ">
+      <table class="ex_TableBackgroundNone" width="100%" height="100%">
+        <tr>
+          <td width="80%">
+            <h3 class="heading-40">専属乗務員一覧</h3>
+          </td>
+          @*<td width="20%" style="">
+            <button id="btnBackMenu" class="btn btn-outline-success" style="padding: 0px; height: 100%; width: 100%; border-radius: 5px;">戻る</button>
+          </td>*@
+        </tr>
+      </table>
+    </div>
+
+    <div id="divHead" style="vertical-align: middle; display: inline-block; width: 100%;">
+      <table class="ex_TableBackgroundNone" width="100%">
+        <tr valign="middle">
+          <th>
+            <div style="vertical-align: middle; display: inline-block;">
+              <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer;" onclick="ChangeMonth(-1); return false;" onselectstart="return false;" alt="<<" tooltip="前月"><<</span>
+              <input id="TargetMonthLavel" type="text" readonly style="width: 150px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
+              <input id="TargetMonthInput" class="calender" type="text" readonly style="width: 0px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
+              <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer;" onclick="ChangeMonth(1); return false;" onselectstart="return false;" alt=">>" tooltip="翌月">>></span>
+              <button class="btn btn-outline-info" style="width: 70px; vertical-align: text-bottom; margin: 0; padding: 0; font-size: 16px; " onclick="LocationReload(); return false;">再描画</button>
+            </div>
+          </th>
+        </tr>
+      </table>
+
+    </div>
+    <div id="DataList" style="padding-top: 5px;">
+
+
+
+    </div>
+
+  </div>
+</body>
+
+<script>
+
+  $(window).on('load', function () {
+
+    var selectMonth = new Date($("#SelectMonth").val());
+    var disp = MonthToString(selectMonth);
+    $("#TargetMonthLavel").val(disp);
+
+    $("#TargetMonthInput").val($("#SelectMonth").val());
+
+    DataListDisplay();
+  });
+
+  $(function () {
+
+    $('#btnBackMenu').on('click', function () {
+      BackMenu();
+    });
+
+    $("input#TargetMonthInput").on('change', function () {
+      var val = $(this).val();
+      $("#Param_SelectMonth").val($("#SelectMonth").val());
+      ChangeTargetMonth();
+    });
+
+    $("#TargetMonthInput").ympicker({
+      changeYear: true,
+      altField: '#SelectMonth',  // 入力結果の表示箇所
+      altFormat: "yy/mm/01",  // 入力結果の表示方法 Dは曜日の省略形、DDは省略なし
+    });
+  });
+
+  /**
+  * 指定年月変更処理
+  * @@param move
+  */
+  function ChangeMonth(move) {
+
+    var selectMonth = new Date($("#SelectMonth").val());
+
+    var changeMonth = new Date(selectMonth.setMonth(selectMonth.getMonth() + move));
+
+    $("#SelectMonth").val(formatMonth(changeMonth, "/"));
+    $("#TargetMonthInput").val($("#SelectMonth").val());
+
+    ChangeTargetMonth();
+
+  };
+
+  /**
+* 指定年月変更後処理
+* */
+  function ChangeTargetMonth() {
+
+    var val = $("#SelectMonth").val();
+    var dateVal = new Date(val);
+    var disp = MonthToString(dateVal);
+    $("#TargetMonthLavel").val(disp);
+
+    DataListDisplay();
+  };
+
+    @*/**
+    * 月次乗務員一覧画面に戻る
+    * */
+  function BackMenu() {
+    var form = document.createElement('form');
+    form.action = '@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "BackMenu" })';
+    form.method = 'POST';
+
+    // body に追加
+    document.body.appendChild(form);
+
+    var html = '';
+    html += '            <input type="hidden" id="SelectDay" name="SelectDay" value="' + $('#SelectDay').val() + '" />';
+    html += '            <input type="hidden" id="SelectTantou" name="SelectTantou" value="' + $('#SelectTantou').val() + '" />';
+    html += '            <input type="hidden" id="SelectSyasyu" name="SelectSyasyu" value="' + $('#SelectSyasyu').val() + '" />';
+    html += '            <input type="hidden" id="SelectKata" name="SelectKata" value="' + $('#SelectKata').val() + '" />';
+    html += '            <input type="hidden" id="SelectGroup" name="SelectGroup" value="' + $('#SelectGroup').val() + '" />';
+    html += '            <input type="hidden" id="BackMenuAction" name="BackMenuAction" value="' + $('#BackMenuAction').val() + '" />';
+
+    form.innerHTML = html;
+    form.submit();
+  };*@
+
+    /**
+    * 乗務員の月別勤怠一覧データを表示
+    * */
+  function DataListDisplay() {
+
+    ///処理中ダイアログ
+    Swal.fire({
+      title: 'データ取得中'
+      , html: 'このデータ抽出には時間がかかります。<br />処理終了まで画面はそのままにしてください。'
+      , allowOutsideClick: false     //枠外をクリックしても画面を閉じない
+      , showConfirmButton: false
+      , didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    $.post('@Url.RouteUrl("Default", new { controller = "AnkenSenzoku", Action = "JsonGetSenzokuDriverList" })',
+      {
+        selectMonth: $('#SelectMonth').val(),
+      },
+      function (data) {
+        $('#DataList').html(data.partialView);
+      }
+    ).always(function () {
+      //完了ダイアログ
+      Swal.fire({
+        title: '処理終了'
+        , html: '処理を終了しました。'
+        , type: 'info'
+        , timer: 1
+      });
+    });
+  };
+
+
+  /**
+    * 月次乗務員一覧画面に戻る
+    * */
+  function SelectedDriverOnClick(paramSenzokuID, paramSenzokuDriverID) {
+
+    var form = document.createElement('form');
+    form.action = '@Url.RouteUrl("Default", new { controller = "AnkenSenzoku", Action = "SenzokuRegIndex" })';
+    form.method = 'POST';
+
+    // body に追加
+    document.body.appendChild(form);
+
+    var html = '';
+    html += '            <input type="hidden" id="SelectDay" name="SelectDay" value="' + $('#SelectDay').val() + '" />';
+    html += '            <input type="hidden" id="SelectTantou" name="SelectTantou" value="' + $('#SelectTantou').val() + '" />';
+    html += '            <input type="hidden" id="SelectSyasyu" name="SelectSyasyu" value="' + $('#SelectSyasyu').val() + '" />';
+    html += '            <input type="hidden" id="SelectKata" name="SelectKata" value="' + $('#SelectKata').val() + '" />';
+    html += '            <input type="hidden" id="SelectGroup" name="SelectGroup" value="' + $('#SelectGroup').val() + '" />';
+    html += '            <input type="hidden" id="BackMenuAction" name="BackMenuAction" value="' + $('#BackMenuAction').val() + '" />';
+    html += '            <input type="hidden" id="SelectMonth" name="SelectMonth" value="' + $('#SelectMonth').val() + '" />';
+    html += '            <input type="hidden" id="SenzokuID" name="SenzokuID" value="' + paramSenzokuID + '" />';
+    html += '            <input type="hidden" id="SenzokuDriverID" name="SenzokuDriverID" value="' + paramSenzokuDriverID + '" />';
+
+    form.innerHTML = html;
+    form.submit();
+  };
+
+</script>

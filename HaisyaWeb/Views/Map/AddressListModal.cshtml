@@ -1,0 +1,99 @@
+﻿@model HaisyaWeb.Models.MapModel.MapddressListModel
+
+
+@{
+}
+<link href="~/css/Anken.css" rel="stylesheet" />
+
+<div role="dialog" id="modal-option" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document" style="max-width:800px">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>住所選択</h3>
+      </div>
+      <div class="model-body">
+        <table width="100%" border="1">
+          <tr>
+            <td width="50%" style="margin: 10px; vertical-align: top; ">
+              <div style="text-align: center;">
+                <h4>住所選択</h4>
+              </div>
+              @foreach (var item in Model.Addresslist)
+              {
+              <button class="btnAddressList" style="" onclick="btnAddressClick('@(item.address_code)','@(item.address)','@(item.post_code)','@(item.address_level)','@(item.address2)','@(item.address3)','@(item.address4)'); return false;">
+                <div style="text-align: left; margin-left: 10px;">
+                  〒@(item.post_code)<br />
+                  @(item.address)
+                </div>
+              </button>
+              }
+              <div style="display: inline-block; margin-top: 30px; margin-left: 5px;">
+                <label>建物名指定</label>
+                <input type="text" id="txtBuildingName" style="width: 290px;" />
+              </div>
+            </td>
+            <td width="50%" style="margin: 10px; vertical-align: top; ">
+              <div style="text-align: center;">
+                <h4>住所・建物名選択</h4>
+              </div>
+              @foreach (var item in Model.BuildingList)
+              {
+              <button class="btnBuildingList" style="" onclick="btnBuildingClick('@(item.address_code)','@(item.zid)','@(item.zid_attr)','@(item.building_name)','@(item.address)','@(item.post_code)','@(item.address_level)','@(item.address2)','@(item.address3)','@(item.address4)'); return false;">
+                <div style="text-align: left; margin-left: 10px; ">
+                  @(item.building_name)<br />
+                  〒@(item.post_code)<br />
+                  @(item.address)
+                </div>
+              </button>
+              }
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div style="vertical-align: middle; display: inline-block; " class="modal-footer">
+        <table width="100%">
+          <tr style="border: none; border: none; padding: 0; margin: 0;">
+            <td width="50%" align="center" style="border: none;padding:0;margin:0;">
+              @*<button id="btnModelHolidayReister" class="btn btn-success" onclick="abc(); return false;">登録</button>*@
+            </td>
+            <td width="50%" align="center" style="border: none;padding:0;margin:0;">
+              <button id="btnModelCancel" class="btn btn-secondary" data-dismiss="modal" onclick="ModalClose();">Close</button>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+<script>
+
+  function abc() {
+
+
+    //ModelClose('aaaaaa');
+
+  };
+
+
+  function btnAddressClick(address_code, address, post_code, address_level, address2, address3, address4) {
+    //alert(address_code);
+    var buildingName = $('#txtBuildingName').val();
+    SetAddressData(address_code, null, null, buildingName, address, post_code, address_level, address2, address3, address4);
+
+  };
+
+  function btnBuildingClick(address_code, zid, Zid_Attr, BuildingName, address, post_code, address_level, address2, address3, address4) {
+    //alert(zid);
+    SetAddressData(address_code, zid, Zid_Attr, BuildingName, address, post_code, address_level, address2, address3, address4);
+  };
+
+
+
+
+</script>

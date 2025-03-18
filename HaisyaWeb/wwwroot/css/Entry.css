@@ -1,0 +1,147 @@
+﻿/* 登録ページ用クラス */
+
+/* カテゴリタイトル */
+div.category-title {
+    font-weight: bold;
+    font-size: 16px;
+    border-bottom: #000000 1px solid;
+    margin-top: 10px;
+}
+
+/* 入力用テーブル */
+div.table-div-span {
+    width: 100%;
+}
+
+div.table-div {
+    width: 100%;
+    padding-top: 5px;
+}
+
+/* ヘッダーボタン用 */
+table.head-button {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+table.head-button td {
+    border: none;
+    text-align: center;
+    vertical-align: top;
+}
+
+/* 入力用テーブル（枠線あり） */
+table.on-line {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    table.on-line th {
+        border: #000000 1px solid;
+        text-align: left;
+        font-size: 14px;
+        padding: 3px;
+        font-weight: bold;
+        width: 120px;
+    }
+
+    table.on-line td {
+        border: #000000 1px solid;
+        text-align: left;
+        font-size: 14px;
+        padding: 3px;
+    }
+
+/* 入力用テーブル（枠線なし） */
+table.no-line {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table.no-line th {
+    border: none;
+    text-align: left;
+    font-size: 14px;
+    padding: 3px;
+    font-weight: bold;
+    width: 120px;
+}
+
+table.no-line td {
+    border: none;
+    text-align: left;
+    font-size: 14px;
+    padding: 3px;
+}
+
+/* 入力用テーブル（一覧用） */
+table.list {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+table.list th {
+    text-align: center;
+    font-size: 14px;
+    padding: 3px;
+    font-weight: bold;
+    border: #000000 1px solid;
+    white-space: nowrap;
+}
+
+table.list th.bgcolor {
+    background-color:#cccccc;
+}
+
+table.list th.noborder {
+    border:none;
+}
+
+table.list td {
+    font-size: 14px;
+    padding: 3px;
+    border: #000000 1px solid;
+    white-space: nowrap;
+}
+
+table.list td.noborder {
+    border: none;
+}
+
+/* 入力フォーム用 */
+.form-control {
+    height: 30px;
+    /* テキストボックスの高さを小さくする */
+    margin-right: 10px;
+    /* テキストボックスの間にスペースを追加 */
+}
+
+.flex-container {
+    /*display: flex;*/
+    align-items: center;
+    /* 垂直方向の中央揃え */
+}
+
+.flex-container span {
+    margin-right: 10px;
+    /* スパン要素の間にスペースを追加 */
+}
+
+.dropdown {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    background-color: #ffffff !important;
+}
+
+.inputtable {
+    background-color: #ffffff !important;
+}
+
+.blue-button {
+    border-radius: 8px;
+    background-color: rgba(91, 156, 213, 1);
+    border: none;
+    color: white;
+    white-space: nowrap;
+}

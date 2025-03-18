@@ -1,0 +1,171 @@
+﻿@using System.Reflection;
+@using HaisyaWeb.Dto;
+@using static HaisyaWeb.Models.CompletedPaymentsModel;
+
+@model DataListModel
+
+@{
+  var i = 0;
+  var l = Model?.SeikyuDataLists?.ToList() ?? new();
+  if (Model.SortParam != null && !string.IsNullOrWhiteSpace(Model.SortParam.SortItemParam) && !string.IsNullOrWhiteSpace(Model.SortParam.SortOrder))
+  {
+    var s = Model.SortParam.SortItemParam;
+    Func<V_SeikyuZumiDataList_Local, object> f = (V_SeikyuZumiDataList_Local r) =>
+      s == nameof(V_SeikyuZumiDataList_Local.Inquiry_Status) ? r.Inquiry_status_label() :
+      s == nameof(V_SeikyuZumiDataList_Local.Reg_Status) ? r.Reg_status_label() :
+      s == nameof(V_SeikyuZumiDataList_Local.Seikyu_Month) ? r.Seikyu_month_display() :
+      typeof(V_SeikyuZumiDataList_Local).GetRuntimeProperty(s).GetValue(r, null);
+    l = "asc".Equals(Model.SortParam.SortOrder) ?
+      l.OrderBy(f).ThenBy(s => s.Seikyu_ID).ToList() :
+      l.OrderByDescending(f).ThenBy(s => s.Seikyu_ID).ToList();
+  }
+}
+
+@if (l.Count == 0)
+{
+<div class="no-data-row">
+  <h4 class="no-data-row-text">データ無し</h4>
+</div>
+}
+else
+{
+<table class="table ex_DataList search-list" border="1">
+<thead>
+  <tr align="center">
+    <th class="nyukin_list" rowspan="2" width="80px">入金処理</th>
+    <th class="nyukin_list" rowspan="2" width="70px">
+      <a href="#" onclick="set_sort('@nameof(V_SeikyuZumiDataList_Local.Inquiry_Status)')">請求方法</a>
+    </th>
+    <th class="nyukin_list" rowspan="2" width="60px">
+      <a href="#" onclick="set_sort('@nameof(V_SeikyuZumiDataList_Local.Reg_Status)')">更新</a>
+    </th>
+    <th class="nyukin_list" rowspan="2" width="80px">
+      <a href="#" onclick="set_sort('@nameof(V_SeikyuZumiDataList_Local.Seikyu_Month)')">売上締日</a>
+    </th>
+    <th class="nyukin_list" rowspan="2" width="80px">
+      <a href="#" onclick="set_sort('@nameof(V_SeikyuZumiDataList_Local.Print_Date)')">請求日</a>
+    </th>
+    <th class="nyukin_list" rowspan="2" width="90px">
+      <a href="#" onclick="set_sort('@nameof(V_SeikyuZumiDataList_Local.Seikyu_Tantou_Name)')">請求担当</a>
+    </th>
+    <th class="nyukin_list" rowspan="2">
+      <a href="#" onclick="set_sort('@nameof(V_SeikyuZumiDataList_Local.Customer_Name)')">請求先</a>
+    </th>
+    <th class="nyukin_list" rowspan="2" width="70px">
+      <a href="#" onclick="set_sort('@nameof(V_SeikyuZumiDataList_Local.Received_Money)')">入金額計</a>
+    </th>
+    <th class="nyukin_list" rowspan="2" width="70px">
+      <a href="#" onclick="set_sort('@nameof(V_SeikyuZumiDataList_Local.Refund_Money)')">返金額計</a>
+    </th>
+    <th class="seikyu_info" colspan="9">請求情報</th>
+  </tr>
+  <tr align="center">
+    <th class="seikyu_list" width="70px">
+      <a href="#" onclick="set_sort('@nameof(V_SeikyuZumiDataList_Local.Seikyu_Previous)')">前回請求額</a>
+    </th>
+    <th class="seikyu_list" width="70px">
+      <a href="#" onclick="set_sort('@nameof(V_SeikyuZumiDataList_Local.Received_Amount_This)')">今回入金額</a>
+    </th>
+    <th class="seikyu_list" width="70px">
+      <a href="#" onclick="set_sort('@nameof(V_SeikyuZumiDataList_Local.Balance_Forward)')">繰越残高</a>
+    </th>
+    <th class="seikyu_list" width="80px">
+      <a href="#" onclick="set_sort('@nameof(V_SeikyuZumiDataList_Local.SeikyuUnchin)')">運賃計</a>
+    </th>
+    <th class="seikyu_list" width="70px">
+      <a href="#" onclick="set_sort('@nameof(V_SeikyuZumiDataList_Local.Tatekaekin)')">立替計</a>
+    </th>
+    <th class="seikyu_list" width="70px">
+      <a href="#" onclick="set_sort('@nameof(V_SeikyuZumiDataList_Local.Taxable_Amount)')">課税対象額</a>
+    </th>
+    <th class="seikyu_list" width="70px">
+      <a href="#" onclick="set_sort('@nameof(V_SeikyuZumiDataList_Local.Tax_Amout)')">消費税額</a>
+    </th>
+    <th class="seikyu_list" width="70px">
+      <a href="#" onclick="set_sort('@nameof(V_SeikyuZumiDataList_Local.Seikyu_Amount)')">今回請求額</a>
+    </th>
+    <th class="seikyu_list" width="70px">
+      <a href="#" onclick="set_sort('@nameof(V_SeikyuZumiDataList_Local.Seikyu_Total_Amount)')">請求合計額</a>
+    </th>
+  </tr>
+</thead>
+<tbody>
+  @foreach (var item in l)
+  {
+    i++;
+    var color = i % 2 == 1 ? "row-even" : "row-odd";
+    <tr class="@(color)">
+      <td>
+        <button class="btn btn-outline-success" style="width: 100%; padding:0;" onclick="submitEdit(@(item.Seikyu_ID))">入金処理</button>
+      </td>
+      <td align="center">
+        @item.Inquiry_status_label()
+      </td>
+      <td align="center">
+        @item.Reg_status_label()
+      </td>
+      <td align="center">
+        @item.Seikyu_month_display()
+      </td>
+      <td align="center">
+        @(item.Print_Date?.ToString("yyyy/MM/dd") ?? "")
+      </td>
+      <td>
+        @Html.DisplayFor(modelItem => item.Seikyu_Tantou_Name)
+      </td>
+      <td>
+        @Html.DisplayFor(modelItem => item.Customer_Name)
+      </td>
+      <td align="right">
+        @(item.Received_Money?.ToString("#,0") ?? "")
+      </td>
+      <td align="right">
+        @(item.Refund_Money?.ToString("#,0") ?? "")
+      </td>
+      <td align="right">
+        @(item.Seikyu_Previous?.ToString("#,0") ?? "")
+      </td>
+      <td align="right">
+        @(item.Received_Amount_This?.ToString("#,0") ?? "")
+      </td>
+      <td align="right">
+        @(item.Balance_Forward?.ToString("#,0") ?? "")
+      </td>
+      <td align="right">
+        @(item.SeikyuUnchin?.ToString("#,0") ?? "")
+      </td>
+      <td align="right">
+        @(item.Tatekaekin?.ToString("#,0") ?? "")
+      </td>
+      <td align="right">
+        @(item.Taxable_Amount?.ToString("#,0") ?? "")
+      </td>
+      <td align="right">
+        @(item.Tax_Amout?.ToString("#,0") ?? "")
+      </td>
+      <td align="right">
+        @(item.Seikyu_Amount?.ToString("#,0") ?? "")
+      </td>
+      <td align="right">
+        @(item.Seikyu_Total_Amount?.ToString("#,0") ?? "")
+      </td>
+    </tr>
+  }
+</tbody>
+</table>
+}
+
+<script>
+  var seikyuDataLists = @Html.Raw(Json.Serialize(l));
+
+  function set_sort(name) {
+    var n = $("#SortParam_SortItemParam").val();
+    if (name != n) {
+      $("#SortParam_SortOrder").val("asc");
+      $("#SortParam_SortItemParam").val(name);
+    }
+    var o = $("#SortParam_SortOrder").val();
+    $("#SortParam_SortOrder").val(o.indexOf("desc") != -1 ? "asc" : "desc");
+    dataListDisplay();
+}
+</script>

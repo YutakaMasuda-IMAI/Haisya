@@ -1,0 +1,94 @@
+@model HaisyaWeb.Models.InvoiceModel.IDataListModel
+
+@if ((Model?.InvoiceDataLists == null || Model.InvoiceDataLists.Count == 0))
+{
+<div class="no-data-row">
+    <h4 class="no-data-row-text">データ無し</h4>
+</div>
+}
+else
+{
+<table class="table ex_DataList search-list" width="100%" border="1">
+    <tr>
+        <th style="width:80px;">
+            <button id="chk-all" class="btn btn-info" style="width: 100%; padding:0;" value="1" onclick="CheckAll()">全選択</button>
+        </th>
+        <th style="width:80px;">状態</th>
+        <th style="width:100px;">請求担当</th>
+        <th style="width:160px;"> 請求先</th>
+        <th>メールアドレス</th>
+        <th style="width:60px;">明細件数</th>
+        <th style="width:60px;">運賃計</th>
+        <th style="width:60px;">立替計</th>
+        <th style="width:60px;">案件件数</th>
+        <th style="width: 60px;">確定件数</th>
+        <th style="width:60px;">暫定件数</th>
+        <th style="width:60px;">仮件数</th>
+    </tr>
+    <tbody>
+    @{
+        var i = 0;
+    }
+    @foreach (var invoice in Model.InvoiceDataLists)
+    {
+        i++;
+        var color = i % 2 == 1 ? "row-even" : "row-odd";
+        <tr>
+            <td class="@(color)" align="center">
+                @Html.TextBoxFor(m => invoice.Order, new { @type = "checkbox", @onchange = "SelectInvoice()" })
+            </td>
+            <td class="@(color)" align="center">
+                @Html.DisplayFor(m => invoice.Status_label)
+            </td>
+            <td class="@(color)">
+                @Html.DisplayFor(m => invoice.Seikyu_Tantou_Name)
+            </td>
+            <td class="@(color)">
+                @Html.DisplayFor(m => invoice.Customer_Name)
+            </td>
+            <td class="@(color)">
+                @Html.DisplayFor(m => invoice.Mail_Address1)
+            </td>
+            <td class="@(color)" align="right">
+                @Html.DisplayFor(m => invoice.Meisai_Count)
+            </td>
+            <td class="@(color)" align="right">
+                @{
+                    string Fare_total = invoice.SeikyuUnchin != null ? invoice.SeikyuUnchin.Value.ToString("#,0") : "";
+                }
+                @Fare_total
+            </td>
+            <td class="@(color)" align="right">
+                @{
+                    string Advance_deposit = invoice.Tatekaekin != null ? invoice.Tatekaekin.Value.ToString("#,0") : "";
+                }
+                @Advance_deposit
+            </td>
+            <td class="@(color)" align="right">
+                @Html.DisplayFor(m => invoice.Anken_Count)
+            </td>
+            <td class="@(color)" align="right">
+                @Html.DisplayFor(m => invoice.Kakutei_Count)
+            </td>
+            <td class="@(color)" align="right">
+                @Html.DisplayFor(m => invoice.Zantei_Count)
+            </td>
+            <td class="@(color)" align="right">
+                @Html.DisplayFor(m => invoice.Kari_Count)
+            </td>
+        </tr>
+        @Html.HiddenFor(m => invoice.Order, htmlAttributes: new { id = $"order-{invoice.Order}" })
+        @Html.HiddenFor(m => invoice.Seikyu_ID, htmlAttributes: new { id = $"id-{invoice.Order}" })
+        @Html.HiddenFor(m => invoice.Customer_Name, htmlAttributes: new { id = $"name-{invoice.Order}" })
+        @Html.HiddenFor(m => invoice.Mail_Address1, htmlAttributes: new { id = $"mail1-{invoice.Order}" })
+        @Html.HiddenFor(m => invoice.Mail_Address2, htmlAttributes: new { id = $"mail2-{invoice.Order}" })
+        @Html.HiddenFor(m => invoice.Customer_Branch_ID, htmlAttributes: new { id = $"branch-{invoice.Order}" })
+        @Html.HiddenFor(m => invoice.Shime_Day, htmlAttributes: new { id = $"shime-{invoice.Order}" })
+        @if (Model.Controller == "InvoiceInquiry")
+        {
+            @Html.HiddenFor(m => (invoice as HaisyaWeb.Dto.V_InvoiceCheckDataList_Local).Uriage_Unchin_ID, htmlAttributes: new { id = $"uriage-{invoice.Order}" })
+        }
+    }
+    </tbody>
+</table>
+}

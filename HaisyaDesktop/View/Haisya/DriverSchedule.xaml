@@ -1,0 +1,166 @@
+﻿<Window x:Class="HaisyaDesktop.View.Haisya.DriverSchedule"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HaisyaDesktop.View.Haisya"
+        mc:Ignorable="d"
+        WindowStyle="ThreeDBorderWindow"
+        Title="乗務員予定一覧" MinHeight="450" MinWidth="800">
+  
+  <Window.Resources>
+
+  </Window.Resources>
+
+
+  <Grid x:Name="MainGrid">
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition x:Name="Head" Height="50" />
+        <RowDefinition Height="*" />
+        <RowDefinition x:Name="Tail" Height="50" />
+      </Grid.RowDefinitions>
+
+      <Grid Grid.Row="0">
+        <Grid.Background>
+          <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="Black"/>
+            <GradientStop Color="LightGray" Offset="1"/>
+          </LinearGradientBrush>
+        </Grid.Background>
+
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition />
+          <ColumnDefinition />
+          <ColumnDefinition />
+          <ColumnDefinition />
+          <ColumnDefinition />
+          <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Button Name="btnMenu" Grid.Column="0" Content="メニュー" Style="{StaticResource MenuButtonCommonStyle}" Click="btnMenu_Click" />
+        <Button Name="btnMenu1" Grid.Column="1" Content="" Style="{StaticResource MenuButtonCommonStyle}" />
+        <Button Name="btnMenu2" Grid.Column="2" Content="" Style="{StaticResource MenuButtonCommonStyle}" />
+        <Button Name="btnMenu3" Grid.Column="3" Content="" Style="{StaticResource MenuButtonCommonStyle}" />
+        <Button Name="btnMenu4" Grid.Column="4" Content="" Style="{StaticResource MenuButtonCommonStyle}" />
+        <Button Name="btnMenu5" Grid.Column="5" Content="" Style="{StaticResource MenuButtonCommonStyle}" />
+      </Grid>
+
+      <Grid Grid.Row="2">
+        <Grid.Background>
+          <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="Black" Offset="1"/>
+            <GradientStop Color="LightGray" Offset="0"/>
+          </LinearGradientBrush>
+        </Grid.Background>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition />
+          <ColumnDefinition />
+          <ColumnDefinition />
+          <ColumnDefinition />
+          <ColumnDefinition />
+          <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <!--<Button x:Name="Abort" Grid.Column="3" Content="登録中止" Style="{StaticResource MenuButtonCommonStyle}"  />-->
+        <Button x:Name="TempReg" Grid.Column="1" Content="" Style="{StaticResource MenuButtonCommonStyle}"  />
+        <Button x:Name="Reg" Grid.Column="2" Content="" Style="{StaticResource MenuButtonCommonStyle}" />
+        <Button x:Name="SearchRoute" Grid.Column="0" Content="" Style="{StaticResource MenuButtonCommonStyle}"  />
+        <Button x:Name="MapLogOff" Grid.Column="5" Content="" Style="{StaticResource MenuButtonCommonStyle}" />
+        <Button x:Name="OptionMenuMin" Grid.Column="3" Content="" Style="{StaticResource MenuButtonCommonStyle}" ></Button>
+      </Grid>
+
+
+      <Grid Grid.Row="1">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="40"/>
+          <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="1">
+          <DataGrid Name="dgDriverList" ItemsSource="{Binding }" AutoGenerateColumns="False">
+            <DataGrid.RowStyle>
+              <Style TargetType="DataGridRow">
+                <Setter Property="Height" Value="100"/>
+              </Style>
+            </DataGrid.RowStyle>
+
+
+            <DataGrid.Columns>
+              <DataGridCheckBoxColumn Header="予定" />
+              <DataGridTemplateColumn>
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate>
+                    <Button Width="100" Content="📅" />
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+
+              <DataGridTemplateColumn Header="ナビ転送">
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate>
+                    <Button Width="100" >
+                      <Image Source="/IMG/wifi.png" />
+                    </Button>
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+
+              <DataGridTextColumn Header="従業員CD" Binding="{Binding aa}" />
+              <DataGridTextColumn Header="従業員名" Binding="{Binding aa}" />
+              <DataGridTextColumn Header="携帯電話" Binding="{Binding aa}" />
+
+              <DataGridTextColumn Header="乗務車種" Binding="{Binding aa}" />
+              <DataGridTextColumn Header="車番" Binding="{Binding aa}" />
+              <DataGridTextColumn Header="所属" Binding="{Binding aa}" />
+              <DataGridTextColumn Header="配車担当" Binding="{Binding aa}" />
+              <DataGridTextColumn Header="勤怠" Binding="{Binding aa}" />
+
+              <DataGridCheckBoxColumn Header="案件" />
+              <DataGridTemplateColumn>
+                <DataGridTemplateColumn.CellTemplate>
+                  <DataTemplate>
+                    <Button Width="100" Content="詳細" />
+                  </DataTemplate>
+                </DataGridTemplateColumn.CellTemplate>
+              </DataGridTemplateColumn>
+
+              <DataGridTextColumn Header="荷主" Binding="{Binding aa}" />
+              <DataGridTextColumn Header="発地" Binding="{Binding aa}" />
+              <DataGridTextColumn Header="積地" Binding="{Binding aa}" />
+              <DataGridTextColumn Header="着地" Binding="{Binding aa}" />
+              <DataGridTextColumn Header="品名" Binding="{Binding aa}" />
+              <DataGridTextColumn Header="到着日" Binding="{Binding aa}" />
+
+            </DataGrid.Columns>
+
+          </DataGrid>
+        </Grid>
+
+        <Grid Grid.Row="0">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
+
+          <TextBlock Text="2022年6月23日(木曜日)" VerticalAlignment="Center" FontSize="20" />
+
+          <StackPanel Orientation="Horizontal" Grid.Column="1" Margin="2" >
+            <TextBlock Text="表示グループ：" VerticalAlignment="Center" FontSize="18" />
+            <ComboBox VerticalAlignment="Center" FontSize="18" >
+              <ComboBoxItem Content="大型ウィング" IsSelected="True" />
+              <ComboBoxItem Content="〇〇営業所" />
+            </ComboBox>
+          </StackPanel>
+
+
+        </Grid>
+
+      </Grid>
+
+
+    </Grid>
+  </Grid>
+</Window>

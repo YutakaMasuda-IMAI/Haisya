@@ -1,0 +1,441 @@
+@model HaisyaWeb.Dto.SenzokuModel
+
+<div>
+  <div>集計値　　立替金は税込表示です。</div>
+  <div class="table-div" style="display:flex;">
+    <table class="list">
+      <tr>
+        <th class="senzoku-list" width="9%">請求運賃合計</th>
+        <th class="senzoku-list" width="9%">荷主負担立替金</th>
+        <th class="senzoku-list" width="9%">個人負担立替金</th>
+        <th class="senzoku-list" width="9%">会社負担立替金</th>
+        <th class="senzoku-list" width="9%" style="@((Model.CustomerUriageCalcData?.Warimashi1_Visible ?? false) == false ? "display:none;" : "")">
+          @(Model.CustomerUriageCalcData?.Warimashi1_Name ?? "割増1")
+        </th>
+        <th class="senzoku-list" width="9%" style="@((Model.CustomerUriageCalcData?.Warimashi2_Visible ?? false) == false ? "display:none;" : "")">
+          @(Model.CustomerUriageCalcData?.Warimashi2_Name ?? "割増2")
+        </th>
+        <th class="senzoku-list" width="9%" style="@((Model.CustomerUriageCalcData?.Warimashi3_Visible ?? false) == false ? "display:none;" : "")">
+          @(Model.CustomerUriageCalcData?.Warimashi3_Name ?? "割増3")
+        </th>
+        <th class="senzoku-list" width="9%" style="@((Model.CustomerUriageCalcData?.Warimashi4_Visible ?? false) == false ? "display:none;" : "")">
+          @(Model.CustomerUriageCalcData?.Warimashi4_Name ?? "割増4")
+        </th>
+        <th class="senzoku-list" width="9%" style="@((Model.CustomerUriageCalcData?.Warimashi5_Visible ?? false) == false ? "display:none;" : "")">
+          @(Model.CustomerUriageCalcData?.Warimashi1_Name ?? "割増5")
+        </th>
+        <th class="senzoku-list" width="9%">課税区分</th>
+        <th class="senzoku-list" width="10%">運賃合計</th>
+      </tr>
+      <tbody>
+        <tr>
+          <td align="right">@Model.TotalSeikyuUnchin.ToString("#,0")</td>
+          <td align="right">@Model.TotalTatekaekin.ToString("#,0")</td>
+          <td align="right">@Model.TotalKojinFutan.ToString("#,0")</td>
+          <td align="right">@Model.TotalFutanPrice.ToString("#,0")</td>
+          <td align="right" style="@((Model.CustomerUriageCalcData?.Warimashi1_Visible ?? false) == false ? "display:none;" : "")">@Model.TotalWarimashi1.ToString("#,0")</td>
+          <td align="right" style="@((Model.CustomerUriageCalcData?.Warimashi2_Visible ?? false) == false ? "display:none;" : "")">@Model.TotalWarimashi2.ToString("#,0")</td>
+          <td align="right" style="@((Model.CustomerUriageCalcData?.Warimashi3_Visible ?? false) == false ? "display:none;" : "")">@Model.TotalWarimashi3.ToString("#,0")</td>
+          <td align="right" style="@((Model.CustomerUriageCalcData?.Warimashi4_Visible ?? false) == false ? "display:none;" : "")">@Model.TotalWarimashi4.ToString("#,0")</td>
+          <td align="right" style="@((Model.CustomerUriageCalcData?.Warimashi5_Visible ?? false) == false ? "display:none;" : "")">@Model.TotalWarimashi5.ToString("#,0")</td>
+          <td align="center">
+            @if (@Model.TotalZeiKubun == 0)
+            {
+              <span>課税</span>
+            }
+            else
+            {
+              <span>非課税</span>
+            }
+          </td>
+          <td align="right">@Model.TotalSeikyuTotal.ToString("#,0")</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="category-title">請求運賃</div>
+  <div class="table-div">
+    <table class="no-line">
+      <tr>
+        <td style="width:120px;">
+          <button class="blue-button" style="margin-right:150px;" onClick="kakuteiRegistrationButton()">一括確定登録</button>
+        </td>
+        @if (Model.Senzoku.Calc_Kubun == 0)
+        {
+          <th style="width:50px;">月額</th>
+          <td style="width:200px;">
+            @Html.TextBoxFor(model => model.Senzoku.Monthly_Fee, "{0:N0}",
+               new
+               {
+                 @class = "form-control inputtable",
+                 @id = "monthlyFee",
+                 @style = "width:100px;text-align:right",
+                 @onblur = "kanmaChange(this);"
+               })
+          </td>
+        }
+        else
+        {
+          <th style="width:50px;">日額</th>
+          <td style="width:200px;">
+            @Html.TextBoxFor(model => model.Senzoku.Daily_Fee, "{0:N0}",
+               new
+               {
+                 @class = "form-control inputtable",
+                 @id = "dailyFee",
+                 @style = "width:100px;text-align:right",
+                 @onblur = "kanmaChange(this);"
+               })
+            }
+          </td>
+        }
+        <th style="width:80px;">稼働日数</th>
+        <td style="width:150px;">
+          <div style=" display: flex;">
+            @Html.TextBoxFor(model => model.OperationDateCount,
+              new
+              {
+                @class = "form-control inputtable",
+                @style = "width:60px;text-align:right",
+                @maxlength = "4",
+                @id = "operationDateCount"
+              })日
+          </div>
+        </td>
+        <th style="width:80px;">計算日額</th>
+        <td style="width:150px;">
+          @Html.TextBox("calculatedDailyFee", "{0:N0}", new
+            {
+              @class = "form-control",
+              @id = "calculatedDailyFee",
+                 @style = "width:100px;text-align:right",
+              @readonly = "readonly"
+            })
+        </td>
+        <td>
+          <button class="blue-button" onClick="RegistrationButton()">一括設定</button>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="4">※☑行の請求運賃に対して上記ボタンで一括設定します</td>
+        <td colspan="2">
+          <span class="uriage-id-background" style="padding: 3px;">背景色</span>　売上登録データ
+        </td>
+        <td colspan="2">
+          <span class="status-2-background" style="padding: 3px;">背景色</span>　売上確定データ
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div id="errorMessage" style="color: red; display: none; margin-bottom: 10px;"></div>
+
+  <div class="table-div">
+    <table class="seikyu-list list">
+      <thead>
+        <tr>
+          <th width="20px">@Html.CheckBox("checkbox", false, new { @class = "", id = "selectAllCheckbox" })</th>
+          <th width="30px">日</th>
+          <th width="30px">曜日</th>
+          <th width="40px">区分</th>
+          <th width="100px">乗務員</th>
+          <th>積み</th>
+          <th>卸し</th>
+          <th width="70px">請求運賃</th>
+          <th width="70px">荷主負担<br />立替金</th>
+          <th width="70px">個人負担<br />立替金</th>
+          <th width="70px">会社負担<br />立替金</th>
+          <th width="70px" style="width:100px; @((Model.CustomerUriageCalcData?.Warimashi1_Visible ?? false) == false ? "display:none;" : "")">
+            @(string.IsNullOrEmpty(Model.CustomerUriageCalcData?.Warimashi1_Name) 
+          ? "割増1" 
+          : Model.CustomerUriageCalcData?.Warimashi1_Name)
+          </th>
+          <th width="70px" style="width:100px; @((Model.CustomerUriageCalcData?.Warimashi2_Visible ?? false) == false ? "display:none;" : "")">
+            @(string.IsNullOrEmpty(Model.CustomerUriageCalcData?.Warimashi2_Name) 
+          ? "割増2" 
+          : Model.CustomerUriageCalcData?.Warimashi2_Name)
+          </th>
+          <th width="70px" style="width:100px; @((Model.CustomerUriageCalcData?.Warimashi3_Visible ?? false) == false ? "display:none;" : "")">
+            @(string.IsNullOrEmpty(Model.CustomerUriageCalcData?.Warimashi3_Name)
+              ? "割増3"
+              : Model.CustomerUriageCalcData?.Warimashi3_Name)
+          </th>
+          <th width="70px" style="width:100px; @((Model.CustomerUriageCalcData?.Warimashi4_Visible ?? false) == false ? "display:none;" : "")">
+            @(string.IsNullOrEmpty(Model.CustomerUriageCalcData?.Warimashi4_Name)
+              ? "割増4"
+              : Model.CustomerUriageCalcData?.Warimashi4_Name)
+          </th>
+          <th width="70px" style="width:100px; @((Model.CustomerUriageCalcData?.Warimashi5_Visible ?? false) == false ? "display:none;" : "")">
+            @(string.IsNullOrEmpty(Model.CustomerUriageCalcData?.Warimashi5_Name)
+              ? "割増5"
+              : Model.CustomerUriageCalcData?.Warimashi5_Name)
+          </th>
+          <th width="40px">課税<br />区分</th>
+          <th width="70px">請求運賃<br />合計</th>
+          <th width="70px">清算</th>
+          <th width="40px">選択</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (Model.SenzokuDataList != null)
+        {
+          @foreach (var item in Model.SenzokuDataList)
+          {
+            string rowClass = "";
+            if (item.Uriage != null)
+            {
+              if (item.Uriage.Reg_Status == 2)
+              {
+                rowClass = "status-2-background";
+              }
+              else if (item.Uriage.Uriage_ID > 0)
+              {
+                rowClass = "uriage-id-background";
+              }
+            }
+            <tr class="@rowClass">
+              <td align="center">
+                @Html.CheckBox("checkbox", false, new { @class = "rowCheckbox" })
+                @Html.Hidden("uriageId", item.Uriage?.Uriage_ID ?? 0, new { @class = "uriageIdHidden" })
+                @Html.Hidden("haisyaDate", item.Uriage?.Haisya_Date ?? null, new { @class = "haisyaDateHidden" })
+                @Html.Hidden("nippouId", item.Uriage?.Nippou_ID ?? 0, new { @class = "nippouIdHidden" })
+                @Html.Hidden("uriageUnchinId", item.UriageUnchin?.Uriage_Unchin_ID ?? 0, new { @class = "uriageUnchinIdHidden" })
+                @Html.Hidden("luggage", item.AnkenData?.Luggage ?? "", new { @class = "luggageHidden" })
+                @Html.Hidden("ankenId", item.AnkenData?.Anken_ID ?? 0, new { @class = "ankenIdHidden" })
+                @Html.Hidden("haisyaDate", item.Haisya_Date, new { @class = "haisyaDateHidden" })
+                @Html.Hidden("nippouId2", item.Nippou_ID, new { @class = "nippouIdHidden2" })
+              </td>
+              <td align="center">
+                @{
+                  if (item.Uriage?.Uriage_ID > 0)
+                    @(item.Uriage?.Haisya_Date.Day.ToString() ?? "")
+                }
+              </td>
+              <td align="center">
+                @{
+                  if (item.Uriage?.Uriage_ID > 0)
+                  {
+                    string[] weekdays = { "日", "月", "火", "水", "木", "金", "土" };
+                    int year = Model.SeikyuDate.Year;
+                    int month = Model.SeikyuDate.Month;
+                    int day = item.Uriage.Haisya_Date.Day;
+                    int maxDay = DateTime.DaysInMonth(year, month);
+                    int correctedDay = Math.Min(day, maxDay);
+                    var seikyuDate = new DateTime(year, month, correctedDay);
+                    var dayOfWeek = (int)seikyuDate.DayOfWeek;
+                    @(dayOfWeek >= 0 && dayOfWeek < 7 ? weekdays[dayOfWeek] : "")
+                  }
+                }
+              </td>
+              <td align="center">
+                @{
+                  if (item.Uriage?.Uriage_ID > 0){
+                    @((item.Kubun != null && item.Kubun != 2) ? "自" : (item.Kubun != null && item.Kubun == 2) ? "傭" : "")
+                  }
+                }
+              </td>
+              <td>@(item.DriverName ?? "")</td>
+              <td>@(item.AnkenData?.StartAddressDisplay3 ?? "")</td>
+              <td>@(item.AnkenData?.EndAddressDisplay3 ?? "")</td>
+              <td align="right">@(item.UriageUnchin?.SeikyuUnchin.ToString("#,0") ?? "0")</td>
+              <td align="right">@(item.UriageUnchin?.Tatekaekin.ToString("#,0") ?? "0")</td>
+              <td align="right">@(item.UriageUnsyu?.KojinFutan.ToString("#,0") ?? "0")</td>
+              <td align="right">@(item.UriageFutan?.FutanPrice.ToString("#,0") ?? "0")</td>
+              <td align="right" style="width:100px; @((Model.CustomerUriageCalcData?.Warimashi1_Visible ?? false) == false ? "display:none;" : "")">@(item.UriageUnchin?.Warimashi1.ToString("#,0") ?? "0")</td>
+              <td align="right" style="width:100px; @((Model.CustomerUriageCalcData?.Warimashi2_Visible ?? false) == false ? "display:none;" : "")">@(item.UriageUnchin?.Warimashi2.ToString("#,0") ?? "0")</td>
+              <td align="right" style="width:100px; @((Model.CustomerUriageCalcData?.Warimashi3_Visible ?? false) == false ? "display:none;" : "")">@(item.UriageUnchin?.Warimashi3.ToString("#,0") ?? "0")</td>
+              <td align="right" style="width:100px; @((Model.CustomerUriageCalcData?.Warimashi4_Visible ?? false) == false ? "display:none;" : "")">@(item.UriageUnchin?.Warimashi4.ToString("#,0") ?? "0")</td>
+              <td align="right" style="width:100px; @((Model.CustomerUriageCalcData?.Warimashi5_Visible ?? false) == false ? "display:none;" : "")">@(item.UriageUnchin?.Warimashi5.ToString("#,0") ?? "0")</td>
+              <td align="center">
+                @if (item.UriageUnchin?.Zei_Kubun == 0)
+                {
+                  <span>課税</span>
+                }
+                else if (item.UriageUnchin?.Zei_Kubun != null)
+                {
+                  <span>非課税</span>
+                }
+                else
+                {
+                  <span></span>
+                }
+              </td>
+              <td align="right">@(item.UriageUnchin?.SeikyuTotal.ToString("#,0") ?? "0")</td>
+              <td align="right">@(item.UriageUnsyu?.Seisan.ToString("#,0") ?? "0")</td>
+              <td align="center"><button class="blue-button" onclick="sendInputIndexForm(@item.AnkenData?.Anken_ID, @item.Uriage?.Reg_Kubun)">選択</button></td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="category-title">個人運収集計</div>
+  <div class="table-div">
+    <table class="list">
+      <thead>
+        <tr>
+          <th class="senzoku-list" width="100px">乗務員CD</th>
+          <th class="senzoku-list" width="80px">車番</th>
+          <th class="senzoku-list">乗務員名</th>
+          <th class="senzoku-list" width="80px">区分</th>
+          <th class="senzoku-list" width="120px">稼働日数</th>
+          <th class="senzoku-list" width="120px">清算計（税込）</th>
+          <th class="senzoku-list" width="140px">個人負担計（税込）</th>
+          <th class="senzoku-list" width="140px">個人運収計</th>
+          <th class="senzoku-list" width="140px">ルート手当計</th>
+          <th class="senzoku-list" width="140px">（ルート残業計）</th>
+          <th class="senzoku-list" width="140px">（ルート深夜計）</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (Model.TotalUriageUnsyuList != null)
+        {
+          @foreach (var item in Model.TotalUriageUnsyuList)
+          {
+            <tr>
+              <td align="center">@item.Employee_Number</td>
+              <td align="center">@item.Syaban_Number</td>
+              <td>@item.Display_Name</td>
+              <td align="center">@item.Unsyu_Kubun</td>
+              <td align="right">@item.Total_Date_Count</td>
+              <td align="right">@item.Seisan.ToString("#,0")</td>
+              <td align="right">@item.KojinFutan.ToString("#,0")</td>
+              <td align="right">@item.KojinUnsyu.ToString("#,0")</td>
+              <td align="right">@item.Route_Teate.ToString("#,0")</td>
+              <td align="right">@item.Route_OverTime.ToString("#,0")</td>
+              <td align="right">@item.Route_Midnight.ToString("#,0")</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="category-title">下払計</div>
+  <div class="table-div">
+    <table class="list" style="width:860px;">
+      <thead>
+        <tr>
+          <th class="senzoku-list" width="100px">支払先CD</th>
+          <th class="senzoku-list" width="300px">支払先名</th>
+          <th class="senzoku-list" width="100px">下払金額計</th>
+          <th class="senzoku-list" width="100px">割増計</th>
+          <th class="senzoku-list" width="100px">立替計</th>
+          <th class="senzoku-list" width="60px">税区分</th>
+          <th class="senzoku-list" width="100px">下払合計</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (Model.TotalUriageShitabaraiList != null)
+        {
+          @foreach (var item in Model.TotalUriageShitabaraiList)
+          {
+            <tr>
+              <td align="center">@item.Yosya_Code</td>
+              <td>@item.Yosya_Name_Abbr</td>
+              <td align="right">@item.ShiharaiPrice.ToString("#,0")</td>
+              <td align="right">@item.WarimashiPrice.ToString("#,0")</td>
+              <td align="right">@item.Tatekaekin.ToString("#,0")</td>
+              <td align="center">
+                @if (item.Zei_Kubun == 0)
+                {
+                  <span>課税</span>
+                }
+                else
+                {
+                  <span>非課税</span>
+                }
+              </td>
+              <td align="right">@item.Shitabarai_Total.ToString("#,0")</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+
+
+  <div class="category-title">会社負担計</div>
+  <div class="table-div">
+    <table class="list" style="width:300px;">
+      <thead>
+        <tr>
+          <th class="senzoku-list" width="200px">区分</th>
+          <th class="senzoku-list" width="100px">負担額計</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (Model.TotalUriageFutanList != null)
+        {
+          @foreach (var item in Model.TotalUriageFutanList)
+          {
+            var burdenName = Model.BurdenList.FirstOrDefault(b => b.Burden_ID == item.futan_Kubun)?.Burden_Name
+            ?? "不明";
+            <tr>
+              <td>@burdenName</td>
+              <td align="right">@item.FutanPrice.ToString("#,0")</td>
+            </tr>
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function() {
+    function calculateDailyFee() {
+      var calcKubun = @Model.Senzoku.Calc_Kubun;
+      var fee = calcKubun == 0 ? parseFloat(kanmaChangeRevert($('#monthlyFee').val())) : parseFloat(kanmaChangeRevert($('#dailyFee').val()));
+      var operationDays = parseInt($('#operationDateCount').val());
+      if (!isNaN(fee) && !isNaN(operationDays) && operationDays !== 0) {
+        var calculatedFee = calcKubun == 0 ? fee / operationDays : fee;
+        $('#calculatedDailyFee').val(kanmaChange2(Math.floor(calculatedFee)));
+      } else {
+        $('#calculatedDailyFee').val('0');
+      }
+    }
+
+    // 計算日額の計算
+    $('#monthlyFee, #dailyFee, #operationDateCount').on('input', calculateDailyFee);
+    calculateDailyFee();
+  });
+
+  // 全選択チェックボックスの処理
+  $('#selectAllCheckbox').change(function () {
+    $('.rowCheckbox').prop('checked', this.checked);
+    validateCheckboxes();
+  });
+
+  // 各行のチェックボックスの処理
+  $('.rowCheckbox').change(function () {
+    validateCheckboxes();
+  });
+
+  function validateCheckboxes() {
+    var errorFound = false;
+    $('.rowCheckbox:checked').each(function () {
+      var $row = $(this).closest('tr');
+      var isWhiteBackground = !$row.hasClass('uriage-id-background') && !$row.hasClass('status-2-background');
+      var uriageId = $row.find('.uriageIdHidden').val();
+
+      if (isWhiteBackground || uriageId === '0' || uriageId === '') {
+        errorFound = true;
+        return false; // eachループを抜ける
+      }
+    });
+
+    if (errorFound) {
+      $('#errorMessage').text('選択行の背景が白色は売上データの登録がないため、一括確定対象外です。').show();
+    } else {
+      $('#errorMessage').hide();
+    }
+
+    // 全選択チェックボックスの状態を更新
+    var allChecked = $('.rowCheckbox').length === $('.rowCheckbox:checked').length;
+    $('#selectAllCheckbox').prop('checked', allChecked);
+  }
+
+</script>

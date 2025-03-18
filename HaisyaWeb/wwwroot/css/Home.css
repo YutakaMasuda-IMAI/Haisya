@@ -1,0 +1,205 @@
+﻿
+
+body {
+}
+
+
+/* トップページ用 */
+.topLeft {
+    float: left;
+    width: 1050px;
+    display:inline-block;
+}
+
+.topRight {
+    float: left;
+    width: 600px;
+    display: inline-block;
+}
+
+.UnderLeft {
+    float: left;
+    width: 350px;
+    display: inline-block;
+}
+
+.UnderRight {
+    float: left;
+    width: 700px;
+    display: inline-block;
+}
+
+
+
+#page-top {
+    position: fixed;
+    bottom: 60px;
+    right: 15px;
+    font-size: 77%;
+}
+
+    #page-top a {
+        background: #fff;
+        text-decoration: none;
+        color: #565555;
+        width: 35px;
+        height: 35px;
+        font-size: 30px;
+        text-align: center;
+        display: block;
+    }
+
+
+#HomeMain h5 {
+    background-color: gainsboro;
+    color: #5B5B5B;
+    padding: 5px 10px;
+    margin: 10px 0;
+    font-weight: bold;
+}
+
+#HomeMain div {
+    display: block;
+    unicode-bidi: isolate;
+}
+
+
+#HomeMain table {
+    font-size: /*13px*/ 1em;
+    line-height: 1.5;
+    border-width: 0px;
+    border-style: none;
+    width: 100%;
+}
+
+
+.information-from-admin {
+    background: #fff;
+    margin: 10px 0;
+}
+
+    .information-from-admin .information_toggle {
+        border-bottom: 1px dotted #cccccc;
+    }
+
+    .information-from-admin p.block {
+        color: #000;
+        padding-left: 10px;
+        margin: 5px 0;
+        display: inline-block;
+        max-width: 450px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+    }
+
+    .information-from-admin p.date {
+        float: right;
+        display: block;
+        font-size: 11px;
+        padding: 8px;
+        overflow: hidden;
+    }
+
+    .information-from-admin .next {
+        padding: 10px;
+    }
+
+        .information-from-admin .next span {
+            font-size: 90%;
+        }
+
+    .information-from-admin table td {
+        padding: 10px;
+        padding-left: 20px;
+        text-align: left;
+        font-size: small;
+    }
+
+    .information-from-admin .information_toggle {
+        background-color: whitesmoke;
+        margin: 3px 0;
+    }
+
+        .information-from-admin .information_toggle .label {
+            min-width: 60px;
+            display: inline-block;
+            vertical-align: top;
+            text-align: center;
+            font-size: 12px;
+            padding: 1px 5px;
+            margin-right: 5px;
+            background-color: #b33e3e;
+            color: white;
+        }
+
+            .information-from-admin .information_toggle .label.type1 {
+                background-color: #666;
+            }
+
+            .information-from-admin .information_toggle .label.type2 {
+                background-color: #457cce;
+            }
+
+            .information-from-admin .information_toggle .label.type3 {
+                background-color: #b33e3e;
+            }
+
+        .information-from-admin .information_toggle.private {
+            background-color: #a9a9a9;
+        }
+
+
+
+information-from-system {
+
+}
+
+
+
+
+ table.calendar {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+    table.calendar th.calendar, td.calendar {
+        width: 14.28%; /* 7つの列の幅を均等に設定 */
+        padding: 10px;
+        text-align: center;
+        border: 1px solid #ddd;
+    }
+
+    table.calendar th.calendar {
+        background-color: #f2f2f2;
+    }
+
+    table.calendar td.calendar:hover {
+        background-color: #f0f0f0;
+        cursor: pointer;
+    }
+
+
+.button-container-calendar button {
+    cursor: pointer;
+    display: inline-block;
+    zoom: 1;
+    background: #00a2b7;
+    color: #fff;
+    border: 1px solid #0aa2b5;
+    border-radius: 4px;
+    padding: 5px 10px;
+}
+
+#monthAndYear {
+    text-align: center;
+    margin-top: 0;
+}
+
+#CalenderInfo h4 {
+    /*margin-top: 1px;*/
+    padding: 18px 10px;
+    color: #138a72;
+/*    border-top: solid 1px #cccccc;*/
+    border-bottom: solid 1px #cccccc;
+}

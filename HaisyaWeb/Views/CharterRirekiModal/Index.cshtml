@@ -1,0 +1,170 @@
+﻿@model HaisyaWeb.Models.HaisyaModel.DataListModel
+
+
+@{
+  Layout = "_ModalLayout";
+}
+<link href="~/css/Haisya.css" rel="stylesheet" />
+
+<style>
+</style>
+
+@*<div id="hiddenItem" hidden>
+    @Html.HiddenFor(model => Model.Search.SelectTab)
+    @Html.HiddenFor(model => Model.Search.SelectGroup)
+    @Html.HiddenFor(model => Model.Search.SelectFilter)
+    @Html.HiddenFor(model => Model.Search.SelectDay)
+    @Html.HiddenFor(model => Model.Search.SelectSyoriKubun)
+    @Html.HiddenFor(model => Model.Search.BackMenuAction)
+  </div>*@
+
+<div role="dialog" aria-hidden="true" tabindex="-1" class="modal fade" style="z-index: 1240;" data-backdrop="static">
+  <div class="modal-dialog" role="document" style="max-width:800px">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-3" id="exampleModalLabel">個別傭車案件履歴</h1>
+        <button type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
+      </div>
+      <div class="model-body">
+        <form id="form1" class="month-calendar">
+          <table class="table jbc-table table-hedder" style="padding: 0; border-collapse: collapse; ">
+            <tbody>
+              <tr>
+                <th width="300px" colspan="2">
+                  <div class="appeal-box box" style="vertical-align: middle; display: inline-block; padding: 0;">
+                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeDayModal(-1)" onselectstart="return false;" alt="<<" tooltip="前日">＜＜</span>
+                    <input id="TargetDayLavelModal" class="calender calenderModal" type="text" readonly style="width: 130px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
+                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeDayModal(1)" onselectstart="return false;" alt=">>" tooltip="翌日">＞＞</span>
+                  </div>
+                </th>
+                <td width="30%" colspan="2">
+                  今井　太郎
+                </td>
+                <th width="80px">傭車先</th>
+                <td width="30%">〇〇運送</td>
+              </tr>
+              <tr>
+                <th>車番</th>
+                <td>9999</td>
+                <th>車種</th>
+                <td>15t平</td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="">
+            <table class="table ex_DataList table-secondary" width="100%" style="" border="1">
+              <thead>
+                <tr>
+                  <th width="100px">日付</th>
+                  <th width="200px">荷主</th>
+                  <th width="200px">積地</th>
+                  <th width="200px">卸地</th>
+                  <th width="70px">売上</th>
+                  <th width="70px">下払</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2023/10/01</td>
+                  <td>セオ運輸</td>
+                  <td>広島県広島市</td>
+                  <td>兵庫県尼崎市</td>
+                  <td>99,999</td>
+                  <td>99,999</td>
+                </tr>
+                <tr>
+                  <td>2023/03/01</td>
+                  <td>セオ運輸</td>
+                  <td>広島県広島市</td>
+                  <td>兵庫県尼崎市</td>
+                  <td>99,999</td>
+                  <td>99,999</td>
+                </tr>
+                <tr>
+                  <td>2022/12/01</td>
+                  <td>セオ運輸</td>
+                  <td>広島県広島市</td>
+                  <td>兵庫県尼崎市</td>
+                  <td>99,999</td>
+                  <td>99,999</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </form>
+      </div>
+      @*<div style="vertical-align: middle; display: inline-block; " class="modal-footer">
+        <table width="100%">
+            <tr style="border: none; border: none; padding: 0; margin: 0;">
+              <td width="50%" align="center" style="border: none;padding:0;margin:0;">
+              </td>
+              <td width="50%" align="center" style="border: none;padding:0;margin:0;">
+                <button id="btnModelCancel" class="btn btn-secondary" data-dismiss="modal" onclick="closeModel(); return false;">Close</button>
+              </td>
+            </tr>
+          </table>
+        </div>*@
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+<script>
+
+
+  $(function () {
+
+    setTimeout(function () {
+      $('.modal-backdrop')
+        .not('.modal-stack')
+        .css('z-index', 1239)
+        .addClass('modal-stack');
+    }, 0);
+
+    var disp = new Date($("#Search_SelectDay").val());
+
+    /** 日付を文字列にフォーマットする */
+    var formatted = `${disp.getFullYear()}\年${(disp.getMonth() + 1).toString().padStart(2, '0')}\月`.replace(/\n|\r/g, '');
+    $("input#TargetDayLavelModal").val(formatted);
+
+
+    //$(".calenderModal").datepicker({
+    //  buttonImage: "../img/calender.png",        // カレンダーアイコン画像
+    //  buttonText: "カレンダーから選択", // ツールチップ表示文言
+    //  buttonImageOnly: true,           // 画像として表示
+    //  showOn: "both",                   // カレンダー呼び出し元の定義
+    //  dateFormat: "yy\年mm\月",
+    //});
+
+
+  });
+
+  function selectedChangeDayModal(move) {
+    var dt = new Date($('#Search_SelectDay').val());
+    dt.setMonth(dt.getMonth() + move);
+    $("#Search_SelectDay").val(formatDateModal(dt));
+
+    /** 日付を文字列にフォーマットする */
+    var formatted = `${dt.getFullYear()}\年${(dt.getMonth() + 1).toString().padStart(2, '0')}\月`.replace(/\n|\r/g, '');
+    $("input#TargetDayLavelModal").val(formatted);
+    dataListDisplay();
+  };
+
+  function formatDateModal(date) {
+    var yyyy = date.getFullYear();
+    var mm = ('00' + (date.getMonth() + 1)).slice(-2);
+    var dd = ('00' + date.getDate()).slice(-2);
+    const ymd = String(yyyy) + '/' + String(mm) + '/' + String(dd);
+    return ymd;
+  };
+
+
+</script>

@@ -1,0 +1,276 @@
+﻿@model SettingModel.DefaultMoneyModalDto
+
+@{
+    Layout = "_LayoutForSettingModal";
+}
+
+  <style>
+  /*  .float-left {
+      float: left;
+      padding: 0.5em 1em;
+      margin: 2em 0;
+      background: #f0f7ff;
+      border: dashed 2px #5b8bd0;
+    }
+
+    .float-right {
+      float: right;
+      padding: 0.5em 1em;
+      margin: 2em 0;
+      background: #f0f7ff;
+      border: dashed 2px #5b8bd0;
+    }*/
+
+    .readonly {
+      background-color: lightgray;
+    }
+
+  </style>
+
+
+    <div role="dialog" aria-hidden="true" tabindex="-1" class="modal fade" style="z-index: 1240;" data-backdrop="static">
+      <div class="modal-dialog" role="document" style="max-width:850px;">
+        <div class="modal-content">
+          <div class="modal-header" style="background-color: gainsboro;">
+            <h1 class="modal-title fs-3" id="exampleModalLabel">@(Model.Title)</h1>
+            @if (Model.EditEnabled)
+            {
+              <button type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
+              <button type="button" class="btn btn-success" onclick="insertRow(); return false;">行追加</button>
+            }
+            <button type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
+          </div>
+          <div class="model-body">
+            <form id="form1">
+              <div id="hidden" hidden>
+                @Html.HiddenFor(model => Model.BtnCaption)
+                @Html.HiddenFor(model => Model.Title)
+                @Html.HiddenFor(model => Model.CompanyID)
+                @Html.HiddenFor(model => Model.Area)
+                @Html.HiddenFor(model => Model.M_SyaryoSize.SIZE)
+              </div>
+              <div class="contents-wrap-middle" style="margin: 10px;">
+                <h4 class="">注意</h4>
+                <span>
+                  ・上の行から昇順に距離（FROM～TO)を入力してください。
+                </span>
+              </div>
+              <table id="table1" class="table ex_tableSyaryoCost" border="1" style="border: double; ">
+                <thead>
+                  <tr align="center" style="background-color:aquamarine;">
+                    <th>エリア</th>
+                    <th>車種サイズ</th>
+                    <th>距離<br />(From)</th>
+                    <th>距離<br />(To)</th>
+                    <th>距離間</th>
+                    <th>金額</th>
+                    <th>加算額</th>
+                    <th>行削除</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @{
+                    var M_DefaultMoneyList = Model.M_DefaultMoneyList.OrderBy(m => m.From_Distance).ToList();
+                    for (int i = 0; i < M_DefaultMoneyList.Count; i++)
+                    {
+                      <tr>
+                        <td align="center" width="150px">@Html.TextBoxFor(model => M_DefaultMoneyList[i].Area, null, new { @readonly = "readonly", @class = "form-control text-center", @style = "", @onblur = "" })</td>
+                        <td align="center" width="150px">@Html.TextBoxFor(model => M_DefaultMoneyList[i].SyasyuSize, null, new { @readonly = "readonly", @class = "form-control text-center", @style = "", @onblur = "" })</td>
+                        <td align="center" width="150px">@Html.TextBoxFor(model => M_DefaultMoneyList[i].From_Distance, "{0}", new { @class = "form-control text-end", @style = "", @onblur = "" })</td>
+                        <td align="center" width="150px">@Html.TextBoxFor(model => M_DefaultMoneyList[i].To_Distance, "{0}", new { @class = "form-control text-end", @style = "", @onblur = "" })</td>
+                        <td align="center" width="100px">@Html.TextBoxFor(model => M_DefaultMoneyList[i].Interval, "{0:N0}", new { @class = "form-control text-end", @style = "", @onblur = "" })</td>
+                        <td align="center" width="150px">@Html.TextBoxFor(model => M_DefaultMoneyList[i].Amount, "{0:N0}", new { @class = "form-control text-end", @style = "", @onblur = "kanmaChange(this);" })</td>
+                        <td align="center" width="150px">@Html.TextBoxFor(model => M_DefaultMoneyList[i].AdditionAmount, "{0:N0}", new { @class = "form-control text-end", @style = "", @onblur = "kanmaChange(this);" })</td>
+                        <td style="vertical-align: middle;"><input type="button" value="行削除" onclick="deleteRow(this)" /></td>
+                      </tr>
+                    }
+
+                  }
+                </tbody>
+              </table>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+
+
+  <script>
+
+    $(function () {
+
+      setTimeout(function () {
+        $('.modal-backdrop')
+          .not('.modal-stack')
+          .css('z-index', 1239)
+          .addClass('modal-stack');
+      }, 0);
+
+    });
+
+    function regExec() {
+
+      if (varidationCheck()) {
+        return false;
+      }
+
+      //Formの参照を取る
+      var $form = $('#form1');
+
+      //alert($form.sarealize());
+
+      $.ajax({
+            url: '@Url.RouteUrl("Default", new { controller = "Setting", Action = "DefaultMoneyRegExec" })',
+            type: 'post',
+            data: $form.sarealize(),
+          }).done(function (response) {
+              if (response.errorMessage != null && response.errorMessage !== '') {
+                alertError(`【エラー】${response.errorMessage}`);
+                return false;
+            } else {
+              closeModelAndRefresh();
+              return false;
+            }
+          }).fail(function (xhr) {
+            alert('【ネットワークエラー】:' + xhr);
+              console.log(xhr);
+              return false;
+          }).always(function (xhr, msg) {
+              console.log(xhr, msg);
+          });
+
+
+
+
+    }
+
+    function varidationCheck() {
+
+      // table要素を取得
+      var tableElem = document.getElementById('table1');
+
+      // 行（tr要素）を取得
+      var rowElems = tableElem.rows;
+
+      var toBefore = 0;
+
+      // 取得した行（tr要素）を繰り返しHTMLを取得
+      var htmlStr = '';
+      for (i = 1, len = rowElems.length; i < len; i++) {
+
+        var area = $('#M_DefaultMoneyList_' + (i - 1) + '__Area').val();
+        var syasyuSize = $('#M_DefaultMoneyList_' + (i - 1) + '__SyasyuSize').val();
+        var from = $('#M_DefaultMoneyList_' + (i - 1) + '__From_Distance').val().replace(',', '');
+        var to = $('#M_DefaultMoneyList_' + (i - 1) + '__To_Distance').val().replace(',', '');
+        var interval = $('#M_DefaultMoneyList_' + (i - 1) + '__Interval').val().replace(',', '');
+        var amount = $('#M_DefaultMoneyList_' + (i - 1) + '__Amount').val().replace(',','');
+        var additionAmount = $('#M_DefaultMoneyList_' + (i - 1) + '__AdditionAmount').val().replace(',', '');
+
+        if (area != null && syasyuSize != null) {
+          $('#M_DefaultMoneyList_' + (i - 1) + '__Syasyu').css('background-color', 'white');
+        } else {
+          alert("入力データにエラーが発生しました。接続が切れている可能性があります。再度ログインして登録し直してください。");
+          $('#M_DefaultMoneyList_' + (i - 1) + '__Syasyu').css('background-color', 'lightcoral');
+          return true;
+        }
+
+        if (!(from != null && from > 0)) {
+          alert("距離(From)は必須です。");
+          $('#M_DefaultMoneyList_' + (i - 1) + '__From_Distance').css('background-color', 'lightcoral');
+          return true;
+        } else {
+          $('#M_DefaultMoneyList_' + (i - 1) + '__From_Distance').css('background-color', 'white');
+        }
+
+        if (!(to != null && to > 0)) {
+          alert("距離(To)は必須です。");
+          $('#M_DefaultMoneyList_' + (i - 1) + '__To_Distance').css('background-color', 'lightcoral');
+          return true;
+        } else {
+          $('#M_DefaultMoneyList_' + (i - 1) + '__To_Distance').css('background-color', 'white');
+        }
+
+        if (!(Number(from) == (Number(toBefore) + 1))) {
+          alert("距離from~toの整合性にエラーが発生しています。距離の昇順に正しく登録してください。※ここでは[from]値に[" + (Number(toBefore) + 1) + "]を入力してください。");
+          $('#M_DefaultMoneyList_' + (i - 1) + '__From_Distance').css('background-color', 'lightcoral');
+          return true;
+        } else {
+          $('#M_DefaultMoneyList_' + (i - 1) + '__From_Distance').css('background-color', 'white');
+        }
+
+        if (!(interval != null && interval > 0)) {
+          alert("距離間は必須です。");
+          $('#M_DefaultMoneyList_' + (i - 1) + '__Interval').css('background-color', 'lightcoral');
+          return true;
+        } else {
+          $('#M_DefaultMoneyList_' + (i - 1) + '__Interval').css('background-color', 'white');
+        }
+
+        if (!(amount != null && amount > 0)) {
+          alert("金額は必須です。");
+          $('#M_DefaultMoneyList_' + (i - 1) + '__Amount').css('background-color', 'lightcoral');
+          return true;
+        } else {
+          $('#M_DefaultMoneyList_' + (i - 1) + '__Amount').css('background-color', 'white');
+        }
+
+        if (!(additionAmount != null && additionAmount > 0) && interval > 1) {
+          alert("距離間が1より大きい場合は加算額は必須です。");
+          $('#M_DefaultMoneyList_' + (i - 1) + '__AdditionAmount').css('background-color', 'lightcoral');
+          return true;
+        } else {
+          $('#M_DefaultMoneyList_' + (i - 1) + '__AdditionAmount').css('background-color', 'white');
+        }
+
+
+        toBefore = to;
+      };
+
+      return false;
+
+    };
+
+    function insertRow() {
+
+      // テーブル取得
+      var table = document.getElementById("table1");
+      // 行を行末に追加
+      var row = table.insertRow(-1);
+      // セルの挿入
+      var cell1 = row.insertCell(-1);
+      var cell2 = row.insertCell(-1);
+      var cell4 = row.insertCell(-1);
+      var cell5 = row.insertCell(-1);
+      var cell6 = row.insertCell(-1);
+      var cell7 = row.insertCell(-1);
+      var cell8 = row.insertCell(-1);
+      var cell9 = row.insertCell(-1);
+
+      // 行数取得
+      var row_len = table.rows.length - 2;
+
+      //// 列非表示
+      //cell1.hidden = true;
+
+      // セルの内容入力
+      cell1.innerHTML = '<input class="form-control text-center" data-val="true" data-val-required="The area field is required." id="M_DefaultMoneyList_' + row_len + '__area" name="M_DefaultMoneyList[' + row_len + '].area" onblur="" readonly="readonly" style="" type="text" value="' + $('#area').val() + '">';
+      cell2.innerHTML = '<input class="form-control text-center" data-val="true" data-val-length="The field SyasyuSize must be a string with a maximum length of 50." data-val-length-max="50" id="M_DefaultMoneyList_' + row_len + '__SyasyuSize" maxlength="50" name="M_DefaultMoneyList[' + row_len + '].SyasyuSize" onblur="" readonly="readonly" style="" type="text" value="' + $('#M_SyaryoSize_SIZE').val() + '">';
+      cell4.innerHTML = '<input class="form-control text-end" data-val="true" data-val-required="The From_Distance field is required." id="M_DefaultMoneyList_' + row_len + '__From_Distance" name="M_DefaultMoneyList[' + row_len + '].From_Distance" onblur="" style="" type="text">';
+      cell5.innerHTML = '<input class="form-control text-end" data-val="true" data-val-required="The To_Distance field is required." id="M_DefaultMoneyList_' + row_len + '__To_Distance" name="M_DefaultMoneyList[' + row_len + '].To_Distance" onblur="" style="" type="text"">';
+      cell6.innerHTML = '<input class="form-control text-end" data-val="true" data-val-required="The Interval field is required." id="M_DefaultMoneyList_' + row_len + '__Interval" name="M_DefaultMoneyList[' + row_len + '].Interval" onblur="" style="" type="text" value="1">';
+      cell7.innerHTML = '<input class="form-control text-end" data-val="true" data-val-number="The field Amount must be a number." id="M_DefaultMoneyList_' + row_len + '__Amount" name="M_DefaultMoneyList[' + row_len + '].Amount" onblur="kanmaChange(this);" style="" type="text" value="0">';
+      cell8.innerHTML = '<input class="form-control text-end" data-val="true" data-val-number="The field AdditionAmount must be a number." id="M_DefaultMoneyList_' + row_len + '__AdditionAmount" name="M_DefaultMoneyList[' + row_len + '].AdditionAmount" onblur="kanmaChange(this);" style="" type="text" value="0">';
+      cell9.innerHTML = '<input type="button" value="行削除" onclick="deleteRow(this)">';
+    };
+
+    /**
+     * 行削除
+     */
+    function deleteRow(obj) {
+      // 削除ボタンを押下された行を取得
+      tr = obj.parentNode.parentNode;
+      // trのインデックスを取得して行を削除する
+      tr.parentNode.deleteRow(tr.sectionRowIndex);
+    };
+  </script>

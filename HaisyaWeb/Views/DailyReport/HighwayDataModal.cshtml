@@ -1,0 +1,120 @@
+@model DailyReportModel.T_Nippou_Toll
+
+<head>
+<link href="~/css/Haisya.css" rel="stylesheet" />
+<style>
+  .modal-dialog {
+    max-width: 1000px; /* モーダルウィンドウの最大幅を設定 */
+  }
+
+  .modal-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 中央揃え */
+    text-align: center;
+  }
+
+  .highway-form .form-group input {
+      flex: 1;
+  }
+
+  .form-table {
+    margin-top: 10px;
+    width: 980px;
+    border-collapse: collapse;
+  }
+  .form-table tr {
+    height: 40px;
+  }
+  .form-table th {
+    text-align:left;
+    font-size:14px;
+    width: 80px;
+  }
+  .form-table td {
+    text-align: left;
+    font-size: 14px;
+  }
+  .form-table td .date-control {
+    width: 160px;
+    font-size: 14px;
+
+  }
+  .form-table td input {
+    margin:5px;
+    width: 90%;
+  }
+  .form-table td button {
+  }
+</style>
+</head>
+<div role="dialog" aria-hidden="true" tabindex="-1" class="modal fade">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-3" id="exampleModalLabel">高速情報追加</h1>
+      </div>
+
+      <input type="hidden" id="recordIndex" value="@Model.Index">
+      <div style="text-align:center;padding:10px;">
+        <table class="form-table"">
+          <tr>
+            <th style="color:#ff0000;">開始日時</th>
+            <td>@Html.TextBoxFor(model => model.FormattedStartDate, new { @class = "form-control text-box single-line date-control", @id = "startDatetime", type = "datetime-local" })</td>
+            <th style="color:#ff0000;">終了日時</th>
+            <td>@Html.TextBoxFor(model => model.FormattedEndDate, new { @class = "form-control text-box single-line date-control", @id = "endDatetime", type = "datetime-local" })</td>
+          </tr>
+          <tr>
+            <th>開始道路名</th>
+            <td><input type="text" id="startRoadName" name="startRoadName" class="form-control" value="@Model.開始道路名"></td>
+            <th style="color:#ff0000;">開始IC名</th>
+            <td><input type="text" id="startICName" name="startICName" class="form-control" value="@Model.開始IC名"></td>
+          </tr>
+          <tr>
+            <th>終了道路名</th>
+            <td><input type="text" id="endRoadName" name="endRoadName" class="form-control" value="@Model.終了道路名"></td>
+            <th style="color:#ff0000;">終了IC名</th>
+            <td><input type="text" id="endICName" name="endICName" class="form-control" value="@Model.終了IC名"></td>
+          </tr>
+          <tr>
+            <th style="color:#ff0000;">料金</th>
+            <td><input type="text" id="fee" name="fee" class="form-control" style="width:80px;text-align:right;" maxlength="7" value="@Model.料金" onblur="kanmaChange(this)"></td>
+            <th style="color:#ff0000;"></th>
+            <td></td>
+          </tr>
+          <tr>
+            <td colspan="3" style="text-align:right;">
+              <button class="btn btn-outline-danger" style="width:100px;margin-right:50px;" id="deleteButton" onclick="deleteHighwayList()">削除</button>
+              <button class="btn btn-outline-success" style="width:200px;" id="saveButton" onclick="saveHighwayList()">登録</button>
+              <button class="btn btn-outline-success" style="width:200px;" id="updateButton" onclick="saveHighwayList()">更新</button>
+            </td>
+            <td style="text-align:right;">
+                <button class="btn btn-outline-warning" style="width:100px;" onclick="closeHighwayList(); return false;">閉じる</button>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  $(document).ready(function() {
+    var recordIndex = $("#recordIndex").val();
+    if (recordIndex === "-1") {
+      $("#updateButton").hide();
+      $("#deleteButton").hide();
+    } else {
+      $("#updateButton").show();
+      $("#deleteButton").show();
+      $("#saveButton").hide();
+    }
+  });
+
+  function closeHighwayList() {
+    $('#ModalHere').find('.modal').modal('hide');
+    $("#ModalHere").html('');
+  }
+</script>
+

@@ -1,0 +1,162 @@
+﻿@model CommonDialogModel.SelectCustomerTantouModel
+
+
+
+<style>
+  .div-area-customer-tantou-dialog {
+    margin: auto;
+    flex-wrap: wrap;
+    display: flex;
+    padding: 0 5px 0 5px
+  }
+
+  .table-CustomerTantouListDataModal {
+    overflow: auto;
+    width: 100%;
+    max-height: 700px;
+  }
+
+    .table-CustomerTantouListDataModal table {
+      margin: 0;
+      border-spacing: 0;
+      width: 100%;
+      font-size: 12px;
+    }
+
+    .table-CustomerTantouListDataModal th {
+      white-space: nowrap;
+      position: sticky;
+      top: -1px;
+      left: 0;
+      border-right: 1px solid #999;
+      border-bottom: 1px solid #999;
+      background-color: lemonchiffon;
+      text-align: center;
+      padding: 0.2rem 0 0.2rem 0;
+    }
+
+    .table-CustomerTantouListDataModal td {
+      white-space: nowrap;
+      padding: 2px;
+      border-right: 1px solid #999;
+      border-bottom: 1px solid #999;
+    }
+
+    .table-CustomerTantouListDataModal tr:first-child th {
+      border-top: 1px solid #999;
+    }
+
+    .table-CustomerTantouListDataModal th:first-child {
+      border-left: 1px solid #999;
+    }
+
+    .table-CustomerTantouListDataModal tr:first-child th:first-child {
+      z-index: 1;
+    }
+</style>
+
+
+<div id="hiddenItem" hidden>
+  @Html.HiddenFor(Model => Model.CompanyID)
+  @Html.HiddenFor(Model => Model.SelectedID)
+  @Html.HiddenFor(Model => Model.UserID)
+  @Html.HiddenFor(Model => Model.CustomerID)
+
+</div>
+
+
+<div class="modal-dialog container" role="document" style="">
+  <div class="modal-content">
+    <div class="model-body">
+      <div class="div-area-customer-tantou-dialog">
+        <table class="table jbc-table table-borderless" style="padding: 0; background-color: whitesmoke;" border="1">
+          <tbody>
+            <tr style="vertical-align: middle;">
+              <td class="col-sm-4">
+                <button style="width: 150px;" class="btn btn-success align-items-start" onclick="return false;">担当者登録</button>
+              </td>
+              <td class="col-sm-4">
+              </td>
+              <td class="col-sm-1">
+                <button style="width: 100px; float: right;" class="btn btn-primary align-items-end" onclick="listDisplay();return false;">検索</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div id="alertTop" style="vertical-align: middle; margin-top: 1px;">
+        </div>
+
+        <div id="DataList" class="table-CustomerTantouListDataModal dataList" style="height:500px; margin: 0;">
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+
+  $(function () {
+
+      listDisplay();
+
+  });
+
+  /**
+   * 画面を閉じる
+   * selectCustomerTantouModalCloseCallBack
+   * */
+  function ModalCommonDialogClose() {
+
+    $('#ModalCommonDialog').html('');
+
+    if (typeof selectCustomerTantouModalCloseCallBack == 'function') {
+      // 関数があった場合の処理内容
+      selectCustomerTantouModalCloseCallBack();
+    }      
+  };
+
+  /**
+   * 一覧データ選択時の処理
+   * selectCustomerTantouModalCloseCallBack
+   * @@param data
+   */
+  function selectOnClick(data) {
+
+    $('#ModalCommonDialog').html('');
+    $('#ModalCommonDialog').dialog("close");
+
+    //コールバック関数チェック
+    if (typeof selectCustomerTantouSelectedCallBack == 'function') {
+      // 関数があった場合の処理内容
+      selectCustomerTantouSelectedCallBack(data);
+    }
+  };
+
+  /**
+   * 一覧の表示
+   * */
+  function listDisplay() {
+
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "JsonGetCustomerTantouDataList" })',
+      {
+        CustomerID: $("#CustomerID").val(),
+      },
+      function (data) {
+          if (data.message != null) {
+              alertError(`【エラー】${data.message}`);
+          }
+          else {
+              $('#alertTop').hide();
+              $('#DataList').html(data.partialView);
+          }
+      }
+    );
+
+  };
+
+
+</script>
+<script src="~/js/EnterKeyCancel.js"></script>

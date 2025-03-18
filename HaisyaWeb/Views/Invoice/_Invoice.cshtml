@@ -1,0 +1,136 @@
+﻿@model HaisyaWeb.Models.InvoiceModel.InvoiceSummModel
+
+@{
+  var sd = Model.Sale_date;
+  if (!string.IsNullOrWhiteSpace(sd))
+    sd = sd[0..(Model.Sale_date.LastIndexOf("("))] + "まで";
+}
+<div style="width: 100%; height: 100%">
+  @Html.HiddenFor(model => Model.PDF_flag)
+  @Html.HiddenFor(model => Model.Invoice.SelectRow)
+  @Html.HiddenFor(model => Model.Year_month)
+  @Html.HiddenFor(model => Model.Invoice.Shime_Day)
+  @Html.HiddenFor(model => Model.Invoice.Customer_Branch_ID)
+  @Html.HiddenFor(model => Model.Controller)
+  <table>
+    <tbody>
+      <tr>
+        <td colspan="2">@Html.DisplayFor(m => m.Confirm_message)</td>
+      </tr>
+      <tr>
+        <td colspan="2">@Html.DisplayFor(m => m.Description)</td>
+      </tr>
+      <tr>
+        <td style="width: 120px;">@Html.LabelFor(m => m.Year_month, htmlAttributes: new { @style = "font-weight: initial;" })</td>
+        <td>@(Html.DisplayFor(m => m.Year_month))分</td>
+      </tr>
+      <tr>
+        <td>@Html.LabelFor(m => m.Publish_date, htmlAttributes: new { @style = "font-weight: initial;" })</td>
+        <td>@(Model.Publish_date[0..(Model.Publish_date.LastIndexOf("("))])</td>
+      </tr>
+      <tr>
+        <td>@Html.LabelFor(m => m.Sale_date, htmlAttributes: new { @style = "font-weight: initial;" })</td>
+        <td>@sd</td>
+      </tr>
+      <tr>
+        <td>@Html.LabelFor(m => m.Invoice, htmlAttributes: new { @style = "font-weight: initial;" })</td>
+        <td>@Html.DisplayFor(m => m.Invoice.Customer_Name)</td>
+      </tr>
+      @for (var i = 1; i < Model.Invoice_list.Count; i++)
+      {
+        <tr>
+          <td></td>
+          <td>@Model.Invoice_list[i].Customer_Name</td>
+        </tr>
+      }
+      @if (!string.IsNullOrWhiteSpace(Model.Selected_layout))
+      {
+        <tr>
+          <td>
+            @Html.LabelFor(m => m.Layout, htmlAttributes: new { @style = "font-weight: initial;" })
+          </td>
+          <td>
+            @Html.DropDownListFor(m => m.Layout, new SelectList(Model.Layouts, "Value", "Text"), new {@id="Layout", @style = "width: 175px;display: inline-block;", @onchange= "selectedChange(this)"})
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<script>
+  // 「請求書」印刷
+  function openReport() {
+     
+    const PDFFlag = $('#PDF_flag').val();
+
+    if (PDFFlag == "1") {
+      PDFReport();
+    } else {
+      ExportCSV();
+    }
+  };
+
+  //PDFReport
+  async function PDFReport() {
+    const searchKubun = $('#Layout').val()?.split(" ");
+    const searchKubunId = searchKubun[0];
+    const namePdf = searchKubun[1] + ".pdf";
+
+    const isSeikyu = $('#Controller').val() === "Invoice";
+    const seikyuId = isSeikyu ? $('#Invoice_SelectRow').val() : "0";
+    const checkSeikyuId = isSeikyu ? "0" : $('#Invoice_SelectRow').val();
+    const yearMonth = $('#Year_month').val();
+    const seikyuMonth = `${yearMonth.substring(0, 4)}-${yearMonth.substring(5, 7)}`;
+    const shimeDay = $('#Invoice_Shime_Day').val();
+    const customerBranchId = $('#Invoice_Customer_Branch_ID').val();
+    const zeiKubun = $('#Invoice_Tax_category').val();
+    const params = { seikyuId, checkSeikyuId, seikyuMonth, shimeDay, customerBranchId, zeiKubun };
+
+    const url = '@Url.RouteUrl(new { controller = "Report", action = "PreviewPDFReport", template = "__Template__" })'
+      .replace("__Template__", namePdf);
+
+    $("#form-pdf-export").remove();
+
+    const form = $('<form id="form-pdf-export" target="_blank" method="post" action="' + url + '"></form>');
+    form.append('<input type="hidden" name="SerchKubunID" value="' + searchKubunId + '" />');
+    form.append('<input type="hidden" name="searchJson" value="' + encodeURIComponent(JSON.stringify(params)) + '" />');
+    $('body').append(form);
+    form.submit();
+  }
+
+  //CSVをエクスポート
+  async function ExportCSV() {
+    const searchKubun = $('#Layout').val()?.split(" ");
+    const searchKubunId = searchKubun[0];
+    const namePdf = searchKubun[1] + ".pdf";
+
+    const isSeikyu = $('#Controler').val() == "Invoice";
+    const seikyuId = isSeikyu ? $('#Invoice_SelectRow').val() : 0;
+    const checkSeikyuId = isSeikyu ? 0 : $('#Invoice_SelectRow').val();
+    const yearMonth = $('#Year_month').val();
+    const seikyuMonth = `${yearMonth.substring(0, 4)}-${yearMonth.substring(5, 7)}`;
+    const shimeDay = $('#Invoice_Shime_Day').val();
+    const customerBranchId = $('#Invoice_Customer_Branch_ID').val();
+    const zeiKubun = $('#Invoice_Tax_category').val();
+    const params = { seikyuId, checkSeikyuId, seikyuMonth, shimeDay, customerBranchId, zeiKubun };
+
+    const url = '@Url.RouteUrl(new { controller = "Report", action = "ExportCSV" })';
+
+    $("#form-csv-export").remove();
+
+    const form = $('<form id="form-csv-export" method="post" action="' + url + '"></form>');
+    form.append('<input type="hidden" name="SerchKubunID" value="' + searchKubunId + '" />');
+    form.append('<input type="hidden" name="searchJson" value="' + encodeURIComponent(JSON.stringify(params)) + '" />');
+    $('body').append(form);
+    form.submit();
+  }
+  function selectedChange(i) {
+    $('#Print_Pattern').remove();
+    $('#namePdf').remove();
+    const searchKubun = i.value?.split(" ");
+    $('#summ-data').append('<input type="hidden" id="Print_Pattern" name="Print_Pattern" value="' + searchKubun[0] + '" />')
+    $('#summ-data').append('<input type="hidden" id="namePdf" name="namePdf" value="' + searchKubun[1] + '" />')
+  }
+
+</script>

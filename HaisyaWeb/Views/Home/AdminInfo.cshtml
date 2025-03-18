@@ -1,0 +1,48 @@
+﻿@model HomeModel.HomeMainModel
+
+<div class="information-from-admin">
+
+
+  <h5 class="heading-40" style="width:100%;"><span class="glyphicon glyphicon-bullhorn"></span>管理者からのお知らせ</h5>
+
+  @{
+      var list = Model.AdminInfos.OrderByDescending(m => m.Info_Datetime).ToList();
+
+      int i = 0;
+
+      foreach (var item in list)
+      {
+
+      <div style="cursor:pointer;" data-id="@(item.AdminInfo_ID)" class="information_toggle">
+        <p class="block size13"><span class="label type1">お知らせ</span>@Html.Raw(item.Info_Title)</p>
+        <p class="date">@Convert.ToDateTime(item.Info_Datetime).ToString("yy/MM/dd HH:mm")</p>
+      </div>
+      <table class="b-bottom" id="admin_info@(item.AdminInfo_ID)" style="@(i == 0 ? "display: table;" : "display: none;")">
+        <tbody>
+          <tr>
+            <td>
+              @Html.Raw(item.Info_Detail)
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+        i++;
+
+      }
+
+  }
+
+
+
+</div>
+
+
+<script>
+
+  $('.information_toggle').click(function () {
+    var info_num = $(this).data('id');
+    $("#admin_info" + info_num).toggle();
+  });
+
+</script>

@@ -1,0 +1,104 @@
+﻿@using System.Reflection;
+@using HaisyaWeb.Dto;
+@using static HaisyaWeb.Models.ExpenseModel;
+
+@model DataListModel
+
+@{
+  var i = 0;
+  var l = Model?.ExpenseDataLists ?? new();
+  l = l.GroupBy(e => e.Expense_ID).Select(g => g.First()).ToList();
+
+  if (Model.SortParam != null && !string.IsNullOrWhiteSpace(Model.SortParam.SortItemParam) && !string.IsNullOrWhiteSpace(Model.SortParam.SortOrder))
+  {
+    var s = Model.SortParam.SortItemParam;
+    Func<V_ExpenseDataList_Local, object> f = (V_ExpenseDataList_Local r) => typeof(V_ExpenseDataList_Local).GetRuntimeProperty(s).GetValue(r, null);
+    l = "asc".Equals(Model.SortParam.SortOrder) ?
+      l.OrderBy(f).ThenBy(s => s.Expense_ID).ToList() :
+      l.OrderByDescending(f).ThenBy(s => s.Expense_ID).ToList();
+  }
+}
+
+@if (l.Count == 0)
+{
+<div class="no-data-row">
+  <h4 class="no-data-row-text">データ無し</h4>
+</div>
+}
+else
+{
+<table class="table ex_DataList search-list" width="100%" border="1">
+  <tr>
+    <th style="width:60px;"></th>
+    <th style="width:80px;"><a href="#" onclick="set_sort('@nameof(V_ExpenseDataList_Local.Expense_Kubun_name)')">経費区分</a></th>
+    <th style="width:100px;"><a href="#" onclick="set_sort('@nameof(V_ExpenseDataList_Local.Syaban_Number)')">車番</a></th>
+    <th class="ex-table-th"><a href="#" onclick="set_sort('@nameof(V_ExpenseDataList_Local.SyasyuDisplay)')">車種</a></th>
+    @if (Model.Search.Expense_category != ExpenseModel.EXPENSE_CATEGORY_VEHICLE)
+    {
+      <th style="width:120px;"><a href="#" onclick="set_sort('@nameof(V_ExpenseDataList_Local.DRIVER_CODE)')">乗務員CD</a></th>
+      <th style="width:300px;"><a href="#" onclick="set_sort('@nameof(V_ExpenseDataList_Local.DRIVER_NAME)')">乗務員名</a></th>
+    }
+    @if (Model.Search.Expense_category == ExpenseModel.EXPENSE_CATEGORY_ACCIDENT)
+    {
+      <th style="width:140px;"><a href="#" onclick="set_sort('@nameof(V_ExpenseDataList_Local.Jiko_Date)')">事故日</a></th>
+      <th style="width:300px;"><a href="#" onclick="set_sort('@nameof(V_ExpenseDataList_Local.Jiko_Display)')">事故名</a></th>
+      <th style="width:100px;"><a href="#" onclick="set_sort('@nameof(V_ExpenseDataList_Local.Jiko_Futan_Money)')">事故負担額</a></th>
+    }
+  </tr>
+  @foreach (var item in l)
+  {
+    i++;
+    var color = i % 2 == 1 ? "row-even" : "row-odd";
+    <tr>
+      <td class="@(color)">
+        <button class="btn btn-success" style="width: 100%; padding:0;"
+                onclick="openEditView(@Model.Search.Expense_category, '@item.Expense_ID'); return false;">
+          選択
+        </button>
+      </td>
+      <td class="@(color)" align="center">
+        @Html.DisplayFor(mi => item.Expense_Kubun_name)
+      </td>
+      <td class="@(color)" align="center">
+        @Html.DisplayFor(mi => item.Syaban_Number)
+      </td>
+      <td class="@(color)">
+        @Html.DisplayFor(mi => item.SyasyuDisplay)
+      </td>
+      @if (Model.Search.Expense_category != ExpenseModel.EXPENSE_CATEGORY_VEHICLE)
+      {
+        <td class="@(color)" align="center">
+          @Html.DisplayFor(mi => item.DRIVER_CODE)
+        </td>
+        <td class="@(color)">
+          @Html.DisplayFor(mi => item.DRIVER_NAME)
+        </td>
+      }
+      @if (Model.Search.Expense_category == ExpenseModel.EXPENSE_CATEGORY_ACCIDENT)
+      {
+        <td class="@(color)" align="center">
+          @(item.Jiko_Date?.ToString("yyyy/MM/dd") ?? "")
+        </td>
+        <td class="@(color)">
+          @Html.DisplayFor(mi => item.Jiko_Display)
+        </td>
+        <td class="@(color)" align="right">
+          @(item.Jiko_Futan_Money?.ToString("#,0") ?? "")
+        </td>
+      }
+    </tr>
+  }
+</table>
+<script>
+  function set_sort(name) {
+    var n = $("#SortParam_SortItemParam").val();
+    if (name != n) {
+      $("#SortParam_SortOrder").val("asc");
+      $("#SortParam_SortItemParam").val(name);
+    }
+    var o = $("#SortParam_SortOrder").val();
+    $("#SortParam_SortOrder").val(o.indexOf("desc") != -1 ? "asc" : "desc");
+    Search();
+  }
+</script>
+}

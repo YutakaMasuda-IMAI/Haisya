@@ -1,0 +1,372 @@
+﻿@model HaisyaWeb.Models.DriverModel.CompanyDriverSyaryoMenuDto
+
+@{
+    Layout = "DriverMenu";
+    var listData = Model.CompanyDriverList.OrderBy(m => m.Employee_Number).ToList();
+}
+
+
+
+@*<div class="setting-separator">乗務員車輌情報<span style="font-size: 12px; color: red;"></span></div>*@
+<div hidden>
+  @Html.HiddenFor(model => Model.Search.SelectDay)
+  @Html.HiddenFor(model => Model.Search.BackMenuAction)
+  @Html.HiddenFor(model => Model.SelectFilter)
+</div>
+<div class="contents-wrap-middle">
+  <h4 class="">使い方</h4>
+  <span>
+    <span style="background-color: #FF9966 ">・同時に複数のユーザーが変更処理を実施するとデータが壊れたり、不整合が発生したりします。必ず１ユーザーのみで実施してください。</span>
+  </span>
+</div>
+<table class="table" style="padding: 0; margin-bottom: 0;">
+  <tbody>
+    <tr>
+      <th style="width: 30%;">
+        @Html.LabelFor(model => model.Search.SelectTantou, htmlAttributes: new { @class = "control-label align-self-center text-end", @style = "padding: 0;" })
+        <div class="" style="display: inline-block; _display: inline; padding: 0; width: 70%;">
+          @Html.DropDownListFor(model => model.Search.SelectTantou, new SelectList(Model.Search.TantouSelectList, "Value", "Text", "Selected"), "担当者を選択", new { @class = "form-control serch", @style = "padding: 0;" })
+          @Html.ValidationMessageFor(model => model.Search.SelectTantou, "", new { id = "SelectTantou", @class = "text-danger align-middle" })
+        </div>
+      </th>
+      <th style="width: 30%;">
+        @Html.LabelFor(model => model.Search.SelectSyasyu, htmlAttributes: new { @class = "control-label align-self-center text-end", @style = "padding: 0;" })
+        <div class="" style="display: inline-block; _display: inline; padding: 0; width: 70%;">
+          @Html.DropDownListFor(model => model.Search.SelectSyasyu, new SelectList(Model.Search.SyasyuSelectList, "Value", "Text", "Selected"), "車種を選択", new { @class = "form-control serch", @style = "padding: 0;" })
+          @Html.ValidationMessageFor(model => model.Search.SelectSyasyu, "", new { id = "SelectDriverKubun", @class = "text-danger align-middle" })
+        </div>
+      </th>
+      <th style="width: 30%;">
+        @Html.LabelFor(model => model.Search.SelectKata, htmlAttributes: new { @class = "control-label align-self-center text-end", @style = "padding: 0;" })
+        <div class="" style="display: inline-block; _display: inline; padding: 0; width: 70%;">
+          @Html.DropDownListFor(model => model.Search.SelectKata, new SelectList(Model.Search.KataSelectList, "Value", "Text", "Selected"), "型を選択", new { @class = "form-control serch", @style = "padding: 0;" })
+          @Html.ValidationMessageFor(model => model.Search.SelectKata, "", new { id = "SelectMonth", @class = "text-danger align-middle" })
+        </div>
+      </th>
+    </tr>
+    <tr>
+      <th>
+        <div style="border: .1em solid #bbb; padding: 0; margin: 0 15px 0 0; border-radius: 10px;">
+          <label style="color: #ff00dc; margin-left: 5px;">絞り込み　</label>
+          <input type="radio" name="num_of_filter" value="0">全て　
+          <input type="radio" name="num_of_filter" value="1">運用中　
+          <input type="radio" name="num_of_filter" value="2">運用終了　
+        </div>
+      </th>
+      <th colspan="2">
+
+      </th>
+    </tr>
+  </tbody>
+</table>
+<div class="clearfix">
+  <div id="option_attendance_setting" class="sight-settings">
+    <div>
+      @* class="tables" *@
+      <table id="tableMain" width="100%" class="table table-setting table-bordered border-info table-striped">
+        <thead>
+          <tr align="center">
+            <th hidden style="width: 70px;">乗務員ID</th>
+            <th hidden style="width: 100px; ">会社ID</th>
+            <th hidden style="width: 100px; ">支店ID</th>
+            <th style="font-size: 10px; width: 70px;">支店<br />営業所<br />事業所</th>
+            <th style="width: 70px;">従業員CD</th>
+            <th style="width: 150px; ">表示名</th>
+            <th style="width: 110px;">車番</th>
+            <th style="width: 110px;">車番(後)</th>
+            <th style="width: 110px;">車種型</th>
+            <th style="width: 70px;">運用開始日</th>
+            <th style="width: 70px;">運用終了日</th>
+            <th style="width: 60px;">退職日</th>
+            <th style="width: 110px; ">備考</th>
+            @*<th style="font-size: 12px; width: 20px; ">非表示</th>*@
+            <th style="width: 110px; ">詳細</th>
+          </tr>
+        </thead>
+        <tbody>
+          @{
+            int i = 1;
+            foreach (var item in listData)
+            {
+              var listSayryo = Model.CompanyDriverSyaryoList.Where(m => m.Driver_ID == item.Driver_ID).OrderBy(m => m.Start_Date).ToList();
+
+              
+
+              if (listSayryo.Count == 0)
+              {
+                    <tr id="@(i)">
+                      <td align="center" hidden>@(item.Driver_ID)</td>
+                      <td align="center" hidden>@(item.Company_ID)</td>
+                      <td align="center" hidden>@(item.Branch_ID)</td>
+                      @{
+                        var shiten = Model.CompanyBranchList.FirstOrDefault(m => m.Branch_ID == item.Branch_ID);
+                        string EmployeeNumber = item.Employee_Number == 0 ? "" : item.Employee_Number.ToString();
+                      }
+                      <td align="center">@(shiten.Branch_Name_Abbr)</td>
+                      <td align="center">@(EmployeeNumber)</td>
+                      <td align="center">@(item.Display_Name)</td>
+                      <td align="center"></td>
+                      <td align="center"></td>
+                      <td align="center"></td>
+                      <td align="center"></td>
+                      <td align="center"></td>
+                      @if (item.Taisyoku_Date == null)
+                      {
+                        <td align="center"></td>
+                      }
+                      else
+                      {
+                        <td align="center">@Convert.ToDateTime(item.Taisyoku_Date).ToString("yy/MM/dd")</td>
+                      }
+                      <td align="center"></td>
+                      @*<td align="center"></td>*@
+                      @*<td align="center"></td>*@
+
+                      <td align="center" style="margin: 0; vertical-align: middle; ">
+                        @if (Model.EditEnabled)
+                        {
+                          <button class="btn btn-outline-success" style="width: 100%; padding: 0; font-size: 12px; height: 30px; " onclick="ExecShowDetailOnClick('@(item.Driver_ID)','0'); return false;">詳細</button>
+                        }
+                      </td>
+                      @*<td></td>*@
+                      <td hidden>運用終了</td>
+                      <td hidden></td>
+                      <td hidden></td>
+                    </tr>
+                  }
+                  else
+                  {
+                    foreach (var itemSyaryo in listSayryo)
+                    {
+                      var SyaryoManagementData = Model.SyaryoManagementList.FirstOrDefault(m => m.SyaryoManagement_ID == itemSyaryo.SyaryoManagement_ID);
+                      var SyaryoManagementData1 = Model.SyaryoManagementList.FirstOrDefault(m => m.SyaryoManagement_ID == itemSyaryo.SyaryoManagement_ID1);
+
+                      var listMSyaryo = Model.SyaryoList.FirstOrDefault(m => m.Syaryo_ID == SyaryoManagementData.Syaryo_ID);
+                      var listGroup = Model.CompanyUserGroupList.FirstOrDefault(m => m.Group_ID == itemSyaryo.Group_ID);
+
+        <tr id="@(i)">
+          <td align="center" hidden>@(item.Driver_ID)</td>
+          <td align="center" hidden>@(item.Company_ID)</td>
+          <td align="center" hidden>@(item.Branch_ID)</td>
+          @{
+            var shiten = Model.CompanyBranchList.FirstOrDefault(m => m.Branch_ID == item.Branch_ID);
+            string EmployeeNumber = item.Employee_Number == 0 ? "" : item.Employee_Number.ToString();
+          }
+          <td align="center">@(shiten.Branch_Name_Abbr)</td>
+          <td align="center">@(EmployeeNumber)</td>
+          <td align="center">@(item.Display_Name)</td>
+          <td align="center">@(SyaryoManagementData.Syaban_Chiiki)@(SyaryoManagementData.Syaban_Bunrui)@(SyaryoManagementData.Syaban_Kana)@(SyaryoManagementData.Syaban_Number)</td>
+          @if (SyaryoManagementData1 != null)
+          {
+            <td align="center">@(SyaryoManagementData1.Syaban_Chiiki)@(SyaryoManagementData1.Syaban_Bunrui)@(SyaryoManagementData1.Syaban_Kana)@(SyaryoManagementData1.Syaban_Number)</td>
+          }
+          else
+          {
+            <td align="center"></td>
+          }
+
+          <td align="center">@(SyaryoManagementData.Syasyu)@(SyaryoManagementData.Kata)</td>
+          <td align="center">@Convert.ToDateTime(itemSyaryo.Start_Date).ToString("yy/MM/dd")</td>
+          @if (itemSyaryo.End_Date == null)
+          {
+            <td align="center"></td>
+          }
+          else
+          {
+            <td align="center">@Convert.ToDateTime(itemSyaryo.End_Date).ToString("yy/MM/dd")</td>
+          }
+          @if (item.Taisyoku_Date == null)
+          {
+            <td align="center"></td>
+          }
+          else
+          {
+            <td align="center">@Convert.ToDateTime(item.Taisyoku_Date).ToString("yy/MM/dd")</td>
+          }
+          <td align="center">@(itemSyaryo.REMARKS)</td>
+          @*<td align="center">@Html.CheckBoxFor(model => item.Del_Flg, new { @class = "form-control text-left form-check-input", @onclick = "return false;" })</td>*@
+          <td align="center" style="margin: 0; vertical-align: middle; ">
+            @if (Model.EditEnabled)
+            {
+              <button class="btn btn-outline-success" style="width: 100%; padding: 0; font-size: 12px; height: 30px; " onclick="ExecShowDetailOnClick('@(item.Driver_ID)','@(itemSyaryo.SyaryoManagement_ID)'); return false;">詳細</button>
+            }
+          </td>
+          <td hidden>@(itemSyaryo.End_Date == null ? "稼働終了":"稼働中")</td>
+          <td hidden>@(listGroup.Group_Name)</td>
+          <td hidden>@(listMSyaryo.SyasyuDisplay)</td>
+          <td hidden>@(listMSyaryo.KataDisplay)</td>
+        </tr>
+                  i++;
+                }
+              }
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!--<div>-->
+  @*//モダール表示用のスペースを追加*@
+  <!--<div id="ModalHere" data-keyboard="false" data-backdrop="static"></div>
+  <div id="SortHere" hidden></div>
+</div>-->
+
+
+
+<script>
+
+
+  $(function () {
+
+    let tabs = $('.sub-btn'); // tabのクラスを全て取得し、変数tabsに配列で定義
+    $('.sub-btn').removeClass('active');
+    $('#tab2').addClass('active');
+
+
+
+  });
+
+  $(window).on('load', function () {
+
+    radio = document.getElementsByName('num_of_filter');
+    for (let i = 0; i < radio.length; i++) {
+      if (radio.item(i).value == $("#SelectFilter").val()) {
+        radio.item(i).checked = true;
+      }
+    }
+
+  });
+
+  // セレクトボックスが変更されたら処理をする
+  $('.serch').change(function () {
+
+    // 選択した値を取得
+    var select_Tantou = $('#Search_SelectTantou option:selected').text();
+    var select_Syasyu = $('#Search_SelectSyasyu option:selected').text();
+    var select_Kata = $('#Search_SelectKata option:selected').text();
+    var select_kado = ($("#SelectFilter").val() == 1) ? "稼働中" : ($("#SelectFilter").val() == 2) ? "稼働終了" : "";
+
+    var key = 0;
+
+    if (select_kado.length > 0) { key += 1; }
+    if ($('#Search_SelectTantou option:selected').val().length == 0) { select_Tantou = ""; } else { key += 3; }
+    if ($('#Search_SelectSyasyu option:selected').val().length == 0) { select_Syasyu = ""; } else { key += 5; }
+    if ($('#Search_SelectKata option:selected').val().length == 0) { select_Kata = ""; } else { key += 7; }
+
+    // tbodyのtr数回 処理をする
+    $.each($("#tableMain tbody tr"), function (index, element) {
+
+      // 選択した値が空欄だったら、全ての行を表示する為の処理
+      if (select_Tantou == "" && select_Syasyu == "" && select_Kata == "" && select_kado == "") {
+        $(element).css("display", "table-row");
+        return true; // 次のtrへ
+      }
+
+
+      // 1行をテキストとして取り出し、セレクトボックスで選択した値があるかをチェック
+      var row_text = $(element).text();
+      //alert(row_text);
+
+      var check = false;
+
+      //まずは非表示に
+      $(element).css("display", "none");
+
+      var datakey = 0;
+
+      $(element).children("td").each(function (item) {
+
+        var val = $(element).children("td")[item].innerText;
+
+        if (val.length > 0) {
+          if (select_kado.length > 0 && val == select_kado) { datakey += 1; }
+          if (select_Tantou.length > 0 && val == select_Tantou) { datakey += 3; }
+          if (select_Syasyu.length > 0 && val == select_Syasyu) { datakey += 5; }
+          if (select_Kata.length > 0 && val == select_Kata) { datakey += 7; }
+        }
+      });
+
+      if(datakey == key) {
+        // 見つかった場合は表示する
+        $(element).css("display", "table-row");
+      }
+
+    });
+  });
+ 
+
+
+  /**
+   * 
+   * @@param paramDriverID
+   * @@param paramSyaryoID
+   */
+  function ExecShowDetailOnClick(paramDriverID, paramSyaryoID) {
+
+    //alert(document.getElementById("btnSortCommit").disabled);
+
+    $.post('@Url.RouteUrl("Default", new { controller = "Driver", Action = "CompanyDriverSyaryoModal" })',
+      {
+        DriverID: paramDriverID,
+        SyaryoID: paramSyaryoID,
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】" + response.partialView);
+          $("#ModalHere").html(response.partialView);
+          $("#ModalHere").find('.modal').modal('show');
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+          console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+          console.log(xhr, msg);
+      });
+  };
+
+  function closeModel() {
+    $('#ModalHere').find('.modal').modal('hide');
+    $("#ModalHere").html('');
+  };
+
+  function closeModelAndRefresh() {
+    $('#ModalHere').find('.modal').modal('hide');
+    location.reload();
+    document.getElementById("btnSortCommit").disabled = "disabled";
+    alert("登録が完了しました。");
+  };
+
+  function varidationCheckForOverlap(displayName, employeeNumber) {
+
+    // table要素を取得
+    var tableElem = document.getElementById('tableMain');
+
+    // 行（tr要素）を取得
+    var rowElems = tableElem.rows;
+
+    // 取得した行（tr要素）を繰り返しHTMLを取得
+    var htmlStr = '';
+    for (i = 1, len = rowElems.length; i < len; i++) {
+
+      var employeeNumberA = rowElems[i].cells[4].innerHTML;
+      var displayNameA = rowElems[i].cells[7].innerHTML;
+
+      //alert(syasyu + ";;;;" + kata);
+      //alert(syasyuA + ";;;;" + kataA);
+
+      if (employeeNumberA == displayName || displayNameA == employeeNumber) {
+        return true;
+      }
+    }
+
+    return false;
+
+  };
+</script>

@@ -1,0 +1,935 @@
+﻿@using SeikyuWeb.Dto
+@using SeikyuWeb.Models
+@using SeikyuWeb.Models.ReportCommons
+@model SeikyuWeb.Dto.ReportDto.ReportDto.PDFReportModel
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>請求書１</title>
+    <!-- <link href="~/lib/jquery-ui/dist/themes/base/jquery-ui.css" rel="stylesheet" /> -->
+    <!-- <link href="~/lib/jquery-ui/dist/themes/base/theme.css" rel="stylesheet" />  -->
+
+    <!-- <script src="~/lib/jquery/dist/jquery.js" charset="utf-8"></script> -->
+    <!-- <script src="~/lib/jquery-ui/dist/jquery-ui.js" charset="utf-8"></script> -->
+
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.css">
+
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+    <!-- jQuery UI -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+
+
+    <style>
+        @@media print {
+            body, html {
+                width: 297mm; /* A4 landscape */
+                height: 210mm; /* A4 landscape */
+            }
+        }
+
+        @@page {
+            size: A4 landscape;
+            margin: 5mm;
+        }
+        /* 請求書１のCSS */
+        *:where(:not(html, iframe, canvas, img, svg, video, audio):not(svg *, symbol *)) {
+            all: unset;
+            display: revert;
+        }
+        /* Preferred box-sizing value */
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        /* Reapply the pointer cursor for anchor tags */
+        a, button {
+            cursor: revert;
+        }
+        /* Remove list styles (bullets/numbers) */
+        ol, ul, menu {
+            list-style: none;
+        }
+        /* For images to not be able to exceed their container */
+        img {
+            max-width: 100%;
+        }
+        /* removes spacing between cells in tables */
+        table {
+            border-collapse: collapse;
+        }
+        /* Safari - solving issue when using user-select:none on the body text input doesn't working */
+        input, textarea {
+            -webkit-user-select: auto;
+        }
+        /* revert the 'white-space' property for textarea elements on Safari */
+        textarea {
+            white-space: revert;
+        }
+        /* minimum style to allow to style meter element */
+        meter {
+            -webkit-appearance: revert;
+            appearance: revert;
+        }
+            /* reset default text opacity of input placeholder */
+            meter::placeholder {
+                color: unset;
+            }
+            /* fix the feature of 'hidden' attribute.
+                                                           display:revert; revert to element instead of attribute */
+            meter:where([hidden]) {
+                display: none;
+            }
+            /* revert for bug in Chromium browsers
+                                                           - fix for the content editable attribute will work properly.
+                                                           - webkit-user-select: auto; added for Safari in case of using user-select:none on wrapper element*/
+            meter:where([contenteditable]:not([contenteditable="false"])) {
+                -moz-user-modify: read-write;
+                -webkit-user-modify: read-write;
+                overflow-wrap: break-word;
+                -webkit-line-break: after-white-space;
+                -webkit-user-select: auto;
+            }
+            /* apply back the draggable feature - exist only in Chromium and Safari */
+            meter:where([draggable="true"]) {
+                -webkit-user-drag: element;
+            }
+
+        .bill {
+            /* width: 297mm; */
+            height: auto;
+            font-family: "ＭＳ Ｐゴシック", serif;
+            font-size: 13px;
+            line-height: 1.3;
+            /* backgound-colorの有効化 */
+            -webkit-print-color-adjust: exact;
+        }
+            /* 最後のページで改ページが入らないように制御 */
+            .bill:last-child {
+                page-break-after: auto;
+            }
+
+        .opacity {
+            opacity: 0;
+        }
+
+        .bill .head-wrapper {
+            /* display: grid;
+                grid-template-columns: 0.4fr 0.2fr 0.4fr;
+                gap: 40px;
+                justify-content: space-between;
+                align-items: flex-end; */
+            display: table;
+            width: 100%;
+        }
+
+            .bill .head-wrapper .customer-wrapper {
+                /* display:block;
+                  padding-inline-start: 80px; */
+                display: table-cell;
+                padding-left: 80px;
+                vertical-align: bottom;
+            }
+
+                .bill .head-wrapper .customer-wrapper .customer-name {
+                    border-bottom: 1px solid #000;
+                    /* display: flex;
+                    align-items: flex-start;
+                    justify-content: space-between; */
+                    display: table;
+                    width: 100%;
+                }
+
+                    .bill .head-wrapper .customer-wrapper .customer-name span.name {
+                        display: table-cell;
+                        vertical-align: top;
+                    }
+
+                    .bill .head-wrapper .customer-wrapper .customer-name span.dear {
+                        display: table-cell;
+                        vertical-align: top;
+                        text-align: right;
+                    }
+
+            .bill .head-wrapper .title-wrapper {
+                /* text-align: center;
+                  display: flex;
+                  flex-flow: column;
+                  justify-content: space-between;
+                  height: 100%; */
+                text-align: center;
+                display: table-cell;
+                vertical-align: bottom;
+            }
+
+                .bill .head-wrapper .title-wrapper .title {
+                    font-size: 30px;
+                    font-weight: bold;
+                    letter-spacing: 0.5em;
+                }
+
+                .bill .head-wrapper .title-wrapper .date {
+                    /* margin-block-start: 1em; */
+                    margin-top: 1em;
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                }
+
+                .bill .head-wrapper .title-wrapper .month {
+                    font-size: 21px;
+                    font-weight: bold;
+                }
+
+            .bill .head-wrapper .our-company-wrapper {
+                /* padding-inline-start: 20%;
+                          padding-block-start: 10px; */
+                display: table-cell;
+                padding-right: 50px;
+            }
+
+                .bill .head-wrapper .our-company-wrapper .company-name {
+                    text-align: right;
+                    font-size: 21px;
+                    font-weight: bold;
+                    /* margin-block-end: 5px; */
+                    margin-bottom: 5px;
+                    padding-right: 30px;
+                }
+
+                .bill .head-wrapper .our-company-wrapper .company-info {
+                    text-align: right;
+                    margin: auto;
+                    /* display: inline-block; */
+                    /* width: fit-content; */
+                }
+
+                    .bill .head-wrapper .our-company-wrapper .company-info .register-number {
+                        /* margin-inline-start: 4em; */
+                        margin-left: 4em;
+                    }
+
+
+        /* .bill .head-wrapper4 {
+                gap: 0px;
+                grid-template-columns: 0.5fr 0.1fr 0.4fr;
+              }
+
+                .bill .head-wrapper4 .customer-wrapper {
+                  padding-inline-start: 50px;
+                }
+
+                .bill .head-wrapper4 .title-wrapper .title {
+                  white-space: nowrap;
+                }
+
+                .bill .head-wrapper4 .title-wrapper .date {
+                  justify-content: space-evenly;
+                }
+
+
+                .bill .head-wrapper4 .our-company-wrapper {
+                  padding-inline-start: 10%;
+                } */
+
+
+        .bill .total-bill {
+            /* padding-inline-start: 40px; */
+            padding-left: 40px;
+        }
+
+            .bill .total-bill .bill-info {
+                /* display: grid;
+                  justify-content: space-between;
+                  align-items: flex-end;
+                  grid-template-columns: 0.2fr 0.45fr 0.35fr;
+                  gap: 20px; */
+                display: table;
+                width: 100%;
+            }
+
+                .bill .total-bill .bill-info .id {
+                    display: table-cell;
+                    width: 20%;
+                    vertical-align: bottom;
+                }
+
+                .bill .total-bill .bill-info .message {
+                    display: table-cell;
+                    vertical-align: bottom;
+                }
+
+                .bill .total-bill .bill-info .bank {
+                    /* display: block; */
+                    display: table-cell;
+                    padding-left: 70px;
+                    /* width: fit-content; */
+                }
+
+                    .bill .total-bill .bill-info .bank .note {
+                        font-size: 12px;
+                    }
+
+
+            .bill .total-bill .total-table-wrapper {
+                /* display: flex; */
+                overflow: hidden;
+                /* justify-content: space-between;
+                  align-items: flex-end;
+                  gap: 60px; */
+            }
+
+                .bill .total-bill .total-table-wrapper table {
+                    float: left;
+                    margin: 0 20px 0px 0px;
+                }
+
+                    .bill .total-bill .total-table-wrapper table:last-child {
+                        margin-right: 0;
+                    }
+                /* Clear the last floated element */
+                .bill .total-bill .total-table-wrapper::after {
+                    content: "";
+                    display: table;
+                    clear: both;
+                }
+
+                .bill .total-bill .total-table-wrapper table td {
+                    /* padding-block: 3px;
+                    border-block: 1px solid #000; */
+                    padding: 3px;
+                    border: 1px solid #000;
+                }
+
+                .bill .total-bill .total-table-wrapper .sign-boxes {
+                    /*  display: flex;
+                    justify-content: flex-start;
+                    align-items: flex-start; */
+                    /* margin-inline-end: 40px; */
+                    margin-right: 40px;
+                    overflow: hidden;
+                    margin-right: 40px;
+                    float: right
+                }
+
+                    .bill .total-bill .total-table-wrapper .sign-boxes .sign {
+                        width: 60px;
+                        height: 60px;
+                        border: 1px solid #000;
+                        float: left;
+                        /* margin-right: 10px; */
+                    }
+
+                        .bill .total-bill .total-table-wrapper .sign-boxes .sign:first-child {
+                            border-right: none;
+                        }
+                        .bill .total-bill .total-table-wrapper .sign-boxes .sign:last-child {
+                            margin-right: 0;
+                        }
+
+        /* .bill:is( .total-bill3, .total-bill4) {
+                padding-inline-start: 20px;
+              }
+
+                .bill:is( .total-bill3, .total-bill4) .total-table-wrapper {
+                  gap: 30px;
+                }
+
+                  .bill:is( .total-bill3, .total-bill4) .total-table-wrapper .sign-boxes {
+                    margin-inline-end: 20px;
+                  }
+
+              .bill .total-bill4 .bill-info {
+                grid-template-columns: 0.23fr 0.45fr 0.32fr;
+                padding-left: 20px;
+              } */
+
+        .bill .table-detail-wrap {
+            margin: 10px;
+        }
+
+        /* 共通のテーブルスタイル */
+        .bill table {
+            width: 100%;
+            /* margin-inline: auto; */
+            margin: auto;
+            border-top: 1px solid #000;
+            border-collapse: collapse;
+            /* table-layout: fixed; */
+        }
+
+            .bill table td, .bill table th {
+                /* border-inline: 1px solid #000;
+                padding-inline: 5px; */
+                border-left: 1px solid #000;
+                border-right: 1px solid #000;
+                padding-left: 5px;
+                padding-right: 5px;
+                line-height: 140%;
+                text-align: right; /* セルはデフォルトで右寄せ */
+                break-inside: avoid; /* テーブルの行で改ページ禁止 */
+                page-break-inside: avoid;
+            }
+
+        .bill .table-detail-wrap {
+            page-break-after: always;
+        }
+        /* .bill table td:is(.text-right), .bill table th:is(.text-right) {
+                  text-align: right;
+                } */
+        .bill table td.text-right, .bill table th.text-right {
+            text-align: right;
+        }
+
+        /* .bill table td:is(.text-left), .bill table th:is(.text-left) {
+                  text-align: left;
+                } */
+        .bill table td.text-left, .bill table th.text-left {
+            text-align: left;
+        }
+
+        /* .bill table td:is(.text-center), .bill table th:is(.text-center) {
+                  text-align: center;
+                } */
+        .bill table td.text-center, .bill table th.text-center {
+            text-align: center;
+        }
+
+        /* テーブルヘッダー */
+        .bill table thead th {
+            border-left: 1px solid #000;
+            border-right: 1px solid #000;
+            padding: 2px;
+        }
+
+        .bill table tbody tr {
+            page-break-inside: avoid !important;
+            -webkit-column-break-inside: avoid;
+            break-inside: avoid;
+            -webkit-region-break-inside: avoid;
+            page-break-after: auto !important;
+            border-top: 1px solid #fff;
+        }
+
+        .bill table thead tr th {
+            background-color: #d9d9d9;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            vertical-align: middle;
+            /* padding-block: 2px; */
+            padding: 2px;
+        }
+
+        /* テーブルボディ */
+        .bill table tbody tr td {
+            word-break: break-all;
+            word-wrap: break-word;
+            font-size: 12.34px;
+            white-space: normal;
+            overflow: hidden;
+            vertical-align: top;
+            /* border-bottom: 1px solid #fff; */
+            
+            page-break-inside: avoid;
+            page-break-after: auto;
+        }
+
+        .bill table tbody tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        /* 小計 */
+        /* .bill table tbody tr:is(.sub-total) td {
+                border-block: 1px solid #000;
+              } */
+        .bill table tbody tr.sub-total td {
+            border: 1px solid #000;
+        }
+
+        .bill .sub-total {
+            background-color: #f2f2f2;
+        }
+
+        /* テーブルフッター */
+        .bill table tfoot tr td {
+            font-size: 12.8px;
+            border: none;
+            padding: 2px;
+            border-top: 1px solid #000;
+        }
+
+            .bill table tfoot tr td .total-number {
+                /* padding-block-start: 2px; */
+                padding-top: 2px;
+                width: 100%;
+                border: 1px solid #000;
+                white-space: nowrap;
+                overflow: hidden;
+            }
+
+        .bill .tfoot3 {
+            /* border-block-start: 1px solid #000; */
+            border-top: 1px solid #000;
+            display: flex;
+            width: 100%;
+            align-items: center;
+            line-height: 1.5;
+            /* padding-block-start: 3px; */
+            padding-top: 3px;
+        }
+
+            .bill .tfoot3 .num-box {
+                display: flex;
+                align-items: center;
+                border: 1px solid #000;
+                width: fit-content;
+                margin-left: 128px;
+            }
+
+                .bill .tfoot3 .num-box .text {
+                    width: fit-content;
+                    padding: 0 8px;
+                }
+
+                .bill .tfoot3 .num-box .bg {
+                    background-color: #d9d9d9;
+                    font-weight: bold;
+                    text-align: center;
+                }
+
+                .bill .tfoot3 .num-box .text-number {
+                    width: 100px;
+                    text-align: right;
+                    /* padding-inline-end: 2px; */
+                    padding-right: 2px;
+                }
+
+            .bill .tfoot3 .title {
+                width: 80px;
+                text-align: center;
+            }
+
+            .bill .tfoot3 .total-number {
+                width: 88px;
+                border: 1px solid #000;
+                /* border-inline-end: none; */
+                border-right: none;
+                text-align: right;
+                box-sizing: border-box;
+                /* padding-inline-end: 2px; */
+                padding-inline-end: 2px;
+            }
+
+                .bill .tfoot3 .total-number:last-child {
+                    /* border-inline-end: 1px solid #000; */
+                    border-inline-end: 1px solid #000;
+                }
+
+        .bill .tfoot4 .total-number {
+            width: 77px;
+        }
+
+            .bill .tfoot4 .total-number .last {
+                width: 89px;
+            }
+
+            .bill .tfoot4 .total-number:nth-child(6) {
+                /* border-inline-end: 1px solid #000; */
+                border-right: 1px solid #000;
+            }
+
+        .bill .tfoot4.num-box {
+            /* margin-inline-start: 66.4px; */
+            margin-left: 66.4px;
+        }
+
+        .bill .tfoot4 .title {
+            width: 50px;
+        }
+
+        .bill .tfoot4 .last-text {
+            padding-left: 3px;
+        }
+
+        .table-detail-wrap table.totalsum, .table-detail-wrap table.totalsum tr td{
+            border: none;
+        }
+
+            .table-detail-wrap table.totalsum tr td .total-number {
+                padding-right:2px;
+            }
+    </style>
+</head>
+@{
+    V_ReportBillList firstRow = Model.Bill.BillList.FirstOrDefault();
+}
+<body class="bill">
+    <div class="">
+        <div class="head-wrapper">
+            <div class="customer-wrapper">
+                <p class="customer-address">
+                    &#12306;@((firstRow?.CustomerPost)?? "")<br />
+                    @((firstRow?.CustomerAddress1) ?? "")<br />
+                    @((firstRow?.CustomerAddress2) ?? "")
+                </p>
+                <p class="customer-name">
+                    <span class="name">@((firstRow?.CustomerName) ?? "")</span>
+                    <span class="dear">御中</span>
+                </p>
+            </div>
+            <div class="title-wrapper">
+                <div>
+                    <h1 class="title">請求書</h1>
+                    <p class="date">
+                        <span>請求年月日</span>
+                        <span>@((firstRow?.SeikyuMonth.ToString("yyyy/MM/dd")) ?? "")</span>
+                        <span>@* 頁&emsp;1 *@</span>
+                    </p>
+                </div>
+                <p class="month">@((firstRow?.SeikyuMonth.ToString("MM") ?? ""))月度分</p>
+            </div>
+            <div class="our-company-wrapper">
+                <p class="company-name">@((firstRow?.CompanyName) ?? "")</p>
+                <p class="company-info">
+                    &#12306;@((firstRow?.CompanyPost) ?? "")&emsp;@((firstRow?.CompanyAddress) ?? "")<br />
+                    TEL&nbsp;@((firstRow?.CompanyPhone) ?? "")<br />
+                    FAX&nbsp;@((firstRow?.CompanyFax) ?? "")<br />
+                    <span class="register-number">登録番号：@((firstRow?.CompanyInfoBank) ?? "")</span>
+                </p>
+            </div>
+        </div>
+        <div class="total-bill">
+            <div class="bill-info">
+                <p class="id">@((firstRow?.CustomerCode) ?? "")</p>
+                <p class="message">
+                    毎度お引立て有難うございます。下記の通りご請求申し上げます。
+                </p>
+                <p class="bank">
+                    ＜振込銀行＞<span class="note">※振込手数料は貴社負担でお願い致します。</span><br />
+                    広島銀行&emsp;広島西支店&emsp;&emsp;当座609650
+                </p>
+            </div>
+
+            <div class="total-table-wrapper">
+                <table style="width: 80%">
+                    <thead>
+                        <tr>
+                            <th style="width: 12.5%">前回請求額</th>
+                            <th style="width: 12.5%">今回入金額</th>
+                            <th style="width: 12.5%">(内 値引・調整)</th>
+                            <th style="width: 12.5%">繰越残高</th>
+                            <th style="width: 12.5%">
+                                今回売上課税<br />対象額(10%)
+                            </th>
+                            <th style="width: 12.5%">今回売上<br />消費税額(10%)</th>
+                            <th style="width: 12.5%">今回請求額</th>
+                            <th style="width: 12.5%">請求合計額</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>@(firstRow?.Seikyu_Previous.ToString("N0") ?? "")</td>
+                            <td>@(firstRow?.Received_Amount_This.ToString("N0") ?? "")</td>
+                            <td>@(firstRow?.Discount.ToString("N0") ?? "")</td>
+                            <td>@(firstRow?.Balance_Forward.ToString("N0") ?? "")</td>
+                            <td>@(firstRow?.Taxable_Amount.ToString("N0") ?? "")</td>
+                            <td>@(firstRow?.Tax_Amout.ToString("N0") ?? "")</td>
+                            <td>@(Model.Bill.SeikyuUnchin?.ToString("N0") ?? "")</td>
+                            <td>@(firstRow?.Seikyu_Total_Amount.ToString("N0") ?? "")</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="sign-boxes">
+                    <div class="sign"></div>
+                    <div class="sign"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="table-detail-wrap">
+            <table class="rows">
+                <thead>
+                    <tr>
+                        <th style="width: 4%">日付</th>
+                        <th style="width: 4%">車番</th>
+                        <th style="width: 10%">車&emsp;種</th>
+                        <th style="width: 10%">発&emsp;地</th>
+                        <th style="width: 10%">着&emsp;地</th>
+                        <th style="width: 7%">作業時間</th>
+                        <th style="width: 13%">品&emsp;名</th>
+                        <th style="width: 5%">数&emsp;量</th>
+                        <th style="width: 5%">単位</th>
+                        <th style="width: 5%">単価</th>
+                        <th style="width: 7%">運&emsp;賃</th>
+                        <th style="width: 5%">通行料</th>
+                        <th style="width: 10%">合計金額</th>
+                        <th style="width: 5%">摘&emsp;要</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        TNyukin nyukin = Model.Bill.Nyukin;
+                        decimal totalAmount = 0;
+                        if (nyukin != null)
+                        {
+                            if (nyukin.CashAmount > 0)
+                            {
+                                    <tr class="sub-header">
+                                        <td class="text-center">@nyukin.ProcessDate.ToString("MM/dd")</td>
+                                        <td class="text-center"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left">現金</td>
+                                        <td></td>
+                                        <td class="text-left"></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>@nyukin.CashAmount.ToString("N0")</td>
+                                        <td class="text-left"></td>
+                                    </tr>
+                                totalAmount += nyukin.CashAmount;
+                            }
+                            if (nyukin.TransferAmount > 0)
+                            {
+                                    <tr class="sub-header">
+                                        <td class="text-center">@nyukin.ProcessDate.ToString("MM/dd")</td>
+                                        <td class="text-center"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left">振込</td>
+                                        <td></td>
+                                        <td class="text-left"></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>@nyukin.TransferAmount.ToString("N0")</td>
+                                        <td class="text-left"></td>
+                                    </tr>
+                                totalAmount += nyukin.TransferAmount;
+                            }
+                            if (nyukin.DraftAmount > 0)
+                            {
+                                    <tr class="sub-header">
+                                        <td class="text-center">@nyukin.ProcessDate.ToString("MM/dd")</td>
+                                        <td class="text-center"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left">手形</td>
+                                        <td></td>
+                                        <td class="text-left"></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>@nyukin.DraftAmount.ToString("N0")</td>
+                                        <td class="text-left"></td>
+                                    </tr>
+                                totalAmount += nyukin.DraftAmount;
+                            }
+                            if (nyukin.CheckAmount > 0)
+                            {
+                                    <tr class="sub-header">
+                                        <td class="text-center">@nyukin.ProcessDate.ToString("MM/dd")</td>
+                                        <td class="text-center"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left">小切</td>
+                                        <td></td>
+                                        <td class="text-left"></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>@nyukin.CheckAmount.ToString("N0")</td>
+                                        <td class="text-left"></td>
+                                    </tr>
+                                totalAmount += nyukin.CheckAmount;
+                            }
+                            if (nyukin.ServiceChargeAmount > 0)
+                            {
+                                    <tr class="sub-header">
+                                        <td class="text-center">@nyukin.ProcessDate.ToString("MM/dd")</td>
+                                        <td class="text-center"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left">手数料</td>
+                                        <td></td>
+                                        <td class="text-left"></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>@nyukin.ServiceChargeAmount.ToString("N0")</td>
+                                        <td class="text-left"></td>
+                                    </tr>
+                                totalAmount += nyukin.ServiceChargeAmount;
+                            }
+                            if (nyukin.UnchinOffset > 0)
+                            {
+                                    <tr class="sub-header">
+                                        <td class="text-center">@nyukin.ProcessDate.ToString("MM/dd")</td>
+                                        <td class="text-center"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left">運賃相殺</td>
+                                        <td></td>
+                                        <td class="text-left"></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>@nyukin.UnchinOffset.ToString("N0")</td>
+                                        <td class="text-left"></td>
+                                    </tr>
+                                totalAmount += nyukin.UnchinOffset;
+                            }
+                            if (nyukin.GeneralOffset > 0)
+                            {
+                                    <tr class="sub-header">
+                                        <td class="text-center">@nyukin.ProcessDate.ToString("MM/dd")</td>
+                                        <td class="text-center"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left">一般相殺</td>
+                                        <td></td>
+                                        <td class="text-left"></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>@nyukin.GeneralOffset.ToString("N0")</td>
+                                        <td class="text-left"></td>
+                                    </tr>
+                                totalAmount += nyukin.GeneralOffset;
+                            }
+                            if (nyukin.AdjustmentAmount > 0)
+                            {
+                                    <tr class="sub-header">
+                                        <td class="text-center">@nyukin.ProcessDate.ToString("MM/dd")</td>
+                                        <td class="text-center"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left">調整金</td>
+                                        <td></td>
+                                        <td class="text-left"></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>@nyukin.AdjustmentAmount.ToString("N0")</td>
+                                        <td class="text-left"></td>
+                                    </tr>
+                                totalAmount += nyukin.AdjustmentAmount;
+                            }
+                            if (totalAmount > 0)
+                            {
+                                    <tr class="sub-total sub-header">
+                                        <td class="text-center">@DateTime.Now.ToString("MM/dd")</td>
+                                        <td class="text-center"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-left"></td>
+                                        <td class="text-center">□□&emsp;小&emsp;計&emsp;□□</td>
+                                        <td></td>
+                                        <td class="text-left"></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>@totalAmount.ToString("N0")</td>
+                                        <td class="text-left"></td>
+                                    </tr>
+                            }
+                        }
+                    }
+                    @{
+                        List<V_ReportBillList> bills = Model.Bill.BillList;
+                    }
+                    @foreach (var bill in bills)
+                    {
+                        <tr>
+                            <td class="text-center">@bill.Day.ToString("MM/dd")</td>
+                            <td class="text-center">@bill.SyabanNumber</td>
+                            <td class="text-left">@bill.SyasyuDisplay</td>
+                            <td class="text-left">@bill.StartAddress</td>
+                            <td class="text-left">@bill.EndAddress</td>
+                            <td class="text-left">@bill.WorkTime</td>
+                            <td class="text-left">@bill.ProductName</td>
+                            <td>@(bill.Quantity > 0 ? bill.Quantity.ToString("#,000.000") : "")</td>
+                            <td class="text-left">@bill.Unit</td>
+                            <td>@(bill.Price > 0 ? bill.Price.ToString("N0") : "")</td>
+                            <td>@(bill.FeeShip > 0 ? bill.FeeShip.ToString("N0") : "")</td>
+                            <td>@(bill.FeeCar > 0 ? bill.FeeCar.ToString("N0") : "")</td>
+                            <td>@(bill.TotalPrice > 0 ? bill.TotalPrice.ToString("N0") : "")</td>
+                            <td class="text-left">@bill.Remark</td>
+                        </tr>
+                    }
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="8" class="text-left"></td>
+                        <td colspan="2" class="text-center"></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+            <table class="rows totalsum">
+                <tbody>
+                    <tr>
+                        <td style="width: 4%"></td>
+                        <td style="width: 4%"></td>
+                        <td style="width: 10%"></td>
+                        <td style="width: 10%"></td>
+                        <td style="width: 10%"></td>
+                        <td style="width: 7%"></td>
+                        <td style="width: 13%"></td>
+                        <td style="width: 5%"></td>
+                        <td style="width: 5%"></td>
+                        <td style="width: 5%"></td>
+                        <td style="width: 7%"></td>
+                        <td style="width: 5%"></td>
+                        <td style="width: 10%"></td>
+                        <td style="width: 5%"></td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="8" class="text-left">
+                            ※「通行料」(フェリーも含む)は税抜き表示です。
+                        </td>
+                        <td colspan="2" class="text-center">頁&emsp;計</td>
+                        <td><p class="total-number">@bills.Sum(x => x.FeeShip).ToString("N0")</p></td>
+                        <td><p class="total-number">@bills.Sum(x => x.FeeCar).ToString("N0")</p></td>
+                        <td><p class="total-number">@bills.Sum(x => x.TotalPrice).ToString("N0")</p></td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+    <div class="">
+    </div>
+    <script>
+    
+    </script>
+</body>
+</html>

@@ -1,0 +1,701 @@
+﻿@model HaisyaWeb.Models.ReportModel.PDFReportModel
+@*
+  For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>@(Model.ReportSearchKubun.Report_Serch.Display_Title)</title>
+  <link href="~/lib/jquery-ui/dist/themes/base/jquery-ui.css" rel="stylesheet" />
+  <link href="~/lib/jquery-ui/dist/themes/base/theme.css" rel="stylesheet" />
+
+  <script src="~/lib/jquery/dist/jquery.js" charset="utf-8"></script>
+  <script src="~/lib/jquery-ui/dist/jquery-ui.js" charset="utf-8"></script>
+  <style>
+    @@media print {
+      body {
+        width: 297mm; /* A4 landscape */
+        height: 210mm; /* A4 landscape */
+      }
+    }
+
+    @@page {
+      size: A4 landscape;
+      margin: 5mm;
+    }
+
+    /*
+                    @@font-face {
+                     font-family: 'Hanazono';
+                     src: url('file:///D:/font/HanaMinA.ttf') format('truetype');
+                     }
+                    */
+
+    *:where( :not(html, iframe, canvas, img, svg, video, audio):not(svg *, symbol *) ) {
+      all: unset;
+      display: revert;
+    }
+    /* Preferred box-sizing value */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+    /* Reapply the pointer cursor for anchor tags */
+    a,
+    button {
+      cursor: revert;
+    }
+    /* Remove list styles (bullets/numbers) */
+    ol,
+    ul,
+    menu {
+      list-style: none;
+    }
+    /* For images to not be able to exceed their container */
+    img {
+      max-width: 100%;
+    }
+    /* removes spacing between cells in tables */
+    table {
+      border-collapse: collapse;
+    }
+
+    input,
+    textarea {
+      -webkit-user-select: auto;
+    }
+    /* revert the 'white-space' property for textarea elements on Safari */
+    textarea {
+      white-space: revert;
+    }
+    /* minimum style to allow to style meter element */
+    meter {
+      -webkit-appearance: revert;
+      appearance: revert;
+    }
+    /* reset default text opacity of input placeholder */
+    ::placeholder {
+      color: unset;
+    }
+    /* fix the feature of 'hidden' attribute.
+                                                                                                                                                                                                                                                        display:revert; revert to element instead of attribute */
+    :where([hidden]) {
+      display: none;
+    }
+    /* revert for bug in Chromium browsers
+                                                                                                                                                                                                                                                        - fix for the content editable attribute will work properly.
+                                                                                                                                                                                                                                                        - webkit-user-select: auto; added for Safari in case of using user-select:none on wrapper element*/
+    :where([contenteditable]:not([contenteditable="false"])) {
+      -moz-user-modify: read-write;
+      -webkit-user-modify: read-write;
+      overflow-wrap: break-word;
+      -webkit-line-break: after-white-space;
+      -webkit-user-select: auto;
+    }
+    /* apply back the draggable feature - exist only in Chromium and Safari */
+    :where([draggable="true"]) {
+      -webkit-user-drag: element;
+    }
+
+    .list-table {
+      font-family: "ＭＳ Ｐゴシック";
+      /* font-family: '游明朝'; */
+      font-size: 16px;
+      /* backgound-colorの有効化 */
+      -webkit-print-color-adjust: exact;
+      /* 最後のページで改ページが入らないように制御 */
+    }
+
+      .list-table:last-child {
+        page-break-after: auto;
+      }
+
+      .list-table .head-wrapper {
+      }
+
+        .list-table .head-wrapper .title {
+          font-size: 30px;
+          text-align: center;
+        }
+
+        .list-table .head-wrapper .page-num {
+          margin-left: 20px;
+        }
+
+      .list-table table {
+        width: 100%;
+        text-align: left;
+        text-align: right;
+      }
+        /* テーブル内の値がstringの場合はテキスト右寄せ */
+        .list-table table .string, .date {
+          text-align: left;
+        }
+
+        .list-table table td,
+        .list-table table th {
+          padding: 2px 5px;
+        }
+
+        .list-table table thead {
+          font-weight: bold;
+          border-top: 2px solid #000;
+          border-bottom: 4px double #000;
+          background-color: #ddd;
+        }
+
+        .list-table table tfoot {
+          border-top: 2px solid #000;
+        }
+
+          .list-table table tfoot td {
+            margin-block-start: 5px;
+          }
+
+          .list-table table tfoot tr {
+            background-color: #ddd;
+          }
+
+          .list-table table tfoot .total {
+            text-align: center;
+            font-weight: bold;
+          }
+
+    .page-print {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0px;
+    }
+
+    .page-init {
+      opacity: 0;
+    }
+
+    .page {
+      page-break-after: always;
+    }
+
+    .none-break {
+      page-break-inside: avoid;
+    }
+
+    .page-invisible {
+      opacity: 0;
+    }
+
+    .text-invisible {
+      color: transparent;
+      text-align: center;
+    }
+
+    thead {
+      font-weight: bold;
+      border-top: 2px solid #000;
+      border-bottom: 4px double #000;
+      background-color: #ddd;
+    }
+
+    tfoot {
+      font-weight: bold;
+      background-color: #ddd;
+    }
+
+    th div, td div {
+      display: inline-block;
+    }
+  </style>
+</head>
+
+@{
+  int maxRowOrder = Model.ReportOutputItemList.Any() ? Model.ReportOutputItemList.Max(x => x.Report_Output_Item_Master.Row_Order):0;
+  int maxSortOrder = Model.ReportOutputItemList.Any() ?  Model.ReportOutputItemList.Max(x => x.Sort_Order) :0;
+}
+
+<body class="list-table" style="position: relative">
+  <div class="page-init" id="xxx">
+    <div class="head-wrapper">
+      <p class="date-left date" style="width: 270px; display: inline-block; float: left; line-height: 52px;">@DateTime.Now.ToString("yyyy年MM月dd日")</p>
+      <h1 class="title" style="display: inline-block;">※※※&nbsp@(Model.ReportSearchKubun.Report_Serch.Display_Title)&nbsp;※※※</h1>
+      <p class="date-right" style="width: 270px; display: inline-block; float: right; line-height: 52px;">
+        <span class="date">対象締日＝@(Model.ShimeDay?.ToString("yyyy年MM月dd日"))</span>
+        <span class="page-num">頁&emsp; <span>1</span></span>
+      </p>
+    </div>
+    <table>
+      <thead>
+        @for (int i = 1; i <= maxRowOrder; i++)
+        {
+          <tr>
+            @for (int j = 1; j <= maxSortOrder; j++)
+            {
+              var item = Model.ReportOutputItemList.FirstOrDefault(x => x.Report_Output_Item_Master.Row_Order == i && x.Sort_Order == j);
+              @if (item != null)
+              {
+                <th data-row="@j"
+                  style="@(item.Report_Output_Item_Master.Display_Width != null && item.Report_Output_Item_Master.Display_Width > 0
+              ? "width:" + item.Report_Output_Item_Master.Display_Width + "px;"
+              : "")"
+                  class="@item.Report_Output_Item_Master.Display_Type">
+                  <div style="@(item.Report_Output_Item_Master.Display_Width != null && item.Report_Output_Item_Master.Display_Width > 0
+              ? "width:" + item.Report_Output_Item_Master.Display_Width + "px;"
+              : "")">
+                    @Html.Raw(item.Report_Output_Item_Master.Display_Title)
+                  </div>
+
+                </th>
+              }
+              else
+              {
+                <th class="text-invisible" data-row="@j">_</th>
+              }
+            }
+          </tr>
+        }
+      </thead>
+      <tbody>
+        @{
+          int rowTable = 0;
+
+        }
+        @if (Model.ReportCommonList != null)
+        {
+          @foreach (var item in Model.ReportCommonList)
+          {
+            rowTable++;
+            @for (var i = 1; i <= maxRowOrder; i++)
+            {
+              <tr data-row="@rowTable">
+
+                @for (var j = 1; j <= maxSortOrder; j++)
+                {
+                  var outputItem = Model.ReportOutputItemList.FirstOrDefault(x => x.Report_Output_Item_Master.Row_Order == i && x.Sort_Order == j);
+                  if (outputItem != null)
+                  {
+                    var data = item.getValueDynamic(outputItem.Report_Output_Item_Master);
+                    <td style="@(outputItem.Report_Output_Item_Master.Display_Width != null && outputItem.Report_Output_Item_Master.Display_Width > 0
+              ? "width:" + outputItem.Report_Output_Item_Master.Display_Width + "px;"
+              : "")"
+                      data-row="@j"
+                      data-model_property="@outputItem.Report_Output_Item_Master.Model_Prooerty"
+                      data-display_type="@outputItem.Report_Output_Item_Master.Display_Type"
+                      data-display_format="@outputItem.Report_Output_Item_Master.Display_Format"
+                      class=" @outputItem.Report_Output_Item_Master.Display_Type">
+                      <div style="@(outputItem.Report_Output_Item_Master.Display_Width != null && outputItem.Report_Output_Item_Master.Display_Width > 0
+                ? "width:" + outputItem.Report_Output_Item_Master.Display_Width + "px;"
+                : "")">
+                        @Html.Raw(data != null ? data : "")
+                      </div>
+                    </td>
+                  }
+                  else
+                  {
+                    <td class="text-invisible" data-row="@j">_</td>
+                  }
+                }
+
+              </tr>
+            }
+          }
+        }
+      </tbody>
+      @if (Model.ReportOutputItemList.Any(x => x.Report_Output_Item_Master.Report_Fotter == "SUM" || x.Report_Output_Item_Master.Report_Fotter == "AVG"))
+      {
+        <tfoot class="foot-all">
+
+          @{
+            string footerTitle1 = Model.ReportOutputItemList.Any(x => x.Report_Output_Item_Master.Report_Fotter == "AVG") ? "帳票の平均" : "";
+            string footerTitle2 = Model.ReportOutputItemList.Any(x => x.Report_Output_Item_Master.Report_Fotter == "SUM") ? "総合計" : "";
+            string footerTitle = footerTitle1 + (footerTitle1 != "" && footerTitle2 != "" ? "と" : "") + footerTitle2;
+          }
+          @for (var i = 1; i <= maxRowOrder; i++)
+          {
+            <tr>
+              @if (i == 1)
+              {
+                <td class="total" colspan="2" rowspan="@maxRowOrder">
+                  @("■ ■" + footerTitle + "■ ■")
+                </td>
+              }
+              @for (var j = 3; j <= maxSortOrder; j++)
+              {
+                var outputItem = Model.ReportOutputItemList.FirstOrDefault(x => x.Report_Output_Item_Master.Row_Order == i && x.Sort_Order == j);
+                if (outputItem != null && (outputItem.Report_Output_Item_Master.Report_Fotter == "SUM" || outputItem.Report_Output_Item_Master.Report_Fotter == "AVG"))
+                {
+                  <td style="@(outputItem.Report_Output_Item_Master.Display_Width != null && outputItem.Report_Output_Item_Master.Display_Width > 0
+              ? "width:" + outputItem.Report_Output_Item_Master.Display_Width + "px;"
+              : "")"
+                    data-row="@j"
+                    class="footer-aggregate" data-model_property="@(outputItem.Report_Output_Item_Master.Model_Prooerty)"
+                    data-display_type="@outputItem.Report_Output_Item_Master.Display_Type"
+                    data-display_format="@outputItem.Report_Output_Item_Master.Display_Format"
+                    data-type_aggregate="@outputItem.Report_Output_Item_Master.Report_Fotter">
+                    <div style="@(outputItem.Report_Output_Item_Master.Display_Width != null && outputItem.Report_Output_Item_Master.Display_Width > 0
+              ? "width:" + outputItem.Report_Output_Item_Master.Display_Width + "px;"
+              : "")">
+
+                      _
+                    </div>
+                  </td>
+                }
+                else
+                {
+                  <td class="text-invisible" data-row="@j">_</td>
+                }
+              }
+            </tr>
+          }
+
+        </tfoot>
+      }
+      @if (Model.ReportOutputItemList.Any(x => x.Report_Output_Item_Master.Page_Fotter == "SUM" || x.Report_Output_Item_Master.Page_Fotter == "AVG"))
+      {
+        <tfoot class="foot-per-page">
+          @{
+            string footerTitle1 = Model.ReportOutputItemList.Any(x => x.Report_Output_Item_Master.Page_Fotter == "AVG") ? "平均" : "";
+            string footerTitle2 = Model.ReportOutputItemList.Any(x => x.Report_Output_Item_Master.Page_Fotter == "SUM") ? "合計" : "";
+            string footerTitle = footerTitle1 + (footerTitle1 != "" && footerTitle2 != "" ? "と" : "") + footerTitle2;
+          }
+          @for (var i = 1; i <= maxRowOrder; i++)
+          {
+            <tr>
+              @if (i == 1)
+              {
+                <td class="total" colspan="2" rowspan="@maxRowOrder">
+                  @("■ ■" + footerTitle + "■ ■")
+                </td>
+              }
+              @for (var j = 3; j <= maxSortOrder; j++)
+              {
+                var outputItem = Model.ReportOutputItemList.FirstOrDefault(x => x.Report_Output_Item_Master.Row_Order == i && x.Sort_Order == j);
+                if (outputItem != null && (outputItem.Report_Output_Item_Master.Page_Fotter == "SUM" || outputItem.Report_Output_Item_Master.Page_Fotter == "AVG"))
+                {
+                  <td style="@(outputItem.Report_Output_Item_Master.Display_Width != null && outputItem.Report_Output_Item_Master.Display_Width > 0
+              ? "width:" + outputItem.Report_Output_Item_Master.Display_Width + "px;"
+              : "")"
+                    data-row="@j"
+                    class="footer-aggregate" data-model_property="@(outputItem.Report_Output_Item_Master.Model_Prooerty)"
+                    data-display_type="@outputItem.Report_Output_Item_Master.Display_Type"
+                    data-display_format="@outputItem.Report_Output_Item_Master.Display_Format"
+                    data-type_aggregate="@outputItem.Report_Output_Item_Master.Page_Fotter">
+                    <div style="@(outputItem.Report_Output_Item_Master.Display_Width != null && outputItem.Report_Output_Item_Master.Display_Width > 0
+              ? "width:" + outputItem.Report_Output_Item_Master.Display_Width + "px;"
+              : "")">
+
+                      _
+                    </div>
+                  </td>
+                }
+                else
+                {
+                  <td class="text-invisible" data-row="@j">_</td>
+                }
+              }
+            </tr>
+          }
+        </tfoot>
+      }
+
+
+
+    </table>
+  </div>
+  <div class="page-print">
+  </div>
+  <script>
+    function getDPI() {
+      const dpi = 96 * window.devicePixelRatio;
+      return dpi;
+    }
+
+    function getA4Dimensions(dpi) {
+      // A4 (210mm x 297mm)
+      const widthInInches = 210 / 25.4; // A4 width in inches
+      const heightInInches = 297 / 25.4; // A4 height in inches
+
+      const widthInPixels = Math.round(widthInInches * dpi);
+      const heightInPixels = Math.round(heightInInches * dpi);
+
+      return {
+        width: widthInPixels - 38 + 120 * widthInInches / heightInInches,
+        height: heightInPixels + 120
+      };
+    }
+
+    const sizeA4 = getA4Dimensions(getDPI())
+    console.log(sizeA4);
+    $("body").css("width", sizeA4.height + "px");
+
+    const pageHeight = sizeA4.width;
+
+    // split page A4
+    function splitPageA4() {
+      const headerWrapperHeight = $(".page-init .head-wrapper").outerHeight() || 0;
+      const headerWrapperMarginBottom = 5;
+      const headerTable = $(".page-init table thead").outerHeight() || 0;
+      const footerTable = $(".page-init table tfoot.foot-per-page").outerHeight() || 0;
+      let currentHeight = headerWrapperHeight + headerTable + footerTable + headerWrapperMarginBottom;
+      const firstRow = $(".page-init table tbody tr").first().data("row");
+      const lastRow = $(".page-init table tbody tr").last().data("row");
+      let startRow = 1;
+      let endRow = 1;
+      let numberPage = 1;
+
+      const trBodyTable = $(".page-init table tbody tr")
+
+      if (trBodyTable.length === 0) {
+        createPage(0, 0, 1);
+      }
+      let indexRow = 0;
+
+      for (let i = firstRow; i < lastRow; i++) {
+        const rowHeight = $(`.page-init table tbody tr[data-row=${i}]`).toArray().reduce((sum, item) => {
+          return sum + $(item).outerHeight()
+        }, 0);
+
+        if (currentHeight + rowHeight > pageHeight) {
+          currentHeight = headerWrapperHeight + headerTable + footerTable;
+          endRow = i - 1;
+          endRow = createPage(startRow, endRow, numberPage);
+          i = endRow + 1;
+          numberPage++;
+          startRow = i;
+        }
+        currentHeight += rowHeight;
+      }
+
+      // create page for last page
+      let iBreak = 0;
+      while (startRow <= $(".page-init table tbody tr").last().data("row") && iBreak < 10) {
+        endRow = createPage(startRow, $(".page-init table tbody tr").last().data("row"), numberPage)
+        startRow = endRow + 1;
+        numberPage++;
+        iBreak++;
+      }
+    }
+
+    // calculator footer table
+    function calculatorFooter(table, isAll) {
+      const footer = isAll ? table.find("tfoot.foot-all .footer-aggregate") : table.find("tfoot.foot-per-page .footer-aggregate");
+      footer.each(function () {
+        const typeAggregate = $(this).data("type_aggregate");
+        const modelProperty = $(this).data("model_property");
+        const displayType = $(this).data("display_type");
+        const displayFormat = $(this).data("display_format");
+        let value = 0;
+        const trBodyTable = isAll ? $(".page-init table tbody tr") : table.find("tbody tr");
+        if (typeAggregate === "SUM") {
+          value = trBodyTable.toArray().reduce((sum, tr) => {
+            const valueItem = $(tr).find(`td[data-model_property="${modelProperty}"]`).text().replace(/,/g, "");
+            if (["int", "float"].includes(displayType)) {
+              sum += parseFloat(valueItem) || 0;
+            }
+            return sum;
+          }, 0);
+        }
+        else if (typeAggregate === "AVG") {
+          const count = table.find("tbody tr").last().data("row") - table.find("tbody tr").first().data("row") + 1;
+          const total = trBodyTable.toArray().reduce((sum, tr) => {
+            const valueItem = $(tr).find(`td[data-model_property="${modelProperty}"]`).text().replace(/,/g, "");
+            if (["int", "float"].includes(displayType)) {
+              sum += parseFloat(valueItem) || 0;
+            }
+            return sum;
+          }, 0);
+          value = total / count;
+        }
+
+        formatValueItem($(this), value)
+      });
+    }
+
+    // create page pdf A4
+    // startRow: start row of page
+    // endRow: end row of page
+    // numberPage: number page
+    function createPage(startRow, endRow, numberPage) {
+      let i = 0;
+      const startTime = new Date().getTime();
+      console.log(`Page: ${numberPage}, startRow: ${startRow}, endRow: ${endRow}`)
+      while (startRow <= endRow) {
+        const page = $(`<div class="page-invisible page" data-page="${numberPage}"></div>`);
+        const isLastPage = endRow === $(".page-init table tbody tr").last().data("row");
+        const header = $(".page-init .head-wrapper").clone();
+        header.find(".page-num span").text(numberPage);
+        let table = $(".page-init table").clone();
+        table.find("tbody tr").each(function () {
+          const row = $(this).data("row");
+          if (row < startRow || row > endRow) {
+            $(this).remove();
+          }
+        });
+
+        // calculate value for footer All
+        if (!isLastPage) {
+          table.find("tfoot.foot-all").remove();
+        } else {
+          calculatorFooter(table, true)
+        }
+
+        // calculate value for footer per page
+        if (table.find("tfoot.foot-per-page").length > 0) {
+          calculatorFooter(table, false)
+        }
+
+        page.append(header);
+        page.append(table);
+        $(".page-print").append(page);
+
+        // check height of page and rollback endRow
+        const heightPageCurrent = $(`.page-print .page[data-page="${numberPage}"]`).outerHeight();
+
+        if (heightPageCurrent > pageHeight) {
+          i++;
+          endRow--;
+          $(`.page-print .page[data-page="${numberPage}"]`).remove();
+        } else {
+          break;
+        }
+      }
+      const endTime = new Date().getTime();
+      const totalTime = (endTime - startTime) / 1000;
+      const averageRecordInPage = endRow / numberPage;
+      const totalRecord = $(".page-init table tbody tr").last().data("row");
+      const remainingPage = (+totalRecord - endRow) / averageRecordInPage;
+      console.log(`Page: ${numberPage}, retry: ${i}, time: ${totalTime}s, estimate remaining page: ${remainingPage.toFixed(1)}`);
+      console.log("------------------------------");
+
+      return endRow;
+    }
+
+    // format Number
+    function formatNumber(value, format) {
+      try {
+        if (value === '' || value === null) {
+          return value;
+        }
+        let formatSplit = format.split(".");
+        let result = Number(value);
+        if (formatSplit.length > 1 && formatSplit[1].length) {
+          result = result.toFixed(formatSplit[1].length <= 11 ? formatSplit[1].length : 11);
+        } else {
+          if (!format && !Number.isInteger(result)) {
+            result = result.toFixed(2);
+          }
+        }
+
+        let [integer, decimal] = result.toString().split(".");
+
+        if (formatSplit[0] === "#,###") {
+          integer = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        }
+
+        return decimal ? [integer, decimal].join(".") : integer;
+      } catch (e) {
+        console.log(value, format, e);
+        return value;
+      }
+    }
+
+    // function to format value item
+    function formatValueItem(element, value) {
+      const displayFormat = element.data("display_format");
+      const displayType = element.data("display_type");
+
+      if (displayType == "int" || displayType == "float") {
+        value = formatNumber(value?.toString().replace(/,/g, ""), displayFormat);
+      }
+      element.text(value);
+    }
+
+    // init value item
+    function initValueItem() {
+      // format value item
+      $(".page-init td.int, .page-init td.float").each(function () {
+        const displayFormat = $(this).data("display_format");
+        const displayType = $(this).data("display_type");
+        const value = $(this).text().trim().replace(",", "");
+        formatValueItem($(this), value);
+      });
+
+      // change background color for row
+      $(".page-init table tbody tr").each(function (index) {
+        const row = $(this).data("row");
+        if (row % 2 == 0) {
+          $(this).css("background-color", "#eee")
+        }
+      });
+
+      calculatorFooter($(".page-init table"), true)
+      calculatorFooter($(".page-init table"), false)
+      $(".page-init table thead tr th").each(function () {
+        $(this).css("width", ($(this).outerWidth()) + "px")
+      })
+
+      // change width title header
+      const widthDateLeft = $(".page-init .head-wrapper .date-left").outerWidth();
+      const widthDateRight = $(".page-init .head-wrapper .date-right").outerWidth();
+      const widthPage = $("body").outerWidth();
+
+      $(".list-table .head-wrapper .title").css("width", (widthPage - widthDateLeft - widthDateRight - 5) + "px")
+    }
+
+    $(document).ready(function () {
+      const startTime = new Date().getTime();
+      initValueItem();
+      splitPageA4();
+
+      $(".page-init").remove();
+      $("body").append($(".page-print").html())
+      $(".page-print").remove();
+      $(".page").last().removeClass("page");
+
+      let html = $("html").html();
+      html = html.replace(/\.page-invisible/g, "._temp");
+
+      const url = '@Url.RouteUrl("Default", new { controller = "Report", Action = "CreatePdf" })'
+
+      const blob = new Blob([html], { type: 'text/plain' });
+      const formData = new FormData();
+      formData.append('fileHtml', blob, 'largeData.txt');
+      $.ajax({
+        url,
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        xhrFields: {
+          responseType: 'blob'
+        },
+        success: function (blob) {
+          const url = URL.createObjectURL(blob);
+
+          // window.open(url, "_blank");
+          $("body").css("width", "100%")
+          $("body").css("overflow", "hidden");
+
+          const iframe = document.createElement("iframe");
+          iframe.src = url;
+          iframe.type = "application/pdf";
+          iframe.style.width = "100%";
+          iframe.style.height = "100vh";
+          iframe.style.border = "none";
+          document.body.appendChild(iframe);
+
+          $(".page").remove();
+          $("div").remove();
+
+          const endTime = new Date().getTime();
+          const totalTime = (endTime - startTime) / 1000;
+          console.log(`Total time: ${totalTime}s`)
+        }
+      });
+    });
+  </script>
+</body>
+</html>

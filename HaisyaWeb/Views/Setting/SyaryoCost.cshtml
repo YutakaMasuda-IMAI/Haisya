@@ -1,0 +1,159 @@
+﻿@model SettingModel.SyaryoCostDto
+
+@{
+    Layout = "_LayoutForSettingWindow";
+
+    var listSyaryo = Model.M_SyaryoList.OrderBy(m => m.SortOrder).ToList();
+}
+
+<div id="content">
+  <!-- 2秒間だけアラートを表示する -->
+  <!--<div class="col-12">
+    <div id="alert-1" class="lead"></div>
+  </div>-->
+  <div hidden>
+    @Html.HiddenFor(model => Model.CompanyID)
+  </div>
+  <h2>
+    <span class="glyphicon glyphicon-chevron-right"></span>車輌コスト設定
+  </h2>
+
+  <div id="main">
+    <div class="setting-separator">車輌コスト<span style="font-size: 12px; color: red;"> - 運賃原価計算に使用する「車輌コスト」を設定。</span></div>
+
+    <div class="contents-wrap-middle">
+      <h4 class="">使い方</h4>
+      <span>
+        ・「距離間」が"1"は「金額」項目の値のみ、"2"以上は「金額」項目に「距離間」毎の「加算額」を加算します。<br>
+        <span style="background-color: #FF9966 ">・同時に複数のユーザーが変更処理を実施するとデータが壊れたり、不整合が発生したりします。必ず１ユーザーのみで実施してください。</span>
+      </span>
+    </div>
+
+    <div class="clearfix">
+      <div id="option_attendance_setting" class="sight-settings">
+        <div class="tables">
+          @{
+              for(int i = 0; i < listSyaryo.Count; i = i + 2)
+              {
+
+                <div  class=" clearfix">
+
+                  <div id="option_attendance_setting" class="sight-settings" style="display:flex;">
+
+                    @for (int m = 0; m <= 1; m++) {
+
+                      if (i + m < listSyaryo.Count) { 
+                      HaisyaWeb.Dto.M_Syaryo_Local itemSyaryo = listSyaryo[i + m];
+                  
+                    <div class="tables" style="width: 50%; margin-right: 10px;">
+                      <div class="">
+                        <div style="display: flex; margin:2px; background-color:cornsilk ">
+                          <div style="width: 50%; border: groove; text-align: center; vertical-align: middle; padding:0; font-size: 24px;">
+                            @(itemSyaryo.SYASYU)
+                          </div>
+                          <div style="width: 50%; border: groove; text-align: center; vertical-align: middle; padding: 0; font-size: 24px; ">
+                            @(itemSyaryo.KATA)
+                          </div>
+                          @if (Model.EditEnabled) { 
+                          <button class="btn btn-primary" style="width: 200px;margin: 2px;" onclick="ExecShowModalOnClick('@(itemSyaryo.Syaryo_ID)'); return false;">登録/修正</button>
+                          }
+                        </div>
+                      
+                      </div>
+                       <table class="table ex_tableSyaryoCost table-bordered" border="1" style="border: double; border-width: medium;">
+                        <thead>
+                          <tr align="center" style="background-color:aquamarine;">
+                            <th>車種</th>
+                            <th>型</th>
+                            <th>距離<br />(From)</th>
+                            <th>距離<br />(To)</th>
+                            <th class="vertical" style="font-size: 12px; padding: 0; text-align: center; vertical-align: middle;">距離間</th>
+                            <th>金額</th>
+                            <th>加算額</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          @{
+                              var listDetail = Model.M_SyaryoCostList.Where(m => m.Syasyu == itemSyaryo.SYASYU && m.Kata == itemSyaryo.KATA).OrderBy(m => m.From_Distance).ToList();
+                              foreach (var dItem in listDetail)
+                              {
+                              <tr>
+                                <td align="center" width="100px">@(dItem.Syasyu)</td>
+                                <td align="center" width="100px">@(dItem.Kata)</td>
+                                <td align="right" width="70px">@(dItem.From_Distance)</td>
+                                <td align="right" width="70px">@(dItem.To_Distance)</td>
+                                <td align="right" width="50px">@(dItem.Interval)</td>
+                                <td align="right" width="80px">@Convert.ToDouble(dItem.Amount).ToString("#,###")</td>
+                                <td align="right" width="80px">@Convert.ToDouble(dItem.AdditionAmount).ToString("#,###")</td>
+                              </tr>
+                            }
+                          }
+                        </tbody>
+                      </table>
+                    </div>
+                                }
+                              }
+                  </div>
+                </div>
+
+              }
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!--<div>-->
+  @*//モダール表示用のスペースを追加*@
+  <!--<div id="ModalHere" data-keyboard="false" data-backdrop="static"></div>
+  <div id="SortHere" hidden></div>
+</div>-->
+
+<script>
+
+  function closeModel() {
+    $('#ModalHere').find('.modal').modal('hide');
+    //$('#ModalHere').modal('hide');
+    $("#ModalHere").html('');
+  };
+
+  function closeModelAndRefresh() {
+    $('#ModalHere').find('.modal').modal('hide');
+    //$('#ModalHere').modal('hide');
+    location.reload();
+    document.getElementById("btnSortCommit").disabled = "disabled";
+    alertInfo("登録が完了しました。");
+  };
+
+
+  function ExecShowModalOnClick(paramSyaryoID) {
+
+    CommonWaitStart();
+
+    $.post('@Url.RouteUrl("Default", new { controller = "Setting", Action = "SyaryoCostModal" })',
+      {
+        CompanyID: $('#CompanyID').val(),
+        SyaryoID: paramSyaryoID,
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】" + response.partialView);
+          $("#ModalHere").html(response.partialView);
+          $("#ModalHere").find('.modal').modal('show');
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+          console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+        CommonWaitEnd();
+      });
+  };
+
+</script>

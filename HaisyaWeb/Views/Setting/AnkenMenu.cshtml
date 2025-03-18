@@ -1,0 +1,252 @@
+﻿@{
+    Layout = "MasterData3Menu";
+}
+
+<div id="content" style="font-size: 14px;">
+  <h2>
+    <span class="glyphicon glyphicon-chevron-right"></span>案件設定
+  </h2>
+  <div id="contents">
+
+    <div id="menu_01" class=" clearfix">
+      <div class="setting-separator">車輌設定<span style="font-size: 12px; color: red;"></span></div>
+      <div id="option_attendance_setting" class="sight-settings">
+        <div class="title">
+          車輌サイズ情報
+          <br>
+        </div>
+        <div class="buttons" style="padding: 5px 10px;">
+          <a asp-area="" asp-controller="Setting" asp-action="SyaryoSize" target="_blank">設定画面</a>
+        </div>
+        <div class="description">
+          <div style="min-width:305px;">
+            案件登録で選択可能な車輌情報を設定
+          </div>
+        </div>
+      </div>
+      <div id="option_attendance_setting" class="sight-settings">
+        <div class="title">
+          型
+          <br>
+        </div>
+        <div class="buttons" style="padding: 5px 10px;">
+          <a asp-area="" asp-controller="Setting" asp-action="Kata" target="_blank">設定画面</a>
+        </div>
+        <div class="description">
+          <div style="min-width:305px;">
+            統計や目標設定するための型を設定
+          </div>
+        </div>
+      </div>
+      <div id="option_attendance_setting" class="sight-settings">
+        <div class="title">
+          車輌情報
+          <br>
+        </div>
+        <div class="buttons" style="padding: 5px 10px;">
+          <a asp-area="" asp-controller="Setting" asp-action="Syaryo" target="_blank">設定画面</a>
+        </div>
+        <div class="description">
+          <div style="min-width:305px;">
+            案件登録で選択可能な車輌情報を設定
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="menu_02" class=" clearfix">
+      <div class="setting-separator">標準運賃計算設定<span style="font-size: 12px; color: red;"> - 全ての設定項目は、左の設定が初期値となっています。</span></div>
+      <div id="option_attendance_setting" class="sight-settings">
+        <div class="title">
+          運輸局別<br />待機時間料
+          <br>
+        </div>
+        <div class="buttons" style="padding: 5px 10px;">
+          <a asp-area="" asp-controller="Setting" asp-action="DefaultMoneyWaitTimeCalc" target="_blank">設定画面</a>
+        </div>
+        <div class="description">
+          <div style="min-width:305px;">
+            全国本トラック協会が公表している標準的な運賃から
+          </div>
+        </div>
+      </div>
+
+      <div id="option_attendance_setting" class="sight-settings">
+        <div class="title">
+          運輸局別<br />距離制運賃表
+          <br>
+        </div>
+        <div class="buttons" style="padding: 5px 10px;">
+          <a asp-area="" asp-controller="Setting" asp-action="DefaultMoney" target="_blank">設定画面</a>
+        </div>
+        <div class="description">
+          <div style="min-width:305px;">
+            全国本トラック協会が公表している標準的な運賃から
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+
+    <div id="menu_03" class=" clearfix">
+      <div class="setting-separator">原価計算設定<span style="font-size: 12px; color: red;"> - 全ての設定項目は、左の設定が初期値となっています。</span></div>
+
+
+      <div id="option_use_custom_request" class="sight-settings">
+        <div class="title" id="use_custom_request">
+          利用運送時の原価計算有無
+          <br>
+        </div>
+        <div class="buttons">
+          <div class="radio-button ">
+            <input name="use_custom_request" type="radio" value="1" id="use_custom_request_1" checked="">
+          </div>
+          <div class="radio-label ">
+            <label for="use_custom_request_1">計算する</label>
+          </div>
+          <div class="radio-button ">
+            <input name="use_custom_request" type="radio" value="0" id="use_custom_request_0">
+          </div>
+          <div class="radio-label ">
+            <label for="use_custom_request_0">計算しない</label>
+          </div>
+
+        </div>
+
+        <div class="description">
+          <div style="min-width:305px;">
+            計算しない」にすると、案件登録で「利用運送」を選択したときに原価計算を実施しません。
+          </div>
+        </div>
+      </div>
+
+      <div id="option_attendance_setting" class="sight-settings">
+        <div class="title">
+          車輌コスト設定
+          <br>
+        </div>
+        <div class="buttons" style="padding: 5px 10px;">
+          <a asp-area="" asp-controller="Setting" asp-action="SyaryoCost" target="_blank">設定画面</a>
+        </div>
+        <div class="description">
+          <div style="min-width:305px;">
+            走行距離に応じた車輌コストの計算値設定
+          </div>
+        </div>
+      </div>
+      <div id="option_attendance_setting" class="sight-settings">
+        <div class="title">
+          人件費コスト設定
+          <br>
+        </div>
+        <div class="buttons" style="padding: 5px 10px;">
+          <a asp-area="" asp-controller="Setting" asp-action="PersonnelExpenses" target="_blank">設定画面</a>
+        </div>
+        <div class="description">
+          <div style="min-width:305px;">
+            時間に応じた人件費コストの計算値設定
+          </div>
+        </div>
+      </div>
+      <div id="option_attendance_setting" class="sight-settings">
+        <div class="title">
+          燃料費コスト設定
+          <br>
+        </div>
+        <div class="buttons" style="padding: 5px 10px;">
+          <a asp-area="" asp-controller="Setting" asp-action="FuelCosts" target="_blank">設定画面</a>
+        </div>
+        <div class="description">
+          <div style="min-width:305px;">
+            距離に応じた燃料費コストの計算値設定
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="menu_04" class=" clearfix">
+      <div class="setting-separator">案件設定<span style="font-size: 12px; color: red;"> - 全ての設定項目は、左の設定が初期値となっています。</span></div>
+
+      <div id="option_attendance_setting" class="sight-settings">
+        <div class="title">
+          追加料金設定
+          <br>
+        </div>
+        <div class="buttons" style="padding: 5px 10px;">
+          <a asp-area="" asp-controller="Setting" asp-action="AnkenExcharge" target="_blank">設定画面</a>
+        </div>
+        <div class="description">
+          <div style="min-width:305px;">
+            案件登録時の追加料金項目の設定
+          </div>
+        </div>
+      </div>
+      <div id="option_attendance_setting" class="sight-settings">
+        <div class="title">
+          荷物グループ設定
+          <br>
+        </div>
+        <div class="buttons" style="padding: 5px 10px;">
+          <a asp-area="" asp-controller="Setting" asp-action="AnkenLuggageGroup" target="_blank">設定画面</a>
+        </div>
+        <div class="description">
+          <div style="min-width:305px;">
+            案件登録時の荷物情報項目の設定
+          </div>
+        </div>
+      </div>
+      <div id="option_attendance_setting" class="sight-settings">
+        <div class="title">
+          装備グループ設定
+          <br>
+        </div>
+        <div class="buttons" style="padding: 5px 10px;">
+          <a asp-area="" asp-controller="Setting" asp-action="AnkenEquipmentGroup" target="_blank">設定画面</a>
+        </div>
+        <div class="description">
+          <div style="min-width:305px;">
+            案件登録時の装備情報項目の設定
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+
+  </div>
+  <div id="scrollspy" class="bg-white clearfix">
+    <nav id="navbar" class="fixed">
+      <div class="setting-separator" style="width:250px;">項目メニュー</div>
+      <ul class="nav nav-list">
+        <li class="nav-btn active"><a href="#menu_01">車輌設定</a></li>
+        <li class="nav-btn"><a href="#menu_02">標準運賃計算設定</a></li>
+        <li class="nav-btn"><a href="#menu_03">原価計算設定</a></li>
+        <li class="nav-btn"><a href="#menu_04">案件設定</a></li>
+      </ul>
+      <hr>
+      <div class="btn-block">
+        <input type="submit" class="btn btn-warning" style="text-decoration: none; float:left; margin-left:10px" value="設定を保存">
+      </div>
+    </nav>
+  </div>
+</div>
+
+
+<script>
+
+  $(function () {
+
+    let tabs = $('.sub-btn'); // tabのクラスを全て取得し、変数tabsに配列で定義
+    $('.sub-btn').removeClass('active');
+    $('#tabAnkenMenu').addClass('active');
+
+
+
+  });
+
+
+</script>

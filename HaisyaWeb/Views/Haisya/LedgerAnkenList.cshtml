@@ -1,0 +1,126 @@
+﻿@model HaisyaWeb.Models.HaisyaModel.DataListModel
+
+
+<style>
+  #tableAnkenList {}
+    #tableAnkenList thead tr th {
+      padding: 0;
+    }
+    #tableAnkenList tbody tr td {
+      padding: 0 0 0 1px;
+      white-space: nowrap;
+      overflow: hidden;
+      border-width:1px;
+    }
+</style>
+
+@foreach (var ankens in Model.HaisyaDataLists?.GroupBy(a => Tuple.Create<string, string>(
+             Model.Search.SelectGroup switch
+             {
+               0 => "全て",
+               1 => a.KokyakuName,
+               2 => a.TantouID.ToString(),
+               3 => a.SyasyuDisplay,
+               4 => a.Area_Disp,
+               _ => "全て"
+             },
+             Model.Search.SelectGroup switch
+             {
+               0 => "全て",
+               1 => a.KokyakuName,
+               2 => a.Tantou_Name,
+               3 => a.SyasyuDisplay,
+               4 => a.Area_Disp,
+               _ => "全て"
+             }
+           )).OrderBy(h => h.Key.Item2))
+{
+  <details class="accordion-001" open>
+    <summary style="padding: .1em 1em;">@(ankens.Key.Item2)</summary>
+    <div class="" style="">
+      <table id="tableAnkenList" class="table ex_DataList" style="min-width:1000px;" border="1">
+        <thead  class="table-primary">
+          <tr align="center">
+            <th align="center" style="width: 10px; font-size: 8px;">配車<br />状況</th>
+            <th align="center" style="width: 10px; font-size: 8px;">案件<br />状況</th>
+            <th align="center" style="width: 20%;">荷主</th>
+            <th align="center" style="width: 25%;">開始終了場所</th>
+            <th align="center" style="width: 10px;">車種</th>
+            <th align="center" style="width: 15%;">商品</th>
+            <th align="center" style="width: 10px;">区分</th>
+            <th align="center" style="width: 10%;">乗務員</th>
+            <th align="center" style="width: 10px; font-size: 9px;">連<br />絡</th>
+            <th align="center" style="width: 10%;">備考</th>
+          </tr>
+        </thead>
+        <tbody>
+          @{
+                for (int i = 0; i < ankens.Count(); i++)
+                {
+                  var item = ankens.ElementAt(i);
+
+                  bool EditFlg = Model.GroupUserList.Any(m => m.Group_ID == item.TantouID);
+                  bool IsReported = false;
+
+                      <tr id="tr-anken-@(i)" style="font-size: 12px; cursor: pointer; background-color: @(item.Haisya_Status == 0 ? "khaki" : "white")"
+                            ondblclick="@(EditFlg ? $"AnkenRefenceModal({ankens.ElementAt(i).Anken_ID}, {item.AnkenDisplay_ID}, {item.Driver_ID ?? 0}, {item.SyaryoManagement_ID ?? 0})" : $"AnkenRefenceModal({ankens.ElementAt(i).Anken_ID}, {ankens.ElementAt(i).AnkenDisplay_ID})")"
+                        class="@(IsReported == true ? "item_anken_reported" : "item_anken") change_status table-anken-tr"
+                        data-anken-id="@item.Anken_ID"
+                        data-pointdate-s="@item.StartDatetime"
+                        data-anken-no="@item.Anken_No"
+                        data-ankendisplay-id="@item.AnkenDisplay_ID"
+                        data-haisya-id="@item.Haisya_ID"
+                        data-status="@item.Haisya_Status"
+                        data-day="@item.Day"
+                        data-data-i="@i">
+                      <td align="center">
+                        @(ankens.ElementAt(i).Haisya_Status == 0 ? "確定" : "暫定")
+                      </td>
+                      <td align="center">
+                        @(ankens.ElementAt(i).Anken_Status == 0 ? "確定" : ankens.ElementAt(i).Anken_Status == 1 ? "暫定" : "暫定(配車不要)")
+                      </td>
+                      <td align="left">
+                        @ankens.ElementAt(i).Customer_Name_Abbr
+                      </td>
+                      <td align="left">
+                        @ankens.ElementAt(i).Display2
+                      </td>
+                      <td align="center">
+                        @ankens.ElementAt(i).Syasyu
+                      </td>
+                      <td align="left" style="font-size: 10px;">
+                        @ankens.ElementAt(i).Luggage
+                      </td>
+                      <td align="center">
+                      @ankens.ElementAt(i).HaisyaKubunDisplay
+                      </td>
+                      <td align="left">
+                        @if (ankens.ElementAt(i).Haisya_Kubun == 1)
+                        {
+                          <label>@(item.SYABAN):@(item.Driver_Name)</label>
+                        }
+                        else
+                        {
+                          @item.Driver_Branch_Name
+                        }
+                      </td>
+                      <td align="center">
+                        @(ankens.ElementAt(i).Renraku_Kubun == 1 ? "済" : ankens.ElementAt(i).Renraku_Kubun == 2 ? "再" : "未")
+                      </td>
+                      <td align="left">
+                        @ankens.ElementAt(i).Remarks
+                      </td>
+                    </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+  </details>
+}
+
+<script>
+  $(function () {
+  });
+</script>

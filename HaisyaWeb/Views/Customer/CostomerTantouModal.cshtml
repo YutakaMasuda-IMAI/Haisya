@@ -1,0 +1,217 @@
+﻿@model HaisyaWeb.Models.CustomerTantouDto
+
+@{
+  Layout = "_ModalLayout";
+
+}
+
+<style>
+  .readonly {
+    background-color: lightgray;
+  }
+</style>
+
+
+<div role="dialog" id="modal-option" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:750px;">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: gainsboro;">
+        <h1 class="modal-title fs-3" id="exampleModalLabel">@(Model.Title)</h1>
+        <button type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
+      </div>
+      <div class="model-body">
+        <form id="form1">
+          <div id="hidden" hidden>
+            @Html.HiddenFor(model => Model.CompanyID)
+            @Html.HiddenFor(model => Model.BtnCaption)
+            @Html.HiddenFor(model => Model.Title)
+            @Html.HiddenFor(model => Model.CustomerID)
+            @Html.HiddenFor(model => Model.TantouID)
+          </div>
+          <div class="contents-wrap-middle" style="margin: 10px;">
+            <h4 class="">注意</h4>
+            <span>
+              ・一度データを登録すると物理削除は出来ません。「非表示フラグ」を立ててください。
+            </span>
+          </div>
+          <table class="table table-striped-columns table-bordered border-primary" border="1" style="margin: 10px; width:96%;">
+            <thead>
+              <tr style="background-color: aquamarine;">
+                <th align="center" style="text-align: center;">項目名</th>
+                <th align="center" style="text-align: center;">値</th>
+                <th align="center" style="text-align: center;">例</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr hidden>
+                <th width="200px">ID</th>
+                <td width="200px">@Html.TextBoxFor(model => Model.CustomerTantouData.Tantou_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px; padding: 0;" })</td>
+                <td width="400px"></td>
+              </tr>
+              <tr hidden>
+                <th width="200px">会社ID</th>
+                <td width="200px">@Html.TextBoxFor(model => Model.CustomerTantouData.Company_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px; padding: 0;" })</td>
+                <td width="400px"></td>
+              </tr>
+              <tr hidden>
+                <th width="200px">顧客ID</th>
+                <td width="200px">@Html.TextBoxFor(model => Model.CustomerTantouData.Customer_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px; padding: 0;" })</td>
+                <td width="400px"></td>
+              </tr>
+              <tr>
+                <th>部署名</th>
+                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Busyo_Name, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td></td>
+              </tr>
+              <tr>
+                <th>役職名</th>
+                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Position_Name, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td></td>
+              </tr>
+              <tr>
+                <th style="color: red;">担当者名</th>
+                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Tantou_Name, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td></td>
+              </tr>
+              <tr>
+                <th style="color: red;">担当者名カナ</th>
+                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Tantou_Name_Kana, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td></td>
+              </tr>
+              <tr>
+                <th style="color: red;">メール記載名</th>
+                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Tantou_Name_Abbr, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td></td>
+              </tr>
+              <tr>
+                <th style="color: red;">メールアドレス１</th>
+                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Mail_Address1, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td></td>
+              </tr>
+              <tr>
+                <th style="color: red;">メールアドレス２</th>
+                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Mail_Address2, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td></td>
+              </tr>
+              <tr>
+                <th style="color: red;">電話番号１</th>
+                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Phone1, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td></td>
+              </tr>
+              <tr>
+                <th style="color: red;">FAX番号１</th>
+                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Fax1, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td></td>
+              </tr>
+              <tr>
+                <th style="color: red;">電話番号２</th>
+                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Phone2, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td></td>
+              </tr>
+              <tr>
+                <th style="color: red;">FAX番号２</th>
+                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Fax2, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td></td>
+              </tr>
+              <tr>
+                <th>非表示フラグ</th>
+                <td class="">@Html.CheckBoxFor(model => Model.CustomerTantouData.Del_Flg, new { @class = "form-control text-left form-check-input" })</td>
+                <td>オンにすると、登録時に選択不可。</td>
+              </tr>
+              <tr>
+                <th>最終更新日</th>
+                <td>@Convert.ToDateTime(Model.CustomerTantouData.Update_Datetime).ToString("yyyy/MM/dd HH:mm:ss")</td>
+                <td hidden>@Html.TextBoxFor(model => Model.CustomerTantouData.Update_Datetime, null, new { @class = "form-control text-end" })</td>
+              </tr>
+            </tbody>
+          </table>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+  $(function () {
+
+
+  });
+
+  function regExec() {
+
+    if (varidationCheck()) {
+      return false;
+    }
+
+    //Formの参照を取る
+    var $form = $('#form1');
+
+    //alert($form.serialize());
+
+    $.ajax({
+          url: '@Url.RouteUrl("Default", new { controller = "Customer", Action = "CustomerTantouRegExec" })',
+          type: 'post',
+          data: $form.serialize(),
+        }).done(function (response) {
+          if (response.errorMessage != null && response.errorMessage !== '') {
+              alertError(`【エラー】${response.errorMessage}`);
+              return false;
+          } else {
+            closeModelAndRefresh();
+            return false;
+          }
+        }).fail(function (xhr) {
+          alert('【ネットワークエラー】:' + xhr);
+            console.log(xhr);
+            return false;
+        }).always(function (xhr, msg) {
+            console.log(xhr, msg);
+        });
+
+  };
+
+
+
+  function varidationCheck() {
+
+    if (!($('#CustomerTantouData_Tantou_Name').val() != null && isNaN($('#CustomerTantouData_Tantou_Name').val()) == false)) {
+      alert("担当者名が入力されていません");
+      $('#CustomerTantouData_Tantou_Name').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#CustomerTantouData_Tantou_Name').css('background-color', 'white');
+    }
+
+    if (!($('#CustomerTantouData_Tantou_Name_Abbr').val() != null && $('#CustomerTantouData_Tantou_Name_Abbr').val().length > 0)) {
+      alert("メール記載名が入力されていません");
+      $('#CustomerTantouData_Tantou_Name_Abbr').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#CustomerTantouData_Tantou_Name_Abbr').css('background-color', 'white');
+    }
+
+    if (!($('#CustomerTantouData_Mail_Address1').val() != null && $('#CustomerTantouData_Mail_Address1').val().length > 0)) {
+      alert("メールアドレス１が入力されていません");
+      $('#CustomerTantouData_Mail_Address1').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#CustomerTantouData_Mail_Address1').css('background-color', 'white');
+    }
+
+    if (varidationCheckForOverlap($('#CustomerTantouData_Tantou_Name').val())) {
+      alert("同じ担当者名が既に登録されています");
+      $('#CustomerTantouData_Tantou_Name').css('background-color', 'lightcoral');
+        return true;
+    } else {
+      $('#CustomerTantouData_Tantou_Name').css('background-color', 'white');
+    }
+
+
+    return false;
+
+  };
+
+</script>

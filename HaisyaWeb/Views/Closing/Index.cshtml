@@ -1,0 +1,388 @@
+﻿@model InvoiceModel.IDataListModel
+
+@{
+  Layout = "_Layout";
+}
+
+<head>
+    <link href="~/css/ConfirmationDialog.css" rel="stylesheet" type="text/css" />
+    <link href="~/css/List.css" rel="stylesheet" />
+</head>
+
+<div id="hedder" class="row" style="margin-bottom: -20px;">
+    <h6 class="heading-pagetitle">締め処理一覧</h6>
+    <form id="form-filter">
+        @Html.HiddenFor(m => m.Search.CompanyID)
+        <div class="form-group" style="width: 100%">
+            <div class="row">
+                <table class="table jbc-table table-hedder" style="padding: 0; border-collapse: collapse;width:100%; ">
+                    <tbody>
+                        <tr>
+                            <th width="320px">
+                                <div class="appeal-box box" style="vertical-align: middle; display: inline-block; padding: 0;">
+                                    <span class="calendar-nav" onclick="AddMonths(-1)" onselectstart="return false;">＜＜</span>
+                                    @Html.TextBoxFor(m => m.Search.Year_month, htmlAttributes: new
+                                    {
+                                        @class = "calender",
+                                        @readonly = "readonly",
+                                        @onchange = "Search()",
+                                        @style = "width: 120px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;"
+                                    })
+                                    <span class="calendar-nav" onclick="AddMonths(1)" onselectstart="return false;">＞＞</span>
+                                </div>
+                            </th>
+                            <th width="200px">
+                                @Html.LabelFor(model => model.Search.Closing_days, htmlAttributes: new { @class = Model.Controller == "Closing" ? "control-label text-end search-label2 required" : "control-label text-end search-label2", @style = "" })
+                                @Html.TextBoxFor(model => Model.Search.Closing_days, null, new { @class = "form-control search-text", @style = "width: 50px; display: inline-block;text-align:right", @maxlength = "2", @onchange = "Search()" })
+                            </th>
+                            <th width="400px">
+                                @Html.LabelFor(model => model.Search.Seikyu_Tantou_Name, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "" })
+                                @Html.DropDownListFor(model => Model.Search.Seikyu_Tantou_Name, new SelectList(Model.Search.SeikyuTantouSelectList, "Value", "Text"), new { @onchange = "Search();", @class = "form-control search-select", @style = "width:140px; display: inline-block;" })
+                            </th>
+                        </tr>
+                        <tr>
+                            <th colspan="4">
+                                <table>
+                                    <tr>
+                                        <th>
+                                            <label class="toggle-button-customer label" style="margin-right: 10px;">
+                                            <input id="customer-single-search" type="checkbox" />
+                                            </label>
+                                        </th>
+                                        <th>
+                                            <div style="display: inline-block; _display: inline; padding: 0;" class="div-search-customer">
+                                            @Html.LabelFor(m => m.Search.Customer1, htmlAttributes: new { @class = "label search-label2" })
+                                            <button id="btnCustomer1" class="btn btn-info btn-sm btn-select" style="width:80px;">選択</button>
+                                            @Html.TextBoxFor(m => m.Search.Customer1, htmlAttributes: new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 100px; display: inline-block;" })
+                                            @Html.TextBoxFor(m => m.Search.Customer_name1, htmlAttributes: new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 300px; display: inline-block;" })
+                                            @Html.Hidden("Customer_ID", "", new { @id = "hiddenCustomerID" })
+                                            </div>
+                                        </th>
+                                        <th><label class="label search-label2" id="lbl-to" style="visibility: hidden;">～</label></th>
+                                        <th>
+                                            <div style="display: inline-block; _display: inline; padding: 0;">
+                                            @Html.LabelFor(m => m.Search.Customer2, htmlAttributes: new { @id = "lbl-search-customer2", @class = "label search-label2", @style = "visibility: hidden;" })
+                                            <button id="btnCustomer2" class="btn btn-info btn-sm btn-select" style="width:80px;visibility: hidden; ">選択</button>
+                                            @Html.TextBoxFor(m => m.Search.Customer2, htmlAttributes: new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 100px;visibility: hidden;" })
+                                            @Html.TextBoxFor(m => m.Search.Customer_name2, htmlAttributes: new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 300px;visibility: hidden;" })
+                                            @Html.Hidden("Customer_IDTo", "", new { @id = "hiddenCustomerIDTo" })
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </table>
+                            </th>
+                        </tr>
+                        <tr>
+                            <th width="400px">
+                                @Html.LabelFor(m => m.Search.Publish_date, htmlAttributes: new { @class = "label search-label2 required" })
+                                @Html.TextBoxFor(m => m.Search.Publish_date, htmlAttributes: new
+                                    {
+                                        @class = "calender-publish-date form-control search-text",
+                                        @readonly = "readonly",
+                                        @style = "width: 180px; display: inline-block;text-align:center;"
+                                    })
+                            </th>
+                            <th colspan="2">
+                                @Html.LabelFor(m => m.Search.Sale_date, htmlAttributes: new { @class = "label search-label2" })
+                                @Html.TextBoxFor(m => m.Search.Sale_date, htmlAttributes: new
+                                    {
+                                        @class = "calender-sale-date form-control search-text",
+                                        @readonly = "readonly",
+                                        @style = "width: 180px; display: inline-block;text-align:center;"
+                                    })
+                            </th>
+                            <th colspan="2" align="right">
+                                <input type="button" value="一括締め処理" class="btn btn-primary align-items-end" onclick="PublishInvoice('', '', @((int)ConfirmationViews.BULK));" />
+                            </th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div id="invoice-data-list" class="data-list" style="">
+            @await Html.PartialAsync("_DataList.cshtml", Model)
+            </div>
+        </div>
+    </form>
+    <form id="summ-data" style="visibility: hidden;">
+    @await Html.PartialAsync("~/Views/Closing/_ClosingData.cshtml", new InvoiceModel.InvoiceSummModel())
+    </form>
+</div>
+
+
+@section Scripts {
+  <script>
+        const weeks = ["日", "月", "火", "水", "木", "金", "土"];
+
+        $(window).on('load', function () {
+            var disp = new Date();
+
+            /** 日付を文字列にフォーマットする */
+            var formatted = `${disp.getFullYear()}\年${(disp.getMonth() + 1).toString().padStart(2, '0')}\月${disp.getDate().toString().padStart(2, '0')}\日\(${weeks[disp.getDay().toString()]}\)`.replace(/\n|\r/g, '');
+
+            $('#Search_Publish_date').val(formatted);
+            Search();
+        });
+        function AddMonths(months) {
+            var ym = $('#Search_Year_month').val();
+            var dt = new Date(ym.slice(0, 4), ym.slice(5, 7) - 1, 1);
+            dt.setMonth(dt.getMonth() + months);
+            $('#Search_Year_month').val(YearMonthString(dt)).trigger('change');
+        };
+
+        $(function () {
+            $(".calender").datepicker({
+                buttonImage: "../img/calender.png",
+                dateFormat: "yy\年mm\月",
+            });
+
+            $(".calender-publish-date").datepicker({
+                buttonImage: "../img/calender.png",
+            });
+            $(".calender-sale-date").datepicker({
+                buttonImage: "../img/calender.png",
+            });
+
+            $('#customer-single-search').on('change', function () {
+                TurnCustomerRangeSearch($('#customer-single-search').prop('checked'));
+            });
+
+            $('#Search_Sale_date').on('change', function () {
+                $('#Sale_date').val($(this).val());
+            });
+            $('#Search_Publish_date').on('change', function () {
+                $('#Publish_date').val($(this).val());
+            });
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                Search();
+            }
+        });
+        let currentButton = '';
+        $('#btnCustomer1').on('click', function (event) {
+                currentButton = 'from';
+
+            let selectedId = $('#hiddenCustomerID').val();
+            let id = @(Model.Search.CompanyID);
+
+            openCommonDialogForCustomer(id, null, selectedId);
+
+            return false;
+
+        });
+
+        $('#btnCustomer2').on('click', function (event) {
+                currentButton = 'to';
+
+            let selectedId = $('#hiddenCustomerIDTo').val();
+            let id = @(Model.Search.CompanyID);
+
+            openCommonDialogForCustomer(id, null, selectedId);
+            return false;
+
+        });
+
+        function Search() {
+            if ($('#Search_Closing_days').val() == '' || $('#Search_Publish_date').val() == '') {
+            //    return;
+            }
+            $('#Year_month').val($('#Search_Year_month').val());
+            $('#Closing_days').val($('#Search_Closing_days').val());
+            $('#Publish_date').val($('#Search_Publish_date').val());
+            $('#Sale_date').val($('#Search_Sale_date').val());
+            $('#invoice').html('');
+            $('#invoice-list').html('');
+            $.ajax({
+                type: 'POST',
+                data: $('#form-filter').serialize(),
+                url: '@Url.RouteUrl("Default", new { controller = Model.Controller, Action = "Search" })',
+                success: function (result) {
+                    $('#invoice-data-list').html(result);
+                }
+            })
+        }
+
+        function TurnCustomerRangeSearch(on) {
+            if (on) {
+                $('#lbl-to').prop('style', 'display: inline-block;');
+                $('#lbl-search-customer2').prop('style', 'display: inline-block;');
+                $('#btnCustomer2').prop('style', 'width:80px;display: inline-block;');
+                $('#Search_Customer2').prop('style', 'width: 100px; display: inline-block;');
+                $('#Search_Customer_name2').prop('style', 'width: 300px; display: inline-block;');
+            } else {
+                $('#lbl-to').prop('style', 'display: inline-block;visibility:hidden;');
+                $('#lbl-search-customer2').prop('style', 'display: inline-block;visibility:hidden;');
+                $('#btnCustomer2').prop('style', 'width:80px;visibility:hidden;');
+                $('#Search_Customer2').prop('style', 'width: 100px;display: inline-block;visibility:hidden;');
+                $('#Search_Customer_name2').prop('style', 'width: 300px;display: inline-block;visibility:hidden;');
+
+                $("#Search_Customer2").val('');
+                $("#Search_Customer_name2").val('');
+            }
+        };
+
+        function ModalClose() {
+            $('#ModalHere').find('.modal').modal('hide');
+            $("#ModalHere").html('');
+        };
+
+        function selectCustomerSelectedCallBack(obj) {
+            console.log(obj);
+            if (currentButton === 'from') {
+                $('#Search_Customer1').val(obj["Customer_Branch_Code"]);
+                $('#Search_Customer_name1').val(obj["Customer_Branch_Name_Abbr"]);
+                $('#hiddenCustomerID').val(obj["Customer_Branch_ID"]);
+            } else if (currentButton === 'to') {
+                $('#Search_Customer2').val(obj["Customer_Branch_Code"]);
+                $('#Search_Customer_name2').val(obj["Customer_Branch_Name_Abbr"]);
+                $('#hiddenCustomerIDTo').val(obj["Customer_Branch_ID"]);
+            }
+            Search();
+        }
+        function ShowModal(action) {
+            var u = '@Url.RouteUrl("Default", new { controller = Model.Controller, action = "__ACTION__" })'.replace('__ACTION__', action);
+            $.post(u, { CompanyID: @(Model.Search.CompanyID) })
+                .done(function (response) {
+                    if (response.message != null) {
+                        alertError(`【エラー】${response.message}`);
+                        return false;
+                    } else {
+                        $('#ModalHere').html(response.partialView);
+                        $('#ModalHere').find('.modal').modal('show');
+                        return;
+                    }
+                })
+                .fail(function (xhr) {
+                    alertError('fail:' + xhr);
+                    console.log(xhr);
+                    return false;
+                })
+                .always(function (xhr, msg) {
+                });
+            return false;
+        }
+
+        function InvoiceHtml(idx, id) {
+            return `
+                <input type='hidden' name='Invoice_list[${idx}].Order' value='${$('#order-' + id).val()}' />
+                <input type='hidden' name='Invoice_list[${idx}].SelectRow' value='${$('#id-' + id).val()}' />
+                <input type='hidden' name='Invoice_list[${idx}].Invoice_address' value='${$('#name-' + id).val()}' />
+                <input type='hidden' name='Invoice_list[${idx}].Mail_address1' value='${$('#mail1-' + id).val()}' />
+                <input type='hidden' name='Invoice_list[${idx}].Mail_Address2' value='${$('#mail2-' + id).val()}' />
+                <input type='hidden' name='Invoice_list[${idx}].Customer_Branch_ID' value='${$('#branch-' + id).val()}' />
+                <input type='hidden' name='Invoice_list[${idx}].Shime_Day' value='${$('#shime-' + id).val()}' />
+                <input type='hidden' name='Invoice_list[${idx}].Uriage_Unchin_ID' value='${$('#uriage-' + id).val()}' />
+                `;
+            }
+
+        function CheckAll() {
+            event.preventDefault();
+            var f = $('#chk-all').val() > 0;
+            $('#chk-all').val(f ? 0 : 1);
+            $('#chk-all').html(f ? '全解除' : '全選択');
+            var h = '';
+            var idx = 0;
+            $('input:checkbox[name="invoice.Order"]').each(function () {
+                $(this).prop('checked', f);
+                var i = $(this).val();
+                if (f) {
+                    h += InvoiceHtml(idx++, i);
+                }
+            });
+            $('#invoice').html('');
+            $('#invoice-list').html(h);
+        }
+
+        function PublishInvoice(idx, id, v) {
+            event.preventDefault();
+            $('#View').val(v);
+            if (id !== '') {
+                $('#invoice').html(`
+                    <input type='hidden' name='invoice.Order' value='${$('#order-' + id).val()}' />
+                    <input type='hidden' name='invoice.SelectRow' value='${$('#id-' + id).val()}' />
+                    <input type='hidden' name='invoice.Invoice_address' value='${$('#name-' + id).val()}' />
+                    <input type='hidden' name='invoice.Mail_address1' value='${$('#mail1-' + id).val()}' />
+                    <input type='hidden' name='invoice.Mail_Address2' value='${$('#mail2-' + id).val()}' />
+                    <input type='hidden' name='invoice.Customer_Branch_ID' value='${$('#branch-' + id).val()}' />
+                    <input type='hidden' name='invoice.Shime_Day' value='${$('#shime-' + id).val()}' />
+                    <input type='hidden' name='invoice.Uriage_Unchin_ID' value='${$('#uriage-' + id).val()}' />
+                    `);
+            }
+            if (v == @((int)ConfirmationViews.BULK) && $('#invoice-list').html().trim().length == 0) {
+                alert('処理対象を選択してください');
+                return;
+            }
+            $.ajax({
+                type: 'POST',
+                data: $('#summ-data').serialize(),
+                url: '@Url.RouteUrl("Default", new { controller = "Closing", Action = "ConfirmPublishing" })',
+                success: function (result) {
+                    $('#ModalHere2').html(result);
+                    $('#ModalHere2').dialog({
+                        width: 450,
+                        height: 350,
+                        modal: true,
+                        buttons: [
+                            {
+                                text: '発行',
+                                style: 'width: 120px;',
+                                class: 'btn btn-primary align-items-end',
+                                click: function () {
+                                    $(this).dialog('close');
+                                    Publish(v, id);
+                                }
+                            },
+                            {
+                                text: 'キャンセル',
+                                style: 'width: 120px;',
+                                class: 'btn btn-primary align-items-end',
+                                click: function () {
+                                    $(this).dialog('close');
+                                }
+                            }
+                        ]
+                    });
+                    $(".ui-dialog-titlebar").hide();
+                }
+            })
+        }
+
+        function Publish(v, i) {
+            var actionFunc = (v == @((int)ConfirmationViews.BULK) ? 'Bulk' :
+                v == @((int)ConfirmationViews.MAIL) ? 'Mail' :
+                v == @((int)ConfirmationViews.PRINT) ? 'Print' : 'Preview');
+
+            var u = '@Url.RouteUrl("Default", new { controller = Model.Controller, action = "__ACTION__" })'.replace('__ACTION__', actionFunc);
+            $.ajax({
+                type: 'POST',
+                data: $('#summ-data').serialize(),
+                url: u,
+                success: function () {
+                    alert(`登録しました`);
+                },
+                error: function (xhr) {
+                    alert(`【ネットワークエラー】:${xhr}`);
+                }
+            })
+        }
+
+        function SelectInvoice() {
+            var i = 0;
+            var h = '';
+            $('input:checkbox[name="invoice.Order"]').each(function () {
+                if ($(this).is(':checked') == true) {
+                    h += InvoiceHtml(i++, $(this).val());
+                }
+            });
+            $('#invoice-list').html(h);
+        }
+  </script>
+
+  <script id="data-not-found" type="text/html">
+      <div class="no-data-row">
+          <h4 class="no-data-row-text">データ無し</h4>
+      </div>
+  </script>
+}

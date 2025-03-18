@@ -1,0 +1,23 @@
+﻿@model PartnerWeb.Models.AccountModel
+
+
+
+@{
+    ViewData["Title"] = "Logout";
+}
+
+
+
+
+
+@using (Html.BeginForm("LogoutExec", "Account", FormMethod.Post, new { id = "Form1" }))
+{
+    <div class="container">
+        <h2>Logout</h2>
+        <button type="submit" class="btn btn-primary">Log out</button>
+    </div>
+
+
+    @Html.HiddenFor(model => model.ReturnUrl)
+
+}

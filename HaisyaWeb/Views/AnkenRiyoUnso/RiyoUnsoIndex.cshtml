@@ -1,0 +1,123 @@
+﻿@model HaisyaWeb.Models.AnkenModel.AnkenRegisterModel
+
+@{
+  Layout = "_Layout";
+  ViewData["Title"] = "利用運送";
+}
+
+
+<head>
+  <meta charset="UTF-8">
+  <title>Display a map</title>
+  <link href="~/css/Anken.css" rel="stylesheet" />
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    #ZMap {
+      position: absolute;
+      top: 20px;
+      bottom: 0;
+      width: 100%;
+    }
+  </style>
+  <!-- ローダーのURLをscriptでロードする -->
+  <!-- ログイン認証の場合 -->
+  <script src="@(Model.MapsApiForJSUrl)"></script>
+
+</head>
+
+
+<form id="frmMain" class="contact-form">
+  <div hidden>
+    @Html.TextBoxFor(model => Model.SelectDay)
+
+    @Html.TextBoxFor(model => Model.SelectTantou)
+    @Html.TextBoxFor(model => Model.SelectSyasyu)
+    @Html.TextBoxFor(model => Model.SelectKata)
+    @Html.TextBoxFor(model => Model.SelectGroup)
+    @Html.TextBoxFor(model => Model.BackMenuAction)
+
+    <input type="text" id="AnkenID_Before" name="AnkenID_Before" value="@(Model.Anken_ID)" />
+    @Html.TextBoxFor(model => Model.Anken_ID)
+
+    @Html.TextBoxFor(model => Model.UserID)
+
+    @Html.TextBoxFor(model => Model.Anken_Latest_Order)
+    @Html.TextBoxFor(model => Model.Company_ID)
+    @Html.TextBoxFor(model => Model.Branch_ID)
+
+    @Html.TextBoxFor(model => Model.RegKubun)
+
+
+  </div>
+
+  <div id="divRegSelectKubun" class="model-body" style="height: 300px; text-align: center">
+    <div style="display: inline-flex;">
+      <label class="font-weight-bolder control-label" style="font-size: 30px;">まずは、利用運送情報を登録する方法を選択してください。。</label>
+      @if (Model.BackMenuAction == "Home") { }
+      else
+      {<button name="btnClose" value="Close" class="btn btn-secondary right-item" style="width: 200px; margin: 5px; margin-left: 50px; background-color: lightgray" onclick="return false;">閉じる</button>}
+    </div>
+    <div style="display: inline-flex; width: 90%; height: 60%;" class="center">
+      <div style="padding: 0 1em; border: .3em solid #00FF00; border-radius: 5px; margin: 0; font-size: 20px; width: 100%; vertical-align: middle; display: inline-flex;">
+        <button id="btnRegKubun" name="btnRegKubun" value="0" class="btn btn-secondary" style="height: 85%; width: 45%; margin-top: 0.8%; font-size: 30px; background-color: yellowgreen" onclick="return false;">都度運行</button>
+        <button id="btnRegKubun" name="btnRegKubun" value="1" class="btn btn-info" style="height: 85%; width: 45%; margin-top: 0.8%; font-size: 30px; background-color: aqua; margin-left: 60px; " onclick="return false;">固定運行</button>
+      </div>
+    </div>
+    <label class="font-weight-bolder control-label" style="font-size: 20px; color: red;">※「都度運行」は都度輸送場所を指定するような登録画面です。</label>
+    <label class="font-weight-bolder control-label" style="font-size: 20px; color: red;">※「固定運行」は決められた場所への運送に特化した登録画面です。</label>
+  </div>
+
+  <div id="divRegKotei">
+
+  </div>
+
+  <div id="divRegTsudo">
+
+  </div>
+</form>
+
+
+
+<script>
+  $(function () {
+    $(document).ready(function () {
+
+      if ($('#AnkenID_Before').val() == '0') {
+        $('#divRegDetail').hide();
+        $('#divRegSelectKubun').show();
+      } else {
+        $('#divRegSelectKubun').hide();
+        $('#divRegDetail').show();
+      };
+
+
+
+    });
+
+    $('button[name="btnRegKubun"]').on('click', function (event) {
+      var val = $(this).val();
+      $('#Reg_Kubun').val(val);
+      $('#divRegSelectKubun').hide();
+
+      if (val == '0') {
+        //都度運行
+        $('#divRegKotei').hide();
+        $('#divRegTsudo').show();
+      } else {
+        //固定運行
+        $('#divRegTsudo').hide();
+        $('#divRegKotei').show();
+      }
+
+    });
+
+
+  });
+
+
+</script>

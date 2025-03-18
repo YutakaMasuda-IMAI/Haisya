@@ -1,0 +1,40 @@
+{
+  "version": "1.0",
+  "defaultProvider": "jsdelivr",
+  "libraries": [
+    {
+      "library": "bootstrap@5.2.3",
+      "destination": "wwwroot/lib/bootstrap/"
+    },
+    {
+      "library": "jquery@3.6.3",
+      "destination": "wwwroot/lib/jquery/"
+    },
+    {
+      "library": "jquery-ui@1.13.2",
+      "destination": "wwwroot/lib/jquery-ui/"
+    },
+    {
+      "library": "jquery-validation@1.19.5",
+      "destination": "wwwroot/lib/jquery-validation/"
+      //},
+      //{
+      //  "library": "tablesorter@2.31.3",
+      //  "destination": "wwwroot/lib/tablesorter/"
+      //},
+      //{
+      //  "library": "fullcalendar@2.9.0",
+      //  "destination": "wwwroot/lib/fullcalendar/"
+      //},
+      //{
+      //  "library": "jquery"
+      //  "destination": "wwwroot/lib/jquery-easing/"
+    },
+    {
+      "library": "add-clear@2.0.7",
+      "destination": "wwwroot/lib/add-clear/"
+    }
+    
+
+  ]
+}

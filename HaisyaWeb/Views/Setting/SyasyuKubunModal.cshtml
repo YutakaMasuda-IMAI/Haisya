@@ -1,0 +1,196 @@
+﻿@model SettingModel.SyasyuKubunModalDto
+
+  @{
+      Layout = "_LayoutForSettingModal";
+  }
+
+<style>
+/*  .float-left {
+    float: left;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }
+
+  .float-right {
+    float: right;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }*/
+
+  .readonly {
+    background-color: lightgray;
+  }
+
+</style>
+
+
+
+  <div role="dialog" aria-hidden="true" tabindex="-1" class="modal fade" style="z-index: 1240;" data-backdrop="static" aria-labelledby="exampleModalCenterTitle">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:650px;">
+      <div class="modal-content">
+        <div class="modal-header" style="background-color: gainsboro;">
+          <h1 class="modal-title fs-3" id="exampleModalLabel">@(Model.Title)</h1>
+          <button type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
+          <button type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
+        </div>
+        <div class="model-body">
+          <form id="form1">
+            <div id="hidden" hidden>
+              @Html.HiddenFor(model => Model.BtnCaption)
+              @Html.HiddenFor(model => Model.Title)
+              @Html.HiddenFor(model => Model.SyasyuKubunID)
+            </div>
+            <div class="contents-wrap-middle" style="margin: 10px;">
+              <h4 class="">注意</h4>
+              <span>
+                ・一度データを登録すると物理削除は出来ません。「非表示フラグ」を立ててください。
+              </span>
+            </div>
+            <div>
+              <table class="table table-striped-columns table-bordered border-primary" border="1" style="margin: 10px; width:95%;">
+                <tbody>
+                  <tr hidden>
+                    <th width="200px">ID</th>
+                    <td width="300px">@Html.TextBoxFor(model => Model.SyasyuKubunData.SyasyuKubun_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px;" })</td>
+                    <td width="200px"></td>
+                  </tr>
+                  <tr hidden>
+                    <th width="200px">会社ID</th>
+                    <td width="300px">@Html.TextBoxFor(model => Model.SyasyuKubunData.Company_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px;" })</td>
+                    <td width="200px"></td>
+                  </tr>
+                  <tr hidden>
+                    <th width="200px">並び順</th>
+                    <td width="300px">@Html.TextBoxFor(model => Model.SyasyuKubunData.SortOrder, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px;" })</td>
+                    <td></td>
+                  </tr>
+                  <tr style="vertical-align: middle;">
+                    <th>車種サイズ</th>
+                    <td>@Html.TextBoxFor(model => Model.SyasyuKubunData.SIZE, null, new { @readonly = "readonly", @class = "form-control readonly", @style = "width: 95%; pointer-events: none;" })</td>
+                    <td>選択不可</td>
+                  </tr>
+                  <tr style="vertical-align: middle;">
+                    <th>型</th>
+                    <td>
+                      @Html.DropDownListFor(model => model.SyasyuKubunData.Kata_ID, new SelectList(Model.KataSelectList, "Value", "Text", "Selected"), "型を選択", new { @class = "form-control list dropDownList readonly", @style = "width: 95%; pointer-events: none;" })
+                      @Html.ValidationMessageFor(model => model.SyasyuKubunData.Kata_ID, "", new { id = "SelectKATA", @class = "text -danger align-middle" })
+                    </td>
+                    <td>選択不可</td>
+                  </tr>
+                  <tr style="vertical-align: middle;">
+                    <th>区分</th>
+                    <td>@Html.TextBoxFor(model => Model.SyasyuKubunData.KUBUN, null, new { @class = "form-control", @style = "width: 95%;" })</td>
+                    <td></td>
+                  </tr>
+                  <tr style="vertical-align: middle;">
+                    <th>備考</th>
+                    <td colspan="2">@Html.TextBoxFor(model => Model.SyasyuKubunData.Remarks, null, new { @class = "form-control", @style = "width: 95%;" })</td>
+                  </tr>
+                  <tr>
+                    <th>非表示フラグ</th>
+                    <td class="">@Html.CheckBoxFor(model => Model.SyasyuKubunData.Del_Flg, new { @class = "form-control text-left form-check-input" })</td>
+                    <td>オンにすると、登録時に選択不可。</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+<script>
+
+  $(function () {
+
+    setTimeout(function () {
+      $('.modal-backdrop')
+        .not('.modal-stack')
+        .css('z-index', 1239)
+        .addClass('modal-stack');
+    }, 0);
+
+  });
+
+  function regExec() {
+
+    if (varidationCheck()) {
+      return false;
+    }
+
+    //Formの参照を取る
+    var $form = $('#form1');
+
+    //alert($form.serialize());
+
+    $.ajax({
+          url: '@Url.RouteUrl("Default", new { controller = "Setting", Action = "SyasyuKubunRegExec" })',
+          type: 'post',
+          data: $form.serialize(),
+        }).done(function (response) {
+          if (response.errorMessage != null) {
+              alertError(`【エラー】${response.errorMessage}`);
+              return false;
+          } else {
+            closeModelAndRefresh();
+            return false;
+          }
+        }).fail(function (xhr) {
+          alert('【ネットワークエラー】:' + xhr);
+            console.log(xhr);
+            return false;
+        }).always(function (xhr, msg) {
+            console.log(xhr, msg);
+        });
+
+  };
+
+  function varidationCheck() {
+
+    if (!($('#SyasyuKubunData_SIZE').val() != null && $('#SyasyuKubunData_SIZE').val().length > 0)) {
+      alert("車種サイズが入力されていません");
+      $('#SyasyuKubunData_SIZE').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#SyasyuKubunData_SIZE').css('background-color', 'lightgray');
+    }
+
+    if (!($('#SyasyuKubunData_Kata_ID').val() != null && $('#SyasyuKubunData_Kata_ID').val().length > 0)) {
+      alert("型が入力されていません");
+      $('#SyasyuKubunData_Kata_ID').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#SyasyuKubunData_Kata_ID').css('background-color', 'lightgray');
+    }
+
+    if (!($('#SyasyuKubunData_KUBUN').val() != null && $('#SyasyuKubunData_KUBUN').val().length > 0)) {
+      alert("区分が入力されていません");
+      $('#SyasyuKubunData_KUBUN').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#SyasyuKubunData_KUBUN').css('background-color', 'white');
+    }
+    
+    if ($('#SyasyuKubunData_SortOrder').val() == 0) {
+      if (varidationCheckForOverlap($('#SyasyuKubunData_SIZE').val(), $('#SyasyuKubunData_Kata_ID').val(), $('#SyasyuKubunData_KUBUN').val())) {
+        alert("入力の車種・型は既に登録されています");
+        $('#SyasyuKubunData_KUBUN').css('background-color', 'lightcoral');
+        return true;
+      } else {
+        $('#SyasyuKubunData_KUBUN').css('background-color', 'white');
+      }
+    }
+    return false;
+
+  };
+
+
+
+</script>

@@ -1,0 +1,377 @@
+@model HaisyaWeb.Dto.PaymentInputDataListModel
+
+<div>
+  <div class="category-title" style="margin-top:20px;">請求情報</div>
+  <div class="table-div">
+    <table class="list">
+      <thead>
+        <tr>
+          <th class="detail-list" width="100px">請求月</th>
+          <th class="detail-list" width="40px">締日</th>
+          <th class="detail-list" width="100px">前回請求額</th>
+          <th class="detail-list" width="100px">今回入金額</th>
+          <th class="detail-list" width="100px">（内 値引・調整）</th>
+          <th class="detail-list" width="100px">繰越残高</th>
+          <th class="detail-list" width="100px">課税対象額</th>
+          <th class="detail-list" width="100px">消費税額</th>
+          <th class="detail-list" width="100px">今回請求額</th>
+          <th class="detail-list" width="100px">請求合計額</th>
+          <th class="detail-list" width="100px">入金予定日</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td hidden>
+            @Html.HiddenFor(m => Model.PrintSeikyu.Seikyu_ID)
+          </td>
+          <td align="center">
+            @Model.PrintSeikyu?.Seikyu_Month.ToString("yyyy/MM")
+          </td>
+          <td align="center">
+            @Model.PrintSeikyu?.Shime_Day.ToString()日
+          </td>
+          <td align="right">
+            @(Model.PrintSeikyu?.Seikyu_Previous?.ToString("#,0") ?? "0")
+          </td>
+          <td align="right">
+            @(Model.PrintSeikyu?.Received_Amount_This?.ToString("#,0") ?? "0")
+          </td>
+          <td align="right"></td>
+          <td align="right">
+            @(Model.PrintSeikyu?.Balance_Forward?.ToString("#,0") ?? "0")
+          </td>
+          <td align="right">
+            @(Model.PrintSeikyu?.Taxable_Amount?.ToString("#,0") ?? "0")
+          </td>
+          <td align="right">
+            @(Model.PrintSeikyu?.Tax_Amout?.ToString("#,0") ?? "0")
+          </td>
+          <td align="right">
+            @(Model.PrintSeikyu?.Seikyu_Amount?.ToString("#,0") ?? "0")
+          </td>
+          <td align="right">
+            @(Model.PrintSeikyu?.Seikyu_Total_Amount?.ToString("#,0") ?? "0")
+          </td>
+          <td align="center"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="category-title" style="margin-top: 20px; margin-bottom: 5px;">
+    <table class="no-line" style="">
+      <tr>
+        <td style="vertical-align:bottom;">入金情報</td>
+        <td style="text-align:right;"><button class="btn btn-outline-success" onclick="addRow('paymentTable')" style="width:100px;">行追加</button></td>
+      </tr>
+    </table>
+  </div>
+  <div class="table-div">
+    <table id="paymentTable" class="list">
+      <thead>
+        <tr>
+          <th class="detail-list2" width="120px">入金日</th>
+          <th class="detail-list2" width="100px">現金</th>
+          <th class="detail-list2" width="100px">振込</th>
+          <th class="detail-list2" width="100px">手形</th>
+          <th class="detail-list2" width="100px">手数料</th>
+          <th class="detail-list2" width="100px">運賃相殺</th>
+          <th class="detail-list2" width="100px">一般相殺</th>
+          <th class="detail-list2" width="100px">調整金</th>
+          <th class="detail-list2" width="100px">合計</th>
+          <th class="detail-list2">摘要</th>
+          <th class="detail-list2" width="50px">削除</th>
+        </tr>
+      </thead>
+      <tbody id="paymentTableBody">
+        @for (int i = 0; i < Model.PaymentNyukinList.Count; i++)
+        {
+          var item = Model.PaymentNyukinList[i];
+          <tr data-index="@i">
+            @Html.HiddenFor(m => Model.PaymentNyukinList[i].Nyukin_ID)
+            <td style="background-color: rgba(224, 234, 246, 1);">
+              @Html.TextBoxFor(m => Model.PaymentNyukinList[i].Process_Date, "{0:yyyy-MM-dd}", new { @class = "editable-field", @type = "date", @style = "width:100%;text-align:center;", onchange = "updateTotal(this)" })
+            </td>
+            <td style="background-color: rgba(224, 234, 246, 1);">
+              @Html.TextBoxFor(m => Model.PaymentNyukinList[i].Cash_Amount, "{0:0}", new { @class = "editable-field amount-input", @type = "tet", @style = "width:100%;text-align:right;", @maxlength = "10", onchange = "updateTotal(this)" })
+            </td>
+            <td style="background-color: rgba(224, 234, 246, 1);">
+              @Html.TextBoxFor(m => Model.PaymentNyukinList[i].Transfer_Amount, "{0:0}", new { @class = "editable-field amount-input", @type = "text", @style = "width:100%;text-align:right;", @maxlength = "10", onchange = "updateTotal(this)" })
+            </td>
+            <td style="background-color: rgba(224, 234, 246, 1);">
+              @Html.TextBoxFor(m => Model.PaymentNyukinList[i].Draft_Amount, "{0:0}", new { @class = "editable-field amount-input", @type = "text", @style = "width:100%;text-align:right;", @maxlength = "10", onchange = "updateTotal(this)" })
+            </td>
+            <td style="background-color: rgba(224, 234, 246, 1);">
+              @Html.TextBoxFor(m => Model.PaymentNyukinList[i].Service_Charge_Amount, "{0:0}", new { @class = "editable-field amount-input", @type = "text", @style = "width:100%;text-align:right;", @maxlength = "10", onchange = "updateTotal(this)" })
+            </td>
+            <td style="background-color: rgba(224, 234, 246, 1);">
+              @Html.TextBoxFor(m => Model.PaymentNyukinList[i].Unchin_Offset, "{0:0}", new { @class = "editable-field amount-input", @type = "text", @style = "width:100%;text-align:right;", @maxlength = "10", onchange = "updateTotal(this)" })
+            </td>
+            <td style="background-color: rgba(224, 234, 246, 1);">
+              @Html.TextBoxFor(m => Model.PaymentNyukinList[i].General_Offset, "{0:0}", new { @class = "editable-field amount-input", @type = "text", @style = "width:100%;text-align:right;", @maxlength = "10", onchange = "updateTotal(this)" })
+            </td>
+            <td style="background-color: rgba(224, 234, 246, 1);">
+              @Html.TextBoxFor(m => Model.PaymentNyukinList[i].Adjustment_Amount, "{0:0}", new { @class = "editable-field amount-input", @type = "text", @style = "width:100%;text-align:right;", @maxlength = "10", onchange = "updateTotal(this)" })
+            </td>
+            <td class="total-amount" style="text-align:right;">@item.Total_Amount.ToString("#,0")</td>
+            <td style="background-color: rgba(224, 234, 246, 1);">
+              @Html.TextBoxFor(m => Model.PaymentNyukinList[i].Remarks, new { @class = "editable-field", @style = "width:100%;" })
+            </td>
+            <td style="text-align:center;">
+              @if (i != 0)
+              {
+                <button class="red-button" onclick="deleteRow(this)">削除</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="category-title" style="margin-top: 20px; margin-bottom: 5px;">
+    <table class="no-line" style="">
+      <tr>
+        <td style="vertical-align:bottom;">返金情報</td>
+        <td style="text-align:right;"><button class="btn btn-outline-success" onclick="addRow('repaymentTable')" style="width:100px;">行追加</button></td>
+      </tr>
+    </table>
+  </div>
+  <div class="table-div">
+    <table id="repaymentTable" class="list">
+      <thead>
+        <tr class="yellow-header">
+          <th class="detail-list2" width="120px">返金日</th>
+          <th class="detail-list2" width="100px">現金</th>
+          <th class="detail-list2" width="100px">振込</th>
+          <th class="detail-list2" width="100px">手形</th>
+          <th class="detail-list2" width="100px">手数料</th>
+          <th class="detail-list2" width="100px">運賃相殺</th>
+          <th class="detail-list2" width="100px">一般相殺</th>
+          <th class="detail-list2" width="100px">調整金</th>
+          <th class="detail-list2" width="100px">合計</th>
+          <th class="detail-list2">摘要</th>
+          <th class="detail-list2" width="50px">削除</th>
+        </tr>
+      </thead>
+      <tbody id="repaymentTableBody">
+        @for (int i = 0; i < Model.RepaymentNyukinList.Count; i++)
+        {
+          var item = Model.RepaymentNyukinList[i];
+          <tr data-index="@i">
+            @Html.HiddenFor(m => Model.RepaymentNyukinList[i].Nyukin_ID)
+            <td style="background-color: rgba(224, 234, 246, 1);">
+              @Html.TextBoxFor(m => Model.RepaymentNyukinList[i].Process_Date, "{0:yyyy-MM-dd}", new { @class = "editable-field", @type = "date", @style = "width:100%;text-align:center;", onchange = "updateTotal(this)" })
+            </td>
+            <td style="background-color: rgba(224, 234, 246, 1);">
+              @Html.TextBoxFor(m => Model.RepaymentNyukinList[i].Cash_Amount, "{0:0}", new { @class = "editable-field amount-input", @type = "text", @style = "width:100%;text-align:right;", @maxlength = "10", onchange = "updateTotal(this)" })
+            </td>
+            <td style="background-color: rgba(224, 234, 246, 1);">
+              @Html.TextBoxFor(m => Model.RepaymentNyukinList[i].Transfer_Amount, "{0:0}", new { @class = "editable-field amount-input", @type = "text", @style = "width:100%;text-align:right;", @maxlength = "10", onchange = "updateTotal(this)" })
+            </td>
+            <td style="background-color: rgba(224, 234, 246, 1);">
+              @Html.TextBoxFor(m => Model.RepaymentNyukinList[i].Draft_Amount, "{0:0}", new { @class = "editable-field amount-input", @type = "text", @style = "width:100%;text-align:right;", @maxlength = "10", onchange = "updateTotal(this)" })
+            </td>
+            <td style="background-color: rgba(224, 234, 246, 1);">
+              @Html.TextBoxFor(m => Model.RepaymentNyukinList[i].Service_Charge_Amount, "{0:0}", new { @class = "editable-field amount-input", @type = "text", @style = "width:100%;text-align:right;", @maxlength = "10", onchange = "updateTotal(this)" })
+            </td>
+            <td style="background-color: rgba(224, 234, 246, 1);">
+              @Html.TextBoxFor(m => Model.RepaymentNyukinList[i].Unchin_Offset, "{0:0}", new { @class = "editable-field amount-input", @type = "text", @style = "width:100%;text-align:right;", @maxlength = "10", onchange = "updateTotal(this)" })
+            </td>
+            <td style="background-color: rgba(224, 234, 246, 1);">
+              @Html.TextBoxFor(m => Model.RepaymentNyukinList[i].General_Offset, "{0:0}", new { @class = "editable-field amount-input", @type = "text", @style = "width:100%;text-align:right;", @maxlength = "10", onchange = "updateTotal(this)" })
+            </td>
+            <td style="background-color: rgba(224, 234, 246, 1);">
+              @Html.TextBoxFor(m => Model.RepaymentNyukinList[i].Adjustment_Amount, "{0:0}", new { @class = "editable-field amount-input", @type = "text", @style = "width:100%;text-align:right;", @maxlength = "10", onchange = "updateTotal(this)" })
+            </td>
+            <td class="total-amount" style="text-align: right;">@item.Total_Amount.ToString("#,0")</td>
+            <td style="background-color: rgba(224, 234, 246, 1);">
+              @Html.TextBoxFor(m => Model.RepaymentNyukinList[i].Remarks, new { @class = "editable-field", @style = "width:100%;" })
+            </td>
+            <td style="text-align:center;">
+              @if (i != 0)
+              {
+                <button class="red-button" onclick="deleteRow(this)">削除</button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <div class="category-title" style="margin-top:20px;">請求入金履歴</div>
+  <div class="table-div">
+    <table class="list">
+      <thead>
+        <tr>
+          <th colspan="10" class="detail-list2">請求情報</th>
+          <th colspan="2" class="detail-list3">入金情報</th>
+        </tr>
+        <tr class="green-header">
+          <th class="detail-list" width="120px">請求月</th>
+          <th class="detail-list" width="50px">締日</th>
+          <th class="detail-list" width="100px">前回請求額</th>
+          <th class="detail-list" width="100px">今回入金額</th>
+          <th class="detail-list" width="130px">（内 値引・調整）</th>
+          <th class="detail-list" width="100px">繰越残高</th>
+          <th class="detail-list" width="100px">課税対象額</th>
+          <th class="detail-list" width="100px">消費税額</th>
+          <th class="detail-list" width="100px">今回請求額</th>
+          <th class="detail-list" width="100px">請求合計額</th>
+          <th class="detail-list" width="100px">最終入金日</th>
+          <th class="detail-list" width="100px">入金額計</th>
+        </tr>
+      </thead>
+      <tbody>
+        @if (Model.BillingPaymentHistoryList != null)
+        {
+          foreach (var item in Model.BillingPaymentHistoryList)
+          {
+            if (item.PrintSeikyu != null && Model.PrintSeikyu?.Seikyu_ID != item.PrintSeikyu.Seikyu_ID)
+            {
+            <tr>
+              <td style="text-align:center;">@item.PrintSeikyu.Seikyu_Month.ToString("yyyy/MM")</td>
+              <td style="text-align:center;">@item.PrintSeikyu.Shime_Day.ToString()日</td>
+              <td style="text-align:right;">@(item.PrintSeikyu.Seikyu_Previous?.ToString("#,0") ?? "0")</td>
+              <td style="text-align:right;">@(item.PrintSeikyu.Received_Amount_This?.ToString("#,0") ?? "0")</td>
+              <td style="text-align:right;"></td>
+              <td style="text-align:right;">@(item.PrintSeikyu.Balance_Forward?.ToString("#,0") ?? "0")</td>
+              <td style="text-align:right;">@(item.PrintSeikyu.Taxable_Amount?.ToString("#,0") ?? "0")</td>
+              <td style="text-align:right;">@(item.PrintSeikyu.Tax_Amout?.ToString("#,0") ?? "0")</td>
+              <td style="text-align:right;">@(item.PrintSeikyu.Seikyu_Amount?.ToString("#,0") ?? "0")</td>
+              <td style="text-align:right;">@(item.PrintSeikyu.Seikyu_Total_Amount?.ToString("#,0") ?? "0")</td>
+              <td style="text-align:center;">
+                @if(item.Process_Date != DateTime.MinValue)
+                {
+                @item.Process_Date.ToString("yyyy/MM/dd")
+                }
+              </td>
+              <td style="text-align:right;">@item.Deposit_Total.ToString("#,0")</td>
+            </tr>
+            }
+          }
+        }
+      </tbody>
+    </table>
+  </div>
+</div>
+
+
+<script>
+  // 行を追加するメソッド
+  function addRow(tableId) {
+    var $table = $('#' + tableId);
+    var $tbody = $table.find('tbody');
+    // 新しい行の作成と追加
+    var $newRow = $('<tr>').appendTo($tbody);
+    // 新しい行のインデックスを設定
+    var newIndex = $tbody.find('tr').length - 1;
+    $newRow.data('index', newIndex);
+
+    // 新しい行の内容の設定
+    var cellsHtml = `
+      <input type="hidden" name="RepaymentNyukinList[${newIndex}].Nyukin_ID" value="" />
+      <td style="background-color: rgba(224, 234, 246, 1);"><input type="date" name="RepaymentNyukinList[${newIndex}].Process_Date" class="editable-field" style="width:100%;text-align:center;" onchange="updateTotal(this)" /></td>
+      <td style="background-color: rgba(224, 234, 246, 1);"><input type="text" name="RepaymentNyukinList[${newIndex}].Cash_Amount" class="editable-field amount-input" style="width:100%;text-align:right;" onchange="updateTotal(this)" /></td>
+      <td style="background-color: rgba(224, 234, 246, 1);"><input type="text" name="RepaymentNyukinList[${newIndex}].Transfer_Amount" class="editable-field amount-input" style="width:100%;text-align:right;" onchange="updateTotal(this)"/></td>
+      <td style="background-color: rgba(224, 234, 246, 1);"><input type="text" name="RepaymentNyukinList[${newIndex}].Draft_Amount" class="editable-field amount-input" style="width:100px;text-align:right;"" onchange="updateTotal(this)"/></td>
+      <td style="background-color: rgba(224, 234, 246, 1);"><input type="text" name="RepaymentNyukinList[${newIndex}].Service_Charge_Amount" class="editable-field amount-input" style="width:100%;text-align:right;" onchange="updateTotal(this)"/></td>
+      <td style="background-color: rgba(224, 234, 246, 1);"><input type="text" name="RepaymentNyukinList[${newIndex}].Unchin_Offset" class="editable-field amount-input" style="width:100%;text-align:right;" onchange="updateTotal(this)"/></td>
+      <td style="background-color: rgba(224, 234, 246, 1);"><input type="tet" name="RepaymentNyukinList[${newIndex}].General_Offset" class="editable-field amount-input" style="width:100%;text-align:right;" onchange="updateTotal(this)"/></td>
+      <td style="background-color: rgba(224, 234, 246, 1);"><input type="text" name="RepaymentNyukinList[${newIndex}].Adjustment_Amount" class="editable-field amount-input" style="width:100%;text-align:right;" onchange="updateTotal(this)"/></td>
+      <td class="total-amount" style="text-align:right;">0</td>
+      <td style="background-color: rgba(224, 234, 246, 1);"><input type="text" name="RepaymentNyukinList[${newIndex}].Remarks" class="editable-field" style="width:100%;" /></td>
+      <td style="text-align:center;"><button class="red-button" onclick="deleteRow(this)">削除</button></td>
+    `;
+
+    $newRow.html(cellsHtml);
+  }
+
+  // 合計を計算するメソッド
+  function updateTotal(input) {
+    var $row = $(input).closest('tr');
+    var total = 0;
+    $row.find('.amount-input').each(function () {
+      total += parseFloat($(this).val()) || 0;
+    });
+    $row.find('.total-amount').text(total.toLocaleString());
+  }
+
+  // 行を削除するメソッド
+  function deleteRow(button) {
+    $(button).closest('tr').remove();
+  }
+
+  // 入金情報の変更確認
+  function comparePaymentNyukin() {
+    var paymentNyukinList = @Html.Raw(Json.Serialize(Model.PaymentNyukinList));
+    // 行数が異なる場合は即座にfalseを返す
+    if ($('#paymentTableBody tr').length !== paymentNyukinList.length) {
+      return false;
+    }
+
+    var isEqual = true;
+
+    $('#paymentTableBody tr').each(function (index) {
+      var $row = $(this);
+      var modelItem = paymentNyukinList[index];
+
+      // 各フィールドを比較
+      if (
+        $row.find('input[name$=".Process_Date"]').val() + 'T00:00:00' !== modelItem.process_Date ||
+        parseFloat($row.find('input[name$=".Cash_Amount"]').val() || 0) !== modelItem.cash_Amount ||
+        parseFloat($row.find('input[name$=".Transfer_Amount"]').val() || 0) !== modelItem.transfer_Amount ||
+        parseFloat($row.find('input[name$=".Draft_Amount"]').val() || 0) !== modelItem.draft_Amount ||
+        parseFloat($row.find('input[name$=".Service_Charge_Amount"]').val() || 0) !==
+          modelItem.service_Charge_Amount ||
+        parseFloat($row.find('input[name$=".Unchin_Offset"]').val() || 0) !== modelItem.unchin_Offset ||
+        parseFloat($row.find('input[name$=".General_Offset"]').val() || 0) !== modelItem.general_Offset ||
+        parseFloat($row.find('input[name$=".Adjustment_Amount"]').val() || 0) !== modelItem.adjustment_Amount ||
+        parseFloat($row.find('.total-amount').text().replace(/,/g, '') || 0) !== modelItem.total_Amount ||
+        $row.find('input[name$=".Remarks"]').val() !== modelItem.remarks
+      ) {
+        isEqual = false;
+        return false;
+      }
+    });
+
+    return isEqual;
+  }
+
+  // 返金情報の変更確認
+  function compareRepaymentNyukin() {
+    var repaymentNyukinList = @Html.Raw(Json.Serialize(Model.RepaymentNyukinList));
+    // 行数が異なる場合は即座にfalseを返す
+    if ($('#repaymentTableBody tr').length !== repaymentNyukinList.length) {
+      return false;
+    }
+
+    var isEqual = true;
+
+    $('#repaymentTableBody tr').each(function (index) {
+      var $row = $(this);
+      var modelItem = repaymentNyukinList[index];
+
+      // 各フィールドを比較
+      if (
+        $row.find('input[name$=".Process_Date"]').val() + 'T00:00:00' !== modelItem.process_Date ||
+        parseFloat($row.find('input[name$=".Cash_Amount"]').val() || 0) !== modelItem.cash_Amount ||
+        parseFloat($row.find('input[name$=".Transfer_Amount"]').val() || 0) !== modelItem.transfer_Amount ||
+        parseFloat($row.find('input[name$=".Draft_Amount"]').val() || 0) !== modelItem.draft_Amount ||
+        parseFloat($row.find('input[name$=".Service_Charge_Amount"]').val() || 0) !==
+          modelItem.service_Charge_Amount ||
+        parseFloat($row.find('input[name$=".Unchin_Offset"]').val() || 0) !== modelItem.unchin_Offset ||
+        parseFloat($row.find('input[name$=".General_Offset"]').val() || 0) !== modelItem.general_Offset ||
+        parseFloat($row.find('input[name$=".Adjustment_Amount"]').val() || 0) !== modelItem.adjustment_Amount ||
+        parseFloat($row.find('.total-amount').text().replace(/,/g, '') || 0) !== modelItem.total_Amount ||
+        $row.find('input[name$=".Remarks"]').val() !== modelItem.remarks
+      ) {
+        isEqual = false;
+        return false;
+      }
+    });
+
+    return isEqual;
+  }
+</script>

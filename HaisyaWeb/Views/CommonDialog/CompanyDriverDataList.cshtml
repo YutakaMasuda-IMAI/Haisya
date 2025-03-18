@@ -1,0 +1,164 @@
+﻿@model CommonDialogModel.SelectCompanyDriverModel
+
+
+<style>
+
+  .table-CompanyDriverlist-input {
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    font-size: initial;
+  }
+
+</style>
+
+
+<div hidden>
+  @Html.HiddenFor(Model => Model.MyTantouOnlyFlg)
+  @Html.HiddenFor(Model => Model.NowUsingSyaryoFlg)
+</div>
+
+
+@if (Model.CompanyDriverList.Count() == 0)
+{
+  <div style="width: 100%; background: #3366CC ">
+    <h4 style="text-align:left; margin-left: 20px;color: white;">データ無し</h4>
+  </div>
+}
+
+
+<table id="myTable" class="ex_table-CompanyDriver table-bordered border-info" width="100%" border="1">
+  <thead style="background-color: chartreuse;  ">
+    <tr align="center">
+      <th class="ex-table-th" style="vertical-align: middle;">選択</th>
+      <th class="ex-table-th" style="width: 20px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Employee_Number')" style="">担当<br />コード</a>
+      </th>
+      <th class="ex-table-th" style="width: 140px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Display_Name')" style="">乗務員名</a>
+      </th>
+      <th class="ex-table-th" style="width: 50px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Branch_Name_Abbr')" style="">退職日</a>
+      </th>
+      <th class="ex-table-th" style="width: 100px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Branch_ID')" style="">営業所</a>
+      </th>
+      <th class="ex-table-th" style="width: 100px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('')" style="">担当車輌</a>
+      </th>
+      <th class="ex-table-th" style="width: 50px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('')" style="">車番</a>
+      </th>
+      <th class="ex-table-th" style="width: 50px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('')" style="">開始</a>
+      </th>
+      <th class="ex-table-th" style="width: 50px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('')" style="">終了</a>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    @{
+      int i = 1;
+    }
+    @foreach (var item in Model.CompanyDriverList.OrderBy(m => m.Employee_Number).ToList())
+    {
+      int rem;
+      int div = Math.DivRem(i, 2, out rem);
+      string color = rem == 0 ? "khaki" : "	whitesmoke";
+      //var branch = Model.CompanyBranchList.FirstOrDefault(m => m.Branch_ID == item.Branch_ID);
+      //var syaryo = Model.CompanyDriverSyaryoList.FirstOrDefault(m => m.Driver_ID == item.Driver_ID && ((m.End_Date == null ? DateTime.Parse("2999/01/01") : m.End_Date) >= DateTime.Now));
+      //HaisyaWeb.Dto.M_SyaryoManagement_Local sm = null;
+      //if (syaryo != null)
+      //{
+      //  sm = Model.SyaryoManagementList.FirstOrDefault(m => m.SyaryoManagement_ID == syaryo.SyaryoManagement_ID);
+      //}
+
+    <tr style="font-size: 12px; font-weight: bold; background-color: @(color); height: 20px;">
+      <td width="60px" style="vertical-align: middle;">
+        <button name="btnSelectData" class="btn btn-success" style="width: 100%; padding:0;">選択</button>
+      </td>
+
+      <td hidden style="vertical-align: middle;" align="center">
+        @(item.Driver_ID)
+      </td>
+      <td style="vertical-align: middle;" align="center">
+        @(item.Employee_Number)
+      </td>
+      <td style="padding-left: 1rem;">
+        @(item.Display_Name)
+      </td>
+      <td style="text-align: center;">
+        @if (item.Taisyoku_Date != null)
+        {
+          @Convert.ToDateTime(item.Taisyoku_Date).ToString("yy/MM/dd")
+        }
+      </td>
+      <td style="text-align: center;">
+        @(item.Branch_Name_Abbr)
+      </td>
+      <td style="text-align: center;">
+        @Html.DisplayFor(modelItem => item.Syasyu) @Html.DisplayFor(modelItem => item.Kata)
+      </td>
+      <td style="text-align: center;">
+        @Html.DisplayFor(modelItem => item.Syaban_Number)
+      </td>
+      <td style="text-align: center;">
+        @if (item.Start_Date != null)
+        {
+          @Convert.ToDateTime(item.Start_Date).ToString("yy/MM/dd");
+        }
+      </td>
+      <td style="text-align: center;">
+        @if (item.End_Date != null)
+        {
+          @Convert.ToDateTime(item.End_Date).ToString("yy/MM/dd");
+        }
+      </td>
+
+      <td hidden>@Html.TextBoxFor(modelItem => item.Driver_ID, null, new { @readonly = "readonly", })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Employee_Number, null, new { @readonly = "readonly", @class = "table-CompanyDriverlist-input", @style = "text-align: center;" })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Display_Name, null, new { @readonly = "readonly", @class = "table-CompanyDriverlist-input", @style = "text-align: left;" })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Taisyoku_Date, "{0:yyyy/MM/dd}", new { @readonly = "readonly", @class = "table-CompanyDriverlist-input", @style = "text-align: center;" })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Branch_ID)</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.DriverSyaryo_ID)</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.SyaryoManagement_ID)</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.SyaryoManagement_ID1)</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Branch_ID)</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Branch_Name_Abbr)</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Syasyu, null, new { @readonly = "readonly", })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Kata, null, new { @readonly = "readonly", })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Syaban_Number, null, new { @readonly = "readonly", })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.SyasyuDisplay, null, new { @readonly = "readonly", })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Kata_Display, null, new { @readonly = "readonly", })</td>
+    </tr>
+
+
+
+      i++;
+    }
+  </tbody>
+</table>
+
+
+
+<script>
+
+  $(function () {
+
+
+    $('button[name="btnSelectData"]').on('click', function () {
+
+      let result = SelectCommonDialog($(this));
+
+      //alert(data);
+
+      selectOnClick(result);
+
+    });
+
+
+  });
+
+</script>

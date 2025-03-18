@@ -1,0 +1,87 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@ViewData["Title"] - 運送業務システム</title>
+
+  <link href="~/lib/jquery-ui/dist/themes/base/jquery-ui.css" rel="stylesheet" />
+  <link href="~/lib/jquery-ui/dist/themes/base/theme.css" rel="stylesheet" />
+  <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+  <link href="~/lib/glyphicons/css/bootstrap.css" rel="stylesheet" />
+  <link href="~/lib/sweetalert2/dist/sweetalert2.css" rel="stylesheet" />
+  @*<link href="~/lib/tablesorter/dist/css/theme.default.min.css" rel="stylesheet" />*@
+
+  <script src="~/lib/jquery/dist/jquery.js" charset="utf-8"></script>
+  <script src="~/lib/jquery-ui/dist/jquery-ui.js" charset="utf-8"></script>
+  <script src="~/lib/bootstrap/dist/js/bootstrap.js" charset="utf-8"></script>
+  <script src="~/lib/sweetalert2/dist/sweetalert2.js"></script>
+  <script src="~/lib/add-clear/addclear.js"></script>
+  @*<script src="~/lib/tablesorter/dist/js/jquery.tablesorter.js"></script>
+  <script src="~/lib/tablesorter/dist/js/jquery.tablesorter.combined.js"></script>
+  <script src="~/lib/tablesorter/dist/js/jquery.tablesorter.widgets.js"></script>*@
+  <script src="~/js/ympicker.js" charset="utf-8"></script>
+
+  <script src="~/js/site.js" asp-append-version="true"></script>
+
+  <link rel="stylesheet" href="~/css/site.css"  asp-append-version="true"/>
+  <link href="~/css/Tool.css" rel="stylesheet"  asp-append-version="true"/>
+
+  <style>
+  </style>
+</head>
+
+<body data-spy="scroll" data-target="#navbar" style="margin-left:10px; margin-right: 10px; margin-top: 20px;">
+  <div id="ALL">
+    <div id="wrap">
+      <div id="wrap-inside">
+        <div role="main">
+          @RenderBody()
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
+
+<script>
+  $(function () {
+
+
+    $('.nav-btn').on('click', function () {
+      $('.nav-btn').removeClass('active');
+      $(this).addClass('active');
+    });
+
+    $('.sub-btn').on('click', function () {
+      $('.sub-btn').removeClass('active');
+      $(this).addClass('active');
+    });
+
+
+  });
+
+  function WindowsClose() {
+
+    window.close();
+
+  }
+
+
+  function WindowsCloseModel() {
+    $('#ModalHere').find('.modal').modal('hide');
+    $("#ModalHere").html('');
+  };
+
+  function DialogClose(key) {
+    $('#' + key).dialog('close');
+    $('#' + key).html('');
+  };
+
+  function ClearHtml(key) {
+    $('#' + key).html('');
+  };
+
+</script>

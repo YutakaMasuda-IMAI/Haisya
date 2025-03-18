@@ -1,0 +1,184 @@
+﻿@model SettingModel.SenzokuListModel
+
+
+@{
+  Layout = "_LayoutForSettingWindow";
+
+
+}
+
+<style>
+  #SenzokuCommonDialog .btn-senzoku-new {
+    width: 150px;
+    padding: 0 1rem !important;
+  }
+
+  #SenzokuCommonDialog .btn-senzoku-edit {
+    width: 100px;
+    padding: 0 1rem !important;
+  }
+
+  #SenzokuCommonDialog .table-senzoku {
+  }
+    #SenzokuCommonDialog .table-senzoku th {
+      /*text-align:center;*/
+    }
+</style>
+
+<div id="SenzokuCommonDialog" style="font-size: 14px;">
+  <h2>
+    <span class="glyphicon glyphicon-chevron-right"></span>専属マスタ登録画面
+  </h2>
+  <div id="contents">
+
+    @{
+      var senzokus = Model.SenzokuList.OrderBy(m => m.Customer_Branch_Code).ToList();
+      
+    }
+
+    @foreach (var item in senzokus)
+    {
+      <div id="@(item.SenzokuID)" class="clearfix">
+        <div class="setting-separator">(@(item.Customer_Branch_Code))　@(item.Customer_Branch_Name_Abbr)<span style="margin-left: 3rem;font-size: 14px;">専属名：@(item.Senzoku_Name_Abbr)</span><span style="font-size: 12px; color: red; float: right;"><button class="btn btn-primary btn-senzoku-new" style="" onclick="SenzokuDriverRegModal('@(item.SenzokuID)','0'); return false;">乗務員追加</button></span></div>
+        <div id="option_attendance_setting" class="sight-settings">
+          <table class="table table-senzoku" >
+            <thead class="table-info">
+              <tr>
+                <th style="width: 150px; padding-left: 1rem;">選択</th>
+                <th>乗務員No</th>
+                <th>乗務員名</th>
+                <th>車種型</th>
+                <th>車番</th>
+                <th>開始日</th>
+                <th>終了日</th>
+              </tr>
+            </thead>
+            <tbody>
+              @{
+                var drivers = Model.SenzokuDriverList.Where(m => m.SenzokuID == item.SenzokuID).OrderBy(m => m.Customer_Branch_Code).ThenBy(m => m.From_Date).ThenBy(m => m.Employee_Number).ThenBy(m => m.Driver_ID).ToList();
+              }
+
+              @foreach (var driver in drivers)
+              {
+              <tr>
+                <td><button class="btn btn-success btn-senzoku-edit" onclick="SenzokuDriverRegModal('@(item.SenzokuID)','@(driver.Senzoku_Driver_ID)'); return false;">選択</button></td>
+                <td>@(driver.Employee_Number)</td>
+                <td>@(driver.Display_Name)</td>
+                <td>@(driver.Syasyu)@(driver.Kata)</td>
+                <td>@(driver.SYABAN)</td>
+                <td>@Convert.ToDateTime(driver.From_Date).ToString("yyyy/MM/dd")</td>
+                <td>@if (driver.To_Date != null) { Convert.ToDateTime(driver.From_Date).ToString("yyyy/MM/dd"); }</td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    }
+
+
+
+
+  </div>
+  <div id="scrollspy" class="bg-white clearfix">
+    <nav id="navbar" class="fixed">
+      <div class="setting-separator" style="width:250px;">専属一覧<span style="font-size:10px;margin-left: 0.5rem; color: red;">※ダブルクリックで修正画面</span></div>
+      <ul class="nav nav-list">
+        @foreach (var item in senzokus)
+        {
+          <li class="nav-btn"><a href="#@(item.SenzokuID)" ondblclick="SenzokuRegModal('@(item.SenzokuID)'); return false;">(@(item.Customer_Branch_Code))　@(item.Customer_Branch_Name_Abbr)</a></li>
+        }
+      </ul>
+      <hr>
+      <div class="btn-block">
+        <input type="submit" class="btn btn-warning" style="text-decoration: none; float:left; margin-left:10px" onclick="SenzokuRegModal(0); return false;" value="専属新規登録">
+      </div>
+    </nav>
+  </div>
+</div>
+
+
+
+<script>
+
+  /**
+   *
+   * @@param senzokuId
+   */
+  function SenzokuRegModal(senzokuId) {
+
+    CommonWaitStart();
+
+    $.post('@Url.RouteUrl("Default", new { controller = "Setting", Action = "JsonSenzokuRegModal" })',
+      {
+        senzokuId: senzokuId,
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】" + response.partialView);
+          $("#ModalHere").html(response.partialView);
+          DailogOpen("ModalHere", "専属設定", 1200, 620);
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+        console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+        CommonWaitEnd();
+      });
+
+
+
+  }
+
+  /**
+   *
+   * @@param senzokuId
+   * @@param senzokuDriverId
+   */
+  function SenzokuDriverRegModal(senzokuId, senzokuDriverId) {
+
+    CommonWaitStart();
+
+    $.post('@Url.RouteUrl("Default", new { controller = "Setting", Action = "JsonSenzokuDriverRegModal" })',
+    {
+      senzokuId: senzokuId,
+      senzokuDriverId: senzokuDriverId
+    })
+    .done(function (response) {
+      if (response.message != null) {
+          alertError(`【エラー】${response.message}`);
+          return false;
+      } else {
+        //alert("【done】" + response.partialView);
+        $("#ModalHere").html(response.partialView);
+        DailogOpen("ModalHere", "専属乗務員設定", 1200, 620);
+        return false;
+      }
+    })
+      .fail(function (xhr) {
+        console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+        CommonWaitEnd();
+      });
+
+
+
+
+  }
+
+  async function closeModelAndRefresh() {
+    $('#ModalHere').dialog('close');
+    $('#ModalHere').html('');
+    await alertInfo("登録が完了しました。");
+    // reloadメソッドによりページをリロード
+    window.location.reload();
+  };
+
+</script>

@@ -1,0 +1,106 @@
+﻿@model HomeModel.HomeSystemInfoModel
+
+<style>
+
+  .information-from-system {
+    font-size : 12px;
+    padding: 0.1rem;
+  }
+
+  .information-from-system table {
+    font-size: 12px;
+    padding: 0.1rem;
+  }
+
+    .information-from-system table thead tr th {
+      padding: 0.2rem;
+    }
+
+    .information-from-system table tbody tr td {
+      padding: 0.2rem;
+    }
+
+</style>
+
+
+<div class="information-from-system">
+  <table class="table ">
+    <thead class="table-active">
+      <tr align="center">
+        <th style="width: 150px;">
+          日時
+        </th>
+        <th style="width: 150px;">
+          カテゴリ
+        </th>
+        <th style="width: 150px;">
+          重要度
+        </th>
+        <th>
+          表題
+        </th>
+        <th style="width: 150px;">
+          期限
+        </th>
+      </tr>
+    </thead>
+    <tbody class="table-light">
+      @foreach (var item in Model.PortalInfos)
+      {
+      <tr data-id="@(item.Portal_Info_ID)" class="system-information-toggle">
+        <td align="center">
+          @Convert.ToDateTime(item.Insert_Datetime).ToString("yy/M/d HH:mm")
+        </td>
+        <td align="center">
+          @Html.DisplayFor(modelItem => item.Category)
+        </td>
+        <td align="center">
+          @Html.DisplayFor(modelItem => item.Critical_Kubun)
+        </td>
+        <td align="left">
+          @Html.DisplayFor(modelItem => item.Title)
+        </td>
+        <td align="center">
+          @Convert.ToDateTime(item.Limit_Date).ToString("yy/M/d HH:mm")
+        </td>
+      </tr>
+      <tr id="system_info@(item.Portal_Info_ID)" style="display: none;">
+        <td colspan="5" style="background-color: white; text-align: left; padding: 0.2rem 0.5rem;">
+          @Html.Raw(item.Detail)
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+
+</div>
+
+
+<script>
+
+  $('.system-information-toggle').click(function () {
+    var info_num = $(this).data('id');
+    $("#system_info" + info_num).toggle();
+  });
+
+  $('.system-information-toggle').dblclick(function () {
+    var info_num = $(this).data('id');
+
+    let form = document.createElement('form');
+
+    form.action = '@Url.RouteUrl("Default", new { controller = "Home", Action = "SubmitSystemInfo" })';
+    form.method = 'POST';
+
+    // body に追加
+    document.body.appendChild(form);
+
+    let html = '';
+    html += '            <input type="hidden" id="id" name="id" value="' + info_num + '" />';
+
+    form.innerHTML = html;
+    form.submit();
+
+
+  });
+</script>
+

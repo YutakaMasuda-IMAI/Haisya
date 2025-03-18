@@ -1,0 +1,123 @@
+﻿@using RenkeiDB.Dto.LuggageDto
+@using static RenkeiDB.Common.SystemConstants;
+
+@model IEnumerable<LuggagePrintDataDto>
+
+@{
+    var m = new LuggagePrintDataDto();
+    var todayStr = DateTime.Now.ToString("yyyy年M月dd日");
+}
+
+<html>
+<head>
+    <title>荷物共有一覧</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+        td {
+            word-break : break-word
+        }
+
+        .head-wrapper {
+            display: table;
+            width: 100%;
+            font-family: "ＭＳ Ｐゴシック", serif;
+        }
+
+            .head-wrapper .title-wrapper {
+                text-align: center;
+                display: table-cell;
+                vertical-align: bottom;
+            }
+
+                .head-wrapper .title-wrapper .title {
+                    font-size: 30px;
+                    font-weight: bold;
+                }
+
+            .head-wrapper .date-wrapper {
+                position: absolute;
+                top: 15px;
+                right: 10px;
+                font-size: 16px;
+                vertical-align: bottom;
+            }
+
+    </style>
+</head>
+<body>
+    <div class="head-wrapper" style="position: relative;">
+        <div class="date-wrapper">@todayStr</div>
+        <div class="title-wrapper">
+            <div>
+                <h1 class="title">荷物共有一覧</h1>
+            </div>
+        </div>
+    </div>
+    <table>
+        <thead>
+            <tr style="background-color: lightgray;">
+                <th style="width: 9%">@Html.LabelFor(mi => m.shareLuggageNo)</th>
+                <th style="width: 10%">@Html.LabelFor(mi => m.syasyuDisplay)</th>
+                <th style="width: 7%">@Html.LabelFor(mi => m.tumiDatetime)</th>
+                <th style="width: 15%">@Html.LabelFor(mi => m.tumiAddress)</th>
+                <th style="width: 15%">@Html.LabelFor(mi => m.oroshiAddress)</th>
+                <th style="width: 8%">@Html.LabelFor(mi => m.kokyakuName)</th>
+                <th style="width: 5%">@Html.LabelFor(mi => m.tantouGroupName)</th>
+                <th style="width: 5%">@Html.LabelFor(mi => m.luggageDisplay)</th>
+                <th style="width: 7%">@Html.LabelFor(mi => m.luggageWeight)</th>
+                <th style="width: 7%">@Html.LabelFor(mi => m.unchin)</th>
+                <th style="width: 7%">@Html.LabelFor(mi => m.tollKubun)</th>
+                <th style="width: 7%">@Html.LabelFor(mi => m.tollMoney)</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(mi => item.shareLuggageNo)</td>
+                    <td>@Html.DisplayFor(mi => item.syasyuDisplay)</td>
+                    <td>@Html.DisplayFor(mi => item.tumiDatetime)</td>
+                    <td>@Html.DisplayFor(mi => item.tumiAddress)</td>
+                    <td>@Html.DisplayFor(mi => item.oroshiAddress)</td>
+                    <td>@Html.DisplayFor(mi => item.kokyakuName)</td>
+                    <td>@Html.DisplayFor(mi => item.tantouGroupName)</td>
+                    <td>@Html.DisplayFor(mi => item.luggageDisplay)</td>
+                    <td class="text-right">@Math.Floor(item.luggageWeight).ToString(Format.Number)</td>
+                    <td class="text-right">@Math.Floor(item.unchin).ToString(Format.Number)</td>
+                    <td>
+                        @switch (item.tollKubun)
+                        {
+                            case 1:
+                                @:なし
+                                break;
+                            case 2:
+                                @:別途高速
+                                break;
+                            case 3:
+                                @:指定額
+                                break;
+                            case 4:
+                                @:高速代込み
+                                break;
+                            default:
+                                break;
+                        }
+                    </td>
+                    <td class="text-right">@Math.Floor(item.tollMoney).ToString(Format.Number)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</body>
+</html>

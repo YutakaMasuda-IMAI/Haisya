@@ -1,0 +1,135 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net5.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="IMG\AlignHorizontalStretch_16x.png" />
+    <None Remove="IMG\AlignLeft_16x.png" />
+    <None Remove="IMG\AlignMiddle_16x.png" />
+    <None Remove="IMG\AlignRight_16x.png" />
+    <None Remove="IMG\calendar-icon_34471.png" />
+    <None Remove="IMG\Copy_16x.png" />
+    <None Remove="IMG\Cut_16x.png" />
+    <None Remove="IMG\DecreaseFontSize_16x.png" />
+    <None Remove="IMG\IncreaseFontSize_16x.png" />
+    <None Remove="IMG\Paste_16x.png" />
+    <None Remove="IMG\RadioButtonList_16x.png" />
+    <None Remove="IMG\Signal_16x.png" />
+    <None Remove="IMG\StepBackwards_16x.png" />
+    <None Remove="IMG\StepForward_16x.png" />
+    <None Remove="IMG\trash.png" />
+    <None Remove="IMG\wif.jpeg" />
+    <None Remove="IMG\wifi.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="IMG\AlignLeft_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="IMG\AlignMiddle_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="IMG\AlignRight_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="IMG\calendar-icon_34471.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="IMG\Copy_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="IMG\Cut_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="IMG\DecreaseFontSize_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="IMG\IncreaseFontSize_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="IMG\Paste_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="IMG\RadioButtonList_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="IMG\Signal_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="IMG\StepBackwards_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="IMG\StepForward_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="IMG\wif.jpeg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="IMG\wifi.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CalcBinding" Version="2.5.2" />
+    <PackageReference Include="gong-wpf-dragdrop" Version="3.2.1" />
+    <PackageReference Include="LivetCask" Version="4.0.2" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1264.42" />
+    <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.39" />
+    <PackageReference Include="ModernWpfUI" Version="0.9.6" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+    <PackageReference Include="Prism.Core" Version="8.1.97" />
+    <PackageReference Include="ReactiveProperty" Version="8.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WebApplication\WebApplication.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="IMG\AlignHorizontalStretch_16x.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="IMG\trash.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ErrorUtils\" />
+    <Folder Include="ViewModel\Common\" />
+    <Folder Include="ViewModel\UserControls\" />
+    <Folder Include="View\Test\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="View\Tool\SelectSyasyuKata - コピー.xaml">
+      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
+    </Page>
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,1501 @@
+@using HaisyaWeb.Dto
+
+@model AccidentModel_Local
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "事故入力・修正・照会";
+}
+
+<head>
+<link href="~/css/Anken.css" rel="stylesheet" />
+<link href="~/css/Entry.css" rel="stylesheet" />
+<script src="https://app.zip-site.com/auth/jsapi/loader.htm"></script>
+<style>
+  .approval-buttons {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+  }
+  .approval-buttons button {
+    flex: 1;
+    background-color: rgba(91, 156, 213, 1);
+    color: white;
+    border: none;
+    border-radius: 20px;
+  }
+  .approval-buttons div {
+    height: 20px;
+    background-color: rgba(91, 156, 213, 1);
+    width: 50px;
+    border: none;
+    align-self: center;
+  }
+  .blue-button {
+    border-radius: 8px;
+    background-color: rgba(91, 156, 213, 1);
+    border: none;
+    color: white;
+    white-space: nowrap;
+  }
+  #jikoNo {
+    padding: 5px 10px;
+  }
+</style>
+</head>
+
+<body>
+    <div id="hiddenItem" hidden>
+        @Html.HiddenFor(model => Model.Search.FromDate)
+        @Html.HiddenFor(model => Model.Search.ToDate)
+        @Html.HiddenFor(model => Model.Search.AccidentReason)
+        @Html.HiddenFor(model => Model.Search.AccidentName)
+        @Html.HiddenFor(model => Model.Search.DriverName)
+        @Html.HiddenFor(model => Model.Search.CarNumber)
+        @Html.HiddenFor(model => Model.Search.WfRadioButtons)
+    </div>
+  <div id="hedder" class="row">
+    <div class="table-div">
+      <table class="head-button">
+        <tr>
+          <td><h3 id="labelTitle" class="heading-40">事故入力・修正・照会</h3></td>
+          <td style="text-align:right;"><button id="draftingButton" class="btn btn-outline-dark" style="width:100px;" onClick="DraftingButton();">起案</button></td>
+          <td style="text-align:right;"><button id="submitButton" class="btn btn-outline-success" style="width:120px;" onClick="SubmitButton();">承認</button></td>
+          <td style="text-align:right;"><button id="sendBackButton" class="btn btn-outline-info" style="width:120px;" onClick="SendBackButton();">差戻し</button></td>
+          <td style="text-align:right;"><button id="cancelButton" class="btn btn-outline-warning" style="width:100px;" onClick="CancelButton();">キャンセル</button></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div id="jikoNo">
+    <span>事故No.</span>
+    <span>
+      @Model.Jiko.Jiko_No
+    </span>
+  </div>
+  <div class="approval-buttons">
+    <button id="step1" onClick="ChangeStatus(1)">発生</button>
+    <div></div>
+    <button id="step2" onClick="ChangeStatus(2)">荷主<br>対応</button>
+    <div></div>
+    <button id="step3" onClick="ChangeStatus(3)">事故<br>報告</button>
+    <div></div>
+    <button id="step4" onClick="ChangeStatus(4)">保険（相手）<br>対応</button>
+    <div></div>
+    <button id="step5" onClick="ChangeStatus(5)">修理・経費</button>
+    <div></div>
+    <button id="step6" onClick="ChangeStatus(6)">完了</button>
+  </div>
+
+  @if (Model.Jiko.Jiko_ID != 0)
+  {
+    <div style="margin-top: 20px;">
+      <table class="list">
+        <thead>
+          @if (Model.JikoWorkFlowList != null)
+          {
+            <tr>
+              @foreach (var item in Model.JikoWorkFlowList)
+              {
+                <th class="bgcolor" style="width:120px;text-align:center;">@item.WorkFlowRoute.Jiko_WorkFlow_Display</th>
+              }
+              <td class="noborder">&nbsp;</td>
+            </tr>
+          }
+        </thead>
+        <tbody id="WorkFlowRouteListTableBody">
+          @if (Model.JikoWorkFlowList != null)
+          {
+            <tr>
+              @foreach (var item in Model.JikoWorkFlowList)
+              {
+                <td style="text-align:center;">
+                  @(item.WorkFlowStatus != null && item.WorkFlowStatus.Approval_Datetime.HasValue ? item.WorkFlowStatus.Approval_Datetime.Value.ToString("yy/M/d") : "")
+                  <br>
+                  @if (item.WorkFlowStatus != null && item.WorkFlowStatus.Approval_User_ID == Model.Login_User_ID && item.WorkFlowStatus.Approval_Kubun == 3)
+                  {
+                    <span>差戻し</span>
+                  }
+                  else
+                  {
+                    <span>&nbsp;</span>
+                  }
+                  <br>
+                  <div style="@(item.WorkFlowFlg ? "background-color: rgba(160, 206, 99, 1);" : "")">
+                      @item.Display_Name
+                  </div>
+                </td>
+              }
+              <td class="noborder">&nbsp;</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+
+
+  <div style="width: 100%; margin-top: 20px; display: flex;">
+    <div style="width: 60%; margin-right: 2%;">
+      <div class="top-side">
+        <table class="no-line">
+          <tr>
+            <th><span class="required">事故区分</span></th>
+            <td>
+              @Html.DropDownListFor(
+                  m => m.Jiko.Jiko_Kubun,
+                  new SelectList(Model.JikoKubunDto, "Value", "Text"),
+                  new { @class = "form-control list dropdown ", @style = "width:140px;" }
+              )
+            </td>
+          </tr>
+          <tr>
+            <th><span class="required">事故名</span></th>
+            <td>
+              @Html.TextBoxFor(model => model.Jiko.Jiko_Display, new { @class = "form-control" })
+            </td>
+          </tr>
+          @{
+            var jikoWeatherKubun = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Jiko_Weather_Kubun")?.Jiko_Items_Val ?? string.Empty;
+            var addressValue = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Address")?.Jiko_Items_Val ?? string.Empty;
+            var addressRemarksValue = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Address_Remarks")?.Jiko_Items_Val ?? string.Empty;
+            var roadWidth = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Road_Width")?.FormatNumberOrRawValue() ?? string.Empty;
+            var roadSituation = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Road_Situation")?.Jiko_Items_Val ?? string.Empty;
+            var limitSpeed = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Limit_Speed")?.FormatNumberOrRawValue() ?? string.Empty;
+            var drivingSpeed = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Driving_Speed")?.FormatNumberOrRawValue() ?? string.Empty;
+            var roadCondition = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Road_Condition")?.Jiko_Items_Val ?? string.Empty;
+            var workKubun = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Work_Kubun")?.Jiko_Items_Val ?? string.Empty;
+            var workSituation = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Work_Situation")?.Jiko_Items_Val ?? string.Empty;
+            var policeStation = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Police_Station")?.Jiko_Items_Val ?? string.Empty;
+            var policeOfficer = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Police_Officer")?.Jiko_Items_Val ?? string.Empty;
+            var policePhone = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Police_Phone")?.Jiko_Items_Val ?? string.Empty;
+            var nitifiNumber = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Notifi_Number")?.FormatNumberOrRawValue() ?? string.Empty;
+            var policeRemarks = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Police_Remarks")?.Jiko_Items_Val ?? string.Empty;
+            var policeSection = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Police_Section")?.Jiko_Items_Val ?? string.Empty;
+            var remarks = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Remarks")?.Jiko_Items_Val ?? string.Empty;
+            if (Model.Jiko.Jiko_ID == 0)
+            {
+              Model.Jiko.Jiko_Date = DateTime.Now.Date;
+            }
+          }
+          <tr>
+            <th><span class="required">事故発生日</span></th>
+            <td>
+              <table class="no-line">
+                <tr>
+                  <td width="200px">
+                    @Html.TextBoxFor(model => model.Jiko.Jiko_Date, "{0:yyyy-MM-dd}", new { @type = "date", @class = "form-control", @style = "width:140px;text-align:center;" })
+                  </td>
+                  <th style="width:80px;"><span>天候</span></th>
+                  <td>
+                    @Html.DropDownList(
+                        "Jiko_Weather_Kubun",
+                        new SelectList(Model.WeatherKubunDto, "Value", "Text", jikoWeatherKubun),
+                        new { @class = "form-control list dropdown", @style = "width:80px;" }
+                    )
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <th><span class="required">配車担当者</span></th>
+            <td>
+              @Html.DropDownListFor(
+                  m => m.Jiko.Haisya_Group_ID,
+                  new SelectList(Model.UserGroupDataDto, "Value", "Text"),
+                  new { @class = "form-control list dropdown", @style = "width:120px;" }
+              )
+            </td>
+          </tr>
+          <tr>
+            <th><span class="required">当事者</span></th>
+            <td>
+              <div style="display: flex;">
+                <button class="blue-button" onClick="DriverDialog()">設定</button>
+                @Html.TextBoxFor(model => model.Driver_Display_Name, new { @class = "form-control", @style = "width:200px;margin-left:5px;", @readonly = "readonly" })
+                @Html.HiddenFor(model => model.Jiko.Driver_ID)
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th style="vertical-align: top;">車輌</th>
+            <td>
+              <div style="display: flex;">
+                <button class="blue-button" onClick="SayryoDialog(0)">設定</button>
+                @Html.TextBoxFor(model => model.SyaryoManagement_Number, new { @class = "form-control", @style = "width:80px;margin-left:5px;margin-bottom:5px;", @readonly = "readonly" })
+                @Html.HiddenFor(model => model.Jiko.SyaryoManagement_ID)
+              </div>
+              <div style="display: flex;">
+                <button class="blue-button" style="margin-top: 0.5px;" onClick="SayryoDialog(1)">設定</button>
+                @Html.TextBoxFor(model => model.SyaryoManagement_Number1, new { @class = "form-control", @style = "width:80px;margin-left:5px;", @readonly = "readonly" })
+                @Html.HiddenFor(model => model.Jiko.SyaryoManagement_ID1)
+                <span style="width:150px">後ろがある場合</span>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th style="vertical-align: top;">発生場所<br>（詳細）</th>
+            <td>
+              <div style="display: flex;">
+                <button class="blue-button" onClick="AddressDialog()">設定</button>
+                @Html.TextBox("Address", addressValue, new { @class = "form-control", @style = "width:600px;margin-left:5px;", @readonly = "readonly" })
+              </div>
+              <textarea id="Address_Remarks" name="" class="form-control textareas" style="width:100%;height:60px;margin-top:5px;">@Html.Raw(addressRemarksValue)</textarea>
+            </td>
+          </tr>
+          <tr>
+            <th style="vertical-align: top;">道路状況</th>
+            <td>
+              <table class="no-line">
+                <tr>
+                  <th width="70px"><span>道幅</span></th>
+                  <td>@Html.TextBox("Road_Width", roadWidth, new { @class = "form-control", @style = "width:200px;" })</td>
+                  <th width="160px"><span>道幅状況</span></th>
+                  <td>@Html.TextBox("Road_Situation", roadSituation, new { @class = "form-control", @style = "width:200px;" })</td>
+                </tr>
+                <tr>
+                  <th><span>制限速度</span></th>
+                  <td style="display: flex;">
+                    @Html.TextBox("Limit_Speed", limitSpeed, new { @class = "form-control", @style = "width:60px;text-align:right;", @maxlengh="3" })km/h
+                  </td>
+                  <th><span>走行速度</span></th>
+                  <td style="display: flex;">
+                    @Html.TextBox("Driving_Speed", drivingSpeed, new { @class = "form-control", @style = "width:60px;text-align:right;", @maxlengh = "3" })km/h
+                  </td>
+                </tr>
+                <tr>
+                  <th><span>路面状況</span></th>
+                  <td colspan="3">
+                    @Html.TextBox("Road_Condition", roadCondition, new { @class = "form-control", @style = "width:100%;" })
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <th>当時の業務</th>
+            <td>
+              <div style="display: flex;">
+                @Html.DropDownList(
+                    "Work_Kubun",
+                    new SelectList(Model.WorkKubunDto, "Value", "Text", workKubun),
+                    new { @class = "form-control list dropdown", @style = "width:80px;" }
+                )
+                @Html.TextBox("Work_Situation", workSituation, new { @class = "form-control" })
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th style="vertical-align: top;">届出警察署</th>
+            <td>
+              <table class="no-line">
+                <tr>
+                  <th>警察署</th>
+                  <td>@Html.TextBox("Police_Station", policeStation, new { @class = "form-control", @style = "width:200px;" })</td>
+                  <th>課/係</th>
+                  <td>@Html.TextBox("Police_Section", policeSection, new { @class = "form-control", @style = "width:200px;" })</td>
+                </tr>
+                <tr>
+                  <th>担当官</th>
+                  <td>
+                    @Html.TextBox("Police_Officer", policeOfficer, new { @class = "form-control", @style = "width:200px;" })
+                  </td>
+                  <th>連絡先</th>
+                  <td>
+                    @Html.TextBox("Police_Phone", policePhone, new { @class = "form-control", @style = "width:200px;" })
+                  </td>
+                </tr>
+                <tr>
+                  <th>届出番号</th>
+                  <td>@Html.TextBox("Notifi_Number", nitifiNumber, new { @class = "form-control", @style = "width:200px;" })</td>
+                  <th>備考</th>
+                  <td>@Html.TextBox("Police_Remarks", policeRemarks, new { @class = "form-control", @style = "width:200px;" })</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <th>実質負担額</th>
+            <td style="display: flex;">
+              <table>
+                <tr>
+                  <td>
+                    @Html.TextBoxFor(model => model.Jiko.Jiko_Futan_Money, "{0:N0}", new { @class = "form-control", @id = "Jiko_Jiko_Futan_Money", @type = "text", @style = "width:130px;text-align:right;", @onblur = "kanmaChange(this);" })
+                  </td>
+                  <td>円</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <th style="vertical-align: top;">備考</th>
+            <td>
+              <textarea id="Remarks" name="" class="form-control textareas" style="width:100%;height:60px;">@Html.Raw(remarks)</textarea>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <div style="width: 38%;">
+      <table class="no-line">
+        <tr>
+          <th><span class="required">ワークフロー</span></th>
+          <td>
+            @if (Model.Jiko.Jiko_ID != 0)
+            {
+              @Html.DropDownListFor(
+                  m => m.Jiko.Jiko_WorkFlow_Base_ID,
+                  new SelectList(Model.WorkFlowListDto, "Value", "Text"),
+                  new { @class = "form-control list dropdown", @disabled = "disabled" }
+              )
+            }
+            else
+            {
+              @Html.DropDownListFor(
+                  m => m.Jiko.Jiko_WorkFlow_Base_ID,
+                  new SelectList(Model.WorkFlowListDto, "Value", "Text"),
+                  new { @class = "form-control list dropdown", @onchange = "onWorkflowChange(this.value)" }
+              )
+            }
+          </td>
+        </tr>
+      </table>
+
+      <table class="no-line" style="margin-top:5px;">
+        <tr>
+          <th>&nbsp;</th>
+          <td id="WorkflowList"></td>
+        </tr>
+      </table>
+
+      <div class="category-title">事故種類</div>
+      <div style="text-align:right;margin:10px 0 10px 0;"><button class="blue-button" onClick="addRow()">追加</button></div>
+
+      <table class="list" style="">
+        <tr>
+          <th class="bgcolor" style="width:30px;">順</th>
+          <th class="bgcolor" style="width:150px;">種類</th>
+          <th class="bgcolor">備考</th>
+        </tr>
+        <tbody id="JikoTypeListTableBody">
+          @if (Model.JikoTypeList != null)
+          {
+            var index = 1;
+            @foreach (var item in Model.JikoTypeList)
+            {
+              <tr>
+                <td style="text-align:center;">@index</td>
+                <td style="text-align:center;">
+                  @Html.DropDownList(
+                      "Jiko_Type_ID",
+                      new SelectList(Model.JikoTypeKubunDto, "Value", "Text", item.Jiko_Type_ID),
+                      new { @class = "form-control list dropdown", @style = "" }
+                  )
+                </td>
+                <td>
+                  @Html.TextBoxFor(m => item.Jiko_Type_Remarks, new { @class = "form-control", @id = "Jiko_Type_Remarks" })
+                </td>
+              </tr>
+              index++;
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div style="width: 100%;">
+    <div class="category-title">荷主対応</div>
+    @{
+      var kokyakuTantouName = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "KokyakuTantouName")?.Jiko_Items_Val ?? string.Empty;
+      var kokyakuVisitFlg = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Kokyaku_Visit_Flg")?.Jiko_Items_Val ?? string.Empty;
+      var kokyakuVisitDatetime = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Kokyaku_Visit_Datetime")?.Jiko_Items_Val ?? string.Empty;
+      var kokyakuVisitPerson = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Kokyaku_Visit_Person")?.Jiko_Items_Val ?? string.Empty;
+      var kokyakuReportFlg = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Kokyaku_Report_Flg")?.Jiko_Items_Val ?? string.Empty;
+      var kokyakuReportDatetime = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Kokyaku_Report_Datetime")?.Jiko_Items_Val ?? string.Empty;
+      var kokyakuReportPerson = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Kokyaku_Report_Person")?.Jiko_Items_Val ?? string.Empty;
+      var kokyakuRemarks = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Kokyaku_Remarks")?.Jiko_Items_Val ?? string.Empty;
+      var luggageDamageFlg = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Luggage_Damage_Flg")?.Jiko_Items_Val ?? string.Empty;
+      var luggageWeight = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Luggage_Weight")?.FormatNumberOrRawValue() ?? string.Empty;
+      var luggageRemarks = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Luggage_Remarks")?.Jiko_Items_Val ?? string.Empty;
+    }
+    <div class="table-div">
+      <table class="no-line">
+        <tr>
+          <th>荷主</th>
+          <td style="width:300px;">
+            <div style="display: flex;">
+              <button class="blue-button" onClick="CustomerDialog()">設定</button>
+              @Html.TextBoxFor(model => model.CustomerData.Customer_Name, new { @class = "form-control", @style = "width:250px;margin-left:5px;", @readonly = "readonly" })
+              @Html.HiddenFor(model => model.CustomerData.Customer_ID, new { id = "KokyakuId" })
+            </div>
+          </td>
+          <th>担当者</th>
+          <td style="width:300px;">
+            @Html.TextBox("KokyakuTantouName", kokyakuTantouName, new { @class = "form-control", @style = "width:250px;" })
+          </td>
+          <th>&nbsp;</th>
+          <td style="width:300px;">&nbsp;</td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr>
+          <th>訪問</th>
+          <td>
+            @Html.DropDownList(
+                "Kokyaku_Visit_Flg",
+                new SelectList(Model.ListKubunDto, "Value", "Text", kokyakuVisitFlg),
+                new { @class = "form-control list text-center dropdown", @style = "width:60px;" }
+            )
+          </td>
+          <th>訪問日時</th>
+          <td>
+            @Html.TextBox("Kokyaku_Visit_Datetime", kokyakuVisitDatetime, new { @class = "form-control", @type = "date", @style = "width:140px;text-align:center;" })
+          </td>
+          <th>訪問者</th>
+          <td>
+            @Html.TextBox("Kokyaku_Visit_Person", kokyakuVisitPerson, new { @class = "form-control", @style = "width:250px;" })
+          </td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr>
+          <th>報告書提出</th>
+          <td>
+            @Html.DropDownList(
+                "Kokyaku_Report_Flg",
+                new SelectList(Model.ListKubunDto, "Value", "Text", kokyakuReportFlg),
+                new { @class = "form-control list dropdown", @style = "width:60px;" }
+            )
+          </td>
+          <th>提出日時</th>
+          <td>
+            @Html.TextBox("Kokyaku_Report_Datetime", kokyakuReportDatetime, new { @class = "form-control", @type = "date", @style = "width:140px;text-align:center;" })
+          </td>
+          <th>提出担当者</th>
+          <td>
+            @Html.TextBox("Kokyaku_Report_Person", kokyakuReportPerson, new { @class = "form-control", @style = "width:250px;" })
+          </td>
+        </tr>
+        <tr>
+          <th>備考</th>
+          <td colspan="5">
+            @Html.TextBox("Kokyaku_Remarks", kokyakuRemarks, new { @class = "form-control" })
+          </td>
+        </tr>
+      </table>
+    </div>
+
+
+    <div class="category-title">事故当時の車輌状況</div>
+    <div class="table-div">
+      <table class="no-line">
+        <tr>
+          <th>荷物損傷</th>
+          <td style="width:200px;">
+            @Html.DropDownList(
+                "Luggage_Damage_Flg",
+                new SelectList(Model.ListKubunDto, "Value", "Text", luggageDamageFlg),
+                new { @class = "form-control list dropdown", @style = "width:60px;" }
+            )
+          </td>
+          <th>積載量</th>
+          <td>
+            <div style="display: flex;">
+              @Html.TextBox("Luggage_Weight", luggageWeight, new { @class = "form-control", @style = "width: 120px;text-align:right;", @onblur = "kanmaChange(this);" })&nbsp;kg
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <th style="vertical-align:top;">詳細</th>
+          <td colspan="3">
+            <textarea id="Luggage_Remarks" name="" class="form-control textareas" style="width:100%;height:60px;">@Html.Raw(luggageRemarks)</textarea>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+
+    <div class="category-title">相手方詳細</div>
+    @{
+      var otherPartyName = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_Name")?.Jiko_Items_Val ?? string.Empty;
+      var otherPartyDriverRecotderFlg = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_DriveRecorder_Flg")?.Jiko_Items_Val ?? string.Empty;
+      var otherPartyAddress = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_Address")?.Jiko_Items_Val ?? string.Empty;
+      var otherPartyPhone = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_Phone")?.Jiko_Items_Val ?? string.Empty;
+      var otherPartyCellPhone = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_Cell_Phone")?.Jiko_Items_Val ?? string.Empty;
+      var otherPartyCompanyName = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_Company_Name")?.Jiko_Items_Val ?? string.Empty;
+      var otherPartyCompanyAddress = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_Company_Address")?.Jiko_Items_Val ?? string.Empty;
+      var otherPartyCompanyPhone = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_Company_Phone")?.Jiko_Items_Val ?? string.Empty;
+      var otherPartyCarNo = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_CarNo")?.Jiko_Items_Val ?? string.Empty;
+      var otherPartyCarInfo = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_CarInfo")?.Jiko_Items_Val ?? string.Empty;
+      var otherPartyDamage = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_Damage")?.Jiko_Items_Val ?? string.Empty;
+      var otherPartyDamageSituation = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_Damage_Situation")?.Jiko_Items_Val ?? string.Empty;
+      var otherPartyInsuranceFlg = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_Insurance_Flg")?.Jiko_Items_Val ?? string.Empty;
+      var otherPartyInsuranceCompanyName = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_Insurance_Company_Name")?.Jiko_Items_Val ?? string.Empty;
+      var otherPartyInsuranceOfficer = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_Insurance_Officer")?.Jiko_Items_Val ?? string.Empty;
+      var otherPartyInsurancePhone = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_Insurance_Phone")?.Jiko_Items_Val ?? string.Empty;
+      var otherPartyInjury = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_Injury")?.Jiko_Items_Val ?? string.Empty;
+      var otherPartyPropertyDamage = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_Property_Damage")?.Jiko_Items_Val ?? string.Empty;
+      var truckRate = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Truck_Rate")?.FormatNumberOrRawValue() ?? string.Empty;
+      var otherPartyRate = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_Rate")?.FormatNumberOrRawValue() ?? string.Empty;
+      var rateRemarks = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Rate_Remarks")?.Jiko_Items_Val ?? string.Empty;
+      var truckEstimateFlg = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Truck_Estimate_Flg")?.Jiko_Items_Val ?? string.Empty;
+      var truckEstimateSubmitFlg = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Truck_Estimate_Submit_Flg")?.Jiko_Items_Val ?? string.Empty;
+      var truckRepairFlg = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Truck_Repair_Flg")?.Jiko_Items_Val ?? string.Empty;
+      var truckRepairRemarks = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Truck_Repair_Remarks")?.Jiko_Items_Val ?? string.Empty;
+      var truckEstimateMoney = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Truck_Estimate_Money")?.FormatNumberOrRawValue() ?? string.Empty;
+      var truckRepairMoney = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Truck_Repair_Money")?.FormatNumberOrRawValue() ?? string.Empty;
+      var otherPartyEstimateFlg = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_Estimate_Flg")?.Jiko_Items_Val ?? string.Empty;
+      var otherPartyEstimateSubmitFlg = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_Estimate_Submit_Flg")?.Jiko_Items_Val ?? string.Empty;
+      var otherPartyRepairFlg = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_Repair_Flg")?.Jiko_Items_Val ?? string.Empty;
+      var otherPartyRepairRemarks = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_Repair_Remarks")?.Jiko_Items_Val ?? string.Empty;
+      var otherPartyEstimateMoney = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_Estimate_Money")?.FormatNumberOrRawValue() ?? string.Empty;
+      var otherPartyRepairMoney = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Other_Party_Repair_Money")?.FormatNumberOrRawValue() ?? string.Empty;
+    }
+
+    <div class="table-div">
+      <table class="no-line">
+        <tr>
+          <th rowspan="3" style="width:30px;">個人</th>
+          <th style="width:90px;">氏名</th>
+          <td style="width:400px;">
+            @Html.TextBox("Other_Party_Name", otherPartyName, new { @class = "form-control", @style = "width:200px;" })
+          </td>
+          <th>ドラレコ映像</th>
+          <td>
+            @Html.DropDownList(
+                "Other_Party_DriveRecorder_Flg",
+                new SelectList(Model.ListKubunDto, "Value", "Text", otherPartyDriverRecotderFlg),
+                new { @class = "form-control list dropdown", @style = "width:60px;" }
+            )
+          </td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr>
+          <th style="width: 90px;">住所</th>
+          <td colspan="4">
+            @Html.TextBox("Other_Party_Address", otherPartyAddress, new { @class = "form-control" })
+          </td>
+        <tr>
+          <th style="width: 90px;">連絡先一般</th>
+          <td>
+            @Html.TextBox("Other_Party_Phone", otherPartyPhone, new { @class = "form-control", @style = "width:200px;" })
+          </td>
+          <th>携帯</th>
+          <td>
+            @Html.TextBox("Other_Party_Cell_Phone", otherPartyCellPhone, new { @class = "form-control", @style = "width:200px;" })
+          </td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <th rowspan="3" style="width:30px;">会社名</th>
+          <th style="width: 90px;">会社名</th>
+          <td colspan="3">
+            @Html.TextBox("Other_Party_Company_Name", otherPartyCompanyName, new { @class = "form-control", @style = "width:300px;" })
+          </td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr>
+          <th style="width: 90px;">住所</th>
+          <td colspan="4">
+            @Html.TextBox("Other_Party_Company_Address", otherPartyCompanyAddress, new { @class = "form-control" })
+          </td>
+          <td>&nbsp;</td>
+        </tr>
+        <tr>
+          <th style="width: 90px;">連絡先</th>
+          <td colspan="3">
+            @Html.TextBox("Other_Party_Company_Phone", otherPartyCompanyPhone, new { @class = "form-control", @style = "width:200px;" })
+          </td>
+          <td>&nbsp;</td>
+        </tr>
+
+        <tr>
+          <th colspan="2">車輛</th>
+          <td>
+            @Html.TextBox("Other_Party_CarNo", otherPartyCarNo, new { @class = "form-control", @style = "width:200px;" })
+          </td>
+          <th>車種車名</th>
+          <td>
+            @Html.TextBox("Other_Party_CarInfo", otherPartyCarInfo, new { @class = "form-control", @style = "width:200px;" })
+          </td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <th colspan="2">物損</th>
+          <td colspan="4">
+            @Html.TextBox("Other_Party_Damage", otherPartyDamage, new { @class = "form-control" })
+          </td>
+        </tr>
+        <tr>
+          <th colspan="2">被害状況</th>
+          <td colspan="4">
+            @Html.TextBox("Other_Party_Damage_Situation", otherPartyDamageSituation, new { @class = "form-control" })
+          </td>
+        </tr>
+
+        <tr>
+          <th rowspan="2" style="width:30px;">保険</th>
+          <th style="width: 90px;">会社</th>
+          <td>
+            @Html.DropDownList(
+                "Other_Party_Insurance_Flg",
+                new SelectList(Model.ListKubunDto, "Value", "Text", otherPartyInsuranceFlg),
+                new { @class = "form-control list dropdown", @style = "width:60px;" }
+            )
+          </td>
+          <th>会社名</th>
+          <td>
+            @Html.TextBox("Other_Party_Insurance_Company_Name", otherPartyInsuranceCompanyName, new { @class = "form-control", @style = "width:250px;" })
+          </td>
+        </tr>
+        <tr>
+          <th style="width: 90px;">担当</th>
+          <td>
+            @Html.TextBox("Other_Party_Insurance_Officer", otherPartyInsuranceOfficer, new { @class = "form-control", @style = "width:200px;" })
+          </td>
+          <th>連絡先</th>
+          <td>
+            @Html.TextBox("Other_Party_Insurance_Phone", otherPartyInsurancePhone, new { @class = "form-control", @style = "width:200px;" })
+          </td>
+          <td></td>
+        </tr>
+
+        <tr>
+          <th colspan="2">けがの状態</th>
+          <td colspan="4">
+            @Html.TextBox("Other_Party_Injury", otherPartyInjury, new { @class = "form-control" })
+          </td>
+        </tr>
+        <tr>
+          <th colspan="2">物損修理状況</th>
+          <td colspan="4">
+            @Html.TextBox("Other_Party_Property_Damage", otherPartyPropertyDamage, new { @class = "form-control" })
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="category-title">事務処理</div>
+    <div class="table-div">
+      <table class="no-line">
+        <tr>
+          <th>事故割合</th>
+          <td>
+            <table class="no-line">
+              <tr>
+                <td style="width:20px;">自</td>
+                <td style="width:60px;">
+                  @Html.TextBox("Truck_Rate", truckRate, new { @class = "form-control", @style = "width:80px;text-align:right;" })
+                </td>
+                <td style="width:15px;text-align:center;">：</td>
+                <td style="width:20px;">相</td>
+                <td style="width:100px;">
+                  @Html.TextBox("Other_Party_Rate", otherPartyRate, new { @class = "form-control", @style = "width:80px;text-align:right;" })
+                </td>
+                <td style="width:50px;">備考</td>
+                <td>
+                  @Html.TextBox("Rate_Remarks", rateRemarks, new { @class = "form-control" })
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <th style="vertical-align:top;">自車修理</th>
+          <td>
+            <table class="no-line">
+              <tr>
+                <td style="width:40px;">見積</td>
+                <td style="width:120px;">
+                  @Html.DropDownList(
+                      "Truck_Estimate_Flg",
+                      new SelectList(Model.ListKubunDto, "Value", "Text", truckEstimateFlg),
+                      new { @class = "form-control list dropdown", @style = "width:60px;" }
+                  )
+                </td>
+                <td style="width:40px;">提出</td>
+                <td style="width:120px;">
+                  @Html.DropDownList(
+                      "Truck_Estimate_Submit_Flg",
+                      new SelectList(Model.ListKubunDto, "Value", "Text", truckEstimateSubmitFlg),
+                      new { @class = "form-control list dropdown", @style = "width:60px;" }
+                  )
+                </td>
+                <td style="width:40px;">修理</td>
+                <td style="width:120px;">
+                  @Html.DropDownList(
+                      "Truck_Repair_Flg",
+                      new SelectList(Model.ListKubunDto, "Value", "Text", truckRepairFlg),
+                      new { @class = "form-control list dropdown", @style = "width:60px;" }
+                  )
+                </td>
+                <td style="width:60px;">修理先</td>
+                <td>
+                  @Html.TextBox("Truck_Repair_Remarks", truckRepairRemarks, new { @class = "form-control" })
+                </td>
+              </tr>
+            </table>
+            <table class="no-line">
+              <tr>
+                <td style="width:60px;">見積額</td>
+                <td style="width:110px;">
+                  @Html.TextBox("Truck_Estimate_Money", truckEstimateMoney, new { @class = "form-control", @style = "width:130px;text-align:right;", @onblur = "kanmaChange(this);" })
+                </td>
+                <td style="width:100px;">円</td>
+                <td style="width:60px;">実費額</td>
+                <td style="width:110px;">
+                  @Html.TextBox("Truck_Repair_Money", truckRepairMoney, new { @class = "form-control", @style = "width:130px;text-align:right;", @onblur = "kanmaChange(this);" })
+                </td>
+                <td style="width:60px;">円</td>
+                <td>&nbsp;</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <th style="vertical-align:top;">相手修理</th>
+          <td>
+            <table class="no-line">
+              <tr>
+                <td style="width:40px;">見積</td>
+                <td style="width:120px;">
+                  @Html.DropDownList(
+                      "Other_Party_Estimate_Flg",
+                      new SelectList(Model.ListKubunDto, "Value", "Text", otherPartyEstimateFlg),
+                      new { @class = "form-control list dropdown", @style = "width:60px;" }
+                  )
+                </td>
+                <td style="width:40px;">提出</td>
+                <td style="width:120px;">
+                  @Html.DropDownList(
+                      "Other_Party_Estimate_Submit_Flg",
+                      new SelectList(Model.ListKubunDto, "Value", "Text", otherPartyEstimateSubmitFlg),
+                      new { @class = "form-control list dropdown", @style = "width:60px;" }
+                  )
+                </td>
+                <td style="width:40px;">修理</td>
+                <td style="width:120px;">
+                  @Html.DropDownList(
+                      "Other_Party_Repair_Flg",
+                      new SelectList(Model.ListKubunDto, "Value", "Text", otherPartyRepairFlg),
+                      new { @class = "form-control list dropdown", @style = "width:60px;" }
+                  )
+                </td>
+                <td style="width:60px;">修理先</td>
+                <td>
+                  @Html.TextBox("Other_Party_Repair_Remarks", otherPartyRepairRemarks, new { @class = "form-control" })
+                </td>
+              </tr>
+            </table>
+            <table class="no-line">
+              <tr>
+                <td style="width:60px;">見積額</td>
+                <td style="width:110px;">
+                  @Html.TextBox("Other_Party_Estimate_Money", otherPartyEstimateMoney, new { @class = "form-control", @style = "width:130px;text-align:right;", @onblur = "kanmaChange(this);" })
+                </td>
+                <td style="width:100px;">円</td>
+                <td style="width:60px;">実費額</td>
+                <td style="width:110px;">
+                  @Html.TextBox("Other_Party_Repair_Money", otherPartyRepairMoney, new { @class = "form-control", @style = "width:130px;text-align:right;", @onblur = "kanmaChange(this);" })
+                </td>
+                <td style="width:60px;">円</td>
+                <td>&nbsp;</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+
+    @{
+      var incidentSituation = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Incident_Situation")?.Jiko_Items_Val ?? string.Empty;
+      var incidentCause = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Incident_Cause")?.Jiko_Items_Val ?? string.Empty;
+      var incidentWhy = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Incident_Why")?.Jiko_Items_Val ?? string.Empty;
+      var incidentWhyWhy = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Incident_WhyWhy")?.Jiko_Items_Val ?? string.Empty;
+      var incidentIssue = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Incident_Issue")?.Jiko_Items_Val ?? string.Empty;
+      var incidentMeetingContents = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Incident_Meeting_Contents")?.Jiko_Items_Val ?? string.Empty;
+      var incidentMeetingOfficer = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Incident_Meeting_Officer")?.Jiko_Items_Val ?? string.Empty;
+      var incidentMeetingRemarks = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Incident_Meeting_Remarks")?.Jiko_Items_Val ?? string.Empty;
+      var haisyaContents = Model.JikoItemList.FirstOrDefault(item => item.Jiko_Items_Prop_Name == "Haisya_Contents")?.Jiko_Items_Val ?? string.Empty;
+    }
+    <div class="category-title">事故惹起者</div>
+    <div class="table-div">
+      <table class="no-line">
+        <tr>
+          <th style="vertical-align:top;">発生状況</th>
+          <td>
+            <textarea id="Incident_Situation" name="" class="form-control textareas" style="width:100%;height:60px;">@Html.Raw(incidentSituation)</textarea>
+          </td>
+        </tr>
+        <tr>
+          <th>原因</th>
+          <td>
+            @Html.TextBox("Incident_Cause", incidentCause, new { @class = "form-control" })
+          </td>
+        </tr>
+        <tr>
+          <th>なぜ</th>
+          <td>
+            @Html.TextBox("Incident_Why", incidentWhy, new { @class = "form-control" })
+          </td>
+        </tr>
+        <tr>
+          <th>なぜなぜ</th>
+          <td>
+            @Html.TextBox("Incident_WhyWhy", incidentWhyWhy, new { @class = "form-control" })
+          </td>
+        </tr>
+        <tr>
+          <th style="vertical-align:top;">課題</th>
+          <td>
+            <textarea id="Incident_Issue" name="" class="form-control textareas" style="width:100%;height:60px;">@Html.Raw(incidentIssue)</textarea>
+          </td>
+        </tr>
+        <tr>
+          <th style="vertical-align:top;">面談内容<br>共同記入</th>
+          <td>
+            <textarea id="Incident_Meeting_Contents" name="" class="form-control textareas" style="width:100%;height:60px;">@Html.Raw(incidentMeetingContents)</textarea>
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="category-title">面談内容</div>
+    <div class="table-div">
+      <table class="no-line">
+        <tr>
+          <th>面談者</th>
+          <td>
+            @Html.TextBox("Incident_Meeting_Officer", incidentMeetingOfficer, new { @class = "form-control", @style = "width:300px;" })
+          </td>
+        </tr>
+        <tr>
+          <th style="vertical-align:top;">内容</th>
+          <td><textarea id="Incident_Meeting_Remarks" name="" class="form-control textareas" style="width:100%;height:60px;">@Html.Raw(incidentMeetingRemarks)</textarea></td>
+        </tr>
+      </table>
+    </div>
+
+
+    <div class="category-title">配車担当</div>
+    <div class="table-div">
+      <table class="no-line">
+        <tr>
+          <th style="vertical-align:top;">内容</th>
+          <td><textarea id="Haisya_Contents" name="" class="form-control textareas" style="width:100%;height:60px;">@Html.Raw(haisyaContents)</textarea></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</body>
+
+<script>
+  var jikoId = @Model.Jiko.Jiko_ID;
+  var jiko = @Html.Raw(Json.Serialize(Model.Jiko));
+  var jikoWorkFlowID = @Model.Jiko.Jiko_WorkFlow_Base_ID;
+  var jikoTypeOptions = @Html.Raw(Json.Serialize(Model.JikoTypeKubunDto));
+  var jikoWorkFlowList = @Html.Raw(Json.Serialize(Model.JikoWorkFlowList));
+  var jikoTypeList = @Html.Raw(Json.Serialize(Model.JikoTypeList));
+  var jikoItemList = @Html.Raw(Json.Serialize(Model.JikoItemList));
+  var currentButtonIndex = 0;  // 押されたボタンのインデックス（0-5）
+  var totalButtons = 6;
+  var JikoWorkFlowStatusID = @Model.JikoWorkFlowStatusID;
+
+  $(document).ready(function () {
+
+
+    loadSetting();
+    // 新規登録時初期値として一行分を表示
+    if (jikoTypeList.length === 0) {
+      addRow();
+    }
+  });
+
+  function loadSetting() {
+    var isDisabled = @(Model.IsDisabled.ToString().ToLower());
+    var approvalIsDisabled = @(Model.ApprovalIsDisabled.ToString().ToLower());
+    var jikoStatus = @Model.Jiko.Jiko_Status;
+    if (isDisabled) {
+      // キャンセルボタン以外を非活性にする
+      $("#submitButton").prop("disabled", true);
+      $("#sendBackButton").prop("disabled", true);
+    }
+
+    if (jikoId === 0 || approvalIsDisabled) {
+      // 承認と差戻しボタンを非活性にする
+      $("#submitButton").prop("disabled", true);
+      $("#sendBackButton").prop("disabled", true);
+    }
+
+    // 初期表示時のボタン色設定
+    setInitialButtonColors(jikoStatus);
+
+    // 承認ボタンのクリックイベント
+    $(".approval-buttons button").click(function() {
+      var clickedIndex = $(this).index(".approval-buttons button");
+      setButtonColors(clickedIndex);
+    });
+
+    WorkflowList();
+  }
+    // Indexに直すメソッド
+    function setInitialButtonColors(status) {
+      var maxIndex = (status >= 1 && status <= 6) ? status - 1 : -1;
+      setButtonColors(maxIndex);
+    }
+
+    // ボタンの色を設定する関数
+    function setButtonColors(maxIndex) {
+      $(".approval-buttons button, .approval-buttons div").each(function(index) {
+        if (index <= maxIndex * 2) {  // *2 はdivタグも含めるため
+          $(this).css({
+              "background-color": "rgba(208, 115, 106, 1)",
+              "color": "white"
+          });
+        } else {
+          $(this).css({
+            "background-color": "rgba(91, 156, 213, 1)",
+            "color": "white"
+          });
+        }
+      });
+      currentButtonIndex = Math.min(Math.floor(maxIndex), totalButtons - 1);
+    }
+
+    function ChangeStatus(status) {
+        var combinedData = {
+            Jiko_Status: status,
+            Jiko_ID: jikoId
+        };
+
+        $.ajax({
+            url: '@Url.RouteUrl("Default", new { controller = "Accident", action = "ChangeStatus" })',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(combinedData),
+            success: function(response) {
+                console.log('Success:', response);
+                if (response.errorMessage != null) {
+                    alertError(`【エラー】${response.errorMessage}`);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    }
+
+    function onWorkflowChange(value) {
+        jikoWorkFlowID = value;
+        WorkflowList();
+    }
+
+    function WorkflowList() {
+        $.ajax({
+            url: '@Url.RouteUrl("Default", new { controller = "Accident", action = "GetWorkflowList" })',
+            type: 'GET',
+            data: { Jiko_ID: jikoId, Jiko_WorkFlow_Base_ID: jikoWorkFlowID},
+            success: function(response) {
+                $('#WorkflowList').html(response.partialView);
+                },
+            error: function(xhr, status, error) {
+                  console.error('Error:', error);
+                }
+        });
+    }
+
+    // 共通得意先選択ダイアログの表示
+    function CustomerDialog() {
+        var User_ID = @Html.Raw(Json.Serialize(Model.Login_User_ID));
+        var Company_ID = @Html.Raw(Json.Serialize(Model.Company_ID));
+        var SelectedId = parseInt($("#KokyakuId").val()) || 0;
+        openCommonDialogForCustomer(Company_ID,User_ID,SelectedId)
+    }
+
+    // グローバル変数として currentSyaryoType を定義
+    var currentSyaryoType = 0;
+
+    // 共通車輌選択ダイアログの表示
+    function SayryoDialog(type) {
+        var User_ID = @Html.Raw(Json.Serialize(Model.Login_User_ID));
+        var Company_ID = @Html.Raw(Json.Serialize(Model.Company_ID));
+        var hiddenElementId = type === 1 ? "Jiko_SyaryoManagement_ID1" : "Jiko_SyaryoManagement_ID";
+        var SelectedId = parseInt($("#" + hiddenElementId).val()) || 0;
+
+        // グローバル変数に現在の type を設定
+        currentSyaryoType = type;
+
+        openCommonDialogForSayryo(Company_ID,User_ID,SelectedId)
+    }
+
+    // 共通運転者選択ダイアログの表示
+    function DriverDialog() {
+        var User_ID = @Html.Raw(Json.Serialize(Model.Login_User_ID));
+        var Company_ID = @Html.Raw(Json.Serialize(Model.Company_ID));
+        var SelectedId = parseInt($("#Jiko_Driver_ID").val()) || 0;
+        openCommonDialogForCompanyDriver(Company_ID,User_ID,SelectedId)
+    }
+
+    // 共通住所選択ダイアログの表示
+    function AddressDialog() {
+        var User_ID = @Html.Raw(Json.Serialize(Model.Login_User_ID));
+        var Company_ID = @Html.Raw(Json.Serialize(Model.Company_ID));
+        openCommonDialogForAddress(Company_ID, User_ID, 0)
+    }
+
+    // 運転者選択ダイアログのコールバック関数
+    function selectCompanyDriverSelectedCallBack(obj) {
+        $('#Driver_Display_Name').val(obj["Display_Name"]);
+        $('#Jiko_Driver_ID').val(obj["Driver_ID"]);
+    };
+
+    // 得意先選択ダイアログのコールバック関数
+    function selectCustomerSelectedCallBack(obj) {
+        $('#CustomerData_Customer_Name').val(obj["Customer_Branch_Name_Abbr"]);
+        $('#KokyakuId').val(obj["Customer_Branch_ID"]);
+    };
+
+    // 車輌選択ダイアログのコールバック関数
+    function selectSyaryoManagementSelectedCallBack(obj) {
+        var syabanNumberElementId = currentSyaryoType === 1 ? "SyaryoManagement_Number1" : "SyaryoManagement_Number";
+        var hiddenElementId = currentSyaryoType === 1 ? "Jiko_SyaryoManagement_ID1" : "Jiko_SyaryoManagement_ID";
+        $('#' + syabanNumberElementId).val(obj["Syaban_Number"]);
+        $('#' + hiddenElementId).val(obj["SyaryoManagement_ID"]);
+    }
+    // 住所選択ダイアログのコールバック関数
+    function selectAddressSelectedCallBack(obj) {
+        $('#Address').val(obj["Address"]);
+    };
+
+    // 事故種類の行追加メソッド
+    function addRow() {
+        var $tableBody = $('#JikoTypeListTableBody');
+        var newRowIndex = $tableBody.children().length + 1;
+        var $newRow = $('<tr>');
+        $newRow.html(
+            '<td style="text-align:center;">' + newRowIndex + '</td>' +
+            '<td style="text-align:center;">' +
+                '<select id="Jiko_Type_ID" name="JikoTypeList[' + (newRowIndex - 1) + '].Jiko_Type_ID" class="form-control list dropdown">' +
+                    generateOptions(jikoTypeOptions) +
+                '</select>' +
+            '</td>' +
+            '<td>' +
+                '<input type="text" id="Jiko_Type_Remarks" name="JikoTypeList[' + (newRowIndex - 1) + '].Jiko_Type_Remarks" class="form-control">' +
+            '</td>'
+        );
+
+        $tableBody.append($newRow);
+    };
+
+    function generateOptions(options) {
+        return $.map(options, function(option) {
+            return '<option value="' + option.value + '">' + option.text + '</option>';
+        }).join('');
+    }
+
+    async function DraftingButton() {
+        // 起案
+        if (!validateForm() || !validateJikoTypeList()) {
+          return; // バリデーションに失敗した場合は処理を中断
+        }
+
+        var Company_ID = @Html.Raw(Json.Serialize(Model.Company_ID));
+        var Jiko_ID = @Html.Raw(Json.Serialize(Model.Jiko.Jiko_ID));
+
+        var Jiko = {
+            Jiko_ID : Jiko_ID,
+            Branch_ID : 0,
+            Company_ID : Company_ID,
+            Jiko_WorkFlow_Base_ID : parseInt($("#Jiko_Jiko_WorkFlow_Base_ID").val()) || 0,
+            Jiko_WorkFlow_Status : currentButtonIndex + 1,
+            Jiko_Date : $("#Jiko_Jiko_Date").val() || "",
+            Jiko_Display : $("#Jiko_Jiko_Display").val(),
+            SyaryoManagement_ID: parseInt($("#Jiko_SyaryoManagement_ID").val()) || 0,
+            SyaryoManagement_ID1: parseInt($("#Jiko_SyaryoManagement_ID1").val()) || 0,
+            Jiko_Status : currentButtonIndex + 1,
+            Jiko_Kubun : parseInt($("#Jiko_Jiko_Kubun").val()) || 0,
+            Jiko_Futan_Money: kanmaChangeRevert($("#Jiko_Jiko_Futan_Money").val()) || 0,
+            Haisya_Group_ID : parseInt($("#Jiko_Haisya_Group_ID").val()) || 0,
+            Driver_ID: parseInt($("#Jiko_Driver_ID").val()) || 0,
+         }
+
+        for (var i = 0; i < jikoItemList.length; i++) {
+            var item = jikoItemList[i];
+
+            // Jiko_Items_Prop_Name と一致する ID を見つけて、その value を取得
+            var inputValue = $("#" + item.jiko_Items_Prop_Name).val();
+
+            // 一致する場合、Jiko_Items_Val を更新
+            if (inputValue !== undefined) {
+              if (item.jiko_Items_Type.toLowerCase() == "int" ||
+                  item.jiko_Items_Type.toLowerCase() == "money" ||
+                  item.jiko_Items_Type.toLowerCase() == "double" ) {
+                item.jiko_Items_Val = String(kanmaChangeRevert(inputValue));
+              } else {
+                item.jiko_Items_Val = inputValue;
+              }
+            }
+        }
+
+        var JikoTypeList = [];
+        $("#JikoTypeListTableBody tr").each(function(index) {
+            var $row = $(this);
+            var jikoType = {
+            Jiko_ID: Jiko_ID,
+            Jiko_Type_ID: parseInt($row.find("#Jiko_Type_ID").val()) || 0,
+            Jiko_Type_Remarks: $row.find("#Jiko_Type_Remarks").val() || "",
+        };
+        // Jiko_Type_IDが0でない場合のみリストに追加
+        if (jikoType.Jiko_Type_ID !== 0) {
+            JikoTypeList.push(jikoType);
+        }
+    });
+
+    var combinedData = {
+        JikoItemList: jikoItemList,
+        Jiko: Jiko,
+        JikoTypeList: JikoTypeList
+    };
+
+    var res = await post_accident(combinedData);
+    if (res.errorMessage != null) {
+        alertError(`【エラー】${res.errorMessage}`);
+    }
+    else {
+        await CancelButton('DraftingButton', res.jiko_ID);
+    }
+}
+
+    function post_accident(combinedData) {
+        return $.ajax({
+            url: '@Url.RouteUrl("Default", new { controller = "Accident", action = "PostAccident" })',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(combinedData),
+            success: function (response) {
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    }
+
+    function submitEdit(jikoid) {
+
+        var form = document.createElement('form');
+
+        @* TODO:POST先を修正必要なパラメータも送る *@
+        form.action = '@Url.RouteUrl("Default", new { controller = "Accident", Action = "AccidentInputIndex" })';
+        form.method = 'POST';
+
+        // body に追加
+        document.body.appendChild(form);
+
+        var html = '';
+        html += '            <input type="hidden" id="jikoId" name="jikoId" value="' + jikoid + '" />';
+
+        form.innerHTML = html;
+      form.submit();
+    }
+
+    async function CancelButton(action = '', jiko_ID = 0) {
+
+        if (action.length > 0)
+        {
+          confirmation = await alertYesNoMsg("確認", "登録処理が完了しました。前の画面に戻りますか？", "question", "戻る", "キャンセル");
+          if (!confirmation) {
+            if (action == 'DraftingButton' || action == 'SubmitButton' || action == 'SubmitRemand') {
+              submitEdit(jiko_ID);
+              return;
+            }
+          }
+        }
+
+        if (action.length == 0 && !ChangeCheck()) {
+            let resultMsg = await alertYesNoMsg("確認", "内容が変更されています。よろしいですか？", "question", "はい", "いいえ")
+            if (resultMsg == false) { return false; }
+            }
+
+         var form = document.createElement('form');
+
+        form.action = '@Url.RouteUrl("Default", new { controller = "AccidentList", Action = "Index" })';
+        form.method = 'POST';
+
+        // body に追加
+        document.body.appendChild(form);
+
+        var html = '';
+        html += '            <input type="hidden" id="FromDate" name="FromDate" value="' + $('#Search_FromDate').val() + '" />';
+        html += '            <input type="hidden" id="ToDate" name="ToDate" value="' + $('#Search_ToDate').val() + '" />';
+        html += '            <input type="hidden" id="AccidentReason" name="AccidentReason" value="' + $('#Search_AccidentReason').val() + '" />';
+        html += '            <input type="hidden" id="AccidentName" name="AccidentName" value="' + $('#Search_AccidentName').val() + '" />';
+        html += '            <input type="hidden" id="DriverName" name="DriverName" value="' + $('#Search_DriverName').val() + '" />';
+        html += '            <input type="hidden" id="CarNumber" name="CarNumber" value="' + $('#Search_CarNumber').val() + '" />';
+        html += '            <input type="hidden" id="WfRadioButtons" name="WfRadioButtons" value="' + $('#Search_WfRadioButtons').val() + '" />';
+        html += '            <input type="hidden" id="IsBack" name="IsBack" value="true" />';
+
+        form.innerHTML = html;
+        form.submit();
+    }
+
+    async function SendBackButton() {
+        // 差戻し
+        var targetStatusId = @Model.JikoWorkFlowStatusID;
+        var Jiko_ID = @Html.Raw(Json.Serialize(Model.Jiko.Jiko_ID));
+        $.ajax({
+            url: '@Url.RouteUrl("Default", new { controller = "Accident", action = "RemandModal" })',
+            type: 'POST',
+          data: {
+            Jiko_WorkFlow_Status_ID: targetStatusId,
+            Jiko_ID: Jiko_ID
+          },
+            success: function(response) {
+              $("#ModalHere").html(response.partialView);
+              $("#ModalHere").find('.modal').modal('show');
+              return false;
+            },
+            error: function(xhr) {
+              alertError('【ネットワークエラー】:' + xhr);
+              console.log(xhr);
+            },
+            complete: async function(xhr, msg) {
+            }
+        });
+
+    }
+
+    async function SubmitButton() {
+        // 承認
+        var Jiko_ID = @Html.Raw(Json.Serialize(Model.Jiko.Jiko_ID));
+        var targetStatusId = @Model.JikoWorkFlowStatusID;
+
+        $.ajax({
+            url: '@Url.RouteUrl("Default", new { controller = "Accident", action = "PostApproval" })',
+            type: 'POST',
+            data: {
+                Jiko_WorkFlow_Status_ID: targetStatusId
+            },
+            success: function(response) {
+                console.log('送信成功:', response);
+                if (response.errorMessage != null) {
+                    alertError(`【エラー】${response.errorMessage}`);
+                }
+                else {
+                  CancelButton('SubmitButton', Jiko_ID);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('送信エラー:', error);
+            }
+        });
+
+    }
+
+      // バリデーション関数
+    function validateForm() {
+        var isValid = true;
+        var errorMessages = [];
+
+        if (!$("#Jiko_Jiko_Kubun").val()) {
+            isValid = false;
+            errorMessages.push("事故区分");
+        }
+
+        if (!$("#Jiko_Jiko_WorkFlow_Base_ID").val()) {
+            isValid = false;
+            errorMessages.push("ワークフロー");
+        }
+
+        if (!$("#Jiko_Haisya_Group_ID").val()) {
+            isValid = false;
+            errorMessages.push("配車担当");
+        }
+
+        if (!$("#Jiko_Jiko_Display").val()) {
+            isValid = false;
+            errorMessages.push("事故名");
+        }
+
+        if (!$("#Jiko_Jiko_Date").val()) {
+            isValid = false;
+            errorMessages.push("事故発生日");
+        }
+
+        if (parseInt($("#Jiko_Driver_ID").val()) === 0) {
+            isValid = false;
+            errorMessages.push("当事者");
+        }
+
+        if ($("#Road_Width").val() != '' && (parseFloat($("#Road_Width").val()) || 0) == 0) {
+            isValid = false;
+            errorMessages.push("道幅");
+        }
+
+         if (!isValid) {
+            alertError(errorMessages.join("と") + "を入力または選択してください");
+        }
+
+        return isValid;
+
+    }
+
+    function validateJikoTypeList() {
+        var isValid = true;
+        var totalRows = $("#JikoTypeListTableBody tr").length;
+
+        $("#JikoTypeListTableBody tr").each(function(index) {
+            var $row = $(this);
+            var jikoTypeId = parseInt($row.find("#Jiko_Type_ID").val()) || 0;
+            var jikoTypeRemarks = $row.find("#Jiko_Type_Remarks").val() || "";
+
+            // 最後のレコード以外で Jiko_Type_ID が 0 または NaN の場合、エラーフラグを立てる
+            if (index < totalRows - 1 && (isNaN(jikoTypeId) || jikoTypeId === 0)) {
+                isValid = false;
+            }
+
+            // 最後の行の jikoTypeId が 0 の場合に jikoTypeRemarks が空でないときに false
+            if (index === totalRows - 1 && jikoTypeId === 0 && jikoTypeRemarks !== "") {
+                isValid = false;
+            }
+        });
+
+        var allRowsValid = true;
+        $("#JikoTypeListTableBody tr").each(function() {
+            var $row = $(this);
+            var jikoTypeId = parseInt($row.find("#Jiko_Type_ID").val()) || 0;
+            var jikoTypeRemarks = $row.find("#Jiko_Type_Remarks").val() || "";
+
+            if (jikoTypeId !== 0) {
+                // この行は無視する
+                allRowsValid = false;
+            }
+        });
+
+        if (!isValid && !allRowsValid) {
+            alertError('事故種類が選択されていません');
+        } else if(!isValid && allRowsValid) {
+            isValid = true;
+        }
+        return isValid
+    }
+
+    function ChangeCheck() {
+        var isValid = true;
+        // T_Jiko_Items情報の変更を検知
+        for (var i = 0; i < jikoItemList.length; i++) {
+            var item = jikoItemList[i];
+            var inputValue = $("#" + item.jiko_Items_Prop_Name).val();
+
+            var itemVal = item.jiko_Items_Val == null ? '' : item.jiko_Items_Val;
+
+            if (item.jiko_Items_Prop_Name === "KokyakuId" && itemVal === "") {
+                itemVal = "0";
+            }
+
+            if (item.jiko_Items_Type.toLowerCase() === "int") {
+              if (inputValue !== undefined && inputValue != "") {
+                inputValue = parseInt(kanmaChangeRevert(inputValue)) || 0;
+                itemVal = parseInt(kanmaChangeRevert(itemVal)) || 0;
+              }
+            }
+
+            if (item.jiko_Items_Type.toLowerCase() === "double") {
+              if (inputValue !== undefined && inputValue != "") {
+                inputValue = parseFloat(kanmaChangeRevert(inputValue)) || 0;
+                itemVal = parseFloat(kanmaChangeRevert(itemVal)) || 0;
+              }
+            }
+
+            if (item.jiko_Items_Type.toLowerCase() === "money") {
+              if (inputValue !== undefined && inputValue != "") {
+                inputValue = parseFloat(kanmaChangeRevert(inputValue)) || 0;
+                itemVal = parseFloat(kanmaChangeRevert(itemVal)) || 0;
+              }
+            }
+
+            if (inputValue !== undefined && inputValue != itemVal) {
+                isValid = false;
+            }
+        }
+
+        // 事故種類の変更を検知
+        $("#JikoTypeListTableBody tr").each(function(index) {
+            var $row = $(this);
+
+            var modelJikoType = jikoTypeList[index];
+
+            var jikoType = {
+                Jiko_Type_ID: parseInt($row.find("#Jiko_Type_ID").val()) || 0,
+                Jiko_Type_Remarks: $row.find("#Jiko_Type_Remarks").val() || ""
+            };
+
+            if (
+                jikoType.Jiko_Type_ID !== (modelJikoType?.jiko_Type_ID || 0) ||
+                jikoType.Jiko_Type_Remarks !== (modelJikoType?.jiko_Type_Remarks || "")
+            ) {
+                isValid = false;
+                return false;
+            }
+        });
+        jiko.haisya_Group_ID = jiko.haisya_Group_ID == 0 ? 1 : jiko.haisya_Group_ID;
+        // T_Jiko情報の変更を検知
+        if(
+           jiko.jiko_WorkFlow_Base_ID !== (parseInt($("#Jiko_Jiko_WorkFlow_Base_ID").val()) || 0) ||
+            new Date(jiko.jiko_Date).toString() !== new Date($("#Jiko_Jiko_Date").val() + "T00:00:00").toString() ||
+            (jiko.jiko_Display || "") !== $("#Jiko_Jiko_Display").val() ||
+            jiko.syaryoManagement_ID !== (parseInt($("#Jiko_SyaryoManagement_ID").val()) || 0) ||
+            jiko.syaryoManagement_ID1 !== (parseInt($("#Jiko_SyaryoManagement_ID1").val()) || 0) ||
+            jiko.jiko_Kubun !== (parseInt($("#Jiko_Jiko_Kubun").val()) || 0) ||
+            jiko.haisya_Group_ID !== (parseInt($("#Jiko_Haisya_Group_ID").val()) || 0) ||
+            jiko.driver_ID !== (parseInt($("#Jiko_Driver_ID").val()) || 0)
+        ) {
+            isValid = false;
+        }
+
+        return isValid;
+    }
+
+    function updateView(){
+        $.ajax({
+            url: '@Url.RouteUrl("Default", new { controller = "Accident", action = "GetJikoWorkFlowList" })',
+            type: 'GET',
+            data: { jikoId: jikoId },
+            success: function (response) {
+                    var updateValue = '<tr>'
+                response.forEach((item, index) => {
+                    updateValue += '<td style="text-align:center;">'
+                    if (item.workFlowStatus != null && item.workFlowStatus.approval_Datetime != null) {
+                        var date = new Date(item.workFlowStatus.approval_Datetime);
+                        const year = date.getFullYear().toString().slice(-2); // Get last two digits of the year
+                        const month = date.getMonth() + 1; // Months are zero-indexed
+                        const day = date.getDate();
+                        updateValue += `${year}/${month}/${day}`;
+                    }
+                    updateValue += '<br>'
+                    if (item.workFlowStatus != null && item.workFlowStatus.approval_User_ID == @Model.Login_User_ID && item.workFlowStatus.approval_Kubun == 3) {
+                        updateValue += '<span>差戻し</span>';
+                    } else {
+                        updateValue += '<span>&nbsp;</span>';
+                    }
+                    updateValue += '<br>';
+                    updateValue += '<div'
+                    if (item.workFlowFlg) {
+                        updateValue += 'style=""background-color: rgba(160, 206, 99, 1);"';
+                    }
+                    updateValue += '>';
+                    updateValue += item.display_Name;
+                    updateValue += '</div>';
+                });
+                updateValue += '<td class="noborder">&nbsp;</td>'
+                updateValue += '</tr>'
+              $('#WorkFlowRouteListTableBody').html(updateValue);
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    }
+</script>

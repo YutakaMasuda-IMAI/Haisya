@@ -1,0 +1,43 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@ViewData["Title"] - MapApplication</title>
+
+
+  <link href="~/lib/jquery-ui/dist/themes/base/jquery-ui.css" rel="stylesheet" />
+  <link href="~/lib/jquery-ui/dist/themes/base/theme.css" rel="stylesheet" />
+  <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+  <link href="~/lib/bootstrap/dist/css/bootstrap-grid.css" rel="stylesheet" />
+  <link href="~/lib/bootstrap/dist/css/bootstrap-reboot.css" rel="stylesheet" />
+  <link href="~/lib/bootstrap/dist/css/bootstrap-utilities.css" rel="stylesheet" />
+
+  <script src="~/lib/jquery/dist/jquery.js" charset="utf-8"></script>
+  <script src="~/lib/jquery-ui/dist/jquery-ui.js" charset="utf-8"></script>
+  <script src="~/lib/bootstrap/dist/js/bootstrap.js" charset="utf-8"></script>
+
+  <link rel="stylesheet" href="~/css/site.css" />
+  <script src="~/js/site.js" asp-append-version="true"></script>
+</head>
+<body>
+  <header style="background:blue;" class="text-center">
+    <h1 style="color:white;">ルート詳細画面</h1>
+  </header>
+  <div class="">
+    <main role="main" class="pb-3">
+      @RenderBody()
+    </main>
+  </div>
+
+  <div>
+    @*//モダール表示用のスペースを追加*@
+    <div id="ModalHere" data-keyboard="false"></div>
+    <div id="ModalHere2" data-keyboard="false" data-backdrop="static"></div>
+    <div id="ModalHere3" data-keyboard="false" data-backdrop="static"></div>
+    <div id="SortHere" hidden></div>
+  </div>
+
+  @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

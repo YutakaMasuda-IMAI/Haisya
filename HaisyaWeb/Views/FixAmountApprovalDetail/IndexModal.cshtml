@@ -1,0 +1,355 @@
+﻿@model HaisyaWeb.Models.FixAmountApprovalDetailModel.IndexModalModel
+
+@{
+  Layout = "_ModalLayout";
+}
+<link href="~/css/Entry.css" rel="stylesheet" />
+<style>
+  .detail-list {
+    background-color: #d5d5d5;
+  }
+  .table-FixAmountApprovalDetailModal {
+    overflow: auto;
+    width: 100%;
+    max-height: 700px;
+  }
+
+    .table-FixAmountApprovalDetailModal tr:first-child th {
+      border-top: 1px solid #999;
+    }
+
+    .table-FixAmountApprovalDetailModal th:first-child {
+      border-left: 1px solid #999;
+    }
+
+    .table-FixAmountApprovalDetailModal tr:first-child th:first-child {
+      z-index: 1;
+    }
+
+</style>
+
+<div id="hiddenItem" hidden>
+</div>
+
+<div role="dialog" id="modal-option" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog container" role="document" style="width: 1300px; min-width: 1300px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-3" id="exampleModalLabel" style="width:120px;">請求明細</h1>
+      </div>
+      <div class="model-body">
+        <div class="table-div" style="padding:5px;">
+          <table class="no-line">
+            <tbody>
+              <tr>
+                <th style="width:60px;">請求日</th>
+                <td>
+                  @Html.TextBoxFor(m => m.DisplayDate, "{0:yyyy/MM/dd}", new { @class = "form-control", @style = "width:120px;text-align:center;", @readonly = true })
+                </td>
+                <th style="width:60px;">締日</th>
+                <td>
+                  @Html.TextBoxFor(m => m.ShimeDay, new { @class = "form-control", @style = "width:50px;text-align:right;", @readonly = true })
+                </td>
+                <td style="width:60px;"></td>
+                <td></td>
+                <td style="width:60px;"></td>
+                <td></td>
+              </tr>
+              <tr>
+                <th>請求先</th>
+                <td colspan="7">
+                  <div style="display: flex;">
+                    @Html.TextBoxFor(m => m.Customer_Code, new { @class = "form-control", @style = "width:100px;text-align:center;", @readonly = true })
+                    @Html.TextBoxFor(m => m.Customer_Name, new { @class = "form-control", @style = "width:400px;", @readonly = true })
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <th>積</th>
+                <td>
+                  @Html.TextBoxFor(m => m.Tsumi, new { @class = "form-control", style = "width: 180px; display: inline-block; background: rgba(224, 234, 245, 1);" })
+                </td>
+                <th>卸</th>
+                <td>
+                  @Html.TextBoxFor(m => m.Oroshi, new { @class = "form-control", style = "width: 180px; display: inline-block; background: rgba(224, 234, 245, 1);" })
+                </td>
+                <th>品名</th>
+                <td colspan="3">
+                  @Html.TextBoxFor(m => m.Luggage, new { @class = "form-control", style = "width: 400px; display: inline-block; background: rgba(224, 234, 245, 1);" })
+                </td>
+              </tr>
+              <tr>
+                <th>数量</th>
+                <td>
+                  @Html.TextBoxFor(m => m.Qty, "{0:N0}", new { @class = "form-control", @oninput = "calculate_price();", style = "width: 100px; text-align:right; display: inline-block; background: rgba(224, 234, 245, 1);" })
+                </td>
+                <th>単位</th>
+                <td>
+                  @Html.DropDownListFor(
+                     m => m.Unit,
+                     new SelectList(Model.UnitDto, "Value", "Text"),
+                     new { @class = "form-control dropdown", @id = "SelectedUnit", style = "width: 100px; display: inline-block; background: rgba(224, 234, 245, 1);" }
+                     )
+                </td>
+                <th>単価</th>
+                <td>
+                  @Html.TextBoxFor(m => m.UnitPrice, "{0:N0}", new { @class = "form-control", @oninput = "calculate_price();", style = "width: 100px; text-align:right; display: inline-block; background: rgba(224, 234, 245, 1);" })
+                </td>
+                <th>請求運賃</th>
+                <td>
+                  @Html.TextBoxFor(m => m.CalcPrice, "{0:N0}", new { @class = "form-control", style = "width: 100px; text-align:right; display: inline-block;", @readonly = true })
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-div" style="padding:5px;margin-top:10px;">
+          <table id="ClaimDataListTable" class="ClaimDataListTable list" width="100%">
+            <thead>
+              <tr align="center">
+                <th class="detail-list" width="100px">請求運賃</th>
+                <th class="detail-list" width="100px">立替金(税込)</th>
+                <th class="detail-list" width="100px" style="@((Model.Warimashi1_Visible ?? false) == false ? "display:none;" : "")">@(Model.Warimashi1_Name)</th>
+                <th class="detail-list" width="100px" style="@((Model.Warimashi2_Visible ?? false) == false ? "display:none;" : "")">@(Model.Warimashi2_Name)</th>
+                <th class="detail-list" width="100px" style="@((Model.Warimashi3_Visible ?? false) == false ? "display:none;" : "")">@(Model.Warimashi3_Name)</th>
+                <th class="detail-list" width="100px" style="@((Model.Warimashi4_Visible ?? false) == false ? "display:none;" : "")">@(Model.Warimashi4_Name)</th>
+                <th class="detail-list" width="100px" style="@((Model.Warimashi5_Visible ?? false) == false ? "display:none;" : "")">@(Model.Warimashi5_Name)</th>
+                <th class="detail-list" width="100px">課税区分</th>
+                <th class="detail-list" width="100px">運賃合計</th>
+                <td style="border:none;"></td>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="font-size: 16px;">
+                <td align="center" style="background: rgba(224, 234, 245, 1);">
+                  @Html.TextBoxFor(m => m.SeikyuUnchin, "{0:N0}", new { @class = "form-control", @style = "text-align:right;", @id = "SeikyuUnchin2" })
+                </td>
+                <td align="center" style="background: rgba(224, 234, 245, 1);">
+                  @Html.TextBoxFor(m => m.Tatekaekin, "{0:N0}", new { @class = "form-control", @style = "text-align:right;" })
+                </td>
+                <td align="center" style="background: rgba(224, 234, 245, 1); @((Model.Warimashi1_Visible ?? false) == false ? "display:none;" : "")">
+                  @Html.TextBoxFor(m => m.Warimashi1, "{0:N0}", new { @class = "form-control", @style = "text-align:right;" })
+                </td>
+                <td align="center" style="background: rgba(224, 234, 245, 1); @((Model.Warimashi2_Visible ?? false) == false ? "display:none;" : "")">
+                  @Html.TextBoxFor(m => m.Warimashi2, "{0:N0}", new { @class = "form-control", @style = "text-align:right;" })
+                </td>
+                <td align="center" style="background: rgba(224, 234, 245, 1); @((Model.Warimashi3_Visible ?? false) == false ? "display:none;" : "")">
+                  @Html.TextBoxFor(m => m.Warimashi3, "{0:N0}", new { @class = "form-control", @style = "text-align:right;" })
+                </td>
+                <td align="center" style="background: rgba(224, 234, 245, 1); @((Model.Warimashi4_Visible ?? false) == false ? "display:none;" : "")">
+                  @Html.TextBoxFor(m => m.Warimashi4, "{0:N0}", new { @class = "form-control", @style = "text-align:right;" })
+                </td>
+                <td align="center" style="background: rgba(224, 234, 245, 1); @((Model.Warimashi5_Visible ?? false) == false ? "display:none;" : "")">
+                  @Html.TextBoxFor(m => m.Warimashi5, "{0:N0}", new { @class = "form-control", @style = "text-align:right;" })
+                </td>
+                <td align="center" style="background: rgba(224, 234, 245, 1);">
+                  @Html.DropDownListFor(m => m.ZeiKubun,
+                      new SelectList(Model.ZeiKubunOptions, "Value", "Text", Model.ZeiKubun),
+                      new { @class = "form-control list dropDownList", @style = "padding:2px;" })
+                </td>
+                <td align="center" style="background: rgba(224, 234, 245, 1);">
+                  @Html.TextBoxFor(m => m.SeikyuTotal, "{0:N0}", new { @class = "form-controlt", @style = "text-align:right;" })
+                </td>
+                <td style="border:none;"></td>
+              </tr>
+              <tr>
+                <td align="right">@Convert.ToInt32(Model.PreviousSeikyuUnchin).ToString("#,0")</td>
+                <td align="right">@Convert.ToInt32(Model.PreviousTatekaekin).ToString("#,0")</td>
+                <td align="right" style="@((Model.Warimashi1_Visible ?? false) == false ? "display:none;" : "")">@Convert.ToInt32(Model.PreviousWarimashi1).ToString("#,0")</td>
+                <td align="right" style="@((Model.Warimashi2_Visible ?? false) == false ? "display:none;" : "")">@Convert.ToInt32(Model.PreviousWarimashi2).ToString("#,0")</td>
+                <td align="right" style="@((Model.Warimashi3_Visible ?? false) == false ? "display:none;" : "")">@Convert.ToInt32(Model.PreviousWarimashi3).ToString("#,0")</td>
+                <td align="right" style="@((Model.Warimashi4_Visible ?? false) == false ? "display:none;" : "")">@Convert.ToInt32(Model.PreviousWarimashi4).ToString("#,0")</td>
+                <td align="right" style="@((Model.Warimashi5_Visible ?? false) == false ? "display:none;" : "")">@Convert.ToInt32(Model.PreviousWarimashi5).ToString("#,0")</td>
+                <td align="center">
+                  @{
+                    if (Model.ZeiKubun == 0)
+                    {
+                            @:課税
+                    }
+                    else if (Model.ZeiKubun == 1)
+                    {
+                            @:非課税
+                    }
+                  }
+                </td>
+                <td align="right">@Convert.ToInt32(Model.PreviousSeikyuTotal).ToString("#,0")</td>
+                <td style="border:none;"></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="table-div" style="padding:5px;margin-top:10px;">
+            <table class="no-line" width="100%">
+              <tbody>
+                <tr>
+                  <td style="text-align:center;">
+                    <button id="approvalButton" type="button" class="btn btn-outline-success" style="width: 180px;">承認（保存）</button>
+                  </td>
+                  <td width="200px" style="text-align:right;">
+                    <button type="button" class="btn btn-outline-warning" style="width: 180px;" onclick="CanselButton();">キャンセル</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  $("#approvalButton").click(function() {
+    var data = {
+      UpdateCheckSeikyuDetail: {
+        Qty: isNaN(parseFloat($('#Qty').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Qty').val())),
+        Unit: parseInt($("#SelectedUnit").val()),
+        UnitPrice: isNaN(parseFloat($('#UnitPrice').val())) ? 0 : parseFloat(kanmaChangeRevert($('#UnitPrice').val())),
+        CalcPrice: isNaN(parseFloat($('#SeikyuUnchin').val())) ? 0 : parseFloat(kanmaChangeRevert($('#SeikyuUnchin').val())),
+        SeikyuUnchin: isNaN(parseFloat($('#SeikyuUnchin2').val())) ? 0 : parseFloat($('#SeikyuUnchin2').val()),
+        Tatekaekin: isNaN(parseFloat($('#Tatekaekin').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Tatekaekin').val())),
+        Warimashi1: isNaN(parseFloat($('#Warimashi1').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi1').val())),
+        Warimashi2: isNaN(parseFloat($('#Warimashi2').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi2').val())),
+        Warimashi3: isNaN(parseFloat($('#Warimashi3').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi3').val())),
+        Warimashi4: isNaN(parseFloat($('#Warimashi4').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi4').val())),
+        Warimashi5: isNaN(parseFloat($('#Warimashi5').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi5').val())),
+        SeikyuTotal: isNaN(parseFloat($('#SeikyuTotal').val())) ? 0 : parseFloat(kanmaChangeRevert($('#SeikyuTotal').val()))
+      },
+      UpdateCheckSeikyuChange: {
+        Qty: isNaN(parseFloat($('#Qty').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Qty').val())),
+        Unit: parseInt($("#SelectedUnit").val()),
+        UnitPrice: isNaN(parseFloat($('#UnitPrice').val())) ? 0 : parseFloat(kanmaChangeRevert($('#UnitPrice').val())),
+        CalcPrice: isNaN(parseFloat($('#SeikyuUnchin').val())) ? 0 : parseFloat(kanmaChangeRevert($('#SeikyuUnchin').val())),
+        SeikyuUnchin: isNaN(parseFloat($('#SeikyuUnchin2').val())) ? 0 : parseFloat($('#SeikyuUnchin2').val()),
+        Tatekaekin: isNaN(parseFloat($('#Tatekaekin').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Tatekaekin').val())),
+        Warimashi1: isNaN(parseFloat($('#Warimashi1').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi1').val())),
+        Warimashi2: isNaN(parseFloat($('#Warimashi2').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi2').val())),
+        Warimashi3: isNaN(parseFloat($('#Warimashi3').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi3').val())),
+        Warimashi4: isNaN(parseFloat($('#Warimashi4').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi4').val())),
+        Warimashi5: isNaN(parseFloat($('#Warimashi5').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi5').val())),
+        SeikyuTotal: isNaN(parseFloat($('#SeikyuTotal').val())) ? 0 : parseFloat(kanmaChangeRevert($('#SeikyuTotal').val()))
+      },
+      UpdateUriageUnchin: {
+        Tsumi: $("#Tsumi").val(),
+        Oroshi: $("#Oroshi").val(),
+        Luggage: $("#Luggage").val(),
+        Qty: isNaN(parseFloat($('#Qty').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Qty').val())),
+        Unit: parseInt($("#SelectedUnit").val()),
+        UnitPrice: isNaN(parseFloat($('#UnitPrice').val())) ? 0 : parseFloat(kanmaChangeRevert($('#UnitPrice').val())),
+        CalcPrice: isNaN(parseFloat($('#SeikyuUnchin').val())) ? 0 : parseFloat(kanmaChangeRevert($('#SeikyuUnchin').val())),
+        SeikyuUnchin: isNaN(parseFloat($('#SeikyuUnchin2').val())) ? 0 : parseFloat($('#SeikyuUnchin2').val()),
+        Tatekaekin: isNaN(parseFloat($('#Tatekaekin').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Tatekaekin').val())),
+        Warimashi1: isNaN(parseFloat($('#Warimashi1').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi1').val())),
+        Warimashi2: isNaN(parseFloat($('#Warimashi2').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi2').val())),
+        Warimashi3: isNaN(parseFloat($('#Warimashi3').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi3').val())),
+        Warimashi4: isNaN(parseFloat($('#Warimashi4').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi4').val())),
+        Warimashi5: isNaN(parseFloat($('#Warimashi5').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi5').val())),
+        SeikyuTotal: isNaN(parseFloat($('#SeikyuTotal').val())) ? 0 : parseFloat(kanmaChangeRevert($('#SeikyuTotal').val())),
+        Zei_Kubun: parseInt($("#ZeiKubun").val())
+      },
+      Check_Kubun: @Model.Check_Kubun,
+      Check_Seikyu_ID: @Model.Check_Seikyu_ID,
+      Uriage_Unchin_ID: @Model.Uriage_Unchin_ID,
+      Change_Flg: @Model.Change_Flg,
+    };
+
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "FixAmountApprovalDetail", Action = "PostModalApproval" })',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(data),
+      success: function (result) {
+        if (result.message != null) {
+          alertError(`【エラー】${result.message}`);
+        }
+        dataListDisplay();
+        // 成功時の処理
+        ModalClose(); // モーダルを閉じる
+      },
+      error: function (xhr, status, error) {},
+    });
+  });
+
+  function format_number(i) {
+    var s = $(i).val();
+    if (s.length > 0) {
+      var n = parseFloat(s.replace(',', ''));
+      if (isNaN(n)) {
+        s = '';
+      }
+      else {
+        s = n.toLocaleString('ja-JP');
+      }
+    }
+    $(i).val(s);
+    return s;
+  }
+
+  function calculate_price() {
+    var n = parseFloat($('#Qty').val().replace(',', ''));
+    if (isNaN(n)) {
+      n = 0;
+    }
+    var u = parseFloat($('#UnitPrice').val().replace(',', ''));
+    if (isNaN(u)) {
+      u = 0;
+    }
+    format_number('#Qty');
+    format_number('#UnitPrice');
+    if ($('#Qty').val().length == 0 || $('#UnitPrice').val().length == 0) {
+      $('#CalcPrice').val('');
+    }
+    else {
+      $('#CalcPrice').val(u * n);
+      format_number('#CalcPrice');
+    }
+  }
+
+  function decodeHtml(html) {
+  var txt = document.createElement("textarea");
+  txt.innerHTML = html;
+  return txt.value;
+}
+
+// 値が変更されているかをチェックする関数
+function valuesChanged() {
+  return (
+    decodeHtml("@Model.Tsumi") !== $("#Tsumi").val() ||
+    decodeHtml("@Model.Oroshi") !== $("#Oroshi").val() ||
+    decodeHtml("@Model.Luggage") !== $("#Luggage").val() ||
+    "@Model.Qty" != $("#Qty").val() ||
+    ("@Model.Unit" != $("#SelectedUnit").val()) ||
+    "@Model.UnitPrice" != kanmaChangeRevert($("#UnitPrice").val()) ||
+    "@Model.SeikyuUnchin" != kanmaChangeRevert($("#SeikyuUnchin2").val()) ||
+    "@Model.Tatekaekin" != kanmaChangeRevert($("#Tatekaekin").val()) ||
+    "@Model.Warimashi1" != kanmaChangeRevert($("#Warimashi1").val()) ||
+    "@Model.Warimashi2" != kanmaChangeRevert($("#Warimashi2").val()) ||
+    "@Model.Warimashi3" != kanmaChangeRevert($("#Warimashi3").val()) ||
+    "@Model.Warimashi4" != kanmaChangeRevert($("#Warimashi4").val()) ||
+    "@Model.Warimashi5" != kanmaChangeRevert($("#Warimashi5").val()) ||
+    "@Model.ZeiKubun" != kanmaChangeRevert($("#ZeiKubun").val()) ||
+    "@Model.SeikyuTotal" != kanmaChangeRevert($("#SeikyuTotal").val())
+  );
+}
+
+  async function CanselButton() {
+    if (valuesChanged()) {
+      let result = await alertYesNoMsg(
+        '確認',
+        '変更した内容を破棄します。よろしいですか？',
+        'question',
+        'はい',
+        'いいえ',
+      );
+      if (!result) {
+        return false;
+      } else {
+        ModalClose();
+      }
+    } else {
+      ModalClose();
+    }
+  }
+</script>

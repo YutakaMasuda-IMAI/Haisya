@@ -1,0 +1,126 @@
+﻿@model HaisyaWeb.Models.ReportModel.SettingReportOutputModel
+@*
+  For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+  Layout = "_Layout";
+  ViewData["Title"] = "SettingReportOutput";
+}
+<head>
+  <link href="~/css/Setting.css" rel="stylesheet" />
+  <style>
+    .table td {
+      font-size: 14px !important;
+      line-height: 20px;
+      background: #fcfcfc;
+    }
+
+    .selected > td {
+      background-color: var(--bs-table-hover-bg) !important;
+    }
+
+    .isadded > td {
+      background-color: #b1b1b1 !important;
+      box-shadow: none;
+      cursor: initial;
+    }
+
+    .isrequied > td {
+      background: #fcfcfc !important;
+      box-shadow: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="hiddenItem" hidden>
+    @Html.HiddenFor(model => Model.Search.SettingType)
+    @Html.HiddenFor(model => Model.Search.KubunID)
+  </div>
+  <div class="row d-flex align-items-end p-3">
+    <div class="col-8" style="text-align: right;">
+      <button style="width: 200px;" class="btn btn-primary" onclick="onCreate();return false;">保存</button>
+    </div>
+    <div class="col-4" style="text-align: right;">
+      <button style="width: 200px;" class="btn btn-secondary" onclick="onCancel();return false;">キャンセル</button>
+    </div>
+  </div>
+  <table class="table table-bordered mt-2 mb-0 pa-0" style="width: 500px">
+    <tbody>
+      <tr>
+        <th width="150px">
+          出力帳票名
+        </th>
+        <th> @(Model.ReportName)</th>
+      </tr>
+      <tr>
+        <th>
+          出力パターン
+        </th>
+        <th>@(Model.DisplayTitle)</th>
+      </tr>
+      
+    </tbody>
+  </table>
+
+  <div class="row d-flex justify-content-around px-4 mx-0 my-2" style="width: 500px; border: .1em solid #bbb; border-radius: 10px;">
+    <div class="col-4">
+      <input type="radio" name="setting_type" value="1" checked>個人設定　
+    </div>
+    <div class="col-5">
+      <input type="radio" name="setting_type" value="2">会社共通設定
+    </div>
+  </div>
+
+  <div class="row mt-3 pt-3 border-top" id="DataReportOutput">
+    @await Html.PartialAsync("ReportOutputItems")
+  </div>
+</body>
+
+<script>
+  $(function () {
+    $('input[name="setting_type"]:radio').change(async function () {
+      if ($('#DataUnsaved').val() == 1) {
+                const confirm = await alertYesNoMsg("", "データが保存されていません。操作を続行しますか？「続行」ボタンをクリックした場合、設定したデータがリセットされます。", "warning", "続行", "キャンセル");
+
+        if (!confirm) {
+          const radio = document.getElementsByName('setting_type');
+          radio.item(0).value == this.value ? radio.item(1).checked = true : radio.item(0).checked = true;
+          return;
+        }
+      }
+
+      $('#DataUnsaved').val(0);
+      dataListDisplay();
+    });
+  });
+
+  function dataListDisplay() {
+    const selectSettingType = $('input[name="setting_type"]:checked').val();
+    $('#Search_SettingType').val(selectSettingType);
+
+    $.post('@Url.RouteUrl("Default", new { controller = "Report", Action = "JsonGetDataReportOutput" })',
+      {
+        KubunID: $('#Search_KubunID').val(),
+        SettingType: selectSettingType,
+      },
+    ).done(function (response) {
+      if (response.errorMessage != null) {
+          alertError(`【エラー】${response.errorMessage}`);
+          return false;
+      } else {
+        $('#DataReportOutput').html(response.partialView);
+        return;
+      }
+    }).fail(function (xhr) {
+      alertError(xhr, "【ネットワークエラー】");
+      return false;
+    }).always(function (xhr, msg) {
+      /*    console.log(xhr, msg);*/
+    });
+  };
+
+  function onCancel() {
+    dataListDisplay();
+  }
+</script>
+

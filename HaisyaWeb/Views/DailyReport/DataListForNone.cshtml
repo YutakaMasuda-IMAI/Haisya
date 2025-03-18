@@ -1,0 +1,169 @@
+﻿@using System.Reflection;
+@using HaisyaWeb.Dto;
+@using static HaisyaWeb.Models.DailyReportModel;
+
+@model DataListModel
+
+@{
+  var i = 0;
+  var t = typeof(HaisyaDataList);
+  var l = Model?.DataDataLists ?? new();
+  var n = nameof(HaisyaDataList.TNippou);
+  var s = Model.SortParam.SortItemParam;
+  Func<HaisyaDataList, object> f = r =>
+    s == nameof(HaisyaDataList.TNippou.ApprovalStatus) ? (t.GetRuntimeProperty(n).GetValue(r, null) as T_Nippou_Local).Approval_status_label() :
+    s == nameof(HaisyaDataList.TNippou.RenkeiStatus) ? (t.GetRuntimeProperty(n).GetValue(r, null) as T_Nippou_Local).Renkei_status_label() :
+    t.GetRuntimeProperty(s).GetValue(r, null);
+    l = "asc".Equals(Model.SortParam.SortOrder) ?
+    l.OrderBy(f).ThenBy(s => s.Anken_ID).ToList() :
+    l.OrderByDescending(f).ThenBy(s => s.Anken_ID).ToList();
+}
+@if (l.Count == 0)
+{
+  <div class="no-data-row">
+    <h4 class="no-data-row-text">データ無し</h4>
+  </div>
+}
+else
+{
+  <table id="myTable" class="table ex_DataList search-list" style="" border="1">
+    <thead>
+      <tr align="center">
+        <th width="50px" rowspan="2">
+          詳細
+        </th>
+        <th hidden rowspan="2">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.TantouID))')">配車担当Id</a>
+        </th>
+        <th width="40px" rowspan="2">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.TNippou.ApprovalStatus))')">承認</a>
+        </th>
+        <th width="40px" rowspan="2">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.TNippou.RenkeiStatus))')">連携<br />結果</a>
+        </th>
+        <th width="120px" rowspan="2">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.Tantou_Name))')">配車担当</a>
+        </th>
+        <th width="70px" rowspan="2">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.StartDatetime))')">積日</a>
+        </th>
+        <th width="70px" rowspan="2">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.EndDatetime))')">卸日</a>
+        </th>
+        <th width="100px">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.SYABAN))')">担当車番</a>
+        </th>
+        <th hidden>
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.KokyakuName))')">顧客Id</a>
+        </th>
+        <th width="200px" rowspan="2">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.KokyakuName))')">顧客</a>
+        </th>
+        <th width="250px" rowspan="2">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.StartAddressDisplay3))')">積地</a>
+        </th>
+        <th width="250px" rowspan="2">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.EndAddressDisplay3))')">卸地</a>
+        </th>
+        <th width="80px" rowspan="2">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.Daisuu))')">車種</a>
+        </th>
+        <th width="80px">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.ZanteiAmount))')">暫定金額</a>
+        </th>
+        <th width="100px" style="background: Aquamarine">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.Yosya_Display1))')">傭車１</a>
+        </th>
+      </tr>
+      <tr align="center">
+        <th>
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.Driver_Name))')">担当乗務員</a>
+        </th>
+        <th align="center">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.KakuteiAmount))')">確定金額</a>
+        </th>
+        <th align="center" style="background: Aquamarine">
+          <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.Yosya_Display2))')">傭車２</a>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var item in l)
+      {
+        i++;
+        var color = i % 2 == 1 ? "row-even" : "row-odd";
+        <tr>
+          <td class="@(color)" align="center" rowspan="2">
+            <button class="btn btn-outline-success" style="width: 100%; padding:0;" onclick="submitAnkenEdit(@(item.AnkenDisplay_ID),@(item.Anken_ID), @(item.KokyakuId))">選択</button>
+          </td>
+          <td class="@(color)" hidden rowspan="2">
+            @Html.DisplayFor(modelItem => item.TantouID)
+          </td>
+          <td class="@(color)" align="center" rowspan="2">
+            @(item.TNippou.Approval_status_label())
+          </td>
+          <td class="@(color)" align="center" rowspan="2">
+            @(item.TNippou.Renkei_status_label())
+          </td>
+          <td class="@(color)" rowspan="2">
+            @Html.DisplayFor(modelItem => item.Tantou_Name)
+          </td>
+          <td class="@(color)" align="center" rowspan="2">
+            @item.StartDatetime.ToString("MM/dd")<br> @item.StartDatetime.ToString("HH:mm")
+          </td>
+          <td class="@(color)" align="center" rowspan="2">
+            @item.EndDatetime.ToString("MM/dd")<br> @item.EndDatetime.ToString("HH:mm")
+          </td>
+          <td class="@(color)" align="center">
+            @Html.DisplayFor(modelItem => item.SYABAN)
+          </td>
+          <td class="@(color)" hidden rowspan="2">
+            @Html.DisplayFor(modelItem => item.KokyakuName)
+          </td>
+          <td class="@(color)" rowspan="2">
+            @Html.DisplayFor(modelItem => item.KokyakuName)
+          </td>
+          <td class="@(color)" rowspan="2">
+            @Html.DisplayFor(modelItem => item.StartAddressDisplay3)
+          </td>
+          <td class="@(color)" rowspan="2">
+            @Html.DisplayFor(modelItem => item.EndAddressDisplay3)
+          </td>
+          <td class="@(color)" align="center" rowspan="2">
+            @Html.DisplayFor(modelItem => item.SyasyuDisplay2)<br />
+            @Convert.ToInt32(item.Daisuu).ToString("0台")
+          </td>
+          <td class="@(color)" align="right">
+            @Convert.ToInt32(item.ZanteiAmount).ToString("#,0")
+          </td>
+          <td class="@(color)" align="right">
+            @Html.DisplayFor(modelItem => item.Yosya_Display1)
+          </td>
+        </tr>
+        <tr align="center">
+          <td class="@(color)">
+            @Html.DisplayFor(modelItem => item.Driver_Name)
+          </td>
+          <td class="@(color)" align="right">
+            @Convert.ToInt32(item.KakuteiAmount).ToString("#,0")
+          </td>
+          <td class="@(color)">
+            @Html.DisplayFor(modelItem => item.Yosya_Display2)
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+  <script>
+    function set_sort(name) {
+      var n = $("#SortParam_SortItemParam").val();
+      if (name != n) {
+        $("#SortParam_SortOrder").val("asc");
+        $("#SortParam_SortItemParam").val(name);
+      }
+      var o = $("#SortParam_SortOrder").val();
+      $("#SortParam_SortOrder").val(o.indexOf("desc") != -1 ? "asc" : "desc");
+      dataListDisplay();
+    }
+  </script>
+}

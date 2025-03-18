@@ -1,0 +1,286 @@
+@model HaisyaWeb.Dto.SalesModel
+
+<style>
+  #billingInfoContainer input[readonly],
+  #billingInfoContainer input:disabled,
+  #billingInfoContainer select:disabled,
+  #billingInfoContainer textarea[readonly] {
+    background-color: #fff;
+  }
+
+  table.no-line input,
+  table.no-line select,
+  table.no-line textarea {
+    background-color: white;
+  }
+
+  table.no-line th {
+    width: 80px;
+  }
+</style>
+
+<div id="billingInfoContainer" style="margin-top: 10px; border: 1px solid #cccccc; padding: 10px;">
+  <div style="display:none;">
+    @Html.Hidden("Uriage_Unchin_ID", 0)
+    @Html.Hidden("Default_Kubun", 0)
+    @Html.HiddenFor(m => Model.Uriage_Unchin_Kubun)
+  </div>
+  <table class="no-line">
+    <tr>
+      <th>請求日</th>
+      <td style="width:200px;">
+        @Html.TextBoxFor(model => model.EndDateTime, "{0:yyyy-MM-dd}", new
+          {
+          @class = "form-control",
+          @id = "endDateTime",
+          type = "date",
+          @style = "width:140px;",
+            @onchange = "contentChanged=true; updateShimedayOption($(this));"
+          })
+      </td>
+      <th>締日</th>
+      <td>
+        <select id="closingDay" class="form-control dropdown" style="width:60px;" onchange="contentChanged=true;">
+          @for (int i = 1; i <= 31; i++)
+          {
+          <!option value="@i" @(i == Model.ShimeDay || i == Model.Customer?.Shime_Day ? "selected" : "")>@i</!option>
+          }
+        </select>
+      </td>
+      <th>請求明細</th>
+      <td>
+        @Html.TextBoxFor(m => Model.RowCount, "{0:N0}", new
+        {
+          @class = "form-control seikyu_detaii_sort",
+          type = "text",
+          @style = "width:60px;",
+          @readonly = "readonly"
+        })
+      </td>
+      @if (Model.ProcessingCategory == "直接入力")
+      {
+        <td style="text-align:right;" width="300px"><button class="btn btn-outline-danger delete-row">削除</button></td>
+      }
+      else
+      {
+          @if (Model.Uriage?.Uriage_ID == null && Model.IsDeletable)
+          {
+            <td style="text-align:right;" width="300px"><button class="btn btn-outline-danger delete-row">削除</button></td>
+          }
+          else
+          {
+            @if (Model.RowCount == 0 || Model.IsRequestReadOnly)
+            {
+              <td width="300px">&nbsp; @Model.RowCount </td>
+            }
+            else if (Model.IsDeletable)
+            {
+              <td style="text-align:right;" width="300px"><button class="btn btn-outline-danger delete-row">削除</button></td>
+            }
+          }
+      }
+    </tr>
+  </table>
+
+  @{
+    var kokyakuName = "";
+    var kokyakuCode = "";
+    int kokyakuId = 0;
+    if (Model.CustomerSeikyusaki == "自社")
+    {
+      kokyakuId = Model.HaisyaData.KokyakuId;
+      kokyakuName = Model.HaisyaData.Customer_Name_Abbr;
+      kokyakuCode = Model.HaisyaData.KokyakuCode;
+    }
+    else if (Model.Customer != null)
+    {
+      kokyakuId = Model.Seikyu.Customer_Branch_ID;
+      kokyakuName = Model.Seikyu.Customer_Branch_Name_Abbr;
+      kokyakuCode = Model.Seikyu.Customer_Branch_Code;
+    }
+  }
+  <table class="no-line">
+    <tr>
+      <th>請求先</th>
+      <td style="width:120px;"><input type="text" class="form-control" id="KokyakuCode" style="background-color: white" readonly value="@kokyakuCode" onchange="contentChanged=true;"/></td>
+      <td style="width:auto;"><input type="text" class="form-control" id="KokyakuName" style="background-color: white" readonly value="@kokyakuName" onchange="contentChanged=true;"/></td>
+      <td style="width:100px;">
+        @if (!Model.IsRequestReadOnly)
+        {
+          <button class="btn btn-outline-primary btnKokyaku" id="btnKokyaku" data-index="@Model.RowCount">選択</button>
+        }
+      </td>
+      <td style="width:1px;"><input type="text" class="form-control" id="KokyakuId" readonly hidden value="@kokyakuId"/></td>
+    </tr>
+  </table>
+
+  <table class="no-line">
+    <tr>
+      @if (Model.AnkenPoint != null && Model.AnkenPoint.Count > 0)
+      {
+        <th>積</th>
+        <td>@Html.TextBoxFor(model => model.AnkenPoint[0].Address3, new { @class = "form-control", @id = "Tsumi", @onchange="contentChanged=true;" })</td>
+        <th>卸</th>
+        <td>@Html.TextBoxFor(model => model.AnkenPoint[1].Address3, new { @class = "form-control", @id = "Oroshi", @onchange="contentChanged=true;" })</td>
+      }
+      else
+      {
+        <th>積</th>
+            <td><input type="text" class="form-control" id="Tsumi" onchange="contentChanged=true;" /></td>
+        <th>卸</th>
+        <td><input type="text" class="form-control" id="Oroshi" onchange = "contentChanged=true;"/></td>
+      }
+      <th>品名</th>
+      <td>@Html.TextBoxFor(model => model.AnkenDetail.LuggageDisplay, new { @class = "form-control", @id = "ItemName", @onchange="contentChanged=true;" })</td>
+    </tr>
+  </table>
+
+  <table class="no-line">
+    <tr>
+      <th>数量</th>
+      <td><input type="text" id="quantity" name="quantity" value="0" class="form-control" style="width:120px;text-align:right;" oninput="filterDigitsOnly(this);" onblur="kanmaChange(this);" onchange="contentChanged=true;" /></td>
+      <th>単位</th>
+      <td style="width:140px;">
+        @Html.DropDownListFor(
+          m => m.SelectedUnitId,
+          new SelectList(Model.UnitDto, "Value", "Text"),
+          new { @class = "form-control dropdown", @id = "SelectedUnit", @onchange = "contentChanged=true;" }
+          )
+      </td>
+      <th>単価</th>
+      <td><input type="text" id="unitPrice" name="unitPrice" value="0" class="form-control" style="width: 120px; text-align: right;" oninput="this.value = this.value.replace(/[^0-9]/g, '');" onblur="kanmaChange(this);" onchange="contentChanged=true;"/></td>
+      <th>請求運賃</th>
+      <td><input type="text" id="totalPrice" value="0" class="form-control" style="width: 120px; text-align: right;" readonly /></td>
+    </tr>
+  </table>
+
+  <table class="list" style="margin-top:10px;">
+    <tr>
+      <th class="unchin-list" style="width:120px;">
+        @(string.IsNullOrEmpty(Model.CustomerUriageCalcData?.SeikyuUnchin_Name) 
+          ? "請求運賃" 
+          : Model.CustomerUriageCalcData?.SeikyuUnchin_Name)
+      </th>
+      <th class="unchin-list" style="width:120px;">
+        @(string.IsNullOrEmpty(Model.CustomerUriageCalcData?.Tatekaekin_Name) 
+          ? "立替金（税込）" 
+          : Model.CustomerUriageCalcData?.Tatekaekin_Name)
+      </th>
+      <th class="unchin-list" style="width:120px; @((Model.CustomerUriageCalcData?.Warimashi1_Visible ?? false) == false ? "display:none;" : "")">
+        @(string.IsNullOrEmpty(Model.CustomerUriageCalcData?.Warimashi1_Name) 
+          ? "割増1" 
+          : Model.CustomerUriageCalcData?.Warimashi1_Name)
+      </th>
+      <th class="unchin-list" style="width:120px; @((Model.CustomerUriageCalcData?.Warimashi2_Visible ?? false) == false ? "display:none;" : "")">
+        @(string.IsNullOrEmpty(Model.CustomerUriageCalcData?.Warimashi2_Name) 
+          ? "割増2" 
+          : Model.CustomerUriageCalcData?.Warimashi2_Name)
+      </th>
+      <th class="unchin-list" style="width:120px; @((Model.CustomerUriageCalcData?.Warimashi3_Visible ?? false) == false ? "display:none;" : "")">
+        @(string.IsNullOrEmpty(Model.CustomerUriageCalcData?.Warimashi3_Name) 
+          ? "割増3" 
+          : Model.CustomerUriageCalcData?.Warimashi3_Name)
+      </th>
+      <th class="unchin-list" style="width:120px; @((Model.CustomerUriageCalcData?.Warimashi4_Visible ?? false) == false ? "display:none;" : "")">
+        @(string.IsNullOrEmpty(Model.CustomerUriageCalcData?.Warimashi4_Name) 
+          ? "割増4" 
+          : Model.CustomerUriageCalcData?.Warimashi4_Name)
+      </th>
+      <th class="unchin-list" style="width:120px; @((Model.CustomerUriageCalcData?.Warimashi5_Visible ?? false) == false ? "display:none;" : "")">
+        @(string.IsNullOrEmpty(Model.CustomerUriageCalcData?.Warimashi5_Name) 
+          ? "割増5" 
+          : Model.CustomerUriageCalcData?.Warimashi5_Name)
+      </th>
+      <th class="unchin-list" style="width:100px;">課税区分</th>
+      <th class="unchin-list" style="width:120px;">
+        @(string.IsNullOrEmpty(Model.CustomerUriageCalcData?.SeikyuTotal_Name) 
+          ? "運賃合計" 
+          : Model.CustomerUriageCalcData?.SeikyuTotal_Name)
+      </th>
+      <td style="border:none;"></td>
+    </tr>
+    <tbody class="unchin-list-body">
+      <tr>
+        <td><input type="text" id="SeikyuUnchin" value="0" class="form-control" style="text-align:right;" onblur="kanmaChange(this);" /></td>
+        <td>@Html.TextBoxFor(model => model.TatekaekinTotal, "{0:N0}", new {@type = "text", @class = "form-control", @style = "text-align:right;", @id = "TatekaekinTotal", @onblur = "kanmaChange(this);" })</td>
+        <td style="@((Model.CustomerUriageCalcData?.Warimashi1_Visible ?? false) == false ? "display:none;" : "")"><input type="text" id="Warimashi1" value="0" class="form-control" style="text-align:right;" onblur="kanmaChange(this);" onchange="contentChanged=true;" /></td>
+        <td style="@((Model.CustomerUriageCalcData?.Warimashi2_Visible ?? false) == false ? "display:none;" : "")"><input type="text" id="Warimashi2" value="0" class="form-control" style="text-align:right;" onblur="kanmaChange(this);" onchange="contentChanged=true;" /></td>
+        <td style="@((Model.CustomerUriageCalcData?.Warimashi3_Visible ?? false) == false ? "display:none;" : "")"><input type="text" id="Warimashi3" value="0" class="form-control" style="text-align:right;" onblur="kanmaChange(this);" onchange="contentChanged=true;" /></td>
+        <td style="@((Model.CustomerUriageCalcData?.Warimashi4_Visible ?? false) == false ? "display:none;" : "")"><input type="text" id="Warimashi4" value="0" class="form-control" style="text-align:right;" onblur="kanmaChange(this);" onchange="contentChanged=true;" /></td>
+        <td style="@((Model.CustomerUriageCalcData?.Warimashi5_Visible ?? false) == false ? "display:none;" : "")"><input type="text" id="Warimashi5" value="0" class="form-control" style="text-align:right;" onblur="kanmaChange(this);" onchange="contentChanged=true;" /></td>
+        <td>
+          @Html.DropDownList(
+              "Kazei_Kubun",
+              new SelectList(Model.KazeiKubunDto, "Value", "Text", 0),
+              new { @type = "text", @class = "form-control list dropdown", @id = "KazeiKubun", @onchange = "contentChanged=true;" }
+              )
+        </td>
+        <td><input type="text" id="SeikyuTotal" value="0" class="form-control" style="text-align:right;" readonly /></td>
+        <td style="border:none;"></td>
+      </tr>
+    </tbody>
+  </table>
+
+  @if (Model.IsSeikyuCommitted)
+  {
+    <table class="no-line">
+      <tr>
+        <th>赤伝黒伝発生理由</th>
+      </tr>
+      <tr>
+        <td><textarea id="" name="" class="form-control inputtable" style="resize: none; overflow-y: auto; height: 100px; width: 100%;" onchange="contentChanged=true;" )></textarea></td>
+      </tr>
+    </table>
+  }
+</div>
+
+<script>
+  $(document).ready(function () {
+
+    function updateClosingDayOptions() {
+      $(".billing-info-item").find('#endDateTime').each(function (index) {
+        updateShimedayOption($(this));
+      });
+    }
+
+    // 初期化時に実行
+    updateClosingDayOptions();
+    $('.billing-info-item').each(function () {
+      var index = $(this).data('index');
+      updateTotalPrice(index);
+    });
+
+    // 監視対象の入力フィールドを指定
+    const fieldsToWatch = '.billing-info-item #SeikyuUnchin, .billing-info-item #TatekaekinTotal, .billing-info-item #Warimashi1, .billing-info-item #Warimashi2, .billing-info-item #Warimashi3, .billing-info-item #Warimashi4, .billing-info-item #Warimashi5';
+
+    // 入力フィールドの変更を監視
+    $(document).on('input', fieldsToWatch, function () {
+
+      var $container = $(this).closest('.billing-info-item');
+
+      var index = $container.data('index');
+
+      calculateTotalFreight(index);
+    });
+
+    // EndDateTime が変更されたときに実行
+    $('#endDateTime').on('change', updateClosingDayOptions);
+
+  // 数量または単価が変更されたときに実行
+  $('.billing-info-item #quantity, .billing-info-item #unitPrice').on('input', function () {
+      var $container = $(this).closest('.billing-info-item');
+      var index = $container.data('index');
+      updateTotalPrice(index);
+    });
+  });
+
+  // 請求運賃の入力フィールドの変更を監視
+  $(document).on('input', '.unchin-list-body tr td:first-child input', function () {
+    updateRouteAllowance();
+  });
+
+  // 動的に追加された請求情報の入力フィールドも監視
+  $(document).on('input', '#billingInfoContainer .unchin-list-body tr td:first-child input', function () {
+    updateRouteAllowance();
+  });
+</script>

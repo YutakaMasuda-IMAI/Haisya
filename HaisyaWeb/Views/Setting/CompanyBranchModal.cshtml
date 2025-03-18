@@ -1,0 +1,203 @@
+﻿@model SettingModel.CompanyBranchModalDto
+
+@{
+  Layout = "_LayoutForSettingModal";
+}
+
+<style>
+  .readonly {
+    background-color: lightgray;
+  }
+</style>
+
+
+  <div role="dialog" aria-hidden="true" tabindex="-1" class="modal fade" style="z-index: 1240;" data-backdrop="static">
+    <div class="modal-dialog" role="document" style="max-width:800px;">
+      <div class="modal-content">
+        <div class="modal-header" style="background-color: gainsboro;">
+          <h1 class="modal-title fs-3" id="exampleModalLabel">@(Model.Title)</h1>
+          <button type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
+          <button type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
+        </div>
+        <div class="model-body">
+          <form id="form1">
+            <div id="hidden" hidden>
+              @Html.HiddenFor(model => Model.BtnCaption)
+              @Html.HiddenFor(model => Model.Title)
+            </div>
+            <div class="contents-wrap-middle" style="margin: 10px;">
+              <h4 class="">注意</h4>
+              <span>
+                ・一度データを登録すると物理削除は出来ません。「非表示フラグ」を立ててください。
+              </span>
+            </div>
+            <table class="table table-striped-columns table-bordered border-primary" border="1" style="margin: 10px; width:97%;">
+              <tbody>
+                <tr hidden>
+                  <th>会社ID</th>
+                  <td>@Html.TextBoxFor(model => Model.M_CompanyBranch.Company_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px;" })</td>
+                  <td></td>
+                </tr>
+                <tr hidden>
+                  <th>支店ID</th>
+                  <td>@Html.TextBoxFor(model => Model.M_CompanyBranch.Branch_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px;" })</td>
+                  <td></td>
+                </tr>
+                <tr hidden>
+                  <th>親支店ID</th>
+                  <td>@Html.TextBoxFor(model => Model.M_CompanyBranch.Oya_Branch_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px;" })</td>
+                  <td></td>
+                </tr>
+                <tr hidden>
+                  <th>並び順</th>
+                  <td>@Html.TextBoxFor(model => Model.M_CompanyBranch.SortOrder, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px;" })</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <th width="130px">支店コード</th>
+                  <td width="360px">@Html.TextBoxFor(model => Model.M_CompanyBranch.Branch_Code, null, new { @class = "form-control text-left", @onblur = "", @style = "width: 100px;" })</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <th style="color: red;">名称</th>
+                  <td colspan="2">@Html.TextBoxFor(model => Model.M_CompanyBranch.Branch_Name, null, new { @class = "form-control text-left", @onblur = "", @style = "width: 450px;" })</td>
+                </tr>
+                <tr>
+                  <th style="color: red;">名称（略称）</th>
+                  <td>@Html.TextBoxFor(model => Model.M_CompanyBranch.Branch_Name_Abbr, null, new { @class = "form-control text-left", @onblur = "", @style = "width: 350px;" })</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <th>郵便番号</th>
+                  <td>
+                    <div class="buttons" style="">
+                      <div style="display: flex;">
+                        @Html.TextBoxFor(Model => Model.M_CompanyBranch.Branch_Post1, null, new { @class = "form-control text-center", @style = "width: 60px; margin-right: 10px;" })
+                        <label style="align-self: center;font-weight: bolder;">―</label>
+                        @Html.TextBoxFor(Model => Model.M_CompanyBranch.Branch_Post2, null, new { @class = "form-control text-center", @style = "width: 70px; margin-left: 10px;" })
+                      </div>
+                    </div>
+                  </td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <th>住所</th>
+                  <td colspan="2">@Html.TextBoxFor(model => Model.M_CompanyBranch.Branch_Address, null, new { @class = "form-control text-left", @onblur = "", @style = "width: 600px;" })</td>
+                </tr>
+                <tr>
+                  <th>電話番号</th>
+                  <td>@Html.TextBoxFor(model => Model.M_CompanyBranch.Branch_Phone, null, new { @class = "form-control text-left", @onblur = "", @style = "width: 200px;" })</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <th>Fax番号</th>
+                  <td>@Html.TextBoxFor(model => Model.M_CompanyBranch.Branch_Fax, null, new { @class = "form-control text-left", @onblur = "", @style = "width: 200px;" })</td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <th>削除フラグ</th>
+                  <td class="">@Html.CheckBoxFor(model => Model.M_CompanyBranch.Del_Flg, new { @class = "form-control text-left form-check-input" })</td>
+                  <td>オンにすると、登録時に選択不可。</td>
+                </tr>
+                <tr>
+                  <th>最終更新日</th>
+                  <td>@Convert.ToDateTime(Model.M_CompanyBranch.UP_DATE).ToString("yyyy/MM/dd HH:mm:ss")</td>
+                  <td hidden>@Html.TextBoxFor(model => Model.M_CompanyBranch.UP_DATE, null, new { @class = "form-control text-end" })</td>
+                </tr>
+              </tbody>
+            </table>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+<script>
+
+  $(function () {
+
+    setTimeout(function () {
+      $('.modal-backdrop')
+        .not('.modal-stack')
+        .css('z-index', 1239)
+        .addClass('modal-stack');
+    }, 0);
+
+  });
+
+
+  function regExec() {
+
+    if (varidationCheck()) {
+      return false;
+    }
+
+    //Formの参照を取る
+    var $form = $('#form1');
+
+    //alert($form.serialize());
+
+    $.ajax({
+          url: '@Url.RouteUrl("Default", new { controller = "Setting", Action = "CompanyBranchRegExec" })',
+          type: 'post',
+          data: $form.serialize(),
+        }).done(function (response) {
+          if (response.errorMessage != null && response.errorMessage !== '') {
+              alertError(`【エラー】${response.errorMessage}`);
+              return false;
+          } else {
+            closeModelAndRefresh();
+            return false;
+          }
+        }).fail(function (xhr) {
+          alert('【ネットワークエラー】:' + xhr);
+            console.log(xhr);
+            return false;
+        }).always(function (xhr, msg) {
+            console.log(xhr, msg);
+        });
+
+
+
+
+  }
+
+  function varidationCheck() {
+
+    if (!($('#M_CompanyBranch_Branch_Name').val() != null && $('#M_CompanyBranch_Branch_Name').val().length > 0)) {
+      alert("名称が入力されていません");
+      $('#M_CompanyBranch_Branch_Name').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#M_CompanyBranch_Branch_Name').css('background-color', 'white');
+    }
+
+    if (!($('#M_CompanyBranch_Branch_Name_Abbr').val() != null && $('#M_CompanyBranch_Branch_Name_Abbr').val().length > 0)) {
+      alert("略称が入力されていません");
+      $('#M_CompanyBranch_Branch_Name_Abbr').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#M_CompanyBranch_Branch_Name_Abbr').css('background-color', 'white');
+    }
+    
+    
+    if (varidationCheckForOverlap($('#M_CompanyBranch_Branch_Name').val(), $('#M_CompanyBranch_Branch_ID').val())) {
+      alert("対象の名称は既に登録されています。重複した名称は登録出来ません。");
+      $('#M_CompanyBranch_Branch_Name').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#M_CompanyBranch_Branch_Name').css('background-color', 'white');
+    }
+
+    return false;
+
+  }
+
+
+
+
+</script>
+
+

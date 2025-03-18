@@ -1,0 +1,238 @@
+@model HaisyaWeb.Dto.SalesModel
+
+<style>
+  table.no-line input,
+  table.no-line select,
+  table.no-line textarea {
+    background-color: white;
+  }
+  table.no-line th {
+    width: 80px;
+  }
+</style>
+
+<div id="underPaymentContainer" style="margin-top: 10px; border: 1px solid #cccccc; padding: 10px;">
+  <div style="display:none;">
+    @Html.Hidden("Uriage_Shiharai_ID", 0)
+    @Html.Hidden("Default_Kubun", 0)
+  </div>
+  <table class="no-line">
+    <tr>
+      <th>支払日</th>
+      <td>
+        @Html.TextBoxFor(model => model.EndDateTime, "{0:yyyy-MM-dd}", new
+          {
+            @class = "form-control bgwhite",
+            @id = "endDateTime",
+            type = "date",
+            @style = "width:140px;background-color: white;",
+            @onchange = "contentChanged=true; updateShimedayOption($(this));"
+          })
+      </td>
+      <th>締日</th>
+      <td>
+        <select id="closingDay" class="form-control dropdown inputtable" style="width: 60px; background-color: white;">
+        @for (int i = 1; i <= 31; i++)
+        {
+            <!option value="@i" @(i == Model.ShimeDay ? "selected" : "")>@i</!option>
+        }
+        </select>
+      </td>
+      <th>車番</th>
+      <td><input type="text" id="Syaban" name="" value="@Model.HaisyaData?.SYABAN" class="form-control inputtable" style="width: 100px; background-color: white;" oninput="filterDigitsOnly(this);" onblur="kanmaChange(this);"/></td>
+      <td style="text-align:right;">
+        @if (Model.ProcessingCategory == "直接入力")
+        {
+          <button class="btn btn-outline-danger delete-row-under">削除</button>
+        }
+        else
+        {
+          @if (Model.RowCount == 0 || Model.IsUnderlingReadOnly)
+          {
+          }
+          else if (Model.IsDeletable)
+          {
+            <button class="btn btn-outline-danger delete-row-under">削除</button>
+          }
+        }
+      </td>
+    </tr>
+  </table>
+
+  @{
+    var kokyakuName = "";
+    var kokyakuCode = "";
+    int kokyakuId = 0;
+
+    if (Model.HaisyaData.Haisya_Kubun == 2 || Model.HaisyaData.Haisya_Kubun == 3)
+    {
+      kokyakuId = Model.Yosya.Yosya_Branch_ID;
+      kokyakuName = Model.Yosya.Customer_Branch_Name_Abbr;
+      kokyakuCode = Model.Yosya.Customer_Branch_Code;
+    }
+    else if (Model.Customer != null)
+    {
+      kokyakuId = Model.Seikyu.Customer_Branch_ID;
+      kokyakuName = Model.Seikyu.Customer_Branch_Name_Abbr;
+      kokyakuCode = Model.Seikyu.Customer_Branch_Code;
+    }
+    else if (Model.HaisyaData != null)
+    {
+      kokyakuId = Model.HaisyaData.KokyakuId;
+      kokyakuName = Model.HaisyaData.Customer_Name_Abbr;
+      kokyakuCode = Model.HaisyaData.KokyakuCode;
+    }
+  }
+  <table class="no-line">
+    <tr>
+      <th>下払先会社</th>
+      <td style="width:120px;"><input type="text" class="form-control inputtable" id="KokyakuCode3" style="background-color: white" value="@kokyakuCode" readonly /></td>
+      <td style="width:auto;"><input type="text" class="form-control inputtable" id="KokyakuName3" style="background-color: white" value="@kokyakuName" readonly /></td>
+      <td style="width:100px;"><button class="btn btn-outline-primary btnKokyaku" id="btnKokyaku3" data-index="@Model.RowCount">変更</button></td>
+      <td style="width:1px;"><input type="text" class="form-control" id="KokyakuId3" readonly value="@kokyakuId"hidden /></td>
+    </tr>
+  </table>
+  
+  <table class="no-line">
+    <tr>
+      @if (Model.AnkenPoint != null && Model.AnkenPoint.Count > 0)
+      {
+        <th>積</th>
+        <td>@Html.TextBoxFor(model => model.AnkenPoint[0].Address3, new { @class = "form-control", @id = "Tsumi", @style= "background-color: white;" })</td>
+        <th>卸</th>
+        <td>@Html.TextBoxFor(model => model.AnkenPoint[1].Address3, new { @class = "form-control", @id = "Oroshi", @style = "background-color: white;" })</td>
+      }
+      else
+      {
+        <th>積</th>
+        <td><input type="text" class="form-control inputtable" id="Tsumi" style="background-color: white" /></td>
+        <th>卸</th>
+        <td><input type="text" class="form-control inputtable" id="Orosi" style="background-color: white" /></td>
+      }
+      <th>品名</th>
+      @if (Model.BaggageGroupDto.Any())
+      {
+        <td>@Html.TextBoxFor(model => model.BaggageGroupDto[0].Item, new { @class = "form-control", @id = "ItemName", @style = "background-color: white;" })</td>
+      }
+      else
+      {
+        <td>@Html.TextBoxFor(model => model.AnkenDetail.LuggageDisplay, new { @class = "form-control", @id = "ItemName", @style = "background-color: white;" })</td>
+      }
+    </tr>
+  </table>
+  <table class="no-line">
+    <tr>
+      <th>数量</th>
+      <td><input type="text" id="quantity" name="quantity" class="form-control calc-input inputtable" style="width: 100px; text-align: right; background-color: white;" oninput="filterDigitsOnly(this);" onblur="kanmaChange(this);" value="@Model.BaggageGroupDto?.FirstOrDefault()?.Number"/></td>
+      <th>単位</th>
+      <td style="width:140px;">
+        @Html.DropDownListFor(
+              m => m.SelectedUnitId,
+              new SelectList(Model.UnitDto, "Value", "Text"),
+              new { @class = "form-control dropdown inputtable", @id = "SelectedUnit", @style = "background-color: white;" }
+              )
+      </td>
+      <th>単価</th>
+      <td><input type="text" id="unitPrice" name="unitPrice" value="0" class="form-control calc-input inputtable" style="width: 140px; text-align: right; background-color: white;" oninput="filterDigitsOnly(this);" onblur="kanmaChange(this);" /></td>
+      <th>下払運賃</th>
+      <td>
+        @Html.TextBox("totalPrice", "0", new
+          {
+            @class = "form-control inputtable",
+            @id = "totalPrice",
+            type = "text",
+            @style = "width:100px;text-align:right;background-color: white;",
+            @readonly = true
+          })
+      </td>
+    </tr>
+  </table>
+
+  <table class="no-line">
+    <tr>
+      <th>下払金額</th>
+      <td style="width:150px;"><input type="text" id="underPayment" name="underPayment" value="0" class="form-control under-payment-input inputtable" style="width: 100px; text-align: right; background-color: white;" oninput="filterDigitsOnly(this);" onblur="kanmaChange(this);" /></td>
+      <th>割増</th>
+      <td style="width:150px;"><input type="text" id="surcharge" name="surcharge" value="0" class="form-control under-payment-input inputtable" style="width: 100px; text-align: right; background-color: white;" oninput="filterDigitsOnly(this);" onblur="kanmaChange(this);" /></td>
+      <th style="width:120px;">立替金（税込）</th>
+      <td style="width:150px;"><input type="text" id="advance" name="advance" value="0" class="form-control under-payment-input inputtable" style="width: 100px; text-align: right; background-color: white;" oninput="filterDigitsOnly(this);" onblur="kanmaChange(this);" /></td>
+      <th>課税区分</th>
+      <td>
+        @Html.DropDownList(
+              "Kazei_Kubun",
+              new SelectList(Model.KazeiKubunDto, "Value", "Text", 0),
+              new { @class = "form-control list dropdown inputtable", @id = "KazeiKubun", @style = "width:140px;background-color: white;" }
+              )
+      </td>
+    </tr>
+  </table>
+
+  <table class="no-line">
+    <tr>
+      <th>下払備考</th>
+      <td>※割増を入力した場合は、記載必須となります</td>
+    </tr>
+    <tr>
+      <td colspan="2"><textarea class="form-control inputtable" id="" name="" style="resize: none; overflow-y: auto; height: 100px; width: 100%; background-color: white;"></textarea></td>
+    </tr>
+  </table>
+</div>
+
+<script>
+  $(document).ready(function () {
+
+    // 締日のドロップダウンメニューをendDateTimeの月の日にちに合わせて動的に更新するメソッド
+    function updateClosingDayOptions() {
+      $(".under-payment-item").find('#endDateTime').each(function (index) {
+        updateShimedayOption($(this));
+      });
+    }
+
+    // 初期化時に実行
+    updateClosingDayOptions();
+
+    $(document).on('input', '.under-payment-row input', function () {
+      updateTotals();
+    });
+
+    $(document).on('input', '.under-payment-row .calc-input', function () {
+      updateUnderPaymentPrice($(this).closest('.under-payment-row'));
+    });
+
+    $('.under-payment-item').each(function () {
+      var index = $(this).data('index');
+      updateTotalPricePayment(index);
+    });
+
+    updateTotals();
+    updateAllUnderPaymentPrices();
+  });
+
+  // 数量または単価が変更されたときに実行(下払運賃)
+  $('.under-payment-item #quantity, .under-payment-item #unitPrice').on('input', function () {
+    var $container = $(this).closest('.under-payment-item');
+    var index = $container.data('index');
+    updateTotalPricePayment(index);
+  });
+
+  $('.under-payment-item #underPayment, .under-payment-item #surcharge, .under-payment-item #advance').on('input', function () {
+    updateTotals();
+  });
+
+
+  // 数量かける単価をして下払運賃を計算するメソッド(下払運賃)
+  function updateUnderPaymentPrice(row) {
+    const quantity = parseFloat($(row).find('[name="quantity"]').val()) || 0;
+    const unitPrice = parseFloat($(row).find('[name="unitPrice"]').val()) || 0;
+    const totalPrice = quantity * unitPrice;
+    $(row).find('.total-price').text(totalPrice.toFixed(0));
+  }
+
+  // 下払分updateUnderPaymentPriceを発火させるためのメソッド
+  function updateAllUnderPaymentPrices() {
+    $('.under-payment-row').each(function () {
+      updateUnderPaymentPrice(this);
+    });
+  }
+
+</script>

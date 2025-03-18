@@ -1,0 +1,163 @@
+@model HaisyaWeb.Models.InvoiceModel.IDataListModel
+
+@if ((Model?.InvoiceDataLists == null || Model.InvoiceDataLists.Count == 0))
+{
+<div class="no-data-row">
+  <h4 class="no-data-row-text">データ無し</h4>
+</div>
+}
+else
+{
+<table class="table ex_DataList search-list" width="100%" border="1">
+  <tr>
+    <th style="width:80px;">
+        <button id="chk-all" class="btn btn-info" style="width: 100%; padding:0;" value="1" onclick="CheckAll()">全選択</button>
+    </th>
+    <th style="width:80px;">
+      <a href="#" onclick="dataListSort('Status_label')" style="">状態</a>
+    </th>
+    <th style="width:60px;">メール</th>
+    <th style="width:60px;">印刷</th>
+    <th style="width:80px;">プレビュー</th>
+    <th style="width:100px;">
+      <a href="#" onclick="dataListSort('Seikyu_Tantou_Name')" style="">請求担当</a>
+    </th>
+    <th style="width:160px;">
+      <a href="#" onclick="dataListSort('Customer_Name')" style="">請求先</a>
+    </th>
+    <th style="width:100px;">
+      <a href="#" onclick="dataListSort('Mail_Address1')" style="">メールアドレス</a>
+    </th>
+    <th style="width:60px;">
+      <a href="#" onclick="dataListSort('Meisai_Count')" style="">明細件数</a>
+    </th>
+    <th style="width:60px;">
+      <a href="#" onclick="dataListSort('SeikyuUnchin')" style="">運賃計</a>
+    </th>
+    <th style="width:60px;">
+      <a href="#" onclick="dataListSort('Tatekaekin')" style="">立替計</a>
+    </th>
+    <th style="width:60px;">
+      <a href="#" onclick="dataListSort('Anken_Count')" style="">案件件数</a>
+    </th>
+    <th style="width:90px;">
+      <a href="#" onclick="dataListSort('Kakutei_Count')" style="">確定件数</a>
+    <th style="width:60px;">
+      <a href="#" onclick="dataListSort('Zantei_Count')" style="">暫定件数</a>
+    </th>
+    <th style="width:60px;">
+      <a href="#" onclick="dataListSort('Kari_Count')" style="">仮件数</a>
+    </th>
+  </tr>
+<tbody>
+  @{
+    var i = 0;
+    var listData = Model.InvoiceDataLists;
+    if (!string.IsNullOrEmpty(Model.SortParam?.SortItemParam) && !string.IsNullOrEmpty(Model.SortParam?.SortOrder))
+    {
+        if ("asc".Equals(Model.SortParam.SortOrder))
+        {
+            listData = listData.OrderBy(s => s.GetType().GetProperty(Model.SortParam.SortItemParam).GetValue(s, null)).ToList();
+        }
+        else
+        {
+            listData = listData.OrderByDescending(s => s.GetType().GetProperty(Model.SortParam.SortItemParam).GetValue(s, null)).ToList();
+        }
+    }
+  }
+  @foreach (var invoice in listData)
+  {
+    i++;
+    var color = i % 2 == 1 ? "row-even" : "row-odd";
+    <tr class="@(color)">
+      <td align="center">
+      @if (Model.Controller == "InvoiceInquiry" || invoice.Meisai_Count == invoice.Kakutei_Count)
+      {
+        @Html.TextBoxFor(m => invoice.Order, new { @type = "checkbox", @onchange = "SelectInvoice()" })
+      }
+      </td>
+      <td align="center">
+      @Html.DisplayFor(m => invoice.Status_label)
+      </td>
+      @if (Model.Controller == "InvoiceInquiry" || invoice.Meisai_Count == invoice.Kakutei_Count)
+      {
+      <td align="center">
+        <button class="btn btn-success" style="width: 96%; padding: 0; background-color: #b27aab;" onclick="PublishInvoice(@(i - 1), @(invoice.Order), @((int)ConfirmationViews.MAIL));">メール</button>
+      </td>
+      <td align="center">
+        <button class="btn btn-success" style="width: 96%; padding: 0; background-color: #84e291;" onclick="PublishInvoice(@(i - 1), @(invoice.Order), @((int)ConfirmationViews.PRINT));">印刷</button>
+      </td>
+      <td align="center">
+        <button class="btn btn-success" style="width: 96%; padding: 0; background-color: #ffc000;" onclick="PublishInvoice(@(i - 1), @(invoice.Order), @((int)ConfirmationViews.PREVIEW));">プレビュー</button>
+      </td>
+      }
+      else
+      {
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+        <td>&nbsp;</td>
+      }
+      <td class="@(color)">
+      @Html.DisplayFor(m => invoice.Seikyu_Tantou_Name)
+      </td>
+      <td class="@(color)">
+      @Html.DisplayFor(m => invoice.Customer_Name)
+      </td>
+      <td class="@(color)">
+      @Html.DisplayFor(m => invoice.Mail_Address1)
+      </td>
+      <td class="@(color)" align="right">
+      @Html.DisplayFor(m => invoice.Meisai_Count)
+      </td>
+      <td class="@(color)" align="right">
+      @{
+        string Fare_total = invoice.SeikyuUnchin != null ? invoice.SeikyuUnchin.Value.ToString("#,0") : "";
+      }
+      @Fare_total
+      </td>
+      <td class="@(color)" align="right">
+      @{
+        string Advance_deposit = invoice.Tatekaekin != null ? invoice.Tatekaekin.Value.ToString("#,0") : "";
+      }
+      @Advance_deposit
+      </td>
+      <td class="@(color)" align="right">
+      @Html.DisplayFor(m => invoice.Anken_Count)
+      </td>
+      <td class="@(color)" align="right">
+      @Html.DisplayFor(m => invoice.Kakutei_Count)
+      </td>
+      <td class="@(color)" align="right">
+      @Html.DisplayFor(m => invoice.Zantei_Count)
+      </td>
+      <td class="@(color)" align="right">
+      @Html.DisplayFor(m => invoice.Kari_Count)
+      </td>
+    </tr>
+    @Html.HiddenFor(m => invoice.Order, htmlAttributes: new { id = $"order-{invoice.Order}" })
+    @Html.HiddenFor(m => invoice.Customer_Name, htmlAttributes: new { id = $"name-{invoice.Order}" })
+    @Html.HiddenFor(m => invoice.Mail_Address1, htmlAttributes: new { id = $"mail1-{invoice.Order}" })
+    @Html.HiddenFor(m => invoice.Mail_Address2, htmlAttributes: new { id = $"mail2-{invoice.Order}" })
+    @Html.HiddenFor(m => invoice.Customer_Branch_ID, htmlAttributes: new { id = $"branch-{invoice.Order}" })
+    @Html.HiddenFor(m => invoice.Seikyu_Month, htmlAttributes: new { id = $"month-{invoice.Order}" })
+    @Html.HiddenFor(m => invoice.Shime_Day, htmlAttributes: new { id = $"shime-{invoice.Order}" })
+    @Html.HiddenFor(m => invoice.Uriage_Unchin_ID, htmlAttributes: new { id = $"uriage-{invoice.Order}" })
+    @Html.HiddenFor(m => invoice.Uriage_Unchin_ID_LIST, htmlAttributes: new { id = $"uriagelist-{invoice.Order}" })
+
+    @Html.HiddenFor(m => invoice.FROM_DATE, htmlAttributes: new { id = $"from-date-{invoice.Order}" })
+    @Html.HiddenFor(m => invoice.TO_DATE, htmlAttributes: new { id = $"to-date-{invoice.Order}" })
+    @Html.HiddenFor(m => invoice.SEIKYUDATE_TO, htmlAttributes: new { id = $"date-to-{invoice.Order}" })
+    @Html.HiddenFor(m => invoice.NENDOMATSU_FLG, htmlAttributes: new { id = $"nendomatsu-{invoice.Order}" })
+
+    @if (Model.Controller == "InvoiceInquiry")
+    {
+      @Html.HiddenFor(m => (invoice as HaisyaWeb.Dto.V_InvoiceCheckDataList_Local).Check_Seikyu_ID, htmlAttributes: new { id = $"id-{invoice.Order}" })
+    }
+    else
+    {
+      @Html.HiddenFor(m => invoice.Seikyu_ID, htmlAttributes: new { id = $"id-{invoice.Order}" })
+    }
+  }
+  </tbody>
+</table>
+}

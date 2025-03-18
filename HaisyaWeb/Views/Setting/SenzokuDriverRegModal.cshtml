@@ -1,0 +1,204 @@
+﻿@model SettingModel.SenzokuDriverModalModel
+
+
+@{
+  Layout = "_ModalLayout";
+}
+
+
+<style>
+  .btn-senzoku-select {
+    width: 80px;
+    padding: 0 1rem !important;
+  }
+
+  .header-senzokuReg {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+  }
+</style>
+
+
+<div class="modal-dialog" role="document" style="">
+  <div class="modal-content">
+    @*<div class="modal-header" style="background-color: gainsboro;">
+
+      </div>*@
+    <div class="model-body">
+      @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmSenzokuDriverReg", @class = "contact-form", @style = "padding: 0;", @onsubmit = "return false;" }))
+      {
+        <div id="hidden" hidden>
+          @Html.TextBoxFor(model => model.UserID)
+          @Html.TextBoxFor(model => model.CompanyID)
+        </div>
+
+        <div class="row" style="margin-right: 1px; padding: 0 0.2rem;">
+          <div class="col-12" style="padding-right: 0;">
+            <div class="contents-wrap-middle" style="margin: 10px;">
+              <h4 class="">注意</h4>
+              <span>
+                ・一度データを登録すると物理削除は出来ません。「非表示フラグ」を立ててください。
+              </span>
+            </div>
+            <div class="container header-senzokuReg" style="">
+              <div>
+                <h4>@(Model.Title)</h4>
+              </div>
+              <div>
+                <button type="button" class="btn btn-primary" style="float:right;" onclick="SenzokuDriverRegExec(); return false;">@(Model.BtnCaption)</button>
+              </div>
+            </div>
+
+            <table class="table table-striped-columns table-bordered border-primary" border="1" style="margin: 10px; width:96%;">
+              <thead>
+                <tr style="background-color: aquamarine;">
+                  <th align="center" style="text-align: center;" width="100px">項目名</th>
+                  <th align="center" style="text-align: center;" width="40%">値</th>
+                  <th align="center" style="text-align: center;" width="100px">項目名</th>
+                  <th align="center" style="text-align: center;" width="40%">値</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr hidden>
+                  <th>SenzokuDriverID</th>
+                  <td>@Html.TextBoxFor(model => Model.SenzokuDriver.Senzoku_Driver_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px;" })</td>
+                  <th>Company_ID</th>
+                  <td>@Html.TextBoxFor(model => Model.SenzokuDriver.Company_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px;" })</td>
+                  <th>SenzokuDriverID</th>
+                  <td>@Html.TextBoxFor(model => Model.SenzokuDriver.SenzokuID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px;" })</td>
+                </tr>
+                <tr>
+                  <th>乗務員</th>
+                  <td style="display:flex;">
+                    <button id="btnDriver" class="btn btn-secondary btn-senzoku-select">選択</button>
+                    @Html.TextBoxFor(model => Model.SenzokuDriver.Driver_ID, null, new { @class = "form-control", @style = "width: 50px; padding: 0;" })
+                    @Html.TextBoxFor(model => Model.DriverDisplay, null, new { @readonly = "readonly", @class = "form-control", @style = "width: 60%;" })
+                  </td>
+                  <th>乗務員車輌</th>
+                  <td style="display:flex;">
+                    @Html.TextBoxFor(model => Model.SenzokuDriver.DriverSyaryo_ID, null, new { @class = "form-control", @style = "width: 50px; padding: 0;" })
+                    @Html.TextBoxFor(model => Model.DriverSyaryoDisplay, null, new { @readonly = "readonly", @class = "form-control", @style = "width: 80%;" })
+                  </td>
+                </tr>
+                <tr>
+                  <th style="color: red;">開始日</th>
+                  <td>@Html.TextBoxFor(m => Model.SenzokuDriver.From_Date, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", @style = "width: 150px;" })</td>
+                  <th style="">終了日</th>
+                  <td>@Html.TextBoxFor(m => Model.SenzokuDriver.To_Date, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", @style = "width: 150px;" })</td>
+                </tr>
+  
+
+              </tbody>
+            </table>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+  $(function () {
+
+    $('#btnDriver').on('click', function (event) {
+      openCommonDialogForCompanyDriver($('#CompanyID').val(), $('#UserID').val(), $('#SenzokuDriver_Driver_ID').val());
+      return false;
+    });
+
+  });
+
+  /**
+   *　乗務員選択ボタン押下時
+   * @@param CustomerID
+   * @@param CustomerName
+   */
+  function selectCompanyDriverSelectedCallBack(obj) {
+    $('#SenzokuDriver_Driver_ID').val(obj["Driver_ID"]);
+    $('#DriverDisplay').val(obj["Display_Name"]);
+    $('#SenzokuDriver_DriverSyaryo_ID').val(obj["DriverSyaryo_ID"]);
+    var aa = '車種：  ' + obj["Syasyu"] + obj["Kata"] + ' 車番：  ' + obj["Syaban_Number"];
+    $('#DriverSyaryoDisplay').val(aa);
+
+  };
+
+
+  /**
+   * 専属情報登録処理
+   * */
+  function SenzokuDriverRegExec() {
+
+    if (varidationCheckForSenzokuDriver()) {
+      return false;
+    }
+
+    //Formの参照を取る
+    var $form = $('#frmSenzokuDriverReg');
+
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "Setting", Action = "SenzokuDriverRegExec" })',
+      type: 'post',
+      data: $form.serialize(),
+    }).done(function (response) {
+      if (response.errorMessage != null) {
+        alertError("【エラー】" + response.errorMessage);
+        return false;
+      } else {
+        closeModelAndRefresh();
+        return false;
+      }
+    }).fail(function (xhr) {
+      alertError('【ネットワークエラー】:' + xhr);
+        console.log(xhr);
+        return false;
+    }).always(function (xhr, msg) {
+        console.log(xhr, msg);
+    });
+
+  }
+
+  function varidationCheckForSenzokuDriver() {
+
+    if (!($('#SenzokuDriver_Driver_ID').val() != null && $('#SenzokuDriver_Driver_ID').val() > 0)) {
+      alertInputError("顧客が選択されていません");
+      $('#DriverDisplay').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#DriverDisplay').css('background-color', 'white');
+    }
+
+    if (!($('#SenzokuDriver_DriverSyaryo_ID').val() != null && $('#SenzokuDriver_DriverSyaryo_ID').val() > 0)) {
+      alertInputError("顧客担当者が選択されていません");
+      $('#DriverSyaryoDisplay').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#DriverSyaryoDisplay').css('background-color', 'white');
+    }
+
+    var objStart = $('#SenzokuDriver_From_Date');
+
+    if (!(objStart.val() != null && objStart.val().length > 0)) {
+      alertInputError("乗務員の開始日が指定されていません");
+      $('#' + objStart.attr('id') + '').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      let datetime = new Date(objStart.val());
+      if (datetime.getFullYear() > 2000) {
+        $('#' + objStart.attr('id') + '').css('background-color', 'white');
+      } else {
+        alertInputError("日時が選択されていません");
+        $('#' + objStart.attr('id') + '').css('background-color', 'lightcoral');
+        return true;
+
+      }
+    }
+
+    return false;
+
+  };
+
+
+</script>

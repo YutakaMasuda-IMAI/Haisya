@@ -1,0 +1,204 @@
+﻿@model HaisyaWeb.Models.AnkenModel.AnkenListModel
+
+
+
+@{
+  var list = Model.AnkenDataLists.GroupBy(m => m.SyasyuDisplay).OrderBy(m => m.Key).ToList();
+}
+
+@if (Model.AnkenDataLists.Count() == 0)
+{
+  <div style="width: 100%; background: #999999 ">
+    <h4 style="text-align:left; margin-left: 20px;color: white;">データ無し</h4>
+  </div>
+}
+
+
+@foreach (var group in list)
+{
+  var iCount = Model.AnkenDataLists.Where(m => m.SyasyuDisplay == group.Key).Count();
+  <div style="width: 100%; background: #999999 ">
+    <h4 style="text-align: left; margin-left: 20px; color: white;">@(group.Key)(@(iCount))</h4>
+  </div>
+
+
+  <table id="myTable" class="table ex_tableAnkenList" style="width: 100%;" border="1">
+    <thead>
+      <tr align="center">
+        <th>選択</th>
+        <th>
+          <a data-koumoku="Kubun_Sort" href="#" style="">案件画面</a>
+        </th>
+        <th>
+          <a data-koumoku="Kubun_Sort" href="#" style="">注文書</a>
+        </th>
+        <th hidden>
+          <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('配車担当Id')" style="">配車担当Id</a>
+        </th>
+        <th>
+          <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('配車担当')" style="">配車担当</a>
+        </th>
+        <th>
+          <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('案件状況')" style="">案件状況</a>
+        </th>
+        <th>
+          <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('進捗状況')" style="">進捗状況</a>
+        </th>
+        <th>
+          <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('積日')" style="">積日</a>
+        </th>
+        <th>
+          <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('卸日')" style="">卸日</a>
+        </th>
+        <th hidden>
+          <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('顧客Id')" style="">顧客Id</a>
+        </th>
+        <th>
+          <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('顧客')" style="">顧客</a>
+        </th>
+        <th>
+          <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('積地')" style="">積地</a>
+        </th>
+        <th>
+          <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('卸地')" style="">卸地</a>
+        </th>
+        <th>
+          <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('車種')" style="">車種</a>
+        </th>
+        <th>
+          <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('暫定金額')" style="">暫定金額</a>
+        </th>
+        <th>
+          <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('確定金額')" style="">確定金額</a>
+        </th>
+        <th>
+          <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('区分')" style="">区分</a>
+        </th>
+        <th>
+          <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('担当車番')" style="">担当車番</a>
+        </th>
+        <th>
+          <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('担当乗務員')" style="">担当乗務員</a>
+        </th>
+        <th>
+          <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('携帯電話')" style="">携帯電話</a>
+        </th>
+        <th>
+          <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('傭車１')" style="">傭車１</a>
+        </th>
+        <th>
+          <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('傭車２')" style="">傭車２</a>
+        </th>
+        <th>
+          <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('傭車３')" style="">傭車３</a>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+
+      @{
+        var datalist = Model.AnkenDataLists.Where(m => m.SyasyuDisplay == group.Key).OrderBy(m => m.Anken_No).ToList();
+      }
+
+      @foreach (var item in datalist)
+      {
+        <tr>
+          <td>
+          </td>
+          <td width="70px">
+            <button class="btn btn-success" style="width: 100%; padding:0;" onclick="submitAnkenEdit(@(item.Anken_ID))">選択</button>
+          </td>
+          <td width="70px">
+            <button class="btn btn-info" style="width: 100%; padding:0;" onclick="submitPrintOrder(@(item.Anken_ID))">選択</button>
+          </td>
+          <td hidden>
+            @Html.DisplayFor(modelItem => item.TantouID)
+          </td>
+          <td align="center" width="70px">
+            @Html.DisplayFor(modelItem => item.Tantou_Name)
+          </td>
+          <td align="center" width="70px">
+            @{
+              int num = item.AnkenStatusDisplay.IndexOf("(");
+              string AnkenStatusDisplay1 = item.AnkenStatusDisplay;
+              if (num > 0) { AnkenStatusDisplay1 = item.AnkenStatusDisplay.Substring(0, num); }
+
+            }
+            @(AnkenStatusDisplay1)
+
+            @{
+              string AnkenStatusDisplay2 = null;
+              if (num > 0) { AnkenStatusDisplay2 = item.AnkenStatusDisplay.Substring(num); }
+            }
+            @if (AnkenStatusDisplay2 != null)
+            {
+              <br />@(AnkenStatusDisplay2)
+            }
+          </td>
+          <td align="center" width="70px">
+            @Html.DisplayFor(modelItem => item.AnkenStep)
+          </td>
+          <td align="center" width="70px">
+            @Convert.ToDateTime(item.START_PointDate).ToString("yyyy/MM/dd")<br />
+            @Html.DisplayFor(modelItem => item.START_PointTime)
+          </td>
+          <td align="center" width="70px">
+            @Convert.ToDateTime(item.END_PointDate).ToString("yyyy/MM/dd")<br />
+            @Html.DisplayFor(modelItem => item.END_PointTime)
+          </td>
+          <td hidden>
+            @Html.DisplayFor(modelItem => item.KokyakuId)
+          </td>
+          <td align="left" width="250px">
+            @Html.DisplayFor(modelItem => item.KokyakuName)
+          </td>
+          <td align="left" width="250px">
+            @Html.DisplayFor(modelItem => item.START_BuildingName)<br />
+            @Html.DisplayFor(modelItem => item.START_Address)
+          </td>
+          <td align="left" width="250px">
+            @Html.DisplayFor(modelItem => item.END_BuildingName)<br />
+            @Html.DisplayFor(modelItem => item.END_Address)
+          </td>
+          <td align="center" width="150px">
+            @Html.DisplayFor(modelItem => item.SyasyuDisplay)<br />
+            @Convert.ToInt32(item.Daisuu).ToString("0台")
+          </td>
+          <td align="center" width="70px">
+            @*@Html.DisplayFor(modelItem => item.ZanteiAmount)*@
+            @Convert.ToInt32(item.ZanteiAmount).ToString("C")
+          </td>
+          <td align="center" width="70px">
+            @*@Html.DisplayFor(modelItem => item.KakuteiAmount)*@
+            @Convert.ToInt32(item.KakuteiAmount).ToString("C")
+          </td>
+          <td align="center" width="70px">
+            @*@Html.DisplayFor(modelItem => item.TantouKubunDisplay)*@
+          </td>
+          <td align="center" width="70px">
+            @*@Html.DisplayFor(modelItem => item.CarNum)*@
+          </td>
+          <td align="center" width="70px">
+            @*@Html.DisplayFor(modelItem => item.DriverName)*@
+          </td>
+          <td align="center" width="150px">
+            @*@Html.DisplayFor(modelItem => item.DriverPhoneNum)*@
+          </td>
+          <td align="center" width="200px">
+            @*@Html.DisplayFor(modelItem => item.SubCon1Display)*@
+          </td>
+          <td align="center" width="200px">
+            @*@Html.DisplayFor(modelItem => item.SubCon2Display)*@
+          </td>
+          <td align="center" width="200px">
+            @*@Html.DisplayFor(modelItem => item.SubCon3Display)*@
+          </td>
+
+
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+
+

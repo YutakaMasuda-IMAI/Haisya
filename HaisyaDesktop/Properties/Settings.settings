@@ -1,0 +1,18 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="HaisyaDesktop.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="MapsAPIHosts" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">https://imai-srv-ad.imaiunso01.com/HaisyaWeb/</Value>
+    </Setting>
+    <Setting Name="WebAPIHosts" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">https://imai-srv-ad.imaiunso01.com/WebApplication/</Value>
+    </Setting>
+    <Setting Name="MapsAPIHostsLocal" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">https://localhost:44383/</Value>
+    </Setting>
+    <Setting Name="WebAPIHostsLocal" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">https://localhost:44329/</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

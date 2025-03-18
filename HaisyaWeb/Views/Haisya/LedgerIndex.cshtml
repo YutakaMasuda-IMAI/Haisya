@@ -1,0 +1,839 @@
+﻿@model HaisyaWeb.Models.HaisyaModel.DataListModel
+@*
+  For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+  Layout = "_Layout";
+}
+
+<head>
+  <link href="~/css/Haisya.css" rel="stylesheet" />
+  <script src="~/js/Haisya.js"></script>
+  <style>
+
+    .ui-draggable-dragging {
+      z-index: 1000;
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, lightgrey 0px 0px 0px 1px;
+      filter: brightness(90%);
+    }
+
+    .item_anken td, .item_driver td {
+      /*background: #DCDCDC !important;*/
+    }
+
+    .item_anken_reported td, .item_driver_reported td {
+      background: #f7b069 !important;
+    }
+
+    .ledger-row {
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+
+    .text_kokyaku:hover .icon_clear_kokyaku {
+      display: block;
+    }
+
+    .icon_clear_kokyaku {
+      position: absolute;
+      right: 8px;
+      top: 2px;
+      display: none;
+      cursor: pointer;
+    }
+
+    .dot-spin {
+      width: 10px;
+      aspect-ratio: 1;
+      border-radius: 50%;
+      animation: dot-spin 1s infinite linear alternate;
+    }
+
+    .loader-block-driver {
+      left: 0px;
+      width: 100%;
+      background: transparent;
+      height: 37px;
+      display: flex;
+      position: absolute;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .col-auto {
+      padding-left: 0;
+      font-size: smaller;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="hiddenItem" hidden>
+    @Html.HiddenFor(model => Model.Search.SelectTab)
+    @Html.HiddenFor(model => Model.Search.SelectGroup)
+    @Html.HiddenFor(model => Model.Search.SelectFilter)
+    @Html.HiddenFor(model => Model.Search.SelectDay)
+    @Html.HiddenFor(model => Model.Search.BackMenuAction)
+    @Html.HiddenFor(model => Model.Company_ID)
+    @Html.HiddenFor(model => Model.RefreshKubun)
+
+  </div>
+  <div>
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+      <!-- Success Toast -->
+      <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <strong class="me-auto">Success</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          Success message goes here.
+        </div>
+      </div>
+
+      <!-- Error Toast -->
+      <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+          <strong class="me-auto">Error</strong>
+          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+          Error message goes here.
+        </div>
+      </div>
+    </div>
+
+
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "Form2", data_initializing = "1" }))
+    {
+      <div id="hedder" class="row ledger-row" style="margin-bottom: -20px;">
+        <h6 class="heading-pagetitle">配車台帳</h6>
+        <div class="form-group" style="width: 110%">
+          <div class="row ledger-row">
+            <div class="col-sm-4" style="display: flex;">
+              <div class="appeal-box box" style="vertical-align: middle; display: inline-block; padding: 0;">
+                <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeDay(-1)" onselectstart="return false;" alt="<<" tooltip="前日">＜＜</span>
+                <input id="TargetDayLavel" class="calender" type="text" readonly style="width: 200px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
+                <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeDay(1)" onselectstart="return false;" alt=">>" tooltip="翌日">＞＞</span>
+              </div>
+            </div>
+            <div class="col-sm-4" style="display: flex;">
+              @Html.LabelFor(model => model.Search.SelectTantou, htmlAttributes: new { @class = "control-label align-self-center text-end", @style = "padding: 0; font-weight: bold; white-space: nowrap;" })
+              @Html.DropDownListFor(model => model.Search.SelectTantou, new SelectList(Model.Search.TantouSelectList, "Value", "Text", "Selected"), "担当者を選択", new { @class = "form-control", @style = "padding: 0;width: auto; min-width: 200px;" })
+              @Html.ValidationMessageFor(model => model.Search.SelectTantou, "", new { id = "SelectTantou", @class = "text-danger align-middle" })
+            </div>
+            <div class="col-sm-4" style="display: flex; white-space: nowrap;">
+              <div style="border: .1em solid #bbb; padding: 0; margin: 0; border-radius: 10px; white-space: nowrap; align-content: center;">
+                <label style="color: #ff00dc; margin-left: 5px;">再描画　</label>
+                <input type="radio" name="num_of_refresh" value="1">1分　
+                <input type="radio" name="num_of_refresh" value="3">3分　
+                <input type="radio" name="num_of_refresh" value="5">5分　
+                <input type="radio" name="num_of_refresh" value="10">10分　
+                <input type="radio" name="num_of_refresh" value="0">無し　
+              </div>
+            </div>
+
+            <button type="button" class="btn btn-secondary btn-sm" style="width: 110%; padding: 0;" onClick="UpdateColapse()">▼詳細検索</button>
+            <div id="tblCollapseSearch" class="collapse" style="width: 110%; padding: 0.2rem 0 0 0; border-collapse: collapse; ">
+              <div class="row ledger-row">
+                <div class="col-sm-6" style="display: flex;">
+                  @Html.LabelFor(model => model.Search.SelectTokuisakiID, htmlAttributes: new { @class = "control-label align-self-center align-middle text-end", @style = "padding: 0; font-weight: bold; white-space: nowrap;" })
+                  <button id="btnKokyaku" class="btn btn-info btn-sm" onclick="return false;" style="white-space: nowrap;">選択</button>
+                  @Html.HiddenFor(model => Model.Search.SelectTokuisakiID)
+                  @Html.TextBoxFor(model => model.Search.SelectTokuisakiName, null, new { @readonly = "readonly", @class = "form-control", @style = "font-size: 12px; padding: 2px;" })
+                  <div class="icon_clear_kokyaku" onclick="clearKokyaku()"><i class="fa-solid fa-xmark"></i></div>
+                </div>
+                <div class="col-sm-3" style="display: flex;">
+                  @Html.LabelFor(model => model.Search.SelectSyasyu, htmlAttributes: new { @class = "control-label align-self-center text-end", @style = "padding: 0; font-weight: bold; white-space: nowrap;" })
+                  @Html.DropDownListFor(model => model.Search.SelectSyasyu, new SelectList(Model.Search.SyasyuSelectList, "Value", "Text", "Selected"), "車種を選択", new { @class = "form-control", @style = "padding: 0;" })
+                  @Html.ValidationMessageFor(model => model.Search.SelectSyasyu, "", new { id = "SelectDriverKubun", @class = "text-danger align-middle" })
+                </div>
+                <div class="col-sm-3" style="display: flex;">
+                  @Html.LabelFor(model => model.Search.SelectKata, htmlAttributes: new { @class = "control-label align-self-center text-end", @style = "padding: 0; font-weight: bold;" })
+                  @Html.DropDownListFor(model => model.Search.SelectKata, new SelectList(Model.Search.KataSelectList, "Value", "Text", "Selected"), "型を選択", new { @class = "form-control", @style = "padding: 0;" })
+                  @Html.ValidationMessageFor(model => model.Search.SelectKata, "", new { id = "SelectMonth", @class = "text-danger align-middle" })
+                </div>
+              </div>
+              <div class="row ledger-row" style=" font-size: 14px;">
+                <div class="col-sm-4">
+                  <div class="" style="border: .1em solid #bbb; padding: 0; margin: 0.1rem 0 0 0; border-radius: 10px; white-space: nowrap; display: flex; justify-content: space-around; ">
+                    <label style="color: #ff00dc; margin-left: 5px;">絞り込み　</label>
+                    <div><input type="radio" name="num_of_filter" value="0">全て</div>
+                    <div><input type="radio" name="num_of_filter" value="1">配車(確定)</div>
+                    <div><input type="radio" name="num_of_filter" value="2">配車(暫定)</div>
+                    <div><input type="radio" name="num_of_filter" value="3">未配車</div>
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <div class="justify-content:space-around;" style="border: .1em solid #bbb; padding: 0; margin: 0 0 0 0; border-radius: 10px; white-space: nowrap; display: flex; justify-content: space-around; ">
+                    <label style="color: #ff00dc; margin-left: 5px;">グループ化　</label>
+                    <div><input type="radio" name="num_of_inq" value="0">なし</div>
+                    <div><input type="radio" name="num_of_inq" value="1">得意先</div>
+                    <div><input type="radio" name="num_of_inq" value="2">配車</div>
+                    <div><input type="radio" name="num_of_inq" value="3">車種</div>
+                    <div><input type="radio" name="num_of_inq" value="4">地域</div>
+                  </div>
+                </div>
+                <div class="col-sm-4">
+                  <div class="justify-content:space-around;" style="border: .1em solid #bbb; padding: 0; margin: 0; border-radius: 10px; white-space: nowrap; display: flex; justify-content: space-around; ">
+                    <label style="color: #ff00dc; margin-left: 5px; margin-right: 16px;">案件状況</label>
+                    <div><input type="checkbox" name="num_of_status" value="0" checked>確定</div>
+                    <div><input type="checkbox" name="num_of_status" value="1" checked>暫定</div>
+                    <div><input type="checkbox" name="num_of_status" value="2">暫定(配車不要)</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+
+  <div class="row ledger-row" style="margin-top: 25px" id="data-leager">
+    <div class="col-8" style="">
+      <div class="row ledger-row" style="height: 40px;margin-bottom:5px">
+        <h5 class="heading-014" style="width: 200px;">荷物情報</h5>
+        <div class="col-sm-7">
+          <div class="row ledger-row" style="margin-left: 20px;">
+            @Html.LabelFor(model => model.Search.SortSelectList, htmlAttributes: new { @class = "control-label text-end", @style = "padding: 0; width: 80px; " })
+            <div class="col-6 col-sm-6" style="">
+              @Html.DropDownListFor(model => model.Search.SortSelectList, new SelectList(Model.Search.SortSelectList, "Value", "Text", "Selected"), "表示順を選択", new { @class = "form-control", @style = "padding: 0;" })
+              @Html.ValidationMessageFor(model => model.Search.SortSelectList, "", new { id = "SelectMonth", @class = "text-danger align-middle" })
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div style="border: black; border-style: groove;  overflow: auto; " id="DataListAnken">
+        @*///min-height: 0px; max-height: 500px;*@
+      </div>
+    </div>
+    <div class="col-4" style="">
+      <div style="height: 40px; overflow: hidden;margin-bottom:5px">
+        <h5 class="heading-014">乗務員一覧</h5>
+      </div>
+      @* 現状だと該当ページへ遷移することができないため、仮のボタンで遷移できるようにしています *@
+      @* デベロップ用ディバッグ *@
+      @* <div style="display:flex">
+          <a href="#" style="padding:0;" onclick="GetOperationInstructions(); return false;">
+            運行指示書作成へのボタン（開発用）
+          </a>
+        </div> *@
+      <div style=" border: black; border-style: groove; margin: 3px 0 3px 0; overflow: auto; " id="DataListDriver">
+        @*/// min-height: 200px; max-height: 500px;*@
+      </div>
+    </div>
+  </div>
+
+  @await Html.PartialAsync("ModalStatusHaisya")
+</body>
+
+
+
+
+<script>
+
+  $('#ModalStatusHaisya').hide();
+
+  const weeks = ["日", "月", "火", "水", "木", "金", "土"];
+  let isBlockDriver = false;
+  let yearMonth;
+
+  $(window).on('load', function () {
+
+    var disp = new Date($("#Search_SelectDay").val());
+
+    /** 日付を文字列にフォーマットする */
+    var formatted = `${disp.getFullYear()}\年${(disp.getMonth() + 1).toString().padStart(2, '0')}\月${disp.getDate().toString().padStart(2, '0')}\日\(${weeks[disp.getDay().toString()]}\)`.replace(/\n|\r/g, '');
+    $("input#TargetDayLavel").val(formatted);
+    $("input#TargetDayLavel_To").val(formatted);
+
+    var radio = document.getElementsByName('num_of_inq');
+    for (let i = 0; i < radio.length; i++) {
+      if (radio.item(i).value == $("#Search_SelectGroup").val()) {
+        radio.item(i).checked = true;
+      }
+    }
+
+    radio = document.getElementsByName('num_of_filter');
+    for (let i = 0; i < radio.length; i++) {
+      if (radio.item(i).value == $("#Search_SelectFilter").val()) {
+        radio.item(i).checked = true;
+      }
+    }
+
+    var radio = document.getElementsByName('num_of_refresh');
+    for (let i = 0; i < radio.length; i++) {
+      if (radio.item(i).value == $("#RefreshKubun").val()) {
+        radio.item(i).checked = true;
+      }
+    }
+
+    dataListDisplay();
+
+    tglSelectDayKubun(false);
+
+    /** Redraw data */
+    var numRefresh = $('input[name="num_of_refresh"]:checked').val();
+    if (numRefresh != 0) {
+      let cronRedraw = setInterval(function () {
+        dataListDisplay(true);
+        alertSuccess('再描画は自動的に実行されています。');
+      }, parseInt(numRefresh || 1) * 60000);
+    }
+
+    $('form').data('initializing', "0");
+  });
+
+  $(document).ready(function () {
+
+  });
+
+  //デベロップ用テストコード
+  /**
+   * 運行指示書作成
+   * */
+  function GetOperationInstructions(){
+      var haisyamodel;
+  			$.post('@Url.RouteUrl("Default", new { controller = "Haisya", Action = "GetOperationInstructions" })',
+				{
+					AnkenID: 1,
+				},
+			).done(function (response) {
+                if (response.errorMessage != null) {
+                    alertError(`【エラー】${response.errorMessage}`);
+					return false;
+				} else {
+          $("#ModalHere").html(response.partialView);
+          //$('#ModalHere').modal('show');
+          $("#ModalHere").find('.modal').modal('show');
+          return;
+				}
+			}).fail(function (xhr) {
+				console.log(xhr);
+				return false;
+			});
+  }
+
+
+  $(async function () {
+
+    if ($('form').data('initializing') == "0") {
+
+      $(this).keydown(async function (e) {
+        // key code 116 = F5
+        if (isBlockDriver && e.keyCode == 116) {
+          e.preventDefault();
+          await alertError("配車は処理中ですので、少々お待ちください！")
+        }
+      });
+      $('a').click(async function (event) {
+        if (isBlockDriver) {
+          event.preventDefault();
+          await alertError("配車は処理中ですので、少々お待ちください！")
+        }
+      });
+
+      $('input[name="num_of_inq"]:radio').change(function () {
+        dataListDisplay();
+      });
+
+      $('#Search_SelectTantou').on('change', function () {
+        dataListDisplay();
+      });
+
+      $('#Search_SelectSyasyu').on('change', function () {
+        dataListDisplay();
+      });
+
+      $('#Search_SelectKata').on('change', function () {
+        dataListDisplay();
+      });
+
+      $(".calender").datepicker({
+          buttonText: "カレンダーから選択", // ツールチップ表示文言
+          buttonImageOnly: true,           // 画像として表示
+          showOn: "both"                   // カレンダー呼び出し元の定義
+      });
+
+      $('input[name="num_of_filter"]:radio').change(function () {
+        dataListDisplay();
+      });
+
+      $('input[name="num_of_status"]:checkbox').change(function () {
+        dataListDisplay();
+      });
+
+      $('#Search_SortSelectList').on('change', function () {
+        dataListDisplay();
+      });
+
+      $('input[name="num_of_refresh"]:radio').change(function () {
+        clearInterval(cronRedraw);
+        var numRefresh = $('input[name="num_of_refresh"]:checked').val();
+
+        if (numRefresh == 0) {
+          clearInterval(cronRedraw);
+          return false;
+        }
+
+        var cronRedraw = setInterval(function () {
+          dataListDisplay(true);
+          alertSuccess('再描画は自動的に実行されています。');
+        }, parseInt(numRefresh || 1) * 60000);
+      });
+
+      $('#tglSelectDayKubun').on('change', function () {
+        //alert($('#tglSelectDayKubun').prop("checked"));
+        tglSelectDayKubun($('#tglSelectDayKubun').prop("checked"));
+      });
+
+      $('#TargetDayLavel').on('change', function () {
+        const dateJp = $('#TargetDayLavel').prop("value"); // Format YYYY年MM月DD日(W)
+        const date = `${dateJp.slice(0, 4)}/${dateJp.slice(5, 7)}/${dateJp.slice(8, 10)}`;
+        $("#Search_SelectDay").val(date);
+        dataListDisplay();
+      });
+
+      $(document).on("contextmenu", ".change_status", function (e) {
+
+        $('#ModalStatusHaisya').find('.modal-footer .btn-primary').attr("disabled", false);
+        //Dataの設定
+        $('#ModalStatusHaisya').data('haisya-id', $(this).data('haisya-id'));
+        $('#ModalStatusHaisya').data('anken-id', $(this).data('anken-id'));
+        $('#ModalStatusHaisya').data('ankendisplay-id', $(this).data('ankendisplay-id'));
+
+        const status = $(this).data('status');
+        $('#ModalStatusHaisya').find('input[name="status"]').each(function () {
+          if ($(this).val() == status) {
+            $(this).prop('checked', true);
+          }
+        })
+
+        $('#ModalStatusHaisya').show();
+        DailogOpen2("ModalStatusHaisya", "配車のステータス更新", 350, 140);
+     
+        return false;
+      });
+
+
+      $('#btnKokyaku').on('click', function (event) {
+        openCommonDialogForCustomer($('#Company_ID').val(), 0, $('#Search_SelectTokuisakiID').val());
+        return false;
+      });
+
+    }
+
+  });
+
+
+  /**
+   *
+   * @@param checked
+   */
+  function tglSelectDayKubun(checked) {
+
+    if (checked) {
+      $('#lblkara').show();
+      $('#divTargetDayLavelTo').show();
+    } else {
+      $('#lblkara').hide();
+      $('#divTargetDayLavelTo').hide();
+    }
+
+  };
+
+  function selectedChangeDay(move) {
+    var dt = new Date($('#Search_SelectDay').val());
+    dt.setDate(dt.getDate() + move);
+    $("#Search_SelectDay").val(formatDate(dt));
+
+    /** 日付を文字列にフォーマットする */
+    var formatted = `${dt.getFullYear()}\年${(dt.getMonth() + 1).toString().padStart(2, '0')}\月${dt.getDate().toString().padStart(2, '0')}\日\(${weeks[dt.getDay().toString()]}\)`.replace(/\n|\r/g, '');
+    $("input#TargetDayLavel").val(formatted);
+    dataListDisplay();
+  };
+
+  function formatDate(date) {
+    var yyyy = date.getFullYear();
+    var mm = ('00' + (date.getMonth() + 1)).slice(-2);
+    var dd = ('00' + date.getDate()).slice(-2);
+    const ymd = String(yyyy) + '/' + String(mm) + '/' + String(dd);
+    return ymd;
+  };
+
+  /**
+   *　指定クラス名に切り替える
+   * @@param ele
+   * @@param className
+   * @@param newClassName
+   */
+  function replaceClass(ele, className, newClassName) {
+    ele.removeClass(className);
+    if (!ele.hasClass(newClassName)) {
+      ele.addClass(newClassName);
+    }
+  }
+
+  /**
+   * スケジュールロックを実施
+   * @@param id
+   */
+  function createLoaderBlock(id) {
+    isBlockDriver = true
+    const eleCurrent = $(`.ex_DriverDataList tr[data-id="${id}"]`);
+    for (let i = 0; i < eleCurrent.length; i++) {
+      const top = eleCurrent.eq(i).data('i') || 0;
+      const html = `
+        <div class="loader-block-driver" data-id="${id}" style="top:${48 + top * 37}px; width: 100%;">
+          <div class="dot-spin"></div>
+        </div>`
+
+      eleCurrent.eq(i).parents(".accordion-005").find(".insert-loader").append(html)
+      replaceClass(eleCurrent, 'item_driver_draggable', 'item_driver')
+    }
+
+  }
+
+  /**
+   * スケジュールロックを解除
+   * @@param id
+   */
+  function removeLoaderBlock(id) {
+    isBlockDriver = false
+    $(`.loader-block-driver[data-id="${id}"]`).remove()
+    const eleCurrent = $(`.ex_DriverDataList tr[data-id="${id}"]`);
+    replaceClass(eleCurrent, 'item_driver', 'item_driver_draggable')
+  }
+
+  /**
+   * 案件リストと乗務員リストの再描画
+   * */
+  async function dataListDisplay() {
+    CommonWaitStart();
+    var selectTab = $('input[name="num_of_inq"]:checked').val();
+    $('#Search_SelectGroup').val(selectTab);
+
+    var selectFilter = $('input[name="num_of_filter"]:checked').val();
+    $('#Search_SelectFilter').val(selectFilter);
+
+    var selectStatus = [];
+    $('input[name="num_of_status"]:checked').each(function (i) {
+      selectStatus[i] = $(this).val();
+    });
+
+    $.post('@Url.RouteUrl("Default", new { controller = "Haisya", Action = "JsonGetLedgerDataList" })',
+      {
+        SelectDay: $('#Search_SelectDay').val(),
+        SelectTantou: $('#Search_SelectTantou').val(),
+        SelectSyasyu: $('#Search_SelectSyasyu').val(),
+        SelectKata: $('#Search_SelectKata').val(),
+        SelectGroup: $('#Search_SelectGroup').val(),
+        SelectFilter: $('#Search_SelectFilter').val(),
+        SelectSort: $('#Search_SortSelectList').val(),
+        SelectTokuisakiID: $('#Search_SelectTokuisakiID').val(),
+        SelectStatus: selectStatus,
+        //sortItemParam: $('#DriverListSort_SortItemParam').val(),
+        //sortOrder: $('#DriverListSort_SortOrder').val(),
+      })
+      .done(async function (data) {
+        if (data.message != null) {
+          $('#data-leager').html(data.partialView);
+          return false;
+        } else {
+          $('#DataListAnken').html(data[0].partialView);
+          $('#DataListDriver').html(data[1].partialView);
+
+          $(".item_driver_draggable").draggable({
+            scroll: true,
+            opacity: 5,
+            helper: function (event) {
+              const html = $(event.currentTarget).html();
+              const width = $(event.currentTarget).width();
+              return $(`
+					<table class="table ex_DriverDataList table-primary" width="100%" style="width:${width}px; background: #ffffff; cursor: move" border="1">
+						${html}
+					</table>`
+              )
+            },
+            appendTo: "#data-leager",
+            containment: "parent",
+          });
+
+          $(".table-anken-tr").droppable({
+            /*  accept: ".item_anken",*/
+            drop: function (event, ui) {
+
+              // X座標を取得
+              var left = $("#DataListAnken").offset().left;
+              var right = left + $("#DataListAnken").innerWidth();
+              //ドロップされたら吸着する
+              var dropposi = ui.position;
+
+              // ドロップされた場所
+              var dropPositionX = dropposi.left;
+              var dropPositionY = dropposi.top;
+
+              // ドロップされた場所が範囲内かチェック
+              if (!(left <= dropPositionX && dropPositionX <= right)) {
+                let aa = $(this).data("data-i");
+                $("#tr-anken-" + aa).css("background-color", "transparent");
+                // ドロップNG
+                return false;
+              }
+
+              if ($(ui.draggable).data("driver-id") > 0 || $(ui.draggable).data("yosya-driver-id") > 0) {
+
+                ///案件新規登録
+                let Anken_No = $(this).data("anken-no");
+                const Anken_ID = $(this).data("anken-id");
+                const AnkenDisplay_ID = $(this).data("ankendisplay-id"); // Add this line
+                const Day = $(this).data("day");
+
+                const Driver_ID = $(ui.draggable).data("driver-id");
+                const DriverSyaryo_ID = $(ui.draggable).data("driver-syaryo-id");
+                const YosyaDriver_ID = $(ui.draggable).data("yosya-driver-id");
+                const YosyaDriverSyaryo_ID = $(ui.draggable).data("yosya-driver-syaryo-id");
+                const SyaryoManagement_ID = $(ui.draggable).data('syaryomanage-id');
+                const SyaryoManagement_ID1 = $(ui.draggable).data('syaryomanage-id1');
+                const Haisya_Kubun = $(ui.draggable).data('jisyayosyakubun');
+
+                //AddNewHaisya(Anken_ID, Anken_No, Driver_ID, DriverSyaryo_ID, YosyaDriver_ID, YosyaDriverSyaryo_ID, AnkenDisplay_ID);
+                submitAddNew(Day, Driver_ID, DriverSyaryo_ID, Anken_ID, AnkenDisplay_ID, Haisya_Kubun, Anken_No, SyaryoManagement_ID, SyaryoManagement_ID1);
+              }
+            },
+            over: function (event, ui) {
+              //alert("over");
+              let aa = $(this).data("data-i");
+              $("#tr-anken-" + aa).css("background-color", "red");
+            },
+            out: function (event, ui) {
+              //alert("over");
+              let aa = $(this).data("data-i");
+              $("#tr-anken-" + aa).css("background-color", "transparent");
+            }
+          });
+
+          return;
+        }
+      })
+      //通信エラーの場合
+      .fail(function () {
+
+
+      })
+
+      //通信が終了した場合
+      .always(function () {
+        CommonWaitEnd();
+      })
+      ;
+
+  }
+
+
+  /**
+   * 案件の割当て処理
+   * @@param Day
+   * @@param Driver_ID
+   * @@param DriverSyaryo_ID
+   * @@param Anken_ID
+   * @@param AnkenDisplay_ID
+   * @@param Haisya_Kubun
+   * @@param Anken_No
+   * @@param SyaryoManagement_ID
+   * @@param SyaryoManagement_ID1
+   */
+  async function submitAddNew(Day, Driver_ID, DriverSyaryo_ID, Anken_ID, AnkenDisplay_ID, Haisya_Kubun, Anken_No, SyaryoManagement_ID, SyaryoManagement_ID1) {
+
+    //alert("submitAddNew");
+    const id = `${Driver_ID}-${DriverSyaryo_ID}-${Haisya_Kubun}`;
+    createLoaderBlock(id)
+    $.post('@Url.RouteUrl("Default", new { controller = "Haisya", Action = "AddNewHaisyaData" })',
+      {
+        Driver_ID,
+        DriverSyaryo_ID,
+        Anken_ID,
+        AnkenDisplay_ID,
+        Haisya_Kubun,
+        Day: $('#Search_SelectDay').val(),
+        SyaryoManagement_ID,
+        SyaryoManagement_ID1,
+      },
+    ).done(async function (response) {
+      if (response.errorMessage != null) {
+        await alertError('【エラー】' + response.errorMessage);
+        return false;
+      } else {
+        await  alertInfo(`「${Anken_No}」の案件の割り当てが完了しました。`);
+        dataListDisplay();
+        return;
+      }
+    }).fail(async function (xhr) {
+      await alertError(`【ネットワークエラー】:${xhr}`);
+      console.log(xhr);
+      return false;
+    }).always(function (xhr, msg) {
+      console.log(xhr, msg);
+      removeLoaderBlock(id);
+      dataListDisplay();
+    });
+  }
+
+
+  /**
+   * 
+   * @@param flgChecked
+   */
+  function ChangeALLCheckBoxChanged(flgChecked) {
+    $('input:checkbox[name="Target"]').each(function () {
+
+      if ($(this).parents('tr').children('td:nth-child(2)').first().text().trim() == 0) {
+        $(this).prop('checked', flgChecked);
+      }
+    });
+  };
+
+  /**
+   * 選択した顧客情報をクリアする
+   * */
+  function clearKokyaku() {
+    $("#Search_SelectTokuisakiID").val(null);
+    $("#Search_SelectTokuisakiName").val(null);
+    dataListDisplay();
+  }
+
+  /**
+   * 共通得意先選択ダイアログで一覧選択されたときのCallBack関数
+   * */
+  function selectCustomerSelectedCallBack(obj) {
+    $('#Search_SelectTokuisakiID').val(obj["Customer_Branch_ID"]);
+    $('#Search_SelectTokuisakiName').val(obj["Customer_Branch_Name_Abbr"]);
+    dataListDisplay();
+  };
+
+
+  /**
+   * ドライバー月間カレンダー（モーダル）を開く
+   * @@param kubun
+   * @@param driverID
+   */
+  function MonthScheduleCalendarModal(kubun, driverID) {
+    var url = '@Url.RouteUrl("Default", new { controller = "Haisya", Action = "MonthScheduleCalendarModal" })';
+    MonthScheduleCalendarModalEx(url, kubun, driverID, $("#Search_SelectDay").val(), null);
+  };
+
+
+  /**
+   * 案件照会画面(モーダル)を開く
+   * @@param ankenID
+   * @@param ankenDisplayID
+   * @@param driverID
+   * @@param driverSyaryoID
+   * @@param haisyaKubun
+   */
+  function AnkenRefenceModal(ankenID, ankenDisplayID, driverID = null, driverSyaryoID = null, haisyaKubun = null) {
+    var url = '@Url.RouteUrl("Default", new { controller = "AnkenReference", Action = "Index" })';
+    AnkenRefenceModalEx(url, ankenID, ankenDisplayID, driverID, driverSyaryoID, haisyaKubun);
+  };
+
+
+
+  /**
+   *　車番連絡可能チェック
+   * @@param Anken_ID
+   */
+  function checkEnableContact(Anken_ID) {
+    $.post('@Url.RouteUrl("Default", new { controller = "Haisya", Action = "CheckEnableContact" })',
+      {
+        Anken_ID
+      }).done(async function (response) {
+        if (response.errorMessage != null) {
+          await alertError(`【エラー】${response.errorMessage}`);
+          return false;
+        } else {
+          if (response.data?.status) {
+            await alertInfo(`「${response.data.kokyakuName}」の案件全ての割当てが完了しました。車番連絡が可能となっています`);
+          }
+          return;
+        }
+      }).fail(async function (xhr) {
+        await alertError(`【ネットワークエラー】:${xhr}`);
+        return false;
+      })
+  }
+
+  /**
+   * 
+   * @@param ankeniDisplayId
+   * @@param ankenId
+   */
+  function submitAnkenEdit(ankeniDisplayId, ankenId) {
+    //alert("submitAnkenEdit::" + ankeniDisplayd);
+
+    var form = document.createElement('form');
+    form.action = '@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "DailyReportRegistration" })';
+    form.method = 'POST';
+
+    //alert(form.action);
+
+    // body に追加
+    document.body.appendChild(form);
+
+    var html = '';
+    html += '            <input type="hidden" id="AnkenDisplay_ID" name="AnkenDisplay_ID" value="' + ankeniDisplayId + '" />';
+    html += '            <input type="hidden" id="Anken_ID" name="Anken_ID" value="' + ankenId + '" />';
+    html += '            <input type="hidden" id="SingleSwitch" name="SingleSwitch" value="' + !$('#tglSelectDayKubun').is(':checked') + '" />';
+    html += '            <input type="hidden" id="SelectDay" name="SelectDay" value="' + $('#Search_SelectDay').val() + '" />';
+    html += '            <input type="hidden" id="SelectTokuisakiID" name="SelectTokuisakiID" value="' + $('#Search_SelectTokuisakiID').val() + '" />';
+    html += '            <input type="hidden" id="SelectTantou" name="SelectTantou" value="' + $('#Search_SelectTantou').val() + '" />';
+    html += '            <input type="hidden" id="SelectSyasyu" name="SelectSyasyu" value="' + $('#Search_SelectSyasyu').val() + '" />';
+    html += '            <input type="hidden" id="SelectKata" name="SelectKata" value="' + $('#Search_SelectKata').val() + '" />';
+    html += '            <input type="hidden" id="SelectGroup" name="SelectGroup" value="' + $('#Search_SelectGroup').val() + '" />';
+    html += '            <input type="hidden" id="BackMenuAction" name="BackMenuAction" value="' + $('#Search_BackMenuAction').val() + '" />';
+
+    form.innerHTML = html;
+    form.submit();
+
+  }
+
+
+  /**
+   * 
+   * */
+  function UpdateColapse() {
+    if ($('#tblCollapseSearch').hasClass('show')) {
+      $('#tblCollapseSearch').removeClass("show");
+    }
+    else {
+      $('#tblCollapseSearch').addClass("show");
+    }
+  };
+
+
+  /**
+   * 休暇・一覧備考登録画面の閉じる処理のコールバック関数
+   * */
+  var closeFun = function () {
+    // カレンダーデータを表示
+    dataListDisplay();
+  };
+
+  /**
+   * 休暇・一覧備考登録画面を開く
+   * @@param date
+   * @@param driverID
+   * @@param closeFunction
+   */
+  function AttendanceModal(driverID, employeeNumber) {
+    var url = '@Url.RouteUrl("Default", new { controller = "Haisya", Action = "AttendanceModal" })';
+    AttendanceModalEx(url, $("#Search_SelectDay").val(), driverID, employeeNumber, closeFun);
+  };
+
+
+</script>

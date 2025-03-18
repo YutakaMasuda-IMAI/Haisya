@@ -1,0 +1,615 @@
+﻿@model HaisyaWeb.Models.DesktopAppModel
+
+@{
+    Layout = "_LayoutForDesktop";
+}
+
+
+<head>
+    <meta charset="UTF-8">
+    <title>Display a map</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #ZMap {
+            position: absolute;
+            top: 20px;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+    <!-- ローダーのURLをscriptでロードする -->
+    <!-- ログイン認証の場合 -->
+    <script src="@(Model.MapsApiForJSUrl)"></script>
+    
+    <style>
+       
+        .map-page-container {
+            height: calc(100vh - 20px);
+            display: flex;
+            margin: 0;
+            padding: 0;
+        }
+        .map-container {
+            height: calc(100vh);
+            width: calc(100vh);
+            flex-grow: 1;
+            position: relative;
+        }
+        .map-container2 {
+            height: calc(100vh - 80px);
+            width: calc(100vh);
+            flex-grow: 1;
+            position: relative;
+        }
+    </style>
+
+</head>
+
+
+<body style="margin-bottom: 0px;" >
+    <div class="map-page-container">
+        <form id="frmMain">
+            <div hidden>
+                @Html.HiddenFor(model => Model.WebViewFlg)
+            </div>
+
+            
+            <table width="100%">
+                <tr>
+                    <td style="margin: 0; padding: 0;">
+                        @if (Model.WebViewFlg == 0)
+                        {
+                            <div id="mapHead">
+                                <!-- ログイン認証の場合 -->
+                                <button onclick="logout(); return false;" style="width: 100px;height:30px;font-size:12px;">logout</button>
+                                <button onclick="aaaTest(); return false;" style="width: 100px; height: 30px; font-size: 12px; ">aaaa</button>
+                            </div>
+                            <div id="MapContainer" class="map-container2" style="margin:0;padding:0;">
+                                <div id="ZMap" style="background:#00ffff;"></div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div id="MapContainer" class="map-container" style="margin:0;padding:0;">
+                                <div id="ZMap" style="background:#00ffff;"></div>
+                            </div>
+                        }
+
+                    </td>
+
+                </tr>
+            </table>
+            
+
+            <div id="Polyline" hidden >
+                @*<table id="Map1">
+                    <tr>
+                        <td>35.65</td>
+                        <td>139.54</td>
+                    </tr>
+                    <tr>
+                        <td>35.24</td>
+                        <td>136.97</td>
+                    </tr>
+                </table>*@
+            </div>
+        </form>
+
+    </div>
+</body>
+
+
+<script>
+
+    $(function () {
+
+        // ウィンドウの高さ
+        var w_height = 0;
+        //ウィンドウ幅の高さをw_heightに取得
+        var w_width = 0;
+
+
+        $(document).ready(function () {
+            SetWindowSize();
+        });
+
+        $(window).on('beforeunload', function (e) {
+            alert("beforeunload");
+            logout();
+        });
+
+        $(window).on("unload", function () {
+
+            logout();
+            alert("logout");
+
+        });
+
+        $(window).resize(function (event) {
+            //alert(window.innerHeight);
+
+            SetWindowSize();
+        });
+
+
+        function SetWindowSize() {
+
+            //alert("SetWindowSize");
+
+            // ウィンドウの高さ
+            w_height = window.innerHeight;
+            //ウィンドウ幅の高さをw_heightに取得
+            w_width = window.innerWidth;
+
+            if ($('#WebViewFlg').text == 0)
+            {
+                // ウィンドウの高さ
+                w_height = window.innerHeight - 45;
+                //ウィンドウ幅の高さをw_heightに取得
+                w_width = window.innerWidth - 5;
+            }
+
+
+
+            if (w_height < 0) { w_height = 50; }
+            if (w_width < 0) { w_width = 50; }
+
+            //要素MapContainerをdiv_targetに取得
+            var div_target = document.getElementById("MapContainer");
+            //div_targetの高さをw_heightに書き換え
+            div_target.style.height = w_height + 'px';
+            div_target.style.width = w_width + 'px';
+
+            $('#ZMap').height(div_target.style.height - 0);
+            $('#ZMap').width(div_target.style.width - 0);
+        };
+
+    });
+
+
+
+
+    ZisAuth.addEventListener("load", function (e) {
+       login();
+    });
+
+
+    function login() {
+        const obj = {
+            uid: "@(Model.MapApiSettings.AuthAid.Uid)"
+            , pwd: "@(Model.MapApiSettings.AuthAid.Pwd)"
+            , sid: "@(Model.MapApiSettings.AuthAid.Sid)"
+            , device_flag: 1
+        }
+        ZisAuth.login(obj);
+    };
+
+    function logout() {
+        ZisAuth.logout();
+        alert("logout");
+    };
+
+    function logoutForDesktop() {
+        ZisAuth.logout();
+    };
+
+
+
+    // 地図オブジェクト
+    var map = null;
+
+    // オブジェクト
+    var mrk_widget = [];
+
+    // 地図ポリライン
+    var pl = [];
+
+
+    // failedイベントリスナー設定
+    // 認証クラスでエラーが発生した場合にfailedが発行される
+    ZisAuth.addEventListener("failed", function (e) {
+        alert("エラーが発生しました。(" + e.status.code + ")");
+    });
+
+    // readyイベントリスナー設定
+    // 認証クラスで地図が利用可能な場合にreadyが発行される
+    ZisAuth.addEventListener("ready", function (e) {
+        // マップエレメント要素を取得する
+        var mapElement = document.getElementById("ZMap");
+
+        // MapOptionsをデフォルト値から変更する場合各パラメータに値を設定
+        var mapOptions = ZisAuth.getMapOption();
+        //mapOptions.zipsMapType = "kP8KjZdn";
+        mapOptions.center = new ZDC.LatLng(34.35132785373264, 132.35272922092014);
+        mapOptions.zoom = 10; // ★ズームレベルを設定
+        mapOptions.minZoom = 3
+        mapOptions.maxZoom = 22;
+        mapOptions.touchOperation = true;
+
+        // 地図を生成
+        map = new ZDC.Map(
+            mapElement,
+            mapOptions,
+            function () {
+                // Success callback
+                // コントロールを追加する
+                // コンパスの表示
+                map.addControl(new ZDC.Compass('top-right'));
+                // ズームボタンの表示
+                map.addControl(new ZDC.ZoomButton('bottom-right'));
+                // スケールバーの表示
+                map.addControl(new ZDC.ScaleBar('bottom-left'));
+                // 中心マーカーを作成します
+                map.addControl(new ZDC.CenterMarker());
+
+            },
+            function () {
+                // Failure callback
+            }
+        );
+
+
+    });
+
+
+    /* ダブルタップ判定処理 */
+    function doubletap(event) {
+        if (!tapCount) {
+            /* シングルタップ */
+            tapCount++;
+
+            setTimeout(function () {
+                tapCount = 0;
+            }, 350);
+
+        } else {
+            /* ダブルタップ */
+            tapCount = 0;
+
+            mapZoom(event);
+        }
+    };
+
+    /* ★クリック／タップ地点を中心に地図を拡大 */
+    function mapZoom(event) {
+        map.setCenter(event.latlng);
+        map.setZoom(map.getZoom() + 1);
+    };
+
+
+
+    function aaaTest() {
+        alert("@(Model.MapsApiForJSUrl)");
+
+        //SetMarkerToPoint();
+
+        //var latLng = map.getCenter();
+        ////C#の関数の実行
+        //chrome.webview.hostObjects.class.Test("Js send text");
+
+        //abc();
+
+        //SetMarker("35.65", "139.54", "1", "TruckB", "3633<br/> 益田　豊");
+        //SetMarker("35.65", "138.54", "2", "TruckR", "9999<br/> 西本");
+        //setPolyline("1", "solid");
+    };
+
+
+
+    function abc() {
+
+        //SetMarkerToPoint();
+
+        //var data = [];
+        //data = new Array(1);
+        //data[0] = new Array(2);
+        //data[0][0] = new Array(2);
+        //data[0][1] = new Array(2);
+
+        //data[0][0][0] = "35.65";
+        //data[0][0][1] = "139.54";
+
+        //data[0][1][0] = "35.24";
+        //data[0][1][1] = "136.97";
+
+
+
+        //CreatePolylineTable(data);
+
+
+        //alert("END");
+
+    };
+
+
+
+
+    function CreatePolylineTable(list) {
+
+        $("#Polyline").empty();
+
+        for (var i = 0; i < list.length; i++) {
+
+            var aa = "Map" + String(i + 1);
+            var bb = '<table id="' + aa + '">';
+            var tableJQ = $(bb);
+
+            //alert(list[i].length);
+
+            for (var m = 0; m < list[i].length; m++) {
+
+                var latVal = list[i][m][0];
+                var lngVal = list[i][m][1];
+
+                //alert(latVal + ";" + lngVal);
+
+                var trJQ_r = $('<tr></tr>').appendTo(tableJQ);
+
+                $('<td>' + latVal + '</td>').appendTo(trJQ_r);
+                $('<td>' + lngVal + '</td>').appendTo(trJQ_r);
+
+            }
+
+            $("#Polyline").append(tableJQ);
+
+        };
+
+    };
+
+
+    /*------------------------------------------------
+         文字列の左右に指定した文字を連結して固定長にする
+        --------------------------------------------------*/
+    function padLeft(pad, str) {
+        if (typeof str === 'undefined')
+            return pad;
+
+        return (pad + str).slice(-pad.length);
+    };
+    function padRight(pad, str) {
+        if (typeof str === 'undefined')
+            return pad;
+
+        return (str + pad).substring(0, pad.length);
+    };
+
+
+    function MapGetCenterPoint() {
+        //alert("MapGetCenterPoint()");
+        var latLng = map.getCenter();
+        var latlon = latLng.lng + ',' + latLng.lat;
+        return latlon;
+    };
+
+
+    function GetAddressForDesktop(lat, lng, komoku) {
+
+        var latlon = String(lng) + ',' + String(lat);
+
+        alert(latlon);
+
+        $.ajax({
+            url: '@Url.RouteUrl("Default", new { controller = "Home2", Action = "MapGetAddressFromPosition" })',
+            type: 'post',
+            cache: false,
+            dataType: 'json',
+            async: true,
+            data: { positionl: String(latlon), }
+        }).done(function(response) {
+
+            if (response.errorMessage != null) {
+                alertError(`【エラー】${response.errorMessage}`);
+                return String(null);
+            } else {
+                alert("【戻り値】" + response.result);
+                return response.result;
+            }
+
+
+        }).fail(function (xhr) {
+            alert('fail:' + xhr);
+            console.log(xhr);
+            return String(null);
+        }).always(function (xhr, msg) {
+
+        });
+
+        return String(null);
+    };
+
+
+    function setPolyline(routeId, lineStyle) {
+
+        var selector = "#Map" + routeId +" tr";
+        //alert(selector);
+
+        var latlons = [];
+
+
+        //var lineStyle2 = "solid";
+
+        $(selector).each(function (i, e) {
+
+            //alert("aaa");
+
+            for (var i = 0, l = $(this).length; i < l; i++) {
+
+                var cells = $(this).eq(i).children();//1行目から順にth、td問わず列を取得
+
+                var latVal = cells.eq(0).text();
+                var lngVal = cells.eq(1).text();
+
+                latlons.push(new ZDC.LatLng(parseFloat(latVal), parseFloat(lngVal)));
+
+            }
+
+        });
+
+        // ポリラインを作成
+        // ポリラインを地図オブジェクト(map)に追加
+        switch (String(routeId)) {
+            case "1":
+                if (pl[1] === undefined) {  } else { map.removeWidget(pl[1]); }
+                pl[1] = new ZDC.Polyline(latlons, { color: '#ff0000', width: 5, pattern: lineStyle, opacity: 1.0 });
+                map.addWidget(pl[1]);
+                break;
+            case "2":
+                if (pl[2] === undefined) { } else { map.removeWidget(pl[2]); }
+                pl[2] = new ZDC.Polyline(latlons, { color: '#4800ff', width: 5, pattern: lineStyle, opacity: 1.0 });
+                map.addWidget(pl[2]);
+                break;
+            case "3":
+                if (pl[3] === undefined) { } else { map.removeWidget(pl[3]); }
+                pl[3] = new ZDC.Polyline(latlons, { color: '#00ff21', width: 5, pattern: lineStyle, opacity: 1.0 });
+                map.addWidget(pl[3]);
+                break;
+            case "4":
+                if (pl[4] === undefined) { } else { map.removeWidget(pl[4]); }
+                pl[4] = new ZDC.Polyline(latlons, { color: '#ff00dc', width: 5, pattern: lineStyle, opacity: 1.0 });
+                map.addWidget(pl[4]);
+                break;
+            default:
+                if (pl[0] === undefined) { } else { map.removeWidget(pl[0]); }
+                pl[0] = new ZDC.Polyline(latlons, { color: '#00ffff', width: 5, pattern: lineStyle, opacity: 1.0 });
+                map.addWidget(pl[0]);
+                break;
+
+        }
+
+        return;
+
+    };
+
+
+
+    function SetMarkerToPoint(lat, lng, kubun) {
+        var widget;
+
+        switch (kubun) {
+            case "start":
+                if (mrk_widget[1] === undefined) { } else { map.removeWidget(mrk_widget[1]); }
+                mrk_widget[1] = new ZDC.Marker(new ZDC.LatLng(parseFloat(lat), parseFloat(lng)), { styleId: ZDC.MARKER_COLOR_ID_BLUE_L, contentStyleId: ZDC.MARKER_NUMBER_ID_STAR_L });
+                map.addWidget(mrk_widget[1]);
+                break;
+            case "end":
+                if (mrk_widget[2] === undefined) { } else { map.removeWidget(mrk_widget[2]); }
+                mrk_widget[2] = new ZDC.Marker(new ZDC.LatLng(parseFloat(lat), parseFloat(lng)), { styleId: ZDC.MARKER_COLOR_ID_RED_L, contentStyleId: ZDC.MARKER_NUMBER_ID_STAR_L });
+                map.addWidget(mrk_widget[2]);
+                break;
+
+        }
+
+        
+    };
+
+    function ClearMarkerToPoint(kubun) {
+        var widget;
+
+        switch (kubun) {
+            case "start":
+                if (mrk_widget[1] === undefined) { } else { map.removeWidget(mrk_widget[1]); }
+                break;
+            case "end":
+                if (mrk_widget[2] === undefined) { } else { map.removeWidget(mrk_widget[2]); }
+                break;
+
+        }
+
+
+    };
+
+
+    function SetMarkerToTruck(lat, lng, iconID, kubun, popupVal) {
+
+        var iconPath = '';
+        var host = 'https://' + location.hostname;
+
+        switch (kubun) {
+            case "TruckB":
+                iconPath = host + '/MapApplication/img/TruckIconBlue.png';
+                break;
+            case "TruckR":
+                iconPath = host + '/MapApplication/img/TruckIconRed.png';
+                break;
+        }
+
+        var widgetPopup = new ZDC.Popup(new ZDC.LatLng(parseFloat(lat), parseFloat(lng)), {
+            htmlSource: popupVal,
+            closeButton: false
+        });
+        var widget = new ZDC.Marker(new ZDC.LatLng(parseFloat(lat), parseFloat(lng)), {
+            custom: {
+                base: {
+                    imgSrc: iconPath
+                    }
+            }
+        });
+        widget.addEventListener('click', function (event) {
+            MarkerClickToTruck(iconID);
+        });
+        widget.addEventListener('mouseover', function (event) {
+            map.addWidget(widgetPopup);
+        });
+        widget.addEventListener('mouseout', function (event) {
+            map.removeWidget(widgetPopup);
+        });
+        map.addWidget(widget)
+    };
+
+
+    function SetMarkerToCargo(lat, lng, iconID, kubun, popupVal) {
+
+        var iconPath = '';
+        var host = 'https://' + location.hostname;
+
+
+        switch (kubun) {
+            case "CargoB":
+                iconPath = host + '/MapApplication/img/CargoIconBlue.png';
+                break;
+            case "CargoR":
+                iconPath = host + '/MapApplication/img/CargoIconRed.png';
+                break;
+        }
+
+        var widgetPopup = new ZDC.Popup(new ZDC.LatLng(parseFloat(lat), parseFloat(lng)), {
+            htmlSource: popupVal,
+            closeButton: false
+        });
+        var widget = new ZDC.Marker(new ZDC.LatLng(parseFloat(lat), parseFloat(lng)), {
+            custom: {
+                base: {
+                    imgSrc: iconPath
+                }
+            }
+        });
+        widget.addEventListener('click', function (event) {
+            MarkerClickToCargo(iconID);
+        });
+        widget.addEventListener('mouseover', function (event) {
+            map.addWidget(widgetPopup);
+        });
+        widget.addEventListener('mouseout', function (event) {
+            map.removeWidget(widgetPopup);
+        });
+        map.addWidget(widget)
+    };
+
+    function MarkerClickToTruck(ankenId) {
+        alert(ankenId);
+        //chrome.webview.hostObjects.class.WebViewReady(String(ankenId));
+
+        //alert(id);
+    };
+
+    function MarkerClickToCargo(ankenId) {
+        //alert(ankenId);
+        chrome.webview.hostObjects.class.WebViewReady(String(ankenId));
+
+
+    };
+</script>

@@ -1,0 +1,89 @@
+﻿@model CommonDialogModel.SelectCustomerModel
+
+
+<style>
+</style>
+
+@if (Model.CustomerBranchList.Count() == 0)
+{
+  <div style="width: 100%; background: #3366CC ">
+    <h4 style="text-align:left; margin-left: 20px;color: white;">データ無し</h4>
+  </div>
+}
+
+
+<table id="@(Model.ListIdName)" class="table">
+  <thead>
+    <tr><th>@(Model.TheadTitle)</th></tr>
+  </thead>
+  <tbody>
+    @foreach (var item in Model.CustomerBranchList)
+    {
+    <tr>
+      <td>
+        <button class="btn btn-dark" style="width: 100% !important;height: 70%;" onclick="return false;">
+          <div style="padding: 0px 0px 0px 2px; margin: 0; background: none; width: 100%; line-height: initial; text-align: left;">
+            <div style="display:inline-flex; float: left;">
+              @Html.DisplayFor(modelItem => item.Customer_Branch_Code) ： @Html.DisplayFor(modelItem => item.Customer_Branch_Name_Abbr)
+            </div>
+          </div>
+        </button>
+      </td>
+
+      <td hidden width="20px" style="vertical-align: middle;" align="center">
+        @Html.TextBoxFor(modelItem => item.Customer_Branch_ID, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden width="20px" style="vertical-align: middle;" align="center">
+        @Html.TextBoxFor(modelItem => item.Customer_Branch_Code, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden width="170px">
+        @Html.TextBoxFor(modelItem => item.Customer_Branch_Name, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden width="100px">
+        @Html.TextBoxFor(modelItem => item.Customer_Branch_Name_Abbr, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden width="80px">
+        @Html.TextBoxFor(modelItem => item.Customer_Branch_Name_Kana, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden width="50px">
+        @Html.TextBoxFor(modelItem => item.Customer_Branch_Phone1, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden width="50px">
+        @Html.TextBoxFor(modelItem => item.Customer_Branch_Fax1, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden width="50px">
+        @Html.TextBoxFor(modelItem => item.Shiharai_Shime_Day, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden width="50px">
+        @Html.TextBoxFor(modelItem => item.Shime_Day, null, new { @readonly = "readonly", })
+      </td>
+
+    </tr>
+    }
+  </tbody>
+</table>
+
+
+<script>
+
+  $(function () {
+
+
+    $('#@(Model.ListIdName) tbody tr').on('click', function () {
+
+      var obj = $(this).find('td');
+
+      let result = SelectCommonDialog2(obj);
+
+      selectOnClick(result);
+
+    });
+
+
+
+
+
+  });
+
+
+</script>

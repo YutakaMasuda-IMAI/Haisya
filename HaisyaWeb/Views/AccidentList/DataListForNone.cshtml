@@ -1,0 +1,104 @@
+﻿@using System.Reflection;
+@using HaisyaWeb.Dto;
+@using static HaisyaWeb.Models.AccidentListModel;
+
+@model DataListModel
+
+<style>
+  .jikoCheckDataListTable td {
+    border: 1px solid black;
+  }
+  .jikoCheckDataListTable th {
+    border: 1px solid black;
+  }
+</style>
+
+@{
+  var i = 0;
+  var l = Model?.JikoDataLists ?? new();
+  if (Model.SortParam != null && !string.IsNullOrWhiteSpace(Model.SortParam.SortItemParam) && !string.IsNullOrWhiteSpace(Model.SortParam.SortOrder))
+  {
+    var s = Model.SortParam.SortItemParam;
+    Func<AccidentListItem_Local, object> f = (AccidentListItem_Local r) => typeof(AccidentListItem_Local).GetRuntimeProperty(s).GetValue(r, null);
+    l = "asc".Equals(Model.SortParam.SortOrder) ?
+      l.OrderBy(f).ThenBy(s => s.Jiko_ID).ToList() :
+      l.OrderByDescending(f).ThenBy(s => s.Jiko_ID).ToList();
+  }
+}
+
+@if (l.Count == 0)
+{
+  <div class="no-data-row">
+    <h4 class="no-data-row-text">データ無し</h4>
+  </div>
+}
+else
+{
+<table id="jikoCheckDataListTable" class="table ex_DataList search-list" style="width:100%; border:1px">
+  <thead>
+  <tr>
+    <th style="width:80px;"></th>
+    <th style="width:120px;">
+      <a href="#" onclick="set_sort('@nameof(AccidentListItem_Local.Jiko_No)')">事故No.</a>
+    </th>
+    <th style="width:140px;">
+      <a href="#" onclick="set_sort('@nameof(AccidentListItem_Local.Jiko_Date)')">事故発生日</a>
+    </th>
+    <th style="width:120px;">
+      <a href="#" onclick="set_sort('@nameof(AccidentListItem_Local.Code_Name)')">事故区分</a>
+    </th>
+    <th>
+      <a href="#" onclick="set_sort('@nameof(AccidentListItem_Local.Jiko_Display)')">事故名</a>
+    </th>
+    <th style="width:300px;">
+      <a href="#" onclick="set_sort('@nameof(AccidentListItem_Local.Display_Name)')">乗務員名</a>
+    </th>
+    <th style="width:140px;">
+      <a href="#" onclick="set_sort('@nameof(AccidentListItem_Local.Syaban_Number)')">車番</a>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+  @foreach (var item in l)
+  {
+    i++;
+    var color = i % 2 == 1 ? "row-even" : "row-odd";
+    <tr class="@(color)">
+      <td align="center">
+        <button class="btn btn-info" style="width: 100%; padding:0;" onclick="submitEdit(@(item.Jiko_ID))">詳細</button>
+      </td>
+      <td align="center">
+        @Html.DisplayFor(modelItem => item.Jiko_No)
+      </td>
+      <td align="center">
+        @Convert.ToDateTime(item.Jiko_Date).ToString("yyyy/MM/dd")
+      </td>
+      <td align="center">
+        @Html.DisplayFor(modelItem => item.Code_Name)
+      </td>
+      <td>
+        @Html.DisplayFor(modelItem => item.Jiko_Display)
+      </td>
+      <td>
+        @Html.DisplayFor(modelItem => item.Display_Name)
+      </td>
+      <td align="center">
+        @Html.DisplayFor(modelItem => item.Syaban_Number)
+      </td>
+    </tr>
+  }
+  </tbody>
+</table>
+<script>
+  function set_sort(name) {
+    var n = $("#SortParam_SortItemParam").val();
+    if (name != n) {
+      $("#SortParam_SortOrder").val("asc");
+      $("#SortParam_SortItemParam").val(name);
+    }
+    var o = $("#SortParam_SortOrder").val();
+    $("#SortParam_SortOrder").val(o.indexOf("desc") != -1 ? "asc" : "desc");
+    dataListDisplay();
+}
+</script>
+}

@@ -1,0 +1,260 @@
+﻿@model SettingModel.FuelCostsDto
+
+@{
+  Layout = "_LayoutForSettingWindow";
+}
+
+<style>
+  /*  .float-left {
+      float: left;
+      padding: 0.5em 1em;
+      margin: 2em 0;
+      background: #f0f7ff;
+      border: dashed 2px #5b8bd0;
+    }
+
+    .float-right {
+      float: right;
+      padding: 0.5em 1em;
+      margin: 2em 0;
+      background: #f0f7ff;
+      border: dashed 2px #5b8bd0;
+    }*/
+
+  .readonly {
+    background-color: lightgray;
+  }
+</style>
+
+
+
+<div id="main">
+  <div class="setting-separator">燃料単価費<span style="font-size: 12px; color: red;"> - 燃料費を計算する値を設置絵。</span></div>
+
+  <div class="contents-wrap-middle">
+    <h4 class="">使い方</h4>
+    <span>
+      <span style="background-color: #FF9966 ">・同時に複数のユーザーが変更処理を実施するとデータが壊れたり、不整合が発生したりします。必ず１ユーザーのみで実施してください。</span>
+    </span>
+  </div>
+
+  <div class="clearfix">
+    
+    <div id="option_attendance_setting" class="sight-settings">
+      <form id="form1">
+        <div id="hidden" hidden>
+          @Html.HiddenFor(model => Model.CompanyID)
+        </div>
+        <div class="tables">
+          @if (Model.EditEnabled)
+          {
+            <button type="button" class="btn btn-primary" style="width: 150px;" onclick="regExec(); return false;">登録</button>
+            <button type="button" class="btn btn-success align-items-end" style="float: right; width: 150px;" onclick="insertRow(); return false;">行追加</button>
+          }
+          <table id="tableMain" width="100%" class="table table-setting table-bordered border-info table-striped" style="margin-top: 10px;">
+            <thead>
+              <tr align="center" style="background-color:aquamarine; vertical-align: middle;">
+                <th hidden>会社ID</th>
+                <th>支店/営業所/事業所</th>
+                <th>適用開始日</th>
+                <th>燃料単価</th>
+                <th>行削除</th>
+              </tr>
+            </thead>
+            <tbody>
+              @{
+                  var M_FuelCostList = Model.M_FuelCostList.OrderBy(m => m.FromDate).ToList();
+                  for (int i = 0; i < M_FuelCostList.Count; i++)
+                  //foreach (var M_FuelCostList in M_FuelCostList)
+                  {
+                  <tr style="vertical-align: middle;">
+                    @if (Model.EditEnabled)
+                    {
+                      DateTime aa = new DateTime(M_FuelCostList[i].FromDate.Year, M_FuelCostList[i].FromDate.Month, M_FuelCostList[i].FromDate.Day);
+                      <td align="center" width="100px" hidden>@Html.TextBoxFor(model => M_FuelCostList[i].Company_ID, "{0:N0}", new { @readonly = "readonly", @class = "form-control text-end", @style = ""})</td>
+                      <td align="center" width="300px">@Html.DropDownListFor(model => M_FuelCostList[i].Branch_ID, new SelectList(Model.BranchList, "Value", "Text", false), "支店/営業所/事業所を選択", new { @class = "form-control", @style = "width: 100%" })</td>
+                      <td align="center" width="100px">@Html.TextBoxFor(m => M_FuelCostList[i].FromDate, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })</td>
+                      <td align="center" width="100px">@Html.TextBoxFor(model => M_FuelCostList[i].FuelAmount, "{0:N0}", new { @class = "form-control text-end", @style = "" })</td>
+                      <td  style="vertical-align: middle;" align="center" width="100px"><input type="button" class="btn btn-warning" value="行削除" onclick="deleteRow(this)" /></td>
+                    }
+                    else
+                    {
+                      <td align="center" width="100px">@(String.Format("{0:N0}", M_FuelCostList[i].Company_ID))</td>
+                      <td align="center" width="100px">@(String.Format("{0:N0}", M_FuelCostList[i].Branch_ID))</td>
+                      <td align="center" width="300px">@Html.DropDownListFor(model => M_FuelCostList[i].Branch_ID, new SelectList(Model.BranchList, "Value", "Text", false), "支店/営業所/事業所を選択", new { @readonly = "readonly", @class = "form-control", @style = "width: 100%" })</td>
+                      <td align="center" width="100px">@Convert.ToDateTime(M_FuelCostList[i].FromDate).ToString("yyyy/MM/dd")</td>
+                      <td align="center" width="100px">@(String.Format("{0:N0}", M_FuelCostList[i].FuelAmount))</td>
+                      <td align="center" width="100px"></td>
+                    }
+
+                  </tr>
+                  }
+              }
+            </tbody>
+          </table>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!--<div>-->
+  @*//モダール表示用のスペースを追加*@
+  <!--<div id="ModalHere" data-keyboard="false" data-backdrop="static"></div>
+  <div id="SortHere" hidden></div>
+</div>-->
+
+<script>
+
+  $(function () {
+
+
+
+  });
+
+
+
+  function closeAndRefresh() {
+    location.reload();
+    alert("登録が完了しました。");
+  };
+
+  function regExec() {
+    
+    try {
+      CommonWaitStart();
+
+      if (varidationCheck()) {
+        return false;
+      }
+
+      //Formの参照を取る
+      var $form = $('#form1');
+
+      //alert($form.serialize());
+
+      $.ajax({
+        url: '@Url.RouteUrl("Default", new { controller = "Setting", Action = "FuelCostRegExec" })',
+        type: 'post',
+        data: $form.serialize(),
+      }).done(function (response) {
+        if (response.errorMessage != null) {
+            alertError(`【エラー】${response.errorMessage}`);
+            return false;
+        } else {
+          closeAndRefresh();
+          return false;
+        }
+      }).fail(function (xhr) {
+        alert('【ネットワークエラー】:' + xhr);
+          console.log(xhr);
+          return false;
+      }).always(function (xhr, msg) {
+        CommonWaitEnd();
+      });
+    } catch (ex) {
+      CommonWaitEnd();
+    } finally {
+
+    }
+
+
+  }
+
+  function varidationCheck() {
+
+    // table要素を取得
+    var tableElem = document.getElementById('tableMain');
+
+    // 行（tr要素）を取得
+    var rowElems = tableElem.rows;
+
+    var toBefore = '1900/01/01';
+
+    // 取得した行（tr要素）を繰り返しHTMLを取得
+    var htmlStr = '';
+    for (i = 1, len = rowElems.length; i < len; i++) {
+
+      var Branch_ID = $('#M_FuelCostList_' + (i - 1) + '__Branch_ID').val();
+      var FromDate = $('#M_FuelCostList_' + (i - 1) + '__FromDate').val();
+      var FuelAmount = $('#M_FuelCostList_' + (i - 1) + '__FuelAmount').val().replace(',', '');
+
+      if (!(Branch_ID != null)) {
+        alertInputError("支店/営業所/事業所が未選択です。");
+        $('#M_FuelCostList_' + (i - 1) + '__Branch_ID').css('background-color', 'lightcoral');
+        return true;
+      } else {
+        $('#M_FuelCostList_' + (i - 1) + '__Branch_ID').css('background-color', 'white');
+      }
+
+      if (!(FromDate != null)) {
+        alertInputError("適用開始日は必須です。");
+        $('#M_FuelCostList_' + (i - 1) + '__FromDate').css('background-color', 'lightcoral');
+        return true;
+      } else {
+        $('#M_FuelCostList_' + (i - 1) + '__FromDate').css('background-color', 'white');
+      }
+
+      if (!(FuelAmount != null && FuelAmount > 0)) {
+        alertInputError("燃料単価は0円以上を入力してください。");
+        $('#M_FuelCostList_' + (i - 1) + '__Interval').css('background-color', 'lightcoral');
+        return true;
+      } else {
+        $('#M_FuelCostList_' + (i - 1) + '__Interval').css('background-color', 'white');
+      }
+
+      toBefore = FromDate;
+    };
+
+    return false;
+
+  };
+
+  function insertRow() {
+
+    // テーブル取得
+    var table = document.getElementById("tableMain");
+    // 行を行末に追加
+    var row = table.insertRow(-1);
+    // セルの挿入
+    var cell1 = row.insertCell(-1);
+    var cell2 = row.insertCell(-1);
+    var cell3 = row.insertCell(-1);
+    var cell4 = row.insertCell(-1);
+    var cell5 = row.insertCell(-1);
+
+    // 行数取得
+    var row_len = table.rows.length - 2;
+
+    // 列非表示
+    cell1.hidden = true;
+
+    // セルの内容入力
+    cell1.innerHTML = repalceidName(row_len, $("#M_FuelCostList_0__Company_ID").parent().html());
+    cell2.innerHTML = repalceidName(row_len, $("#M_FuelCostList_0__Branch_ID").parent().html());
+    cell3.innerHTML = repalceidName(row_len, $("#M_FuelCostList_0__FromDate").parent().html());
+    cell4.innerHTML = repalceidName(row_len, $("#M_FuelCostList_0__FuelAmount").parent().html());
+    cell5.innerHTML = '<input type="button" class="btn btn-warning" value="行削除" onclick="deleteRow(this)">';
+
+    $("#M_FuelCostList_" + row_len + "__Company_ID").val($("#CompanyID").val());
+    $("#M_FuelCostList_" + row_len + "__Branch_ID").val(0);
+    $("#M_FuelCostList_" + row_len + "__FromDate").val(null);
+    $("#M_FuelCostList_" + row_len + "__FuelAmount").val(0);
+  };
+
+  function repalceidName(row_len, html) {
+    html = html.replace("M_FuelCostList_0", "M_FuelCostList_" + row_len + "");
+    html = html.replace("M_FuelCostList[0]", "M_FuelCostList[" + row_len + "]");
+    return html;
+  }
+
+  /**
+     * 行削除
+     */
+  function deleteRow(obj) {
+    // 削除ボタンを押下された行を取得
+    tr = obj.parentNode.parentNode;
+    // trのインデックスを取得して行を削除する
+    tr.parentNode.deleteRow(tr.sectionRowIndex);
+  };
+</script>

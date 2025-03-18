@@ -1,0 +1,51 @@
+﻿@model AnkenModel.AnkenReferenceModel
+
+
+<style>
+
+  #AnkenReferenceModal .modal-body-Main {
+    border:solid;
+  }
+
+</style>
+
+
+<!-- モダールの中身 -->
+<div role="dialog" id="addRireki" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog " role="document" style="max-width:1000px">
+    <div class="modal-content">
+      <div class="modal-header" style="display: flex; position: relative; justify-content: center;">
+        <h3 class="modal-title" id="exampleModalLabel" style="left: 2rem; position: absolute;">案件変更履歴画面</h3>
+
+        <label style="float: right; color: red; font-weight: bold; font-size: x-large;">案件№</label>
+        <a href="#" data-dismiss="modal" class="btn btn-close" onclick="AnkenRirekiModalClose(); return false;" style="width: 30px; float: right; position: absolute; right: 2rem; "></a>
+      </div>
+      <div id="AnkenReferenceModal" class="modal-body">
+        <div class="modal-body-Main">
+
+
+
+        </div>
+
+      </div>
+      <div class="modal-footer" style="padding: 0;">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+
+  $(function () {
+
+  });
+
+  function AnkenRirekiModalClose() {
+
+    $('#ModalAnkenRireki').find('.modal').modal('hide');
+  }
+
+
+</script>

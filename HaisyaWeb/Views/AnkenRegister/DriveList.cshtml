@@ -1,0 +1,309 @@
+﻿@model List<HaisyaWeb.Models.MapApiModel.DriveListItem_Local>
+
+<style>
+
+    div.ex_driveList_model {
+        /*background: black;*/
+    }
+
+
+    table.ex_table_model td.ex_border_model,
+    table.ex_table_model th.ex_border_model {
+        border-left: double 10px #4682b4;
+    }
+
+    table.ex_table_model {
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+        table.ex_table_model th {
+            color: black;
+            padding: 0;
+            background:#b6ff00;
+
+        }
+
+        table.ex_table_model tr.ex_lineTop {
+            /* background: black;*/
+            color: black;
+            /*margin: 0 20px;*/
+            padding: 0 10px;
+            border-top: groove;
+            border-top-color: black;
+        }
+
+        table.ex_table_model thead.ex_head-line_model {
+            line-height: 20px;
+        }
+
+    table.ex_border_model tbody.ex_head-line_model {
+        line-height: 20px;
+    }
+
+    div.ex_route_name {
+        font-size: 16px;
+    }
+
+    div.ex_route_name_0 {
+        border: 3px solid #00ffff;
+    }
+
+    div.ex_route_name_1 {
+        border: 3px solid #ff0000;
+    }
+
+    div.ex_route_name_2 {
+        border: 3px solid #4800ff;
+    }
+
+    div.ex_route_name_3 {
+        border: 3px solid #00ff21;
+    }
+
+    div.ex_route_name_4 {
+        border: 3px solid #ff00dc;
+    }
+
+
+    table.ex_table_RouteListDetail {
+        padding: 0;
+        margin-top: 0.2rem;
+        margin-bottom: 0.2rem;
+        background:none;
+    }
+
+        table.ex_table_RouteListDetail tbody {
+            background: none;
+        }
+
+        table.ex_table_RouteListDetail tr,
+        table.ex_table_RouteListDetail td {
+            padding: 0;
+            padding: 0;
+            margin: 0;
+            background: none;
+        }
+
+        table.ex_table_RouteListDetail tr.ex_lineUnder {
+            /* background: black;*/
+            color: black;
+            /*margin: 0 20px;*/
+            padding: 0 10px;
+            border-top: dashed;
+            border-width: 1px;
+            border-top-color: black;
+        }
+
+    table.ex_table_DriveRouteList {
+
+    }
+        table.ex_table_DriveRouteList tbody,
+        table.ex_table_DriveRouteList td {
+            border-top: none;
+        }
+</style>
+
+<!-- モダールの中身 -->
+<div class="" id="exampleModal">
+    <div role="document" style="">
+        <button onclick="onClose(); return false;">close</button>
+        <div class="">
+            <div class="ex_driveList_model">
+                <div>
+                    <table id="tableDriveRouteList" class="ex_table_model">
+                        <thead class="ex_head-line_model">
+                            <tr align="center">
+                                <th hidden rowspan="2">routeID</th>
+                                <th hidden rowspan="2">type</th>
+                                <th width="120px" rowspan="2" style="vertical-align: middle;">ルート</th>
+                                <th width="120px">所要時間</th>
+                                <th width="110px">距離</th>
+                                <th width="100px">料金</th>
+                            </tr>
+                            <tr align="center">
+                                <th width="70px"><label style="font-size: 10px; padding: 0; margin: 0; ">(休憩休息時間)</label></th>
+                                <th width="70px"><label style="font-size: 10px; padding: 0; margin: 0; ">消費燃料</label></th>
+                                <th width="70px"><label style="font-size: 12px; padding: 0; margin: 0; ">料金無効値</label></th>
+                                @*<th width="30px"></th>
+        <th width="100px">基本運賃</th>
+        <th width="100px">追加費用</th>
+        <th width="100px">総額</th>*@
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+
+                                string routeType = item.routeType;
+                                string routeTypeDisplay = "推奨";
+                                string routeTypeClass = "ex_route_name ";
+
+                                switch (routeType)
+                                {
+                                    case "1":
+                                        routeTypeDisplay = "一般道優先";
+                                        routeTypeClass += "ex_route_name_1";
+                                        break;
+                                    case "2":
+                                        routeTypeDisplay = "道幅優先";
+                                        routeTypeClass += "ex_route_name_2";
+                                        break;
+                                    case "3":
+                                        routeTypeDisplay = "距離優先";
+                                        routeTypeClass += "ex_route_name_3";
+                                        break;
+                                    case "4":
+                                        routeTypeDisplay = "別ルート";
+                                        routeTypeClass += "ex_route_name_4";
+                                        break;
+                                    default:
+                                        routeTypeDisplay = "推奨";
+                                        routeTypeClass += "ex_route_name_0";
+                                        break;
+                                }
+
+                                <tr name="trDriveRouteList" class="ex_lineTop" ondblclick="onSelectDriveRoute('@(item.routeID)');">
+                                    <td id="tdDriveRouteList" colspan="4" style="border: none;border-width:0;">
+
+                                        <table width="100%" class="ex_table_RouteListDetail table" style="">
+                                            <tbody>
+                                                <tr >
+                                                    <td hidden rowspan="2">
+                                                        @Html.DisplayFor(modelItem => item.routeID)
+                                                    </td>
+                                                    <td hidden rowspan="2">
+                                                        @Html.DisplayFor(modelItem => item.routeType)
+                                                    </td>
+                                                    <td align="center" width="120px">
+                                                        <div style="margin: 2px; align-items: center;" class="@(routeTypeClass)">
+                                                            @(routeTypeDisplay)
+                                                        </div>
+
+                                                    </td>
+                                                    <td align="right" width="120px">
+                                                        @{
+                                                            int time = item.time;
+                                                            string TimeVal = "";
+                                                            if (time / 60 > 0) { TimeVal = (time / 60) + "時間" + Convert.ToInt32(time % 60).ToString("00") + "分"; }
+                                                            if (time / 60 <= 0) { TimeVal = (time % 60) + "分"; }
+                                                        }
+                                                        @(TimeVal)
+                                                    </td>
+                                                    <td align="right" width="110px">
+                                                        @{
+                                                            double distance = item.distance;
+                                                            distance = distance / 1000;
+                                                            @Convert.ToDouble(distance).ToString("#.0km");
+                                                        }
+                                                        @*@Html.DisplayFor(modelItem => item.distance)*@
+                                                    </td>
+                                                    <td align="right" width="100px">
+                                                        @Convert.ToInt32(item.toll).ToString("C")
+                                                    </td>
+                                                </tr>
+                                                <tr class="ex_lineUnder">
+                                                    <td style="vertical-align: middle;" align="center">
+                                                        <div name="divButtonDriveRoute" onclick="onCickDriveRoute('@(item.routeID)','@(item.routeType)');" style="font-size: 16px; width: 120px;color:#ff00dc"> ＞＞詳細＞＞</div>
+                                                        @*<button onclick="" style="font-size: 14px; width: 120px;">詳細</button>*@
+                                                    </td>
+                                                    <td align="center" width="70px">
+                                                        @Convert.ToInt32(60).ToString("(##)")
+                                                    </td>
+                                                    <td align="right" width="70px">
+                                                        @Convert.ToDouble(160.5).ToString("0.0L")
+                                                    </td>
+                                                    <td align="center" width="70px">
+                                                        @Html.DisplayFor(modelItem => item.invalidFee)
+                                                    </td>
+                                                    @*<td></td>
+            <td align="right">
+                @Convert.ToInt32(99999).ToString("C")
+            </td>
+            <td align="right">
+                @Convert.ToInt32(99999).ToString("C")
+            </td>
+            <td align="right">
+                @Convert.ToInt32(99999).ToString("C")
+            </td>*@
+                                                </tr>
+                                            </tbody>
+                                        </table>
+
+                                    </td>
+
+
+
+
+                                    
+                                </tr>
+
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                @*<div>
+                    <table width="100%" height="250px">
+                        <tr>
+                            <td width="60%">
+                                <div id="ZMapRouteList" style="height: 100%; width: 100%;"></div>
+                            </td>
+                            <td width="40%">
+                            </td>
+                        </tr>
+                    </table>
+                </div>*@
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script>
+
+    $(function () {
+
+        $(window).on('beforeunload', function (e) {
+
+        });
+
+        $(window).on("unload", function () {
+
+        });
+
+
+        var tmpColor;
+        var tmpIdx;
+        var highLightColor = '#dff1ff';
+        var tableRows = $('tr[name="trDriveRouteList"]');
+
+        tableRows.hover(
+            // カーソルが乗った時の処理
+            function () {
+                tmpColor = $(this).find('#tdDriveRouteList').css('background-color');
+                tmpIdx = tableRows.index(this);
+                tableRows.eq(tmpIdx).find('#tdDriveRouteList').css('background', highLightColor);
+            },
+
+            // カーソルが外れた時の処理
+            function () {
+                tableRows.eq(tmpIdx).find('td#tdDriveRouteList').css('background', 'none');
+            }
+        );
+       
+    });
+
+    function onCickDriveRoute(routeId, routeType) {
+        OnClickDriveRouteDetail(routeId, routeType);
+    };
+
+    function onSelectDriveRoute(routeId) {
+        alert("onSelectDriveRoute:" + routeId);
+    };
+
+    function onClose() {
+        driveListClose();
+    }
+</script>
+

@@ -1,0 +1,33 @@
+﻿@model HaisyaWeb.Models.InvoiceModel.InvoiceSummModel
+
+@Html.HiddenFor(m => m.Biz)
+@Html.HiddenFor(m => m.View)
+@Html.HiddenFor(m => m.Confirm_message)
+@Html.HiddenFor(m => m.Description)
+@Html.HiddenFor(m => m.Year_month)
+@Html.HiddenFor(m => m.Closing_days)
+@Html.HiddenFor(m => m.Publish_date)
+@Html.HiddenFor(m => m.Sale_date)
+@Html.HiddenFor(m => m.Selected_layout)
+@Html.HiddenFor(m => m.NendomatsuFlg)
+
+<div id="invoice" style="visibility: hidden;">
+  @Html.HiddenFor(m => m.Invoice.Seikyu_Month)
+  @Html.HiddenFor(m => m.Invoice.Shime_Day)
+  @Html.HiddenFor(m => m.Invoice.Customer_Name)
+  @Html.HiddenFor(m => m.Invoice.Mail_address1)
+  @Html.HiddenFor(m => m.Invoice.Mail_address2)
+  @Html.HiddenFor(m => m.Invoice.Customer_Branch_ID)
+  @Html.HiddenFor(m => m.Invoice.SelectRow)
+  @Html.HiddenFor(m => m.Invoice.Order)
+  @Html.HiddenFor(m => m.Invoice.Uriage_Unchin_ID)
+  @Html.HiddenFor(m => m.Invoice.Uriage_Unchin_ID_LIST)
+
+  @Html.HiddenFor(m => m.Invoice.From_Date)
+  @Html.HiddenFor(m => m.Invoice.To_Date)
+  @Html.HiddenFor(m => m.Invoice.SeikyuDate_To)
+  @Html.HiddenFor(m => m.Invoice.Nendomatsu_Flg)
+
+</div>
+
+<div id="invoice-list" style="visibility: hidden;"></div>

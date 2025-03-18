@@ -1,0 +1,351 @@
+@model HaisyaWeb.Models.HaisyaModel.MonthScheduleModelViewModel
+
+<style>
+    .w0 {
+        color: red;
+    }
+
+    .w6 {
+        color: rgb(55, 125, 231);
+    }
+
+    .today {
+        box-sizing: border-box;
+        border: 3px solid rgba(102, 140, 217, 1) !important;
+    }
+
+    .month-calendar {
+        display: flex;
+        flex-wrap: wrap;
+        margin: 0;
+        padding: .2vw;
+        background: #e3e9ff;
+        justify-content: center;
+        font-size: .8vw;
+    }
+
+    /* 各日付のコンテナ */
+    .day td {
+        width: 11vw;
+        height: 10.5vh;
+        justify-content: right;
+        padding: .5vh .2vw;
+        margin: 0;
+        border: .1vw solid #808080;
+        background: #fff;
+        vertical-align: top;
+    }
+
+    /* 曜日記載部分 */
+    .week td {
+        background: #e3e9ff;
+        height: 4vh;
+        justify-content: center;
+        border: .1vw solid;
+        border-color: black;
+        padding: .5vh;
+        @*text-align:center;*@
+    }
+
+    /* 予定表 */
+    .anken {
+        display: inline-block;
+        color: #000000;
+        background: #e3e9ff;
+        height: 2.2vh;
+        border-radius: 5%;
+        margin-bottom: 0;
+        padding: .2%;
+        font-size: .8vw;
+        overflow: hidden;
+        align-content: center;
+        padding-right: .5vw;
+        padding-left: .5vw;
+    }
+
+    /* 予定表 */
+    .holiday {
+        width: 100%;
+        display: block;
+        color: #000000;
+        background-color: rgba(238, 130, 238, 0.5);
+        height: 2.2vh;
+        border-radius: 5%;
+        margin-bottom: 0.5vh;
+        padding: .2%;
+        font-size: .8vw;
+        text-align: center;
+        align-content: center;
+    }
+
+    /* 乗務外 */
+    .nocrew {
+        width: 100%;
+        display: block;
+        color: #000000;
+        background-color: rgba(255, 204, 51, 0.5);
+        height: 2.2vh;
+        border-radius: 5%;
+        margin-bottom: 0.5vh;
+        padding: .2%;
+        font-size: .8vw;
+        text-align: center;
+        align-content: center;
+    }
+
+    /* 入らなかった予定 */
+    .out {
+        width: 100%;
+        display: block;
+        color: #000000;
+        background-color: rgba(217, 217, 217, 0.5);
+        height: 2.2vh;
+        border-radius: 5%;
+        margin-bottom: .1vh;
+        padding: .2%;
+        font-size: .8vw;
+        text-align: center;
+        align-content: center;
+    }
+</style>
+
+
+  <div>
+    <!--<table width="100%" class="table table-danger" style="margin: 0;" >
+    <tbody>
+      <tr class="" style="font-size: 20px;">
+        <th width="100px"></th>-->
+    @*左余白*@
+    <!--<th width="200px">今月残拘束時間</th>
+  <td>@(Model.RemainingMonthlyWorkingTime)</td>
+  <th width="200px"></th>
+  <td></td>
+  <th width="100px"></th>-->
+    @*右余白*@
+    <!--</tr>
+    </tbody>
+  </table>-->
+
+    <table width="100%" class="table ex_TableDriverMonthListSummay" style="" valign="middle">
+      <tr>
+        @*<th><label style="margin-bottom: 0; font-size: 12px;">拘束時間<br />の合計</label></th>*@
+        <th><label style="margin-bottom: 0; font-size: 12px;">総労働時<br />間の合計</label></th>
+        <th><label style="margin-bottom: 0; font-size: 12px;">残業時間<br />の合計</label></th>
+        <th><label style="margin-bottom: 0; font-size: 12px;">公休労働<br />時間の合計</label></th>
+        <th><label style="margin-bottom: 0; font-size: 12px;">法定休労働<br />時間の合計</label></th>
+        <th><label style="margin-bottom: 0; font-size: 12px;">深夜労働<br />時間の合計</label></th>
+        <th><label style="margin-bottom: 0; font-size: 12px;">走行<br />距離</label></th>
+      </tr>
+      <tr style="height: 20px;">
+        @*<td>@(Model.TotalWorkingTime)</td>*@
+        <td>@(Model.TotalLaborTime)</td>
+        <td>@(Model.TotalOvertime)</td>
+        <td>@(Model.TotalPublicHolidayWorkingTime)</td>
+        <td>@(Model.TotalLegalHolidayWorkingTime)</td>
+        <td>@(Model.TotalLateNightWorkingTime)</td>
+        <td>@(Model.TotalTravelDistance)</td>
+      </tr>
+    </table>
+    <div class="month-calendar">
+    </div>
+  </div>
+
+
+
+
+<div hidden>
+
+</div>
+
+<script>
+    var dataGroupedByDate = @Html.Raw(Model.AnkenData);
+    var getKyukaDataGroupedByDate = @Html.Raw(Model.KyukaData);
+    var getNocrewData = @Html.Raw(Model.NocrewData);
+
+    function formatDateModal(date) {
+        var yyyy = date.getFullYear();
+        var mm = ('00' + (date.getMonth() + 1)).slice(-2);
+        var dd = ('00' + date.getDate()).slice(-2);
+        const ymd = String(yyyy) + '/' + String(mm) + '/' + String(dd);
+        return ymd;
+    };
+
+    $(document).ready(function () {
+
+        // コントローラーから送られた日付を取得
+        const selectedDate = new Date("@Model.Date"); // モデルに渡された日付の形式に応じて調整が必要かもしれません
+
+        // 選択された日付から年と月を取得
+        const selectedYear = selectedDate.getFullYear();
+        const selectedMonth = selectedDate.getMonth() + 1; // 月は0-indexedなので+1する
+        // カレンダーを生成して表示
+        $(".month-calendar").html(CreateCalendar(selectedYear, selectedMonth));
+    });
+
+    function CreateCalendar(year, month) {
+        const today = new Date();
+        const todayDate = today.getDate();
+        const weeks = ['日曜日', '月曜日', '火曜日', '水曜日', '木曜日', '金曜日', '土曜日']
+        //取得する月の1日の情報
+        const startDateOfMonth = new Date(year, month - 1, 1)
+        //取得する月の最終日の情報
+        const lastDateOfMonth = new Date(year, month, 0)
+        //1日の曜日
+        const startDay = startDateOfMonth.getDay()
+        //取得する月のカレンダーの行数
+        const Calendarline = CalendarLine(startDay, lastDateOfMonth.getDate())
+        var CalendarElement = "<table>"
+        //カレンダーの曜日の行を作成
+        CalendarElement += "<tr class = week>"
+        for (let w = 0; w < 7; w++) {
+            CalendarElement += "<td class = w" + w + ">" + weeks[w] + "</td>"
+        }
+        CalendarElement += "</tr>"
+        var currentDate = 1;
+        //日を跨ぐ予定が入る配列（跨いだ日数と案件の内容が格納されます）
+        let ankenLengthArray = [];
+        for (let line = 0; line < Calendarline; line++) {
+            CalendarElement += "<tr class = day>"
+            for (let w = 0; w < 7; w++) {
+                let scheduleCount = 0;
+                //カレンダーの一行目の場合は1日の曜日より前の枠は空欄にする
+                //最終日を超えた場合の枠も空欄にする
+                if ((line == 0 && w < startDay)) {
+                    CalendarElement += "<td></td>"
+
+                }
+                else if (currentDate > lastDateOfMonth.getDate()) {
+                    CalendarElement += "<td></td>"
+                    currentDate++
+                }
+                else {
+                    // 年月日を組み立てる
+                    const date = new Date(year, month - 1, currentDate + 1);
+                    const isoDateTime = date.toISOString();
+                    let cellContent = `<a href="#" class="js-modal-open" onclick="AttendanceModal('${isoDateTime}'); return false;">${currentDate}</a>`;
+                    //土曜日から日曜日にかけての予定がある場合の処理
+                    if (w === 0 && ankenLengthArray.length > 0) {
+                        //配列に残っている予定をmapで回す
+                        ankenLengthArray.map(ankenData => {
+                            var max = 7 - w;
+                            var maxLength = ankenData.length > max ? max : ankenData.length; //予定の背景がカレンダーを突き破らないように最大値を設定
+                            var daysLeft = lastDateOfMonth.getDate() - currentDate - maxLength;
+                            // daysLeft がマイナスの場合は maxLength - is として、maxLength を修正
+                            if (daysLeft < 0) {
+                                maxLength += daysLeft + 1;
+                            }
+                            if (scheduleCount <= 1) {
+                                cellContent += `<span class="anken" style="width: ${(maxLength + (maxLength - 1) * 0.046) * 100}%;">${ankenData.anken}</span> `; //跨いだ日数分widthを伸ばす
+                            }
+                            scheduleCount++;
+                        });
+                    } else {
+                        //予定が被らないようにankenLengthArrayに値がある場合は透明のspanタグを配置
+                        ankenLengthArray.map(length => {
+                            if (scheduleCount <= 1) {
+                                cellContent += `<span class="anken" style="width: 100%; opacity: 0;">aa</span>`;
+                            }
+                            scheduleCount++;
+                        });
+                    }
+                    //月をまたぐ予定があるかどうかの判別
+                    const hasCrossingPlans = Object.values(dataGroupedByDate).some(ankenList =>
+                        ankenList.some(anken => anken.CrossesMultipleMonths === true)
+                    );
+                    //ある場合の処理
+                    if (hasCrossingPlans && currentDate == 1) {
+                        Object.entries(dataGroupedByDate).forEach(([key, ankenList]) => {
+                            ankenList.forEach(plan => {
+                                //月を跨いだ予定は月初から予定を表示
+                                if (plan.CrossesMultipleMonths === true) {
+                                    var max = 7 - w;
+                                    var maxLength = plan.Length > max ? max : plan.Length;
+                                    var daysLeft = lastDateOfMonth.getDate() - currentDate - maxLength;
+                                    // daysLeft がマイナスの場合は maxLength - is として、maxLength を修正
+                                    if (daysLeft < 0) {
+                                        maxLength += daysLeft + 1;
+                                    }
+                                    if (scheduleCount <= 1) {
+                                        cellContent += `<span class="anken" style="width: ${(maxLength + (maxLength - 1) * 0.046) * 100}%;">${plan.AnkenRange}</span>`;
+                                    }
+                                    scheduleCount++;
+                                    if (plan.Length >= 2) {
+                                        // lenghtには日付を格納
+                                        ankenLengthArray.push({ anken: plan.AnkenRange, length: parseInt(key) });
+                                    }
+                                }
+                            });
+                        });
+                    }
+                    if (dataGroupedByDate && dataGroupedByDate[currentDate] && !hasCrossingPlans) {
+                        const ankenList = dataGroupedByDate[currentDate];
+                        for (const anken of ankenList) {
+                            var max = 7 - w;
+                            var maxLength = anken.Length > max ? max : anken.Length; //予定の背景がカレンダーを突き破らないように最大値を設定
+                            var daysLeft = lastDateOfMonth.getDate() - currentDate - maxLength;
+                            // daysLeft がマイナスの場合は maxLength - is として、maxLength を修正
+                            if (daysLeft < 0) {
+                                maxLength += daysLeft + 1;
+                            }
+                            if (scheduleCount <= 1) {
+                                cellContent += `<span class="anken" style="width: ${(maxLength + (maxLength - 1) * 0.046) * 100}%;">${anken.AnkenRange}</span>`;
+                            }
+                            scheduleCount++;
+                            if (anken.Length >= 2) {
+                                //予定の日数が二日以上なら配列に格納
+                                ankenLengthArray.push({ anken: anken.AnkenRange, length: anken.Length });
+                            }
+                        }
+                    }
+                    if (getKyukaDataGroupedByDate && getKyukaDataGroupedByDate[currentDate]) {
+                        if (scheduleCount <= 1) {
+                            cellContent += `<span class="holiday">${getKyukaDataGroupedByDate[currentDate]}</span>`;
+                        }
+                        scheduleCount++;
+                    }
+                    if (getKyukaDataGroupedByDate && getNocrewData[currentDate]) {
+                        if (scheduleCount <= 1) {
+                            cellContent += `<span class="nocrew">${getNocrewData[currentDate]}</span>`;
+                        }
+                        scheduleCount++;
+                    }
+
+                    //3つ目以上の予定は+予定数と表示する
+                    if (scheduleCount > 2) {
+                        cellContent += `<span class="out">+${scheduleCount - 2}</span>`;
+                    }
+
+                    //本日の日付には線を引く
+                    if (currentDate === todayDate && today.getFullYear() === year && today.getMonth() + 1 === month) {
+                        CalendarElement += `<td class="w${w} today">${cellContent}</td>`;
+                    } else {
+                        CalendarElement += `<td class="w${w}">${cellContent}</td>`;
+                    }
+                    currentDate++;
+                }
+                // ankenLengthArrayの中身を-1して0になった場合は、リストから削除
+                ankenLengthArray = ankenLengthArray.map(obj => ({ anken: obj.anken, length: obj.length - 1 }))
+                    .filter(obj => obj.length > 0);
+            }
+
+            CalendarElement += "</tr>"
+        }
+        return CalendarElement
+    }
+    // //1日の曜日とその月の日数を引数にしてその月の行を返す関数
+    function CalendarLine(startDay, lastDateOfMonth) {
+        //(例)1日が(金)で最終日が31日の場合6行になる。→31日(日)
+        if (startDay + lastDateOfMonth >= 36) {
+            return 6;
+        }
+        //うるう年でない2月の1日が日曜日の場合
+        else if (startDay + lastDateOfMonth <= 28) {
+            return 4
+        }
+        //それ以外はすべて5行
+        else {
+            return 5
+        }
+    }
+
+</script>

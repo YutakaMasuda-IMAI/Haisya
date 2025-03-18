@@ -1,0 +1,138 @@
+﻿@model AnkenModel.SenzokuSelectDriverModel
+
+
+<div hidden>
+  @Html.HiddenFor(model => model.Company_ID)
+</div>
+
+
+@{
+  var groups = Model.SenzokuDriverList.OrderBy(m => m.Haisya_Group_ID).GroupBy(m => new { m.Haisya_Group_ID });
+}
+
+@foreach (var group in groups)
+{
+  string haisyaName = Model.CompanyUserGroupList.FirstOrDefault(m => m.Group_ID == group.Key.Haisya_Group_ID).Group_Name;
+
+  <div id="@(group.Key.Haisya_Group_ID)" class="clearfix">
+    <div class="setting-separator">担当配車：@(haisyaName)</div>
+    <div id="option_attendance_setting" class="sight-settings">
+      <table id="DataList" name="DataList" class="table ex_DriverList">
+        <thead>
+          <tr>
+            <th style="width:150px;">
+              選択
+            </th>
+            <th hidden>
+              SenzokuID
+            </th>
+            <th hidden>
+              Company_ID
+            </th>
+            <th hidden>
+              KokyakuId
+            </th>
+            <th>
+              顧客CD
+            </th>
+            <th>
+              顧客名称
+            </th>
+            <th>
+              担当名称
+            </th>
+            <th>
+              専属名
+            </th>
+            <th>
+              担当乗務員
+            </th>
+            <th>
+              車種型
+            </th>
+            <th>
+              車番
+            </th>
+            <th>
+              開始
+            </th>
+            <th>
+              終了
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          @{
+              var list = Model.SenzokuDriverList.Where(m => m.Haisya_Group_ID == group.Key.Haisya_Group_ID).OrderBy(m => m.From_Date).ThenBy(m => m.Customer_Branch_Code).ToList();
+          }
+
+          @foreach (var item in list)
+          {
+            <tr align="center">
+              <td>
+                <button class="btn btn-outline-primary" style="width: 100%; padding: 0; font-size: 12px; " onclick="SelectedDriverOnClick(@(item.SenzokuID),@(item.Senzoku_Driver_ID))">選択</button>
+              </td>
+              <td hidden>
+                @Html.DisplayFor(modelItem => item.SenzokuID)
+              </td>
+              <td hidden>
+                @Html.DisplayFor(modelItem => item.Company_ID)
+              </td>
+              <td hidden>
+                @Html.DisplayFor(modelItem => item.Customer_Branch_ID)
+              </td>
+              <td align="center">
+                @Html.DisplayFor(modelItem => item.Customer_Branch_Code)
+              </td>
+              <td align="center">
+                @Html.DisplayFor(modelItem => item.Customer_Branch_Name_Abbr)
+              </td>
+              <td align="center">
+                @Html.DisplayFor(modelItem => item.Tantou_Name_Abbr)
+              </td>
+              <td align="center">
+                @Html.DisplayFor(modelItem => item.Senzoku_Name_Abbr)
+              </td>
+              <td align="center">
+                @Html.DisplayFor(modelItem => item.Display_Name)
+              </td>
+              <td align="center">
+                @Html.DisplayFor(modelItem => item.Syasyu)
+                @Html.DisplayFor(modelItem => item.Kata)
+              </td>
+              <td align="center">
+                @Html.DisplayFor(modelItem => item.SYABAN)
+              </td>
+              <td align="center">
+                @Convert.ToDateTime(item.From_Date).ToString("yyyy/MM/dd")
+              </td>
+              <td align="center">
+                @if (item.To_Date != null)
+                {
+                  @Convert.ToDateTime(item.To_Date).ToString("yyyy/MM/dd")
+                }
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+}
+
+
+
+<script>
+  $(function () {
+
+  });
+
+  function showDetailOnClick(paramSenzokuID, paramSenzokuDriverID) {
+    alert(aa);
+    SelectedDriverOnClick(paramSenzokuID, paramSenzokuDriverID);
+  }
+
+
+</script>

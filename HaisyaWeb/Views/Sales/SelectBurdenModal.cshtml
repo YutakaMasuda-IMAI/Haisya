@@ -1,0 +1,454 @@
+@model SalesModel.SelectBurdenDto
+
+<style>
+  .table-LuggageModal {
+    width: 100%;
+  }
+
+  .table-LuggageModal th {
+    padding: 0;
+    text-align: center;
+  }
+
+  .table-LuggageModal td {
+    padding: 0;
+    height: 15px;
+    text-align: center;
+  }
+
+  .table-LuggageModal td button {
+    width: 90%;
+    height: 95%
+  }
+
+  .table-LuggageModal td button input {
+    color: white;
+  }
+</style>
+<link href="~/css/Enter.css" rel="stylesheet" />
+
+<div role="dialog" id="addRireki" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document" style="max-width:900px; min-height: 700px;">
+    <div class="modal-content">
+      <div hidden>
+        <input type="text" id="SelectLuggageGroup" value="0" />
+        <table id="tableLuggageSelectListModal">
+          <tbody id="tableLuggageSelectListModal-tbody">
+          @{
+            var burdenlist = Model.BurdenList.OrderBy(m => m.Burden_Group_ID).ThenBy(m => m.SortOrder).ToList();
+            foreach (var item in burdenlist)
+            {
+            <tr>
+              <td>@(item.Burden_Group_ID)</td>
+              <td>@(item.Burden_ID)</td><td>@(item.Burden_Name)</td>
+              <td>@(item.Unit_Name)</td>
+            </tr>
+            }
+          }
+          </tbody>
+        </table>
+      </div>
+      <div class="modal-header">
+        <h3>会社負担選択</h3>
+        <button type="button" class="btn btn-secondary" onclick="ModalClose(); return false;">閉じる</button>
+      </div>
+
+      <div class="model-body">
+        <div class="div-area">
+          <label class="tab_class" for="tab1"></label>
+          <div class="content_class">
+            <div class="row" style="margin:0px;">
+              <div class="col-6 col-sm-3">
+                <table class="table table-LuggageModal list">
+                  <thead>
+                    <tr>
+                      <th>負担グループ</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  @{
+                    var burdenGroupList = Model.BurdenGroupList.OrderBy(m => m.SortOrder).ToList();
+                    foreach (var item in burdenGroupList)
+                    {
+                    <tr>
+                      <td>
+                        <button class="btn btn-dark" onclick="onClickBurdenGroup(@(item.Burden_Group_ID)); return false;">@(item.Burden_GroupName)</button>
+                      </td>
+                    </tr>
+                    }
+                  }
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="col-6 col-sm-3">
+                <table id="tableLuggage" class="table table-LuggageModal list">
+                <thead>
+                  <tr>
+                    <th>負担詳細</th>
+                  </tr>
+                </thead>
+                <tbody id="tableLuggage-body">
+                </tbody>
+                </table>
+              </div>
+
+              <div class="col-6 col-sm-3" style="margin-top: -20px;">
+                <h6 style="padding:0;margin:0;">選択負担</h6>
+                <table id="tableLuggageListModal" class="table table-LuggageModal list">
+                <thead>
+                  <tr style="background-color:aquamarine;">
+                    <th>負担</th>
+                    <th>単位</th>
+                  </tr>
+                </thead>
+                <tbody id="tableSelectLuggage-body">
+                  @{
+                    if (Model.AnkenLuggageList != null)
+                    {
+                      var AnkenLuggageList = Model.AnkenLuggageList.OrderBy(m => m.Insert_Datetime).ToList();
+                      for (int i = 0; i < AnkenLuggageList.Count; i++)
+                      {
+                        var luggage = Model.BurdenList.FirstOrDefault(m => m.Burden_ID == Model.AnkenLuggageList[i].futan_Kubun);
+                        if (luggage != null)
+                        {
+                          <tr>
+                            <td hidden>@Html.TextBoxFor(model => Model.AnkenLuggageList[i].Sort, null, new { @readonly = "readonly", })</td>
+                            <td hidden>@Html.TextBoxFor(model => Model.AnkenLuggageList[i].futan_Kubun, null, new { @readonly = "readonly", @type = "text" })</td>
+                            <th><input type="text" value="@(luggage.Burden_Name)" readonly style="width: 200px;" id="AnkenLuggageList_@(i)__Luggage_Name" name="AnkenLuggageList[@(i)].Luggage_Name" /></th>
+                            <th><input type="text" value="@(luggage.Unit_Name)" readonly style="width: 30px;" id="AnkenLuggageList_@(i)__Unit_Name" name="AnkenLuggageList[@(i)].Unit_Name" /></th>
+                          </tr>
+                        }
+                        else
+                        {
+                          <tr hidden>
+                            <td hidden>@Html.TextBoxFor(model => Model.AnkenLuggageList[i].Sort, null, new { @readonly = "readonly", })</td>
+                            <td hidden>@Html.TextBoxFor(model => Model.AnkenLuggageList[i].futan_Kubun, null, new { @readonly = "readonly", @type = "text" })</td>
+                            <th><input type="text" value="" readonly style="width: 200px;" id="AnkenLuggageList_@(i)__Luggage_Name" name="AnkenLuggageList[@(i)].Luggage_Name" /></th>
+                            <th><input type="text" value="" readonly style="width: 30px;" id="AnkenLuggageList_@(i)__Unit_Name" name="AnkenLuggageList[@(i)].Unit_Name" /></th>
+                          </tr>
+                        }
+
+                      }
+                    }
+                  }
+                </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="vertical-align: middle; display: inline-block; " class="modal-footer">
+        <table class="no-line">
+          <tr>
+            <td width="50px">名前</td>
+            <td width="220px">
+              <input id="addLuggageText" type="text" class="form-control" style="width:200px;" value="" />
+            </td>
+            <td width="50px">単位</td>
+            <td width="80px">
+              <input id="addLuggageUnit" type="text" class="form-control" style="width:60px;" value="" />
+            </td>
+            <td>
+              <button id="btnModelCancel" class="btn btn-secondary" data-dismiss="modal" onclick="addLuggageMaster(); return false;">負担詳細追加</button>
+            </td>
+            <td width="100px">
+              <button id="btnModelHolidayReister" class="btn btn-success" style="width:100px;" onclick="SelectLuggageRegExec(); return false;">登録</button>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+$('#SelectLuggageGroup').val(0);
+
+$(function () {
+  // テーブル取得
+  var tableElemLuggage = document.getElementById("tableLuggageListModal");
+  var rowElemsLuggage = tableElemLuggage.rows;
+  var check = rowElemsLuggage[1].cells[2].firstElementChild.value;
+  if (check == '0') {
+    rowElemsLuggage[1].style.display = "none";
+  }
+});
+
+
+/** M_Luggageマスタの登録 */
+function addLuggageMaster() {
+  var addName = $('#addLuggageText').val();
+  var addUnit = $('#addLuggageUnit').val();
+  var gID = $('#SelectLuggageGroup').val();
+
+  if ('0' == gID) {
+    alertInputError("登録する荷物グループを選択してください。");
+    return true;
+  }
+
+  if (!(addName != null && addName.length > 0)) {
+    alertInputError("荷物名称が入力されていません");
+    $('#addLuggageText').css('background-color', 'lightcoral');
+    return true;
+  } else {
+    $('#addLuggageText').css('background-color', 'white');
+  }
+
+  if (!(addUnit != null && addUnit.length > 0)) {
+    alertInputError("単位が入力されていません");
+    $('#addLuggageUnit').css('background-color', 'lightcoral');
+    return true;
+  } else {
+    $('#addLuggageUnit').css('background-color', 'white');
+  }
+
+  // table要素を取得
+  var tableElem = document.getElementById('tableLuggageSelectListModal');
+  // 行（tr要素）を取得
+  var rowElems = tableElem.rows;
+
+  for (i = 0, len = rowElems.length; i < len; i++) {
+    var groupID = rowElems[i].cells[0].innerHTML;
+    var name = rowElems[i].cells[2].innerHTML;
+    if (gID == groupID && name == addName) {
+      alertError("入力された名称は既に選ばれています。");
+      return false;
+    }
+  }
+
+  var luggageNewID = 0;
+
+  $.post('@Url.RouteUrl("Default", new { controller = "Sales", Action = "JsonAddBurdenMaster" })',
+    {
+      paramGroupID: gID, paramLuggageText: addName, paramUnit: addUnit,
+    })
+    .done(function (response) {
+      if (response.message != null) {
+        alertError(`【エラー】${response.message}`);
+        return false;
+      } else {
+        luggageNewID = Number(response.resultVal);
+        AddtableLuggageSelectListModal(gID, luggageNewID, addName, addUnit);
+        onClickBurdenGroup(gID);
+        $('#addLuggageText').val('');
+        $('#addLuggageUnit').val('');
+        return false;
+      }
+    })
+  .fail(function (xhr) {
+    console.log(xhr);
+  })
+};
+
+/**
+* M_Luggageマスタの選択用リストにデータ追加
+* @@param paramGroupID
+* @@param paramID
+* @@param paramText
+* @@param paramUnit
+*/
+function AddtableLuggageSelectListModal(paramGroupID, paramID, paramText, paramUnit) {
+  var tbody = document.getElementById("tableLuggageSelectListModal-tbody");
+  var row = tbody.insertRow(-1);
+
+  var cell0 = row.insertCell(-1);
+  var cell1 = row.insertCell(-1);
+  var cell2 = row.insertCell(-1);
+  var cell3 = row.insertCell(-1);
+  cell0.innerHTML = paramGroupID;
+  cell1.innerHTML = paramID;
+  cell2.innerHTML = paramText;
+  cell3.innerHTML = paramUnit;
+}
+
+/**
+*　荷物グループの選択処理
+* @@param paramGroupID
+*/
+function onClickBurdenGroup(paramGroupID) {
+  $('#SelectLuggageGroup').val(paramGroupID);
+  $("#tableLuggage-body").remove();
+
+  // テーブル取得
+  var table = document.getElementById("tableLuggage");
+  var tbody = document.createElement("tbody");
+  tbody.setAttribute('id', 'tableLuggage-body');
+  table.appendChild(tbody);
+
+  // table要素を取得
+  var tableElem = document.getElementById('tableLuggageSelectListModal');
+  // 行（tr要素）を取得
+  var rowElems = tableElem.rows;
+
+  // 取得した行（tr要素）を繰り返しHTMLを取得;
+  for (i = 0, len = rowElems.length; i < len; i++) {
+    var groupID = rowElems[i].cells[0].innerHTML;
+
+    if (paramGroupID == groupID) {
+      var id = rowElems[i].cells[1].innerHTML;
+      var name = rowElems[i].cells[2].innerHTML;
+      var unit = rowElems[i].cells[3].innerHTML;
+
+      var row = tbody.insertRow(-1);
+      var cell1 = row.insertCell(-1);
+      cell1.innerHTML = '<button class="btn btn-dark" ondblclick="ondblclickLuggage(\'' + id + '\'); return false;">' + name + '(' + unit + ')</button>';
+    }
+  }
+};
+
+
+/**
+* 荷物詳細の選択処理
+* @@param paramID
+*/
+function ondblclickLuggage(paramID) {
+  var gID = $('#SelectLuggageGroup').val();
+
+  // テーブル取得
+  var tableElemLuggage = document.getElementById("tableLuggageListModal");
+  // 行（tr要素）を取得
+  var rowElemsLuggage = tableElemLuggage.rows;
+
+  for (i = 1, len = rowElemsLuggage.length; i < len; i++) {
+    var luggageId = rowElemsLuggage[i].cells[2].firstElementChild.value;
+    if (paramID == luggageId) {
+    alertError("選択された荷物は既に選ばれています。");
+    return false;
+    }
+  }
+
+  // table要素を取得
+  var tableElem = document.getElementById('tableLuggageSelectListModal');
+  // 行（tr要素）を取得
+  var rowElems = tableElem.rows;
+
+
+  // 取得した行（tr要素）を繰り返しHTMLを取得;
+  for (i = 0, len = rowElems.length; i < len; i++) {
+    var id = rowElems[i].cells[1].innerHTML;
+    var groupID = rowElems[i].cells[0].innerHTML;
+
+    if (gID == groupID && paramID == id) {
+      var nm = rowElems[i].cells[2].innerHTML;
+      var unit = rowElems[i].cells[3].innerHTML;
+    
+      var row_len = 1
+      var check = rowElemsLuggage[row_len].cells[2].firstElementChild.value;
+
+      if (check != '0') { 
+        row_len = insertRow(tableElemLuggage, 1);
+      } else {
+        rowElemsLuggage[row_len].style.removeProperty('display');
+      }
+      id = rowElemsLuggage[row_len].cells[0].firstElementChild.id;
+      document.getElementById(id).defaultValue = $('#Sort').val();
+      id = rowElemsLuggage[row_len].cells[1].firstElementChild.id;
+      document.getElementById(id).defaultValue = paramID;
+      id = rowElemsLuggage[row_len].cells[2].firstElementChild.id;
+      document.getElementById(id).defaultValue = nm
+      id = rowElemsLuggage[row_len].cells[3].firstElementChild.id;
+      document.getElementById(id).defaultValue = unit;
+    }
+  }
+};
+
+/**
+* 行追加処理
+* */
+function insertRow(tableElem, baseRow) {
+  // 行（tr要素）を取得
+  var rowElems = tableElem.rows;
+  // tbody要素にtr要素（行）を最後に追加
+  var trElem = tableElem.tBodies[0].insertRow(-1);
+  trElem.style.verticalAlign = 'middle';
+
+  var row_len = rowElems.length - 1;
+  var html = rowElems[baseRow].innerHTML;
+  trElem.innerHTML = repalceidName(row_len - 1, html);
+
+  return row_len;
+};
+
+/**
+*　idとnameの書換え
+* @@param row_len
+* @@param html
+*/
+function repalceidName(row_len, html) {
+  html = replace_all(html, "AnkenLuggageList_0", "AnkenLuggageList_" + row_len + "");
+  html = replace_all(html, "AnkenLuggageList[0]", "AnkenLuggageList[" + row_len + "]");
+  return html;
+}
+
+
+  /**
+* 行追加処理
+* */
+  function insertRow(tableElem, baseRow) {
+  // 行（tr要素）を取得
+  var rowElems = tableElem.rows;
+  // tbody要素にtr要素（行）を最後に追加
+  var trElem = tableElem.tBodies[0].insertRow(-1);
+  trElem.style.verticalAlign = 'middle';
+
+  var row_len = rowElems.length - 1;
+  var html = rowElems[baseRow].innerHTML;
+  trElem.innerHTML = repalceidName(row_len - 1, html);
+
+  return row_len;
+  };
+
+  /**
+*　idとnameの書換え
+* @@param row_len
+* @@param html
+*/
+  function repalceidName(row_len, html) {
+  html = replace_all(html, "AnkenLuggageList_0", "AnkenLuggageList_" + row_len + "");
+  html = replace_all(html, "AnkenLuggageList[0]", "AnkenLuggageList[" + row_len + "]");
+  return html;
+  }
+
+  /** 登録処理 */
+  function SelectLuggageRegExec() {
+
+  var tableBody = document.getElementById("futanTableBody");
+  var selectedLuggageTable = document.getElementById("tableSelectLuggage-body");
+  var rows = selectedLuggageTable.getElementsByTagName("tr");
+
+  for (var i = 1; i < rows.length; i++) {
+    var kubun = rows[i].cells[1].getElementsByTagName("input")[0].value;
+    var name = rows[i].cells[2].getElementsByTagName("input")[0].value;
+
+    var newRow = tableBody.insertRow();
+    newRow.innerHTML = `
+      <input type="hidden" name="UriageFutan[].Uriage_Futan_ID" value="0" />
+      <input type="hidden" name="UriageFutan[].Default_Kubun" value="0" />
+      <input type="hidden" name="UriageFutan[].futan_Kubun" value="${kubun}" />
+      <td>${name}</td>
+      <td><input type="text" class="form-control inputtable" style="text-align:right;" value="0" name=".FutanPrice" onblur = "kanmaChange(this);" /></td>
+      <td  style="border:none;"><button type="button" class="btn btn-danger btn-sm" onclick="deleteFutanRow(this)">削除</button></td>
+      `;
+  }
+
+  ModalClose();
+  };
+
+  // 会社負担の削除ボタン押下時の削除処理
+  function deleteFutanRow(button) {
+  var row = button.parentNode.parentNode;
+  row.parentNode.removeChild(row);
+}
+
+
+  // 会社負担の削除ボタン押下時の削除処理
+  function deleteFutanRow(button) {
+    var row = button.parentNode.parentNode;
+    row.parentNode.removeChild(row);
+  }
+</script>
+

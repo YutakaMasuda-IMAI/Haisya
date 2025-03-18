@@ -1,0 +1,70 @@
+@model HaisyaWeb.Models.PurchasePaymentRegistrationModel_Local.DataListModel
+
+@{
+  Layout = "_ModalLayout";
+}
+<link href="~/css/Anken.css" rel="stylesheet" />
+
+<div role="dialog" id="modal-option" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog container" role="document" style="width: 600px;">
+    <div class="modal-content">
+      <div class="modal-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+          @foreach (var item in Model.PossibleExpenseItems)
+          {
+            <tr>
+              <td>
+                <button type="button" class="btn btn-primary select-button" data-item='@Html.Raw(Json.Serialize(item))'>選択</button>
+              </td>
+              <td>@item.Item_Display</td>
+            </tr>
+          }
+          </tbody>
+        </table> 
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" onclick="ModalClose();">キャンセル</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $('.select-button').on('click', function () {
+      // セレクトされたデータアイテムのパース
+      var itemData = $(this).data('item');
+      // データアイテムはundefinedまだnullリターンする
+      if (itemData === undefined || itemData === null) return;
+
+      // 新しいエレメントをリストに追加する
+      let exPayments = @Html.Raw(Json.Serialize(Model.ExpensePayments));
+
+      exPayments[0].expense_ID = expense.expense_ID;
+
+      let vend = @Html.Raw(Json.Serialize(Model.Venders));
+
+      exPayments[0].expense_Item_ID = itemData.expense_Item_ID;
+
+      expensePayments.push(exPayments[0]);
+
+      venders.push(vend[0]);
+      expenseItems.push(itemData);
+
+      isNotRegistered = true;
+
+      // 経費項目を再描画
+      populateSelect();
+
+      selectHighestValueOption();
+      ModalClose();
+    });
+  });
+</script>

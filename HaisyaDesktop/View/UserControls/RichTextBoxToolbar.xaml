@@ -1,0 +1,118 @@
+﻿<UserControl x:Class="HaisyaDesktop.View.UserControls.RichTextBoxToolbar"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:HaisyaDesktop.View.Tool"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+  <Grid>
+
+    <!-- Set the styles for the tool bar. ツールバーのために、スタイルを設定します。 -->
+
+    <Grid.Resources>
+      <Style TargetType="{x:Type Button}" x:Key="formatTextStyle">
+        <Setter Property="FontFamily" Value="Palatino Linotype"></Setter>
+        <Setter Property="Width" Value="30"></Setter>
+        <Setter Property="FontSize" Value ="14"></Setter>
+        <Setter Property="CommandTarget" Value="{Binding ElementName=mainRTB}"></Setter>
+      </Style>
+
+      <Style TargetType="{x:Type Button}" x:Key="formatImageStyle">
+        <Setter Property="Width" Value="30"></Setter>
+        <Setter Property="CommandTarget" Value="{Binding ElementName=mainRTB}"></Setter>
+      </Style>
+    </Grid.Resources>
+
+    <DockPanel Name="mainPanel">
+
+      <!-- This tool bar contains all the editing buttons.
+                このツールバーには、すべての編集ボタンが含まれています。-->
+
+      <ToolBar Name="mainToolBar" Height="30" DockPanel.Dock="Top">
+
+        <Button Style="{StaticResource formatImageStyle}" 
+                	Command="ApplicationCommands.Cut" ToolTip="Cut">
+          <Image Source="/IMG/Cut_16x.png" />
+        </Button>
+        <Button Style="{StaticResource formatImageStyle}" 
+		Command="ApplicationCommands.Copy" ToolTip="Copy">
+          <Image Source="/IMG/Copy_16x.png" />
+        </Button>
+        <Button Style="{StaticResource formatImageStyle}" 
+		Command="ApplicationCommands.Paste" ToolTip="Paste">
+          <Image Source="/IMG/Paste_16x.png" />
+        </Button>
+        <Button Style="{StaticResource formatImageStyle}" 
+		Command="ApplicationCommands.Undo" ToolTip="Undo">
+          <Image Source="/IMG/StepBackwards_16x.png" />
+        </Button>
+        <Button Style="{StaticResource formatImageStyle}" 
+		Command="ApplicationCommands.Redo" ToolTip="Redo">
+          <Image Source="/IMG/StepForward_16x.png" />
+        </Button>
+
+        <Button Style="{StaticResource formatTextStyle}" 
+		Command="EditingCommands.ToggleBold" ToolTip="Bold">
+          <TextBlock FontWeight="Bold">B</TextBlock>
+        </Button>
+        <Button Style="{StaticResource formatTextStyle}" 
+		Command="EditingCommands.ToggleItalic" ToolTip="Italic">
+          <TextBlock FontStyle="Italic" FontWeight="Bold">I</TextBlock>
+        </Button>
+        <Button Style="{StaticResource formatTextStyle}" 
+		Command="EditingCommands.ToggleUnderline" ToolTip="Underline">
+          <TextBlock TextDecorations="Underline" FontWeight="Bold">U</TextBlock>
+        </Button>
+        <Button Style="{StaticResource formatImageStyle}" 
+		Command="EditingCommands.IncreaseFontSize" ToolTip="Grow Font">
+          <Image Source="/IMG/IncreaseFontSize_16x.png" />
+        </Button>
+        <Button Style="{StaticResource formatImageStyle}" 
+		Command="EditingCommands.DecreaseFontSize" ToolTip="Shrink Font">
+          <Image Source="/IMG/DecreaseFontSize_16x.png" />
+        </Button>
+
+        <Button Style="{StaticResource formatImageStyle}" 
+		Command="EditingCommands.ToggleBullets" ToolTip="Bullets">
+          <Image Source="/IMG/RadioButtonList_16x.png" />
+        </Button>
+        <!--<Button Style="{StaticResource formatImageStyle}" 
+		Command="EditingCommands.ToggleNumbering" ToolTip="Numbering">
+          <Image Source="Images/ListNumbering.png"></Image>
+        </Button>-->
+        <Button Style="{StaticResource formatImageStyle}" 
+		Command="EditingCommands.AlignLeft" ToolTip="Align Left">
+          <Image Source="/IMG/AlignLeft_16x.png" />
+        </Button>
+        <Button Style="{StaticResource formatImageStyle}" 
+		Command="EditingCommands.AlignCenter" ToolTip="Align Center">
+          <Image Source="/IMG/AlignMiddle_16x.png" />
+        </Button>
+        <Button Style="{StaticResource formatImageStyle}" 
+		Command="EditingCommands.AlignRight" ToolTip="Align Right">
+          <Image Source="/IMG/AlignRight_16x.png" />
+        </Button>
+        <Button Style="{StaticResource formatImageStyle}" 
+		Command="EditingCommands.AlignJustify" ToolTip="Align Justify">
+          <Image Source="/IMG/AlignHorizontalStretch_16x.png" />
+        </Button>
+        <!--<Button Style="{StaticResource formatImageStyle}" 
+		Command="EditingCommands.IncreaseIndentation" ToolTip="Increase Indent">
+          <Image Source="Images\ParagraphIncreaseIndentation.png"></Image>
+        </Button>
+        <Button Style="{StaticResource formatImageStyle}" 
+		Command="EditingCommands.DecreaseIndentation" ToolTip="Decrease Indent">
+          <Image Source="Images\ParagraphDecreaseIndentation.png"></Image>
+        </Button>-->
+
+      </ToolBar>
+
+      <!-- By default pressing tab moves focus to the next control. 
+            既定では、タブを押すと、フォーカスを次のコントロールへ移動します。
+            Setting AcceptsTab to true allows the RichTextBox to accept tab characters.
+            AcceptsTab設定をtrueにすると、RichTextBoxは、タブ文字を受け取ることができます。-->
+
+    </DockPanel>
+  </Grid>
+</UserControl>

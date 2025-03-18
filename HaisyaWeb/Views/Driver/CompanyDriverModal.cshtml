@@ -1,0 +1,239 @@
+﻿@model DriverModel.CompanyDriverModalDto
+
+@{
+  Layout = "_LayoutForSettingModal";
+
+}
+
+<style>
+  /*  .float-left {
+    float: left;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }
+
+  .float-right {
+    float: right;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }*/
+
+  .readonly {
+    background-color: lightgray;
+  }
+</style>
+
+
+<div role="dialog" id="modal-option" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:750px;">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: gainsboro;">
+        <h1 class="modal-title fs-3" id="exampleModalLabel">@(Model.Title)</h1>
+        <button type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
+      </div>
+      <div class="model-body">
+        <form id="form1">
+          <div id="hidden" hidden>
+            @Html.HiddenFor(model => Model.CompanyID)
+            @Html.HiddenFor(model => Model.BtnCaption)
+            @Html.HiddenFor(model => Model.Title)
+            @Html.HiddenFor(model => Model.CompanyDriver.Employee_Number)
+          </div>
+          <div class="contents-wrap-middle" style="margin: 10px;">
+            <h4 class="">注意</h4>
+            <span>
+              ・一度データを登録すると物理削除は出来ません。「非表示フラグ」を立ててください。
+            </span>
+          </div>
+          <table class="table table-striped-columns table-bordered border-primary" border="1" style="margin: 10px; width:96%;">
+            <thead>
+              <tr style="background-color: aquamarine;">
+                <th align="center" style="text-align: center;">項目名</th>
+                <th align="center" style="text-align: center;">値</th>
+                <th align="center" style="text-align: center;">例</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr hidden>
+                <th width="200px">ユーザID</th>
+                <td width="200px">@Html.TextBoxFor(model => Model.CompanyDriver.Driver_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px; padding: 0;" })</td>
+                <td width="400px"></td>
+              </tr>
+              <tr hidden>
+                <th width="200px">会社ID</th>
+                <td width="200px">@Html.TextBoxFor(model => Model.CompanyDriver.Company_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px; padding: 0;" })</td>
+                <td width="400px"></td>
+              </tr>
+              <tr>
+                <th style="color: red;">支店/事業等</th>
+                <td>
+                  @Html.DropDownListFor(model => model.CompanyDriver.Branch_ID, new SelectList(Model.M_CompanyBranchList, "Branch_ID", "Branch_Name_Abbr", false), "支店/営業所/事業所を選択", new { @class = "form-control list dropDownList", @style = "padding: 0 0 0 0.5rem; width: 100%" })
+                  @Html.ValidationMessageFor(model => model.CompanyDriver.Branch_ID, "", new { id = "SelectBranchID", @class = "text -danger align-middle" })
+                </td>
+                <td width="400px">支店/営業所/事業所を選択</td>
+              </tr>
+              <tr>
+                <th>従業員CD</th>
+                <td>@Html.TextBoxFor(model => Model.EmployeeNumber, null, new { @class = "form-control", @style = "width: 95%; padding: 0 0 0 0.5rem;" })</td>
+                <td>※数値のみ入力可能です</td>
+              </tr>
+              <tr>
+                <th style="color: red;">性</th>
+                <td>@Html.TextBoxFor(model => Model.CompanyDriver.Last_Name, null, new { @class = "form-control", @style = "width: 95%; padding: 0 0 0 0.5rem;" })</td>
+                <td></td>
+              </tr>
+              <tr>
+                <th>名</th>
+                <td>@Html.TextBoxFor(model => Model.CompanyDriver.First_Name, null, new { @class = "form-control", @style = "width: 95%; padding: 0 0 0 0.5rem;" })</td>
+                <td></td>
+              </tr>
+              <tr>
+                <th style="color: red;">表示名</th>
+                <td>@Html.TextBoxFor(model => Model.CompanyDriver.Display_Name, null, new { @class = "form-control", @style = "width: 95%; padding: 0 0 0 0.5rem;" })</td>
+                <td></td>
+              </tr>
+              <tr>
+                <th>入社日</th>
+                <td>
+                  @Html.TextBoxFor(model => Model.CompanyDriver.Nyusya_Date, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                </td>
+                <td width="400px"></td>
+              </tr>
+              <tr>
+                <th>業務開始日</th>
+                <td>
+                  @Html.TextBoxFor(model => Model.CompanyDriver.GyomuStart_Date, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                </td>
+                <td width="400px"></td>
+              </tr>
+              <tr>
+                <th>退職日</th>
+                <td>
+                  @Html.TextBoxFor(model => Model.CompanyDriver.Taisyoku_Date, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date" })
+                </td>
+                <td width="400px"></td>
+              </tr>
+              <tr>
+                <th>非表示フラグ</th>
+                <td class="">@Html.CheckBoxFor(model => Model.CompanyDriver.Del_Flg, new { @class = "form-control text-left form-check-input" })</td>
+                <td>オンにすると、登録時に選択不可。</td>
+              </tr>
+              <tr>
+                <th>最終更新日</th>
+                <td>@Convert.ToDateTime(Model.CompanyDriver.UP_DATE).ToString("yyyy/MM/dd HH:mm:ss")</td>
+                <td hidden>@Html.TextBoxFor(model => Model.CompanyDriver.UP_DATE, null, new { @class = "form-control text-end" })</td>
+              </tr>
+            </tbody>
+          </table>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+  $(function () {
+
+
+
+
+
+
+  });
+
+
+  function regExec() {
+
+    if (varidationCheck()) {
+      return false;
+    }
+
+    //Formの参照を取る
+    var $form = $('#form1');
+
+    //alert($form.serialize());
+
+    $.ajax({
+          url: '@Url.RouteUrl("Default", new { controller = "Driver", Action = "CompanyDriverRegExec" })',
+          type: 'post',
+          data: $form.serialize(),
+        }).done(function (response) {
+          if (response.errorMessage != null && response.errorMessage !== '') {
+              alertError(`【エラー】${response.errorMessage}`);
+              return false;
+          } else {
+            closeModelAndRefresh();
+            return false;
+          }
+        }).fail(function (xhr) {
+          alert('【ネットワークエラー】:' + xhr);
+            console.log(xhr);
+            return false;
+        }).always(function (xhr, msg) {
+            console.log(xhr, msg);
+        });
+
+  }
+
+
+
+
+  function varidationCheck() {
+
+    if (!($('#CompanyDriver_Branch_ID').val() != null && $('#CompanyDriver_Branch_ID').val() > 0)) {
+      alert("支店/営業所/事業所が選択されていません");
+      $('#CompanyDriver_Branch_ID').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#CompanyDriver_Branch_ID').css('background-color', 'white');
+    }
+
+    if (!($('#CompanyDriver_Employee_Number').val() != null && isNaN($('#CompanyDriver_Employee_Number').val()) == false)) {
+      alert("支店/営業所/事業所が選択されていません");
+      $('#CompanyDriver_Employee_Number').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#CompanyDriver_Employee_Number').css('background-color', 'white');
+    }
+
+    if (!($('#CompanyDriver_Last_Name').val() != null && $('#CompanyDriver_Last_Name').val().length > 0)) {
+      alert("性が入力されていません");
+      $('#CompanyDriver_Last_Name').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#CompanyDriver_Last_Name').css('background-color', 'white');
+    }
+
+    if (!($('#CompanyDriver_Display_Name').val() != null && $('#CompanyDriver_Display_Name').val().length > 0)) {
+      alert("表示名が入力されていません");
+      $('#CompanyDriver_Display_Name').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#CompanyDriver_Display_Name').css('background-color', 'white');
+    }
+
+    if ($('#CompanyDriver_User_ID').val() == 0) {
+      if (varidationCheckForOverlap($('#CompanyDriver_Display_Name').val(), $('#CompanyDriver_Employee_Number').val())) {
+        alert("同じ表示名又は従業員CDが既に登録されています");
+        $('#CompanyDriver_Employee_Number').css('background-color', 'lightcoral');
+        $('#CompanyDriver_Display_Name').css('background-color', 'lightcoral');
+        return true;
+      } else {
+        $('#CompanyDriver_Employee_Number').css('background-color', 'white');
+        $('#CompanyDriver_Display_Name').css('background-color', 'white');
+      }
+    }
+
+    return false;
+
+  };
+
+</script>

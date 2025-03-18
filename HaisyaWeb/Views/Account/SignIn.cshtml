@@ -1,0 +1,134 @@
+﻿@model HaisyaWeb.Models.AccountModel
+
+
+@{
+  ViewData["Title"] = "SignIn";
+}
+
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@ViewData["Title"] - 運送業務システム</title>
+
+  <link href="~/lib/jquery-ui/dist/themes/base/jquery-ui.css" rel="stylesheet" />
+  <link href="~/lib/jquery-ui/dist/themes/base/theme.css" rel="stylesheet" />
+  <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+  @*<link href="~/lib/bootstrap/dist/css/bootstrap-grid.css" rel="stylesheet" />
+  <link href="~/lib/bootstrap/dist/css/bootstrap-reboot.css" rel="stylesheet" />
+  <link href="~/lib/bootstrap/dist/css/bootstrap-utilities.css" rel="stylesheet" />*@
+
+  <script src="~/lib/jquery/dist/jquery.js" charset="utf-8"></script>
+  <script src="~/lib/jquery-ui/dist/jquery-ui.js" charset="utf-8"></script>
+  <script src="~/lib/bootstrap/dist/js/bootstrap.js" charset="utf-8"></script>
+  <script src="~/lib/sweetalert2/dist/sweetalert2.js"></script>
+  <script src="~/js/ympicker.js" charset="utf-8"></script>
+
+  <link rel="stylesheet" href="~/css/site.css" />
+  <script src="~/js/site.js" asp-append-version="true"></script>
+
+  <link href="~/css/SignIn.css" rel="stylesheet" />
+
+  <style>
+
+  </style>
+</head>
+<body>
+
+
+  <div class="col-sm-6 sign-in-left-container ">
+    <div class="sign-in-panels-login">
+
+      <h1 class="system-logo">
+        運送業務システム
+      </h1>
+
+      <h4 class="field-validation-style">@Model.ValidationMessage</h4>
+
+      @using (Html.BeginForm("LoginExec", "Account", FormMethod.Post, new { id = "Form1" }))
+      {
+        @Html.ValidationSummary(true, "", new { @class = "field-validation-style" })
+
+        <div class="form-group">
+          @Html.LabelFor(model => model.CompanyCode, htmlAttributes: new { @class = "control-label col-sm-4 align-self-center align-middle" })
+          @Html.TextBoxFor(model => model.CompanyCode, htmlAttributes: new { @class = "form-control " })
+          @Html.ValidationMessageFor(model => model.CompanyCode, "", new { @class = "field-validation-style" })
+        </div>
+
+        <div class="form-group">
+          @Html.LabelFor(model => model.LoginID, htmlAttributes: new { @class = "control-label col-sm-4 align-self-center align-middle" })
+          @Html.TextBoxFor(model => model.LoginID, htmlAttributes: new { @class = "form-control " })
+          @Html.ValidationMessageFor(model => model.LoginID, "", new { @class = "field-validation-style" })
+        </div>
+
+        <div class="form-group">
+          @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-sm-4 align-self-center align-middle" })
+          @Html.PasswordFor(model => model.Password, htmlAttributes: new { @class = "form-control " })
+          @Html.ValidationMessageFor(model => model.Password, "", new { @class = "field-validation-style" })
+        </div>
+
+        <div class="form-group">
+          <div>
+          </div>
+          <div>
+            <a href="/Account/PasswordNew"> パスワードをお忘れの方 </a>
+          </div>
+        </div>
+
+        <div>
+          @*<button class="btn btn-primary btn-sm py-0">ログイン</button>*@
+          <input type="submit" value="ログイン" class="btn btn-primary btn-sm py-0 form__login" />
+        </div>
+
+        <div hidden>
+          <input type="text" name="LoginUrl" value="SignIn" />
+        </div>
+
+        @Html.HiddenFor(model => model.ReturnUrl)
+
+      }
+
+
+    </div>
+
+  </div>
+  <div class="col-sm-6 sign-in-right-container ">
+    <div class="sign-in-banner-area">
+      <p class="banner-text text-center">乗務員勤怠は現在運用中のプロトタイプ</p>
+      <a target="_blank" href="https://imai-srv-ad.imaiunso01.com/dam/DriverList">
+        @*<img class="sign-in-banner" alt="ジョブカン" src="https://id.jobcan.jp/banners?key=login_top&amp;language_id=1">*@
+        <label class="sign-in-banner text-center" style="cursor: pointer; font-size: 56px; background-color: antiquewhite; height: 130px; padding-top: 30px; ">乗務員勤怠管理</label>
+      </a>
+      <a target="_blank" href="https://imai-srv-ad.imaiunso01.com/tda2">
+        <label class="sign-in-banner text-center" style="cursor: pointer; font-size: 56px; background-color: burlywood; height: 130px; padding-top: 30px; ">輸送部売上目標</label>
+      </a>
+      <a target="_blank" href="https://id.jobcan.jp/users/sign_in" >
+        <img class="sign-in-banner" alt="ジョブカン" src="https://ssl.jobcan.jp/st/image/header/new/JBC_kintai_logo_w.svg" style="border: solid; padding: 2rem 1rem;">
+      </a>
+    </div>
+    <div class="sign-in-bg"></div>
+  </div>
+  @*</div>*@
+
+</body>
+
+
+
+</html>
+
+
+
+<script>
+
+  $(function () {
+
+    
+    $('#CompanyCode').val('100001');
+
+  });
+
+
+
+</script>

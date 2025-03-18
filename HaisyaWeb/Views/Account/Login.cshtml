@@ -1,0 +1,84 @@
+﻿@model HaisyaWeb.Models.AccountModel
+
+@{
+  Layout = "_Layout";
+  ViewData["Title"] = "サインイン";
+}
+
+<style>
+  .form__login {
+    background-color: #007CFF;
+    border: 0;
+    border-radius: 4px;
+    color: #ffffff;
+    cursor: pointer;
+    display: block;
+    font-size: 14px;
+    height: 40px;
+    letter-spacing: -.3px;
+    margin: 11px auto 15px;
+    padding: 0;
+    width: 100%;
+  }
+
+
+</style>
+
+
+<div id="Main" class="container" style="width:500px">
+  <h1>認証</h1>
+
+  <h4 class="field-validation-style">@Model.ValidationMessage</h4>
+
+  @using (Html.BeginForm("LoginExec", "Account", FormMethod.Post, new { id = "Form1" }))
+  {
+    @Html.ValidationSummary(true, "", new { @class = "field-validation-style" })
+
+    <div class="form-group">
+      @Html.LabelFor(model => model.CompanyCode, htmlAttributes: new { @class = "control-label col-sm-4 align-self-center align-middle" })
+      @Html.TextBoxFor(model => model.CompanyCode, htmlAttributes: new { @class = "form-control " })
+      @Html.ValidationMessageFor(model => model.CompanyCode, "", new { @class = "field-validation-style" })
+    </div>
+
+    <div class="form-group">
+      @Html.LabelFor(model => model.LoginID, htmlAttributes: new { @class = "control-label col-sm-4 align-self-center align-middle" })
+      @Html.TextBoxFor(model => model.LoginID, htmlAttributes: new { @class = "form-control " })
+      @Html.ValidationMessageFor(model => model.LoginID, "", new { @class = "field-validation-style" })
+    </div>
+
+    <div class="form-group">
+      @Html.LabelFor(model => model.Password, htmlAttributes: new { @class = "control-label col-sm-4 align-self-center align-middle" })
+      @Html.PasswordFor(model => model.Password, htmlAttributes: new { @class = "form-control " })
+      @Html.ValidationMessageFor(model => model.Password, "", new { @class = "field-validation-style" })
+    </div>
+
+    <div>
+      @*<button class="btn btn-primary btn-sm py-0">ログイン</button>*@
+      <input type="submit" value="ログイン" class="btn btn-primary btn-sm py-0 form__login" />
+    </div>
+
+    <div hidden>
+      <input type="text" name="LoginUrl" value="Login" />
+    </div>
+
+    @Html.HiddenFor(model => model.ReturnUrl)
+
+  }
+
+  @*<div>
+        <br />
+        <br />
+        <label><font color="red">暫定ログインとして、ユーザーとパスワードは"1"です。</font></label>
+    </div>*@
+
+</div>
+
+
+
+
+
+
+
+
+
+

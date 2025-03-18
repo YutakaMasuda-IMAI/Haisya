@@ -1,0 +1,393 @@
+﻿@model HaisyaWeb.Models.FixAmountApprovalModel.DataListModel
+
+@{
+  Layout = "_Layout";
+  ViewData["Title"] = "請求問合わせ変更承認一覧";
+  var selectSeikyuTantouList = Model.Search.SelectSeikyuTantouList.ToList();
+  // 請求担当初期値設定
+  for (var i = 0; i < selectSeikyuTantouList.Count; i++)
+  {
+    if (selectSeikyuTantouList[i].Text == User.Identity.Name)
+    {
+      selectSeikyuTantouList[i].Selected = true;
+      Model.SelectSeikyuTantou = selectSeikyuTantouList[i].Value;
+      selectSeikyuTantouList.Where(w => w.Value == "ALL").FirstOrDefault().Selected = false;
+    }
+  }
+}
+
+<head>
+  <link href="~/css/List.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div id="hiddenItem" hidden>
+    @Html.HiddenFor(model => Model.Company_ID)
+    @Html.HiddenFor(model => Model.Search.SelectDay)
+    @Html.HiddenFor(model => Model.Search.SelectSeikyuTantou)
+    @Html.HiddenFor(model => Model.Search.SelectHakkouKubun)
+    @Html.HiddenFor(model => Model.Search.SelectKingakuHenkou)
+    @Html.HiddenFor(model => Model.Search.BackMenuAction)
+    @Html.HiddenFor(model => Model.Search.IsSelectTokuisaki)
+    @Html.HiddenFor(model => Model.SortParam.SortItemParam)
+    @Html.HiddenFor(model => Model.SortParam.SortOrder)
+  </div>
+
+  <div>
+    <div id="hedder" class="row" style="margin-bottom: -20px;">
+      <h6 class="heading-pagetitle">請求問合わせ変更承認一覧</h6>
+      <div class="form-group" style="width: 110%">
+        <div class="row">
+          <table class="table jbc-table table-hedder" style="padding: 0; border-collapse: collapse;width:100%; ">
+            <tbody>
+              <tr>
+                <th style="width: 300px;">
+                  <div class="appeal-box box d-flex align-items-center" style="vertical-align: middle; display: inline-block; padding: 0;">
+                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeDay(-1)" onselectstart="return false;" alt="<<" tooltip="前日">＜＜</span>
+                    <div class="YearMonth" style="padding: 0px 5px;top: -5px;color: rgb(136, 136, 136);font-size: 18px;position: relative;cursor: pointer;padding: 0; margin: 0 5px;">
+                      <input id="TargetDayLavel" class="calender" type="text" readonly style="width: 120px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
+                    </div>
+                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeDay(1)" onselectstart="return false;" alt=">>" tooltip="翌日">＞＞</span>
+                  </div>
+                </th>
+                <th style="width: 150px;">
+                  <div style="padding: 0; margin: 0 15px 0 0; border-radius: 0px;">
+                    @Html.LabelFor(model => model.Search.SelectShimebi, htmlAttributes: new { @class = "required control-label text-end search-label2", @style = "" })
+                    @Html.TextBoxFor(model => Model.Search.SelectShimebi, null, new { @class = "form-control search-text", @style = "width: 50px; display: inline-block;text-align:right", @maxlength = "2", @id = "selectShimebiInput" })
+                  </div>
+                </th>
+                <th style="width: 300px;">
+                  @Html.LabelFor(model => model.Search.SelectSeikyuTantou, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "" })
+                  <div class="" style="display: inline-block; _display: inline; padding: 0; width: 70%;">
+                    @Html.DropDownListFor(model => model.SelectSeikyuTantou, new SelectList(Model.Search.SelectSeikyuTantouList, "Value", "Text", "Selected"), new { @class = "form-control search-select", @style = "width:140px;" })
+                  </div>
+                </th>
+                <th style="width: 400px;">
+                  <div class="search-div" style="width:260px;">
+                    <label class="search-label">発行区分</label>
+                    <label class="radio-label"><input type="radio" name="num_of_hakkoukubun" value="1">WEB</label>
+                    <label class="radio-label"><input type="radio" name="num_of_hakkoukubun" value="2">帳票</label>
+                  </div>
+                </th>
+                <th>
+                  <div class="search-div" style="width:250px;">
+                    <label class="search-label">金額変更</label>
+                    <label class="radio-label"><input type="radio" name="num_of_kingaku" value="1">あり</label>
+                    <label class="radio-label"><input type="radio" name="num_of_kingaku" value="0">なし</label>
+                  </div>
+                </th>
+              </tr>
+              <tr>
+                <th colspan="5">
+                  <table>
+                    <tr>
+                      <th>
+                        <label class="toggle-button-customer">
+                          <input id="tglSelectTokuisaki" type="checkbox" @(Model.Search.IsSelectTokuisaki ? "checked" : "") />
+                        </label>
+                      </th>
+                      <th>
+                        <div id="tokuisaki" style="display: inline-block; _display: inline; padding: 0;">
+                          @Html.LabelFor(model => model.Search.SelectTokuisakiID, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "" })
+                          <button id="btnTokuisakiFrom" class="btn btn-info btn-sm btn-select" style="width:80px;" onclick="return false;">選択</button>
+                          @Html.TextBoxFor(model => Model.Search.SelectTokuisakiID, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 100px; display: inline-block;" })
+                          @Html.TextBoxFor(model => model.Search.SelectTokuisakiName, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 300px; display: inline-block;" })
+                        </div>
+                      </th>
+                      <th>
+                        <div id="tokuisakiTo" style="display: inline-block; _display: inline; padding: 0; ">
+                          ～
+                          @Html.LabelFor(model => model.Search.SelectTokuisakiID, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "" })
+                          <button id="btnTokuisakiTo" class="btn btn-info btn-sm btn-select" style="width:80px;" onclick="return false;">選択</button>
+                          @Html.TextBoxFor(model => Model.Search.SelectTokuisakiIDTo, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 100px; display: inline-block;" })
+                          @Html.TextBoxFor(model => model.Search.SelectTokuisakiNameTo, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 300px; display: inline-block;" })
+                        </div>
+                      </th>
+                      <th></th>
+                    </tr>
+                  </table>
+                </th>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div id="FixAmountApprovalDataList" class="data-list" style="">
+      </div>
+    </div>
+  </div>
+</body>
+
+@*
+  検索条件
+  年月
+  締日
+  請求担当
+  発行区分  num_of_hakkoukubun
+  金額変更  num_of_kingaku
+  得意先
+*@
+<script>
+    var btnTokuisaki = '';
+    $(window).on('load', function () {
+        var disp = new Date($('#Search_SelectDay').val());
+
+        /** 日付を文字列にフォーマットする */
+        var formatted = `${disp.getFullYear()}\年${(disp.getMonth() + 1).toString().padStart(2, '0')}\月`.replace(
+            /\n|\r/g,
+            '',
+        );
+        $('input#TargetDayLavel').val(formatted);
+
+        radio = document.getElementsByName('num_of_hakkoukubun');
+        for (let i = 0; i < radio.length; i++) {
+            if (radio.item(i).value == $('#Search_SelectHakkouKubun').val()) {
+                radio.item(i).checked = true;
+            }
+        }
+
+        radio = document.getElementsByName('num_of_kingaku');
+        for (let i = 0; i < radio.length; i++) {
+            if (radio.item(i).value == $('#Search_SelectKingakuHenkou').val()) {
+                radio.item(i).checked = true;
+            }
+        }
+
+        tglSelectTokuisaki($('#Search_IsSelectTokuisaki').val().toLowerCase() === 'true');
+
+        dataListDisplay();
+    });
+
+    $(function () {
+        $('input[name="num_of_hakkoukubun"]:radio').change(function () {
+            dataListDisplay();
+        });
+
+        $('input[name="num_of_kingaku"]:radio').change(function () {
+            dataListDisplay();
+        });
+
+        $('#SelectSeikyuTantou').change(function () {
+            dataListDisplay();
+        });
+
+        $('#selectShimebiInput').on('input', function () {
+            dataListDisplay();
+        });
+
+        $(".calender").ympicker({
+            buttonImage: "../img/calender.png",
+            dateFormat: "yy\年mm\月",
+        });
+
+        $('#tglSelectTokuisaki').on('change', function () {
+            tglSelectTokuisaki($('#tglSelectTokuisaki').prop('checked'));
+        });
+    });
+
+    $(document).ready(function () {
+        $(document).on('show.bs.modal', '.modal', (e) => {
+            const $currentModal = $(e.currentTarget);
+            var zIndex = 1040 + 10 * ($('.modal:visible').length || 2);
+            $currentModal.css('z-index', zIndex);
+            setTimeout(function () {
+                $('.modal-backdrop')
+                    .not('.modal-stack')
+                    .css('z-index', zIndex - 1)
+                    .addClass('modal-stack');
+            }, 0);
+        });
+
+        $('#btnTokuisakiFrom').on('click', function (event) {
+            var id = $('#Company_ID').val();
+            btnTokuisaki = 'from';
+            openCommonDialogForCustomer(id, "", "");
+            return false;
+        });
+        $('#btnTokuisakiTo').on('click', function (event) {
+            var id = $('#Company_ID').val();
+            btnTokuisaki = 'to';
+            openCommonDialogForCustomer(id, "", "");
+            return false;
+        });
+    });
+
+    function selectCustomerSelectedCallBack(obj) {
+        console.log(obj);
+        if (btnTokuisaki === 'from') {
+            $('#Search_SelectTokuisakiID').val(obj['Customer_Branch_Code']);
+            $('#Search_SelectTokuisakiName').val(obj['Customer_Branch_Name_Abbr']);
+        } else if (btnTokuisaki === 'to') {
+            $('#Search_SelectTokuisakiIDTo').val(obj['Customer_Branch_Code']);
+            $('#Search_SelectTokuisakiNameTo').val(obj['Customer_Branch_Name_Abbr']);
+        }
+        dataListDisplay();
+    }
+
+    function ModalClose() {
+        $('#ModalHere').find('.modal').modal('hide');
+    }
+
+    function closeModel() {
+        $('#ModalHere').find('.modal').modal('hide');
+        $('#ModalStatusHaisya').find('.modal').modal('hide');
+    }
+
+    function selectedChangeDay(move) {
+        var dt = new Date($('#Search_SelectDay').val());
+        dt.setMonth(dt.getMonth() + move);
+        $('#Search_SelectDay').val(formatDate(dt));
+        /** 日付を文字列にフォーマットする */
+        var formatted = `${dt.getFullYear()}\年${(dt.getMonth() + 1).toString().padStart(2, '0')}\月`.replace(/\n|\r/g, '');
+        $('input#TargetDayLavel').val(formatted);
+        dataListDisplay();
+    }
+
+    function formatDate(date) {
+        var yyyy = date.getFullYear();
+        var mm = ('00' + (date.getMonth() + 1)).slice(-2);
+        var dd = ('00' + date.getDate()).slice(-2);
+        const ymd = String(yyyy) + '/' + String(mm) + '/' + String(dd);
+        return ymd;
+    }
+
+    function tglSelectTokuisaki(checked) {
+        $('#Search_IsSelectTokuisaki').val(checked);
+        if (checked) {
+            $('#lblkara').show();
+            $('#tokuisakiTo').show();
+        } else {
+            $('#lblkara').hide();
+            $('#tokuisakiTo').hide();
+        }
+    }
+
+    function dataListFirstSortChange(name) {
+        if (typeof name === "undefined") {
+            return;
+        }
+        var sortName = $("#SortParam_SortItemParam").val();
+        var sortOrder = $("#SortParam_SortOrder").val();
+        if (name != sortName) {
+            $("#SortParam_SortOrder").val("asc");
+        }
+        if (sortOrder.indexOf("desc") != -1) {
+            $("#SortParam_SortOrder").val("asc");
+        } else {
+            $("#SortParam_SortOrder").val("desc");
+        }
+        $("#SortParam_SortItemParam").val(name);
+        dataListDisplay();
+    }
+
+    function dataListDisplay() {
+        if ($('#selectShimebiInput').val() == '') {
+            $('#FixAmountApprovalDataList').html(`
+                <div class="no-data-row">
+                    <h4 class="no-data-row-text">データ無し</h4>
+                </div>
+            `);
+            return;
+        }
+
+        var selectHakkouKubun = $('input[name="num_of_hakkoukubun"]:checked').val();
+        $('#Search_SelectHakkouKubun').val(selectHakkouKubun);
+
+        var selectKingaku = $('input[name="num_of_kingaku"]:checked').val();
+        $('#Search_SelectKingakuHenkou').val(selectKingaku);
+
+        let SelectTokuisakiIDTo;
+        if ($('#tglSelectTokuisaki').is(':checked')) {
+            SelectTokuisakiIDTo = $('#Search_SelectTokuisakiIDTo').val();
+        } else {
+            SelectTokuisakiIDTo = $('#Search_SelectTokuisakiID').val();
+        }
+
+        $.post(
+            '@Url.RouteUrl("Default", new { controller = "FixAmountApproval", Action = "JsonGetDataListForFixApproval" })',
+            {
+                SelectDay: $('#Search_SelectDay').val(),
+                SelectShimebi: $('#selectShimebiInput').val(),
+                SelectSeikyuTantou: $('#SelectSeikyuTantou').val(),
+                SelectHakkouKubun: $('#Search_SelectHakkouKubun').val(),
+                SelectKingakuHenkou: $('#Search_SelectKingakuHenkou').val(),
+                SelectTokuisakiID: $('#Search_SelectTokuisakiID').val(),
+                SelectTokuisakiName: $('#Search_SelectTokuisakiName').val(),
+                SelectTokuisakiIDTo: SelectTokuisakiIDTo,
+                SelectTokuisakiNameTo: $('#Search_SelectTokuisakiNameTo').val(),
+                IsSelectTokuisaki: $('#Search_IsSelectTokuisaki').val(),
+                sortItemParam: $('#SortParam_SortItemParam').val(),
+                sortOrder: $('#SortParam_SortOrder').val(),
+            },
+            function (data) {
+                $('#FixAmountApprovalDataList').html(data.partialView);
+            },
+        );
+    }
+
+    function submitEdit(Check_Seikyu_ID, idx) {
+        var form = document.createElement('form');
+        form.action =
+            '@Url.RouteUrl("Default", new { controller = "FixAmountApprovalDetail", Action = "FixAmountApprovalDetailIndex" })';
+        form.method = 'POST';
+        document.body.appendChild(form);
+
+        // チェック請求IDが取得されていない為、以降の処理は行えません。
+        if (!Check_Seikyu_ID) {
+            alert('チェック請求IDが取得されていない為、以降の処理は行えません。');
+            return;
+        }
+
+        var item = data_list[idx];
+        var data = {
+            'modelData.Seikyu_Month': item.Seikyu_Month,
+            'modelData.Seikyu_Date': item.Seikyu_Date,
+            'modelData.Shime_Day': item.Shime_Day,
+            'modelData.Customer_Branch_ID': item.Customer_Branch_ID,
+            'modelData.Customer_Name': item.Customer_Name,
+            'modelData.Seikyu_TantouID': item.Seikyu_TantouID,
+            'modelData.Seikyu_Tantou': item.Seikyu_Tantou,
+            'modelData.Mail_Title': item.Mail_Title,
+            'modelData.Mail_Address1': item.Mail_Address1,
+            'modelData.Mail_Address2': item.Mail_Address2,
+            'modelData.Phone1': item.Phone1,
+            'modelData.Phone2': item.Phone2,
+            'modelData.Fax1': item.Fax1,
+            'modelData.Fax2': item.Fax2,
+            'modelData.FROM_DATE': item.FROM_DATE,
+            'modelData.TO_DATE': item.TO_DATE,
+            'modelData.Inquiry_Status': item.Inquiry_Status,
+            'modelData.Check_Status': item.Check_Status,
+            'modelData.Seikyu_Changed': item.Seikyu_Changed,
+            'modelData.Meisai_Count': item.Meisai_Count,
+            'modelData.SeikyuUnchin': item.SeikyuUnchin,
+            'modelData.Tatekaekin': item.Tatekaekin,
+            'modelData.Anken_Count': item.Anken_Count,
+            'modelData.Kakutei_Count': item.Kakutei_Count,
+            'modelData.Zantei_Count': item.Zantei_Count,
+            'modelData.Kari_Count': item.Kari_Count,
+            'modelData.Check_Seikyu_ID': item.Check_Seikyu_ID,
+            'searchParams.SelectDay': $('#Search_SelectDay').val(),
+            'searchParams.SelectShimebi': $('#selectShimebiInput').val(),
+            'searchParams.SelectSeikyuTantou': $('#SelectSeikyuTantou').val(),
+            'searchParams.SelectHakkouKubun': $('#Search_SelectHakkouKubun').val(),
+            'searchParams.SelectKingakuHenkou': $('#Search_SelectKingakuHenkou').val(),
+            'searchParams.SelectTokuisakiID': $('#Search_SelectTokuisakiID').val(),
+            'searchParams.SelectTokuisakiName': $('#Search_SelectTokuisakiName').val(),
+            'searchParams.SelectTokuisakiIDTo': $('#Search_SelectTokuisakiIDTo').val(),
+            'searchParams.SelectTokuisakiNameTo': $('#Search_SelectTokuisakiNameTo').val(),
+            'searchParams.BackMenuAction': $('#Search_BackMenuAction').val(),
+            'searchParams.IsSelectTokuisaki': $('#Search_IsSelectTokuisaki').val()
+        };
+
+        for (var key in data) {
+            var input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = data[key];
+            form.appendChild(input);
+        }
+        form.submit();
+    }
+
+</script>

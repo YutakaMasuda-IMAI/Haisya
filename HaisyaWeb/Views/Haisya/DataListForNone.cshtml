@@ -1,0 +1,283 @@
+﻿@using HaisyaWeb.Dto;
+@using System.Reflection;
+@model HaisyaWeb.Models.HaisyaModel.DataListModel
+
+@{
+  var l = Model.SyabanRenrakuLists;
+  if (Model.SortParam.SortOrder != null && Model.SortParam.SortItemParam != null)
+  {
+    if ("asc".Equals(Model.SortParam.SortOrder))
+    {
+      l = l.OrderBy(s => s.GetType().GetRuntimeProperty(Model.SortParam.SortItemParam).GetValue(s, null)).ThenBy(s => s.Customer_ID).ToList();
+    }
+    else
+    {
+      l = l.OrderByDescending(s => s.GetType().GetRuntimeProperty(Model.SortParam.SortItemParam).GetValue(s, null)).ThenBy(s => s.Customer_ID).ToList();
+    }
+  }
+  var syabanRenrakuListsJson = Newtonsoft.Json.JsonConvert.SerializeObject(l);
+}
+
+@if (l.Count == 0)
+{
+<div class="no-data-row">
+  <h4 class="no-data-row-text">データ無し</h4>
+</div>
+}
+else
+{
+
+<div>
+  <button class="btn btn-primary btn-sm" style="width:150px; margin-bottom: 5px;" onclick="callHaisya2(1, null)">一括送信</button>
+</div>
+
+<table id="myTable" class="table ex_DataList search-list" style="" border="1">
+  <tr>
+    <th width="80px">
+      <button id="chk-all" class="btn btn-info" style="width: 100%; padding:0;" value="1" onclick="CheckAll()">全選択</button>
+    </th>
+    <th width="60px">印刷</th>
+    <th width="60px">個別送信</th>
+    <th width="80px"><a href="#" onclick="set_sort('@(nameof(SyabanRenrakuModel.Status))')">ステータス</a></th>
+    <th width="100px"><a href="#" onclick="set_sort('@(nameof(SyabanRenrakuModel.Customer_Code))')">顧客コード</a></th>
+    <th><a href="#" onclick="set_sort('@(nameof(SyabanRenrakuModel.Customer_Name_Abbr))')">顧客名</a></th>
+    <th width="100px"><a href="#" onclick="set_sort('@(nameof(SyabanRenrakuModel.Tantou_Name_Abbr))')">顧客担当者</a></th>
+    <th width="200px"><a href="#" onclick="set_sort('@(nameof(SyabanRenrakuModel.Mail_Address1))')">メールアドレス1</a></th>
+    <th width="200px"><a href="#" onclick="set_sort('@(nameof(SyabanRenrakuModel.Mail_Address2))')">メールアドレス2</a></th>
+    <th width="100px"><a href="#" onclick="set_sort('@(nameof(SyabanRenrakuModel.Phone1))')">電話番号</a></th>
+    <th width="100px"><a href="#" onclick="set_sort('@(nameof(SyabanRenrakuModel.Fax1))')">FAX番号</a></th>
+    <th width="60px"><a href="#" onclick="set_sort('@(nameof(SyabanRenrakuModel.Not_Dispatched))')">未配車</a></th>
+    <th width="60px"><a href="#" onclick="set_sort('@(nameof(SyabanRenrakuModel.Temporary_Dispatch))')">仮配車</a></th>
+    <th width="70px"><a href="#" onclick="set_sort('@(nameof(SyabanRenrakuModel.Confirmed_Dispatch))')">確定配車</a></th>
+  </tr>
+  <tbody>
+    @for (int i = 0; i < l.Count; i++)
+    {
+      var color = i % 2 == 0 ? "row-even" : "row-odd";
+
+      var item = l[i];
+    <tr class="@(color)">
+      <td align="center">
+        <input type="checkbox" name="Target" value="0" style="@(item.Not_Dispatched + item.Temporary_Dispatch > 0 ? "opacity: 0;" : "")" @(item.Not_Dispatched + item.Temporary_Dispatch > 0 ? "disabled" : "")>
+      </td>
+      <td align="center">
+        <button class="btn btn-success" style="width: 70px; padding:0; @(item.Not_Dispatched + item.Temporary_Dispatch > 0 ? "opacity: 0;" : "")" @(item.Not_Dispatched + item.Temporary_Dispatch > 0 ? "disabled" : "") onclick="callHaisya2(2, @i)">印刷</button>
+      </td>
+      <td align="center">
+        <button class="btn btn-success" style="width: 70px; padding:0; @(item.Not_Dispatched + item.Temporary_Dispatch > 0 ? "opacity: 0;" : "")" @(item.Not_Dispatched + item.Temporary_Dispatch > 0 ? "disabled" : "") onclick="carNumberModal(@i)">送信</button>
+      </td>
+      <td align="center">
+        @Html.DisplayFor(modelItem => item.Status)
+      </td>
+      <td align="center">
+        @Html.DisplayFor(modelItem => item.Customer_Code)
+      </td>
+      <td>
+        @Html.DisplayFor(modelItem => item.Customer_Name_Abbr)
+      </td>
+      <td>
+        @Html.DisplayFor(modelItem => item.Tantou_Name_Abbr)
+      </td>
+      <td>
+        @Html.DisplayFor(modelItem => item.Mail_Address1)
+      </td>
+      <td>
+        @Html.DisplayFor(modelItem => item.Mail_Address2)
+      </td>
+      <td align="center">
+        @Html.DisplayFor(modelItem => item.Phone1)
+      </td>
+      <td align="center">
+        @Html.DisplayFor(modelItem => item.Fax1)
+      </td>
+      <td align="right">
+        @Html.DisplayFor(modelItem => item.Not_Dispatched)件
+      </td>
+      <td align="right">
+        @Html.DisplayFor(modelItem => item.Temporary_Dispatch)件
+      </td>
+      <td align="right">
+        @Html.DisplayFor(modelItem => item.Confirmed_Dispatch)件
+      </td>
+    </tr>
+    }
+  </tbody>
+</table>
+}
+<script>
+  var syabanRenrakuLists = @Html.Raw(syabanRenrakuListsJson);
+
+  function CheckAll() {
+    event.preventDefault();
+    var f = $('#chk-all').val() > 0;
+    $('#chk-all').val(f ? 0 : 1);
+    $('#chk-all').html(f ? '全解除' : '全選択');
+    $('input[name="Target"]:checkbox').each(function () {
+      if (!$(this).prop('disabled')) {
+        $(this).prop('checked', f);
+      }
+    });
+  }
+
+  function callHaisya2(renrakuKubun, index) {
+    var printDate = new Date();
+    var remarks = "";
+    var postDataList = [];
+
+    if (renrakuKubun === 1) {
+      // 一括送信の場合、チェックされたレコードの情報を収集
+      $('input[name="Target"]:checked').each(function () {
+        var row = $(this).closest('tr');
+        var itemIndex = row.index(); // この行のインデックスを取得
+        var item = syabanRenrakuLists[itemIndex]; // モデルからデータを取得
+        var postData = {
+          printDate: printDate,
+          tantouId: item.Tantou_ID,
+          CustomerBranchId: item.Customer_ID,
+          mailAddress1: item.Mail_Address1,
+          mailAddress2: item.Mail_Address2,
+          ankenId: item.Anken_ID,
+          renrakuKubun: renrakuKubun,
+          remarks: remarks,
+          Group_ID: item.Group_ID,
+          Day: $('#Search_SelectDay').val(),
+        };
+        postDataList.push(postData);
+      });
+    } else {
+      // 印刷ボタンの場合、そのボタンが存在する行のレコード情報を収集
+      var item = syabanRenrakuLists[index]// モデルからデータを取得
+      // Create an object to hold the data
+      var postData = {
+        printDate: printDate,
+        tantouId: item.Tantou_ID,
+        CustomerBranchId: item.Customer_ID,
+        mailAddress1: item.Mail_Address1,
+        mailAddress2: item.Mail_Address2,
+        ankenId: item.Anken_ID,
+        renrakuKubun: renrakuKubun,
+        remarks: remarks,
+        Group_ID: item.Group_ID,
+        Day: $('#Search_SelectDay').val(),
+      };
+      postDataList.push(postData);
+    }
+
+    if (postDataList.length > 0) {
+      $.ajax({
+        url: '@Url.RouteUrl("Default", new { controller = "Haisya", action = "PostSyabanRenraku" })',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(postDataList),
+        success: function (response) {
+          if (response.errorMessage != null) {
+            alertError(`【エラー】${response.errorMessage}`);
+          }
+        },
+        error: function (xhr) {
+          alertError('【ネットワークエラー】:' + xhr);
+          console.log(xhr);
+        },
+        complete: async function (xhr, msg) {
+          exportPDF("SYABAN_LIST", index);
+        }
+      });
+    }
+  }
+
+  function carNumberModal(index) {
+    var targetDate =  $('#Search_SelectDay').val();
+    var item = syabanRenrakuLists[index]
+    var postData = {
+      TargetDate: targetDate,
+      TantouId: item.Tantou_ID,
+      CustomerId: item.Customer_ID,
+      Customer_Code: item.Customer_Code,
+      Customer_Name_Abbr: item.Customer_Name_Abbr,
+      Tantou_Name_Abbr: item.Tantou_Name_Abbr,
+      MailAddress1: item.Mail_Address1,
+      MailAddress2: item.Mail_Address2,
+      Phone1: item.Phone1,
+      AnkenId: item.Anken_ID,
+      GroupID: item.Group_ID,
+      HaisyaID: item.Haisya_ID,
+    };
+    
+    $.ajax({
+    url: '@Url.RouteUrl("Default", new { controller = "Haisya", action = "CarNumberModal" })',
+    type: 'POST',
+    contentType: 'application/json',
+    data: JSON.stringify(postData),
+    success: function(response) {
+      if (response.message != null) {
+        alertError(`【エラー】${response.message}`);
+      }
+      $("#ModalHere").html(response.partialView);
+      $("#ModalHere").find('.modal').modal('show');
+      return false;
+    },
+    error: function(xhr) {
+      alertError('【ネットワークエラー】:' + xhr);
+      console.log(xhr);
+    },
+    complete: async function(xhr, msg) {
+    }
+    });
+  }
+
+  function exportPDF(report_type, index) {
+    var item = syabanRenrakuLists[index]
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "Haisya", action = "GetHaisyaData" })',
+      type: 'GET',
+      contentType: 'application/json',
+      data: {
+        Haisya_ID: item.Haisya_ID
+      },
+      success: function (response) {
+        if (response.message != null) {
+          alertError(`【エラー】${response.message}`);
+        }
+
+        const haisyaData = response?.data?.haisya;
+        const haisyaYosyaData = response?.data?.haisyaYosya;
+        const procedureParamater = {
+          ankenId: haisyaData?.anken_ID ? haisyaData?.anken_ID.toString() : undefined,
+          ankenDisplayId: haisyaData?.ankenDisplay_ID ? haisyaData?.ankenDisplay_ID.toString() : undefined,
+          haisyaId: haisyaData?.haisya_ID ? haisyaData?.haisya_ID.toString() : undefined,
+          day: haisyaData?.day,
+          customerBranchId: haisyaYosyaData?.yosya_Branch_ID ? haisyaYosyaData?.yosya_Branch_ID.toString() : undefined,
+        }
+
+        const url = '@Url.RouteUrl("Default", new { controller = "Report", action = "PreviewPDFReportByReportType" })' + '/' + report_type;
+
+        $("#form-pdf-export").remove();
+
+        const form = $('<form id="form-pdf-export" target="_blank" method="post" action="' + url + '"></form>');
+        form.append('<input type="hidden" name="searchJson" value="' + encodeURIComponent(JSON.stringify(procedureParamater)) + '" />');
+        $('body').append(form);
+        form.submit();
+
+        return false;
+      },
+      error: function (xhr) {
+        alertError('【ネットワークエラー】:' + xhr);
+      },
+      complete: async function (xhr, msg) {}
+    });
+  }
+  
+  function set_sort(name) {
+
+    var n = $("#SortParam_SortItemParam").val();
+    if (name != n) {
+      $("#SortParam_SortOrder").val("asc");
+      $("#SortParam_SortItemParam").val(name);
+    }
+
+    var o = $("#SortParam_SortOrder").val();
+    $("#SortParam_SortOrder").val(o.indexOf("desc") != -1 ? "asc" : "desc");
+
+    dataListDisplay();
+  }
+</script>

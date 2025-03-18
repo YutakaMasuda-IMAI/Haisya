@@ -1,0 +1,480 @@
+﻿@model HaisyaWeb.Models.HaisyaModel.DataListModel
+
+
+@{
+    //var spanLeft = 233;  ///勤怠タブがある場合
+    var spanLeft = 160;　　///勤怠タブ無し
+    var spanTop = 54;
+    var spaceMinutes = 15;
+    var spanMinute = 10;
+    var maxTimeRight = spanLeft + (24 * Model.spaceDay) * 60 / spaceMinutes * spanMinute;
+    var spanAdjust = 5;
+}
+
+
+<div class="row">
+  <div class="col-9">
+    <div style="height: 40px; overflow: hidden;margin-bottom:5px">
+      <h5 class="heading-014">乗務員一覧</h5>
+    </div>
+  </div>
+  <div class="col-3">
+    <div class="row">
+      <div class="col-auto">
+        <h5 class="heading-014" style="width: 150px;">荷物情報</h5>
+      </div>
+      <div class="col-auto" style=" margin-bottom:10px;">
+        <div style="max-width: 150px">
+          @Html.DropDownListFor(model => model.Search.SortSelectList, new SelectList(Model.Search.SortSelectList, "Value", "Text", "Selected"), "表示順を選択", new { @class = "form-control", @style = "padding: 0;" })
+          @Html.ValidationMessageFor(model => model.Search.SortSelectList, "", new { id = "SelectMonth", @class = "text-danger align-middle" })
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-9 ankenDropArea" style="">
+    <div class="list-driver" style=" border: black; border-style: groove; margin: 3px 0 3px 0; position: relative; overflow: auto;" id="DriverList">
+      <div>
+        @if (Model.DriverDataLists.Count() == 0)
+        {
+          <h4 style="text-align:left; margin-left: 20px;color: white;">データ無し</h4>
+        }
+        @{
+          var groupIndex = 0;
+          var groupByDriverDataLists = Model.DriverDataLists
+            .Where(d => d.DriverSyaryo_ID != null)
+            .GroupBy(d => new { d.Group_ID, d.HaisyaGroupSortOrder, d.HaisyaGroupName })
+            .OrderBy(h => h.Key.HaisyaGroupSortOrder);
+
+          foreach (var DriverData in groupByDriverDataLists)
+          {
+
+            var groupDrivers = Model.DriverDataLists.Where(h => h.Group_ID == DriverData.Key.Group_ID).GroupBy(d => Tuple.Create(
+                                      d.JISYA_YOSYA_KUBUN, d.SIZE, d.Kata_Sort, d.Kata, d.Kubun_Sort, d.Kubun_Name))
+                                      .OrderBy(h => h.Key.Item1).ThenBy(h => h.Key.Item2).ThenBy(h => h.Key.Item3).ThenBy(h => h.Key.Item5);
+
+            foreach (var drivers in groupDrivers)
+            {
+              <details class="accordion-005" open>
+                <summary>
+                  <div class="row" style="">
+                    <div class="col-auto col-sm-auto">配車：@(DriverData.Key.HaisyaGroupName)</div>
+                    <div class="col-auto col-sm-auto">@(drivers.Key.Item1 switch { 3 => "専属傭車", _=> "" })</div>
+                    <div class="col-auto col-sm-auto">車種：@(drivers.Key.Item2)</div>
+                    <div class="col-auto col-sm-auto">型：@(drivers.Key.Item4)</div>
+                    @if (drivers.Key.Item1 != 2)
+                    {
+                      <div class="col-auto col-sm-auto">区分：@(drivers.Key.Item6)</div>
+                    }
+                  </div>
+                </summary>
+
+                <div name="table-schedule-items" class="contents">
+                  <table class="table table-timetree table-primary" style="width: @(spanLeft + (24 * Model.spaceDay) * 40 + 5)px;">
+                    <thead>
+                      <tr>
+                        <th rowspan="2" class="bdr bdb" style="text-align: center; line-height:42px">乗務員</th>
+                        <th rowspan="2" class="bdr bdb" style="text-align: center; line-height:42px">車種等</th>
+                        @*<th rowspan="2" class="bdr bdb" style="text-align: center; line-height:42px">勤怠</th>*@
+                        <th>
+                          @{
+                            for (var i = 0; i < Model.spaceDay; i++)
+                            {
+                              <div class="sth bdr bdb" style="font-size:14px; width: @(24 * 40)px; text-align:center;">
+                                @Model.SelectDay.AddDays(i).ToString("yyyy年MM月dd日 dddd")
+                              </div>
+                            }
+                          }
+                        </th>
+                      </tr>
+                      <tr>
+                        <th class="bdr bdb" style="text-align: center;">
+                          @{
+                            for (var i = 0; i < 24 * Model.spaceDay; i++)
+                            {
+                              <div class="sth bdr bdb" style="font-size:14px">
+                                @($"{(i % 24 < 10 ? "0" : "")}{i % 24}"):00
+                              </div>
+                            }
+                          }
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody class="group-drivers" data-group-index="@groupIndex">
+
+                      @{
+                        for (int i = 0; i < drivers.Count(); i++)
+                        {
+                          <tr id="driver-row-@(drivers.ElementAt(i).Driver_ID)" class="@(drivers.ElementAt(i).EditFlg ? "table-timetree-tr" : "table-timetree-tr")"
+                              data-id="@($"{drivers.ElementAt(i).Driver_ID}-{drivers.ElementAt(i).DriverSyaryo_ID}")" @*-{drivers.ElementAt(i).YosyaDriver_ID}-{drivers.ElementAt(i).YosyaDriverSyaryo_ID}*@
+                              data-i="@(i)"
+                              data-driver-id="@(drivers.ElementAt(i).Driver_ID)"
+                              data-driversyaryo-id="@(drivers.ElementAt(i).DriverSyaryo_ID)"
+                              data-jisyayosyakubun="@(drivers.ElementAt(i).JISYA_YOSYA_KUBUN)"
+                              data-syaryomanage-id="@(drivers.ElementAt(i).SyaryoManagement_ID)"
+                              data-syaryomanage-id1="@(drivers.ElementAt(i).SyaryoManagement_ID1)"
+                              style="">
+                            <td class="stn bdr bdb" style="width: 90px; max-width: 90px; overflow: hidden; background-color: rgba(202, 227, 255, 1); ">
+                              <div class="col" style="line-height: normal;">
+                                <div style="background-color: rgba(202, 227, 255, 1); padding-left: 0.1rem;">
+                                  <div>
+                                    <a href="#" style="padding: 0; float: left; white-space: nowrap;" onclick="MonthScheduleCalendarModal('jisya', @drivers.ElementAt(i).Driver_ID); return false;">
+                                      @(drivers.ElementAt(i).Display_Name)
+                                    </a>
+                                  </div><br />
+                                  @if (drivers.ElementAt(i).JISYA_YOSYA_KUBUN != 3)
+                                  {
+                                    <div style="font-size: 12px; background-color: rgba(202, 227, 255, 1); float: left;">@(drivers.ElementAt(i).Branch_Name_Abbr)</div>
+                                  }
+                                  @if (drivers.ElementAt(i).JISYA_YOSYA_KUBUN != 3)
+                                  {
+                                    <div style="font-size: 12px; background-color: rgba(202, 227, 255, 1); float: left;">残有休：@(drivers.ElementAt(i).Leave_Days)日</div>
+                                    <div hidden style="font-size: 12px; background-color: rgba(202, 227, 255, 1); float: left;">残拘束h：0h</div>//一旦ハードコード
+                                  }
+                                </div>
+                              </div>
+                            </td>
+                            <td class="stn2 bdr bdb" style="width: 70px; max-width: 70px; overflow: hidden; background-color: rgba(202, 227, 255, 1); text-align: center; white-space: nowrap; ">
+                              <label>@(drivers.ElementAt(i).Syasyu + drivers.ElementAt(i).Kata)</label><br />
+                              <label>@(drivers.ElementAt(i).Syaban_Number)</label><br />
+                              <button class="btn btn-warning" style="padding: 0; font-size: 10px; width: 80%;" onclick="tableTransfer(@(drivers.ElementAt(i).Driver_ID),@(drivers.ElementAt(i).SyaryoManagement_ID)); return false;">ナビ連携</button>
+                            </td>
+                            @*<td class="stn2 bdr bdb" style="width: 70px; max-width: 70px; overflow: hidden; background-color: rgba(202, 227, 255, 1); padding-left: 0.1rem; ">
+                              @if (drivers.ElementAt(i).JISYA_YOSYA_KUBUN != 3)
+                              {
+                                <label>拘束：@(drivers.ElementAt(i).KousokuTime)h</label>//拘束時間カラムがないためハードコードしています
+                              }
+                              @if (drivers.ElementAt(i).JISYA_YOSYA_KUBUN != 3)
+                              {
+                                <label>連続：@(drivers.ElementAt(i).RenzokuWorkDays)日</label>
+                              }
+                              <button class="btn btn-warning" style="padding: 0; font-size: 10px; width: 80%;" onclick="tableTransfer(@(drivers.ElementAt(i).Driver_ID),@(drivers.ElementAt(i).SyaryoManagement_ID)); return false;">ナビ連携</button>
+                            </td>*@
+                            <td id="driver-row-@(drivers.ElementAt(i).Driver_ID)-drag-area" class="bdb drag-area" style="">
+                              @{
+                                for (var m = 0; m < 24 * Model.spaceDay; m++)
+                                {
+                                  <div class="stt"></div>
+                                  <div class="stt2 bdd"></div>
+                                  <div class="stt"></div>
+                                  <div class="stt2 bdr"></div>
+                                }
+                              }
+                            </td>
+                          </tr>
+                        }
+                      }
+                    </tbody>
+                  </table>
+                  @{
+                    for (int i = 0; i < drivers.Count(); i++)
+                    {
+                      var top = ((spanTop) * (i + 1)) - spanAdjust;
+
+                      var haisyaOfDriver = Model.HaisyaDataLists.Where(h =>
+                      h.Driver_ID == drivers.ElementAt(i).Driver_ID
+                      && h.DriverSyaryo_ID == drivers.ElementAt(i).DriverSyaryo_ID
+                      && h.Haisya_Kubun == drivers.ElementAt(i).JISYA_YOSYA_KUBUN
+                      ).OrderBy(h => h.StartDatetime);
+
+                      for (int j = 0; j < haisyaOfDriver.Count(); j++)
+                      {
+                        var HaisyaDisplay = haisyaOfDriver.ElementAt(j);
+                        double sminuites = (HaisyaDisplay.StartDatetime - Model.SelectDay).TotalMinutes;
+                        double eminuites = (HaisyaDisplay.EndDatetime - Model.SelectDay).TotalMinutes;
+                        if (sminuites == 0 && eminuites == 0)
+                        {
+                          sminuites = 0;
+                          eminuites = 1440;
+                        }
+                        var left = spanLeft + sminuites / spaceMinutes * spanMinute;
+                        left = left < spanLeft ? spanLeft : left;
+                        var right = spanLeft + eminuites / spaceMinutes * spanMinute;
+                        right = right > maxTimeRight ? maxTimeRight : right;
+                        var width = right - left;
+
+                        if (HaisyaDisplay.Display_Kubun == 2)
+                        {
+                          <div class="mn @((HaisyaDisplay.Haisya_Status == 0) ? "": "mnc4") mnc1 @(drivers.ElementAt(i).EditFlg ? "active": "active") anken-dragable "
+                               data-haisya-id="@HaisyaDisplay.Haisya_ID"
+                               data-status="@HaisyaDisplay.Haisya_Status"
+                               data-anken-id="@HaisyaDisplay.Anken_ID"
+                               data-ankendisplay-id="@HaisyaDisplay.AnkenDisplay_ID"
+                               data-anken-no="@HaisyaDisplay.Anken_No"
+                               data-day="@HaisyaDisplay.Day"
+                               data-driver-id="@HaisyaDisplay.Driver_ID"
+                               data-driversyaryo-id="@HaisyaDisplay.DriverSyaryo_ID"
+                               data-syaryomanage-id="@HaisyaDisplay.SyaryoManagement_ID"
+                               data-syaryomanage-id1="@HaisyaDisplay.SyaryoManagement_ID1"
+                               data-jisyayosyakubun="@(HaisyaDisplay.Haisya_Kubun)"
+                               data-group-index="@groupIndex"
+                               style="left: @(left)px; top: @(top)px; width: @(width)px;">
+                            <div class="table-schedule-item position-relative" border="1" ondblclick="@(!drivers.ElementAt(i).EditFlg ? $"AnkenRefenceModal({HaisyaDisplay.Anken_ID},{HaisyaDisplay.AnkenDisplay_ID})": $"AnkenRefenceModal({HaisyaDisplay.Anken_ID}, {HaisyaDisplay.AnkenDisplay_ID}, {HaisyaDisplay.Driver_ID}, {HaisyaDisplay.SyaryoManagement_ID}, {HaisyaDisplay.Haisya_Kubun})")">
+                              <i class="btn-remove-anken fa-solid fa-xmark  @(drivers.ElementAt(i).EditFlg? "": "")">✖️</i>
+                              <table class="table-schedule-item">
+                                <tbody>
+                                  <tr><td>@HaisyaDisplay.Display1</td></tr>
+                                  <tr><td>@HaisyaDisplay.Display2</td></tr>
+                                </tbody>
+                              </table>
+                            </div>
+
+                          </div>
+                        }
+                        else
+                        {
+                          <div class="mn mnc2" data-group-index="@groupIndex" name="esyakoi" style="left: @(left)px; top: @(top)px; width: @(width)px; box-sizing: border-box;">
+                            <div class="egrid"></div>
+                            <p class="schedule-title">
+                              <table class="table-schedule-itemEx" border="1">
+                                <tbody>
+                                  <tr><td></td></tr>
+                                  <tr><td>@HaisyaDisplay.Display1</td></tr>
+                                </tbody>
+                              </table>
+                            </p>
+                          </div>
+                        }
+                      }
+                      //TODO:いずれDriver_IDに変更
+                      var kintaiCommits = Model.KintaiCommitLists.Where(h => h.乗務員CD == drivers.ElementAt(i).Employee_Number && h.勤務区分 == 2);
+                      foreach (var kintaiCommit in kintaiCommits)
+                      {
+                        var sminuites = (kintaiCommit.勤怠日 - Model.SelectDay).TotalMinutes;
+                        var eminuites = (kintaiCommit.勤怠日.AddDays(1).AddMinutes(-1) - Model.SelectDay).TotalMinutes;
+                        var left = spanLeft + sminuites / spaceMinutes * spanMinute;
+                        left = left < spanLeft ? spanLeft : left;
+                        var right = spanLeft + eminuites / spaceMinutes * spanMinute;
+                        right = right > maxTimeRight ? maxTimeRight : right;
+                        var width = right - left;
+                        var kyukaName = Model.LeaveList.FirstOrDefault(m => m.LEAVE_CD == kintaiCommit.休暇区分);
+
+                        <div class="mn mnc3" name="kintaiCommit" data-group-index="@groupIndex" data-driver-id="@drivers.ElementAt(i).Driver_ID" style="left: @(left)px; top: @(top)px; width: @(width)px; box-sizing: border-box;">
+                          <div class="egrid"></div>
+                          <p class="schedule-title">
+                            <table class="table-schedule-item-holiday" border="1">
+                              <tbody>
+                                <tr>
+                                  <td></td>
+                                </tr>
+                                <tr><td>@(kyukaName == null ? "不明": kyukaName.LEAVE_NAME)</td></tr>
+                              </tbody>
+                            </table>
+                          </p>
+                        </div>
+                      }
+                    }
+                  }
+                </div>
+              </details>
+              groupIndex++;
+            }
+
+          }
+        }
+      </div>
+    </div>
+  </div>
+
+
+  <div class="col-3" style="">
+    <div id="AnkenList" style="border: black; border-style: groove; overflow: auto;">
+      @if (Model.HaisyaDataLists.Count() == 0)
+      {
+        <h4 style="text-align:left; margin-left: 20px;color: white;">データ無し</h4>
+      }
+      @{
+          //未割当ての配車データを荷物情報に設定
+          var ankenGroup = Model.HaisyaDataLists.Where(m => m.Haisya_ID == null)
+                                        .Where(a => {
+                                          if (Model.Search.SelectStatus == null || Model.Search.SelectStatus.Count() == 0) return false;
+                                          if (!Model.Search.SelectStatus.Contains(a.Anken_Status)) return false;
+                                          return true;
+                                        }).GroupBy(a => Tuple.Create<string, string>(
+            Model.Search.SelectGroup switch
+            {
+              0 => "全て",
+              1 => a.KokyakuName,
+              2 => a.TantouID.ToString(),
+              3 => a.SyasyuDisplay,
+              _ => "全て"
+            },
+            Model.Search.SelectGroup switch
+            {
+              0 => "全て",
+              1 => a.KokyakuName,
+              2 => a.Tantou_Name,
+              3 => a.SyasyuDisplay,
+              _ => "全て"
+            }
+          )).OrderBy(h => h.Key.Item2);
+
+
+          foreach (var ankens in ankenGroup)
+          {
+          <details class="accordion-001" open>
+            <summary>@(ankens.Key.Item2) </summary>
+            <table width="100%" class="table ex_LuggageList">
+              <tbody>
+                @{
+                    foreach (var Anken in ankens)
+                    {
+                      bool EditFlg = Model.GroupUserList.Any(m => m.Group_ID == Anken.TantouID);
+                      bool IsReported = false;
+
+                    <tr class="anken-dragable @(!EditFlg ? "ex_LuggageList-tr" : "ex_LuggageList-tr") @(IsReported == true? " reported": "")"
+                        data-pointdate-s="@(Anken.StartDatetime)"
+                        data-anken-id="@(Anken.Anken_ID)"
+                        data-ankendisplay-id="@(Anken.AnkenDisplay_ID)"
+                        data-anken-no="@(Anken.Anken_No)">
+                      <td>
+                        <div style="border-radius: 10px; margin: 2px; border: 1px solid #5AC472; " ondblclick="AnkenRefenceModal(@Anken.Anken_ID, @(Anken.AnkenDisplay_ID)); return false;">
+                          <table class="table ex_Luggage table-primary" style="margin: 2px;width:99%;">
+                            <tbody>
+                              <tr>
+                                <td colspan="6" align="left" width="100%" name="KokyakuName">
+                                  @(Anken.KokyakuName)
+                                </td>
+                                <th>確定</th>
+                                <td>
+                                  @(
+                                  Anken.Anken_Status switch
+                                  {
+                                    0 => "確定",
+                                    1 => "暫定",
+                                    2 => "暫定(配車不要)",
+                                    _ => "",
+                                  }
+                                      )
+                                </td>
+                              </tr>
+                              <tr>
+                                <td colspan="4">
+                                  <div class="">
+                                    <div name="StartAddress">@(Anken.StartAddressDisplay2)</div>
+                                    <div name="StartDatetime" data-date="@Anken.StartDatetime.ToString("yyyy/MM/dd HH:mm")">@Anken.StartDatetime.ToString("yyyy年MM月dd日 HH:mm")</div>
+                                  </div>
+                                </td>
+                                <td colspan="4">
+                                  <div class="">
+                                    <div name="EndAddress">
+                                      @(Anken.EndAddressDisplay2)
+                                    </div>
+                                    <div name="EndDatetime" data-date="@Anken.EndDatetime.ToString("yyyy/MM/dd HH:mm")">@Anken.EndDatetime.ToString("yyyy年MM月dd日 HH:mm")</div>
+                                  </div>
+                                </td>
+                              </tr>
+                              <tr>
+                                <th>重量</th>
+                                <td>@Convert.ToDouble(Anken.Luggage_Weight).ToString("#,###")@(Anken.Luggage_Weight > 0 ? "t":"")</td>
+                                <th>車種</th>
+                                <td>@(Anken.SyasyuDisplay2)</td>
+                                <th>商品</th>
+                                <td>@(Anken.Luggage)</td>
+                                <th>台数</th>
+                                <td>@(Anken.Daisuu_Sort)/@(Anken.Daisuu)</td>
+                              </tr>
+                              <tr>
+                                <th>備考</th>
+                                <td colspan="7">@(Anken.Remarks)</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </td>
+                    </tr>
+                  }
+                }
+
+              </tbody>
+            </table>
+          </details>
+        }
+      }
+    </div>
+  </div>
+</div>
+<script>
+  $(document).ready(function() {
+    const $ankenList = $('#AnkenList');
+    const $driverList = $('#DriverList');
+    setAnkenListHeight();
+    setDriverPositions();
+
+    $(window).on('resize', setAnkenListHeight);
+  });
+
+  $('[data-group-index]').each(function() {
+      const groupIndex = $(this).data('group-index');
+      //グループごとに発火
+      setDriverPositions(groupIndex);
+    });
+
+
+function setDriverPositions(groupIndex) {
+  const $driverRows = $(`[data-group-index="${groupIndex}"] .table-timetree-tr, [data-group-index="${groupIndex}"] .table-timetree-disable-tr`);
+  let spanTop = 54;
+
+  $driverRows.each(function(index, element) {
+    if (index === 0) return;
+
+    const $driverID = $(element).data('driver-id');
+    
+
+    const $element = $(element);
+    //一つ前の要素を取得
+    const $prevElement = $element.prev(); 
+    const $bdb = $prevElement.find('.bdb');
+    const $stt = $prevElement.find('.stt');
+
+    const bdbHeight = $bdb.height();
+    const sttHeight = $stt.height();
+
+    const diffHeight = bdbHeight - sttHeight;
+
+    spanTop += diffHeight + sttHeight;
+  
+    const $mnElements = $(`.mn`);
+
+    if ($driverID != null && $driverID.length > 0) {
+      const $filteredMnElements = $mnElements.filter(`[data-driver-id="${driverID}"]`);
+
+      $filteredMnElements.each(function () {
+        $(this).css('top', spanTop - @(spanAdjust) + 'px');
+      });
+    }
+    
+  });
+}
+
+  function setAnkenListHeight() {
+
+  const windowHeight = $(window).height();
+  const desiredHeight = windowHeight - 270;
+  $('#AnkenList').height(desiredHeight);
+  $('#DriverList').height(desiredHeight);
+}
+  $(function () {
+
+    $(".mnc1.active").draggable({
+      helper: function (event) {
+        return $(event.currentTarget).clone();
+      },
+      appendTo: ".list-driver",
+      containment: "parent",
+    });
+
+    $(".mnc1.active").find(".btn-remove-anken").click(function (event) {
+      event.preventDefault();
+      var haisya_id = $(this).closest(".mnc1").data("haisya-id");
+      var anken_id = $(this).closest(".mnc1").data("anken-id");
+      var ankendisplay_id = $(this).closest(".mnc1").data("ankendisplay-id");
+      submitUnassignAnken(haisya_id, anken_id, ankendisplay_id);
+    });
+
+    $(".accordion-005 .contents").on( "scroll", function() {
+        $(this).find(".loader-block-driver").css('left',this.scrollLeft);
+    })
+  });
+</script>

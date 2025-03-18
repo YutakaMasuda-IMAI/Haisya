@@ -1,0 +1,193 @@
+﻿@model HaisyaWeb.Models.HaisyaModel.MonthScheduleModelViewModel
+
+
+@{
+  Layout = "_ModalLayout";
+}
+@*<link href="~/css/Haisya.css" rel="stylesheet" />*@
+
+
+<style>
+  table.ex_TableDriverMonthListSummay {
+    border-collapse: collapse;
+    margin: 0 auto;
+    padding: 1px;
+  }
+
+    table.ex_TableDriverMonthListSummay tr {
+      background-color: #fff;
+      padding: 0em 3em;
+      margin: 0;
+      font-size: 14px;
+    }
+
+    table.ex_TableDriverMonthListSummay th,
+    table.ex_TableDriverMonthListSummay td {
+      padding: 0em .2em;
+      margin: 0 3px;
+      /*border-right: 0.1em solid #bbb;*/
+      text-align: center;
+      border: .1em solid #bbb;
+    }
+
+    table.ex_TableDriverMonthListSummay th {
+      background-color: #ffd800;
+    }
+
+    table.ex_TableDriverMonthListSummay th {
+      font-size: 1em;
+    }
+</style>
+
+
+@*<div tabindex="-1" role="dialog" style="position: absolute; z-index: 101;" class="modal fade ui-dialog ui-corner-all ui-widget ui-widget-content ui-front ui-dialog-buttons ui-draggable ui-resizable" aria-describedby="ModalHere" aria-labelledby="ui-id-1">*@
+@*<div role="dialog" id="modal-option" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="z-index: 1051; ">
+  </div>*@
+@*<div class="modal-dialog" role="document" style="max-width:1000px">
+</div>*@
+
+<div class="modal-content">
+  <div class="modal-header">
+    <h1 class="modal-title fs-3" id="exampleModalLabel">個別月次配車表</h1>
+    <button id="btnClose" type="button" class="btn btn-secondary">閉じる</button>
+  </div>
+  <div class="model-body">
+    <form id="form9999" class="">
+      <div hidden>
+        @Html.TextBoxFor(m => m.DriverID)
+        @Html.TextBoxFor(m => m.Date)
+        @Html.TextBoxFor(m => m.EmployeeNumber)
+      </div>
+      <table class="table jbc-table table-hedder" style="padding: 0; border-collapse: collapse; ">
+        <tbody>
+          <tr>
+            <th width="300px" style="padding-left:1rem;">
+              <div class="appeal-box box" style="vertical-align: middle; display: inline-block; padding: 0;">
+                <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeDayModal(-1)" onselectstart="return false;" alt="<<" tooltip="前月">＜＜</span>
+                <input id="TargetDayLavelModal" class="calender" type="text" readonly style="width: 120px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
+                <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeDayModal(1)" onselectstart="return false;" alt=">>" tooltip="翌月">＞＞</span>
+              </div>
+            </th>
+            <th width="30%">
+              @(Model.DriverName)
+            </th>
+            <th width="80px">所属</th>
+            <td>@(Model.DriverBranch)</td>
+          </tr>
+        </tbody>
+      </table>
+      <div id="month-calendar-main"></div>
+    </form>
+  </div>
+</div>
+
+<script>
+  $(function () {
+
+    var disp = new Date("@Model.Date");
+    /** 日付を文字列にフォーマットする */
+    var formatted = `${disp.getFullYear()}\年${(disp.getMonth() + 1).toString().padStart(2, '0')}\月`.replace(/\n|\r/g, '');
+    $("input#TargetDayLavelModal").val(formatted);
+
+    // カレンダーデータを表示
+    monthCalendarDisplay($('#Date').val());
+
+  });
+
+  /**
+   *
+   * @@param move
+   */
+  function selectedChangeDayModal(move) {
+
+     // TargetDayLavelModal の値を取得
+    var targetDateStr = $("input#TargetDayLavelModal").val();
+
+    // 年月の文字列を解析して日付型に変換
+    var yearMonthArr = targetDateStr.split("年");
+    var year = parseInt(yearMonthArr[0], 10);
+    var monthArr = yearMonthArr[1].split("月");
+    var month = parseInt(monthArr[0], 10) - 1;
+
+     // 新しい日付を設定
+    var targetDay = new Date(year, month);
+    // move によって月を変更する
+    targetDay.setMonth(targetDay.getMonth() + move);
+    // 新しい年と月を取得
+    var selectedDate = formatDateModal(targetDay);
+
+
+    /** 日付を文字列にフォーマットする */
+    var formatted = `${targetDay.getFullYear()}\年${(targetDay.getMonth() + 1).toString().padStart(2, '0')}\月`.replace(/\n|\r/g, '');
+    $("input#TargetDayLavelModal").val(formatted);
+
+
+    // カレンダーデータを表示
+    monthCalendarDisplay(selectedDate);
+
+  };
+
+  /**
+   *
+   * @@param selectedDate
+   */
+  function monthCalendarDisplay(selectedDate) {
+
+     // カレンダーを生成して表示
+     $.post('@Url.RouteUrl("Default", new { controller = "Haisya", Action = "UpdateMonthScheduleCalendar" })',
+     {
+       driverId: $('#DriverID').val(),
+       selectedDate: selectedDate,
+       employeeNumber: $('#EmployeeNumber').val(),
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert(response.partialView);
+        //$(".month-calendar").append(response.partialView);
+          $("#month-calendar-main").html(response.partialView);
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+          console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+          //console.log(xhr, msg);
+        //alert(msg);
+      });
+
+  };
+
+  function formatDateModal(date) {
+    var yyyy = date.getFullYear();
+    var mm = ('00' + (date.getMonth() + 1)).slice(-2);
+    var dd = ('00' + date.getDate()).slice(-2);
+    const ymd = String(yyyy) + '/' + String(mm) + '/' + String(dd);
+    return ymd;
+  };
+
+
+  /**
+   * 休暇・一覧備考登録画面の閉じる処理のコールバック関数
+   * */
+  var closeFun = function () {
+    // カレンダーデータを表示
+    monthCalendarDisplay($('#Date').val());
+  };
+
+  /**
+   * 休暇・一覧備考登録画面を開く
+   * @@param date
+   * @@param driverID
+   * @@param closeFunction
+   */
+  function AttendanceModal(date) {
+    var url = '@Url.RouteUrl("Default", new { controller = "Haisya", Action = "AttendanceModal" })';
+    AttendanceModalEx(url, date, $('#DriverID').val(), $('#EmployeeNumber').val(), closeFun);
+  };
+
+
+</script>

@@ -1,0 +1,116 @@
+﻿@model CommonDialogModel.SelectCustomerModel
+
+
+<style>
+
+  .table-tokuisakilist-input {
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    font-size: initial;
+  }
+
+</style>
+
+@if (Model.CustomerBranchList.Count() == 0)
+{
+  <div style="width: 100%; background: #3366CC ">
+    <h4 style="text-align:left; margin-left: 20px;color: white;">データ無し</h4>
+  </div>
+}
+
+
+<table id="myTable" class="ex_table-tokuisaki table-bordered border-info" width="100%" border="1">
+  <thead style="background-color: chartreuse;  ">
+    <tr align="center">
+      <th class="ex-table-th" style="vertical-align: middle;">選択</th>
+      <th class="ex-table-th" style="width: 50px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Customer_Code')" style="">顧客<br />コード</a>
+      </th>
+      <th class="ex-table-th" style="width: 170px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Customer_Name')" style="">顧客名</a>
+      </th>
+      <th class="ex-table-th" style="width: 100px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Customer_Name_Abbr')" style="">表示名</a>
+      </th>
+      <th class="ex-table-th" style="width: 80px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Customer_Name_Kana')" style="">検索カナ</a>
+      </th>
+      <th class="ex-table-th" style="width: 50px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Phone1')" style="">電話番号1</a>
+      </th>
+      <th class="ex-table-th" style="width: 50px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Fax1')" style="">FAX番号1</a>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    @{
+      int i = 1;
+    }
+    @foreach (var item in Model.CustomerBranchList.OrderBy(m => m.Customer_Branch_Code).Take(100).ToList())
+    {
+      int rem;
+      int div = Math.DivRem(i, 2, out rem);
+      string color = rem == 0 ? "khaki" : "	whitesmoke";
+    <tr style="font-size: 12px; font-weight: bold; background-color: @(color); height: 20px;">
+      <td width="50px" style="vertical-align: middle;">
+        <button name="btntokuisakiList" class="btn btn-success" style="width: 100%; padding:0;">選択</button>
+      </td>
+
+      <td hidden style="vertical-align: middle;" align="center">
+        @(item.Customer_Branch_ID)
+      </td>
+      <td style="vertical-align: middle;" align="center">
+        @(item.Customer_Branch_Code)
+      </td>
+      <td >
+        @(item.Customer_Branch_Name)
+      </td>
+      <td >
+        @(item.Customer_Branch_Name_Abbr)
+      </td>
+      <td >
+        @(item.Customer_Branch_Name_Kana)
+      </td>
+      <td align="center">
+        @(item.Customer_Branch_Phone1)
+      </td>
+      <td align="center">
+        @(item.Customer_Branch_Fax1)
+      </td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Customer_Branch_ID, null, new { @readonly = "readonly", })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Customer_Branch_Code, null, new { @readonly = "readonly", @class = "table-tokuisakilist-input" })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Customer_Branch_Name, null, new { @readonly = "readonly", @class = "table-tokuisakilist-input" })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Customer_Branch_Name_Abbr, null, new { @readonly = "readonly", @class = "table-tokuisakilist-input" })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Customer_Branch_Name_Kana, null, new { @readonly = "readonly", @class = "table-tokuisakilist-input" })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Customer_Branch_Phone1, null, new { @readonly = "readonly", @class = "table-tokuisakilist-input" })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Customer_Branch_Fax1, null, new { @readonly = "readonly", @class = "table-tokuisakilist-input" })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Shime_Day, null, new { @readonly = "readonly", @class = "table-tokuisakilist-input" })</td>
+    </tr>
+      i++;
+    }
+  </tbody>
+</table>
+
+
+
+<script>
+
+  $(function () {
+
+
+    $('button[name="btntokuisakiList"]').on('click', function () {
+
+      let result = SelectCommonDialog($(this));
+      //alert(data);
+
+      selectOnClick(result);
+
+    });
+
+
+  });
+
+</script>

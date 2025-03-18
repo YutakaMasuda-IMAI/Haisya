@@ -1,0 +1,151 @@
+﻿html {
+    height: 100%;
+    line-height: 1.15;
+    -ms-text-size-adjust: 100%;
+    /* -webkit-text-size-adjust:100%; */
+}
+
+
+body {
+    font-family: 'Noto Sans JP', YuGothic, 'Yu Gothic', 'ヒラギノ角ゴシック', 'Hiragino Sans', 'Helvetica', sans-serif;
+    letter-spacing: 0.3px;
+    background-color: #f7f7f7;
+    display: flex;
+    height: 100%;
+    margin: 0;
+    font-size: 18px;
+    font-weight: 500;
+    color: #333333;
+    
+}
+
+
+
+
+.title {
+    text-align: center;
+}
+
+.system-logo {
+    text-align: center;
+    margin-bottom: 52px;
+    margin-top: 37px;
+}
+
+.sign-in-left-container {
+    padding: 0;
+    margin: auto 0;
+    width: 50%;
+    line-height: 2.5;
+}
+
+
+
+
+.sign-in-panels-login {
+    padding: 10px 0;
+    max-width: 400px;
+    margin: auto;
+}
+
+
+
+.sign-in-banner-area {
+    margin: 0;
+    width: 54.5%;
+    min-width: 450px;
+}
+
+.banner-text {
+    font-size: calc(max(1.4vw,18px));
+}
+
+
+
+.save-login-forget {
+    display: flex;
+    font-size: 12px;
+    margin-top: 11px;
+}
+
+.sign-in-right-container {
+    z-index: 2;
+    height: 100%;
+    min-height: 744px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+    .sign-in-right-container .sign-in-bg {
+        position: absolute;
+        z-index: -1;
+        top: 0;
+        left: 0;
+        /*background-image: url(/assets/signin-bg-b198898….svg);*/
+        background-color: aqua;
+        background-size: cover;
+        background-repeat: no-repeat;
+        height: 100%;
+        width: 100%;
+        opacity: 0.9;
+    }
+
+
+a {
+    color: #337ab7;
+    text-decoration-line: none
+}
+
+p {
+    margin: 0 0 10px
+}
+
+
+.sign-in-banner-area {
+    margin: 0;
+    width: 54.5%;
+    min-width: 450px;
+}
+
+    .sign-in-banner-area p {
+        display: block;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+        margin-inline-start: 0px;
+        margin-inline-end: 0px;
+    }
+
+
+.sign-in-banner-area :last-child > img {
+    margin-bottom: 0
+}
+
+.hide-banner {
+    display: none
+}
+
+.sign-in-banner {
+    margin-bottom: 21px;
+    width: 100%
+}
+
+
+
+.form__login {
+    background-color: #007CFF;
+    border: 0;
+    border-radius: 4px;
+    color: #ffffff;
+    cursor: pointer;
+    display: block;
+    font-size: 14px;
+    height: 40px;
+    letter-spacing: -.3px;
+    margin: 11px auto 15px;
+    padding: 0;
+    width: 100%;
+}

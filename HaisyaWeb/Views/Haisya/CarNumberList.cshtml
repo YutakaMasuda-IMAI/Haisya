@@ -1,0 +1,217 @@
+@model HaisyaWeb.Models.HaisyaModel.DataListModel
+@{
+  Layout = "_Layout";
+  ViewData["Title"] = "車番連絡一覧";
+}
+
+<head>
+  <link href="~/css/List.css" rel="stylesheet" />
+  <style>
+  </style>
+</head>
+
+<body>
+  <div id="hiddenItem" hidden>
+    @Html.HiddenFor(model => Model.Search.SelectFilter)
+    @Html.HiddenFor(model => Model.Search.SelectDay)
+    @Html.HiddenFor(model => Model.Search.SelectEndDay)
+    @Html.HiddenFor(model => Model.SortParam.SortItemParam)
+    @Html.HiddenFor(model => Model.SortParam.SortOrder)
+  </div>
+  <div>
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "Form2" }))
+    {
+      <div id="hedder" class="row" style="">
+        <h6 class="heading-pagetitle">車番連絡一覧</h6>
+        <div class="form-group" style="width: 110%">
+          <div class="row">
+            <div style="flex-direction: row; display: flex">
+              <div class="appeal-box box" style="vertical-align: middle; display: inline-block; padding: 0;">
+                <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;"
+                    onclick="selectedChangeDay(-1)" onselectstart="return false;" alt="<<"
+                    tooltip="前日">＜＜</span>
+                <input id="TargetDayLavel" class="calender" type="text" readonly
+                     style="width: 200px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;"
+                     onchange="SetSelectedDay()"
+                     value="1900/01/01" />
+                <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;"
+                    onclick="selectedChangeDay(1)" onselectstart="return false;" alt=">>"
+                    tooltip="翌日">＞＞</span>
+              </div>
+            </div>
+            <button type="button" class="btn btn-secondary btn-sm" style="width: 100%; padding: 0;"
+                data-bs-toggle="collapse" data-bs-target="#tblCollapseSearch" aria-expanded="false"
+                aria-controls="tblCollapseSearch">
+              ▼詳細検索
+            </button>
+            <table id="tblCollapseSearch" class="table jbc-table table-hedder collapse"
+                 style="padding: 0; border-collapse: collapse; ">
+              <tbody>
+                <tr>
+                  <th style="width: 25%;">
+                    @Html.LabelFor(model => model.Search.SelectTantou, htmlAttributes: new
+                      {
+                        @class =
+                         "control-label align-self-center text-end",
+                        @style = "padding: 0;"
+                      })
+                    <div class=""
+                       style="display: inline-block; _display: inline; padding: 0; width: 55%;">
+                      @Html.DropDownListFor(model => model.Search.SelectTantou, new
+                           SelectList(Model.Search.TantouSelectList, "Value", "Text", "Selected"),
+                           "担当者を選択", new { @class = "form-control", @style = "padding: 0;" })
+                      @Html.ValidationMessageFor(model => model.Search.SelectTantou, "", new
+                        {
+                          id =
+                           "SelectTantou",
+                          @class = "text-danger align-middle"
+                        })
+                    </div>
+                  </th>
+                  <th style="width: 25%;">
+                    <div class="search-div" style="width:350px;">
+                      <label class="search-label">絞り込み</label>
+                      <label class="radio-label"><input type="radio" name="num_of_filter" value="0">全て</label>
+                      <label class="radio-label"><input type="radio" name="num_of_filter" value="1">未送信</label>
+                      <label class="radio-label"><input type="radio" name="num_of_filter" value="2">送信済</label>
+                    </div>
+                  </th>
+                  <th>
+                  </th>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    }
+    <div id="DataList" class="data-list" style="">
+    </div>
+  </div>
+
+</body>
+
+<script>
+
+  const weeks = ["日", "月", "火", "水", "木", "金", "土"];
+
+  $(window).on('load', function () {
+
+    var disp = new Date($("#Search_SelectDay").val());
+
+    /** 日付を文字列にフォーマットする */
+    var formatted = `${disp.getFullYear()}\年${(disp.getMonth() + 1).toString().padStart(2, '0')}\月${disp.getDate().toString().padStart(2, '0')}\日\(${weeks[disp.getDay().toString()]}\)`.replace(/\n|\r/g, '');
+    $("input#TargetDayLavel").val(formatted);
+
+    var disp = new Date($("#Search_SelectEndDay").val());
+
+    radio = document.getElementsByName('num_of_filter');
+    for (let i = 0; i < radio.length; i++) {
+      if (radio.item(i).value == $("#Search_SelectFilter").val()) {
+        radio.item(i).checked = true;
+      }
+    }
+
+    dataListDisplay();
+  });
+
+  $(function () {
+
+    $('input[name="num_of_filter"]:radio').change(function () {
+      dataListDisplay();
+    });
+
+    $('#Search_SelectTantou').on('change', function () {
+      dataListDisplay();
+    });
+
+    $(".calender").datepicker({
+      buttonImage: "../img/calender.png",    // カレンダーアイコン画像
+      buttonText: "カレンダーから選択", // ツールチップ表示文言
+      buttonImageOnly: true,       // 画像として表示
+      showOn: "both"           // カレンダー呼び出し元の定義
+    });
+
+    $('input[name="Target"]:checkbox').change(function () {
+      // チェックボックスの状態を取得
+      var isChecked = $(this).prop('checked');
+      var valueToSet = isChecked ? 1 : 0;
+
+      // チェックボックスの値を設定
+      $(this).val(valueToSet);
+      console.log("チェックボックスの状態が変更されました。新しい値: " + valueToSet);
+    });
+  });
+
+  $(document).on('click', "button.ui-datepicker-current", function () {
+
+    var dt = new Date();
+    $('.calender').datepicker('setDate', dt);
+    $('.calender').datepicker('hide');
+
+    /** 日付を文字列にフォーマットする */
+    var formatted = `${dt.getFullYear()}\年${(dt.getMonth() + 1).toString().padStart(2, '0')}\月${dt.getDate().toString().padStart(2, '0')}\日\(${weeks[dt.getDay().toString()]}\)`.replace(/\n|\r/g, '');
+    $('#TargetDayLavel').val(formatted);
+
+    $('#Search_SelectDay').val(formatDate(dt));
+
+    dataListDisplay();
+  });
+
+  function selectedChangeDay(move) {
+    var dt = new Date($('#Search_SelectDay').val());
+    dt.setDate(dt.getDate() + move);
+    $("#Search_SelectDay").val(formatDate(dt));
+
+    /** 日付を文字列にフォーマットする */
+    var formatted = `${dt.getFullYear()}\年${(dt.getMonth() + 1).toString().padStart(2, '0')}\月${dt.getDate().toString().padStart(2, '0')}\日\(${weeks[dt.getDay().toString()]}\)`.replace(/\n|\r/g, '');
+    $("input#TargetDayLavel").val(formatted);
+    dataListDisplay();
+  };
+
+  function SetSelectedDay() {
+    var ds = $('#TargetDayLavel').val();
+    var dt = new Date(ds.slice(0, 4), ds.slice(5, 7) - 1, ds.slice(8, 10));
+
+    $("#Search_SelectDay").val(formatDate(dt));
+
+    dataListDisplay();
+  };
+
+  function formatDate(date) {
+    var yyyy = date.getFullYear();
+    var mm = ('00' + (date.getMonth() + 1)).slice(-2);
+    var dd = ('00' + date.getDate()).slice(-2);
+    const ymd = String(yyyy) + '/' + String(mm) + '/' + String(dd);
+    return ymd;
+  };
+
+  function dataListDisplay() {
+    var selectTab = $('input[name="num_of_filter"]:checked').val();
+    $('#Search_SelectFilter').val(selectTab);
+    endDayParam = $('#Search_SelectDay').val();
+
+    $.get('@Url.RouteUrl("Default", new { controller = "Haisya", Action = "JsonGetCarNumberDataList" })',
+      {
+        SelectDay: $('#Search_SelectDay').val(),
+        SelectEndDay: endDayParam,
+        SelectTantou: $('#Search_SelectTantou').val(),
+        SelectFilter: $('#Search_SelectFilter').val(),
+        sortItemParam: $('#SortParam_SortItemParam').val(),
+        sortOrder: $('#SortParam_SortOrder').val(),
+      },
+      function (data) {
+        $('#DataList').html(data.partialView);
+      }
+    );
+  }
+
+  function closeModel() {
+    $('#ModalHere').find('.modal').modal('hide');
+    $('#ModalStatusHaisya').find('.modal').modal('hide');
+    //$('#ModalHere').modal('hide');
+    $(".modal-backdrop").remove();
+    $("#ModalHere").html('');
+    $("#ModalStatusHaisya").html('');
+  };
+</script>

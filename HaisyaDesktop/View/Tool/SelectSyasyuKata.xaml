@@ -1,0 +1,164 @@
+﻿<Window x:Class="HaisyaDesktop.View.Tool.SelectSyasyuKata"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HaisyaDesktop.View.Tool"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        WindowState="Normal"
+        Title="車種選択画面" MinHeight="600" Width="1200" ScrollViewer.VerticalScrollBarVisibility="Auto" Loaded="Window_Loaded">
+
+  <Window.Resources>
+    <Style x:Key="SelectButton" TargetType="Button">
+      <!--<Setter Property="Width" Value="100"/>-->
+      <!--<Setter Property="Height" Value="60" />-->
+      <Setter Property="Margin" Value="10" />
+      <Setter Property="FontSize" Value="20" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border CornerRadius="10" BorderBrush="White" BorderThickness="1" >
+              <Border.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                  <GradientStop Color="{DynamicResource ControlLightColor}" Offset="0" />
+                  <GradientStop Color="{DynamicResource ControlMediumColor}" Offset="1" />
+                </LinearGradientBrush>
+              </Border.Background>
+              <ContentPresenter Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True" />
+            </Border>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+    
+    
+    
+  </Window.Resources>
+
+  <Grid Background="Black">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="30" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <DockPanel Grid.Row="0" Background="Azure">
+      <Button Name="btnClose" Content="閉じる" DockPanel.Dock="Right" Width="150" Click="btnClose_Click"/>
+      <Label Content="車種選択" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0" />
+    </DockPanel>
+
+    <Grid Grid.Row="1">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition x:Name="cd0" Width="0" />
+        <ColumnDefinition x:Name="cd1" Width="0" />
+        <ColumnDefinition x:Name="cd2" Width="0" />
+        <ColumnDefinition x:Name="cd3" Width="0" />
+        <ColumnDefinition x:Name="cd4" Width="0" />
+        <ColumnDefinition x:Name="cd5" Width="0" />
+        <ColumnDefinition x:Name="cd6" Width="0" />
+        <ColumnDefinition x:Name="cd7" Width="0" />
+        <ColumnDefinition x:Name="cd8" Width="0" />
+        <ColumnDefinition x:Name="cd9" Width="0" />
+      </Grid.ColumnDefinitions>
+
+      <Grid x:Name="grid0" Grid.Column="0">
+        <Grid.RowDefinitions>
+          <RowDefinition x:Name="grid0_rd0" Height="*" />
+          <RowDefinition x:Name="grid0_rd1" Height="*" />
+          <RowDefinition x:Name="grid0_rd2" Height="*" />
+          <RowDefinition x:Name="grid0_rd3" Height="*" />
+          <RowDefinition x:Name="grid0_rd4" Height="*" />
+        </Grid.RowDefinitions>
+      </Grid>
+
+      <Grid x:Name="grid1" Grid.Column="1">
+        <Grid.RowDefinitions>
+          <RowDefinition x:Name="grid1_rd0" Height="*" />
+          <RowDefinition x:Name="grid1_rd1" Height="*" />
+          <RowDefinition x:Name="grid1_rd2" Height="*" />
+          <RowDefinition x:Name="grid1_rd3" Height="*" />
+          <RowDefinition x:Name="grid1_rd4" Height="*" />
+        </Grid.RowDefinitions>
+      </Grid>
+
+      <Grid x:Name="grid2" Grid.Column="2">
+        <Grid.RowDefinitions>
+          <RowDefinition x:Name="grid2_rd0" Height="*" />
+          <RowDefinition x:Name="grid2_rd1" Height="*" />
+          <RowDefinition x:Name="grid2_rd2" Height="*" />
+          <RowDefinition x:Name="grid2_rd3" Height="*" />
+          <RowDefinition x:Name="grid2_rd4" Height="*" />
+        </Grid.RowDefinitions>
+      </Grid>
+
+      <Grid x:Name="grid3" Grid.Column="3">
+        <Grid.RowDefinitions>
+          <RowDefinition x:Name="grid3_rd0" Height="*" />
+          <RowDefinition x:Name="grid3_rd1" Height="*" />
+          <RowDefinition x:Name="grid3_rd2" Height="*" />
+          <RowDefinition x:Name="grid3_rd3" Height="*" />
+          <RowDefinition x:Name="grid3_rd4" Height="*" />
+        </Grid.RowDefinitions>
+      </Grid>
+
+      <Grid x:Name="grid4" Grid.Column="4">
+        <Grid.RowDefinitions>
+          <RowDefinition x:Name="grid4_rd0" Height="*" />
+          <RowDefinition x:Name="grid4_rd1" Height="*" />
+          <RowDefinition x:Name="grid4_rd2" Height="*" />
+          <RowDefinition x:Name="grid4_rd3" Height="*" />
+          <RowDefinition x:Name="grid4_rd4" Height="*" />
+        </Grid.RowDefinitions>
+      </Grid>
+
+      <Grid x:Name="grid5" Grid.Column="5">
+        <Grid.RowDefinitions>
+          <RowDefinition x:Name="grid5_rd0" Height="*" />
+          <RowDefinition x:Name="grid5_rd1" Height="*" />
+          <RowDefinition x:Name="grid5_rd2" Height="*" />
+          <RowDefinition x:Name="grid5_rd3" Height="*" />
+          <RowDefinition x:Name="grid5_rd4" Height="*" />
+        </Grid.RowDefinitions>
+      </Grid>
+
+      <Grid x:Name="grid6" Grid.Column="6">
+        <Grid.RowDefinitions>
+          <RowDefinition x:Name="grid6_rd0" Height="*" />
+          <RowDefinition x:Name="grid6_rd1" Height="*" />
+          <RowDefinition x:Name="grid6_rd2" Height="*" />
+          <RowDefinition x:Name="grid6_rd3" Height="*" />
+          <RowDefinition x:Name="grid6_rd4" Height="*" />
+        </Grid.RowDefinitions>
+      </Grid>
+
+      <Grid x:Name="grid7" Grid.Column="7">
+        <Grid.RowDefinitions>
+          <RowDefinition x:Name="grid7_rd0" Height="*" />
+          <RowDefinition x:Name="grid7_rd1" Height="*" />
+          <RowDefinition x:Name="grid7_rd2" Height="*" />
+          <RowDefinition x:Name="grid7_rd3" Height="*" />
+          <RowDefinition x:Name="grid7_rd4" Height="*" />
+        </Grid.RowDefinitions>
+      </Grid>
+
+      <Grid x:Name="grid8" Grid.Column="8">
+        <Grid.RowDefinitions>
+          <RowDefinition x:Name="grid8_rd0" Height="*" />
+          <RowDefinition x:Name="grid8_rd1" Height="*" />
+          <RowDefinition x:Name="grid8_rd2" Height="*" />
+          <RowDefinition x:Name="grid8_rd3" Height="*" />
+          <RowDefinition x:Name="grid8_rd4" Height="*" />
+        </Grid.RowDefinitions>
+      </Grid>
+
+      <Grid x:Name="grid9" Grid.Column="9">
+        <Grid.RowDefinitions>
+
+        </Grid.RowDefinitions>
+      </Grid>
+
+    </Grid>
+    
+  </Grid>
+</Window>

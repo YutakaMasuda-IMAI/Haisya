@@ -1,0 +1,118 @@
+@model HaisyaWeb.Dto.CertificationRequestModel
+
+<head>
+  <link href="~/css/Haisya.css" rel="stylesheet" />
+  <style>
+    .modal-dialog {
+      max-width: 600px;
+    }
+
+
+    .modal-body {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .modal-body div {
+      margin-bottom: 15px;
+      width: 100%;
+    }
+
+    .modal-body span {
+      display: inline-block;
+      width: 100px;
+    }
+
+    .form-control {
+      width: calc(100% - 110px);
+    }
+
+    .button {
+      background-color: rgba(91, 156, 213, 1);
+      border: none;
+      color: white;
+      border-radius: 8px;
+      padding: 5px 10px;
+    }
+  </style>
+</head>
+<div role="dialog" aria-hidden="true" tabindex="-1" class="modal fade">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-3" id="exampleModalLabel">承認依頼</h1>
+      </div>
+      <form id="frmCertification">
+        <div hidden>
+          @Html.TextBoxFor(model => model.NippouApprovalData.Nippou_Approval_ID)
+          @Html.TextBoxFor(model => model.Nippou_ID)
+        </div>
+        <div class="modal-body">
+          <div style="display: flex;">
+            <span style="font-weight: bold;">承認依頼者</span>
+            @Html.DropDownListFor(model => model.Approval_Group_ID, new SelectList(Model.GroupUserSelectList,
+                 "Value", "Text"), "承認依頼者", new { @class = "form-control list text-center" })
+          </div>
+          <div style="display: flex;">
+            <span style="font-weight: bold;">承認期限日</span>
+            @Html.TextBoxFor(model => model.FormattedLimitDate, new { @class = "form-control", type = "date" })
+          </div>
+          <div style="display: flex;">
+            <span style="font-weight: bold;">依頼事項</span>
+            @Html.TextBoxFor(model => model.Comment, new { @class = "form-control" })
+          </div>
+          <div style="text-align: center; width: 100%;">
+            <button type="button" class="button" style="margin-right: 5%;" onclick="requestModal()">依頼</button>
+            <button type="button" class="button" style="margin-left: 5%;"
+              onclick="closeModal()">閉じる</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function closeModal() {
+    $('#ModalHere').find('.modal').modal('hide');
+    $("#ModalHere").html('');
+    selectedRows = [];
+  }
+
+  function requestModal() {
+    let $form = $('#frmCertification');
+
+    if (!validateForm()) {
+      return false;
+    }
+    $("#NippouApproval_Approval_Group_ID").val($("#Approval_Group_ID").val());
+    $("#NippouApproval_Limit_DateTime").val($("#FormattedLimitDate").val());
+    $("#NippouApproval_Order_Memo").val($("#Comment").val());
+    closeModal()
+  }
+
+  function validateForm() {
+  let isValid = true;
+  
+  // 承認依頼者のバリデーション
+  if ($('#Approval_Group_ID').val() === "") {
+    alertError("承認依頼者を選択してください。", "入力エラー");
+    isValid = false;
+  }
+  
+  // 承認期限日のバリデーション
+  if ($('#FormattedLimitDate').val() === "") {
+    alertError("承認期限日を入力してください。", "入力エラー");
+    isValid = false;
+  }
+  
+  // 依頼事項のバリデーション
+  if ($('#Comment').val().trim() === "") {
+    alertError("依頼事項を入力してください。", "入力エラー");
+    isValid = false;
+  }
+  
+  return isValid;
+}
+</script>

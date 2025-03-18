@@ -1,0 +1,157 @@
+﻿@model RenkeiDB.Dto.OperationInstructionDto.OperationInstructionPrintDto
+
+<html>
+<head>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .no-grid {
+            border: none;
+        }
+
+        .grid td {
+            border: 1px solid black;
+            text-align: center;
+        }
+
+        .u {
+            border-bottom: 1px solid black;
+        }
+
+        .r {
+            text-align: right;
+        }
+
+        .b {
+            font-size: 20px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <table class="no-grid">
+        <tr>
+            <td width="50%"></td>
+            <td class="r">@Model.ExportDate</td>
+        </tr>
+        <tr>
+            <td class="u" style="text-align: center;"><span class="b">@Html.DisplayFor(m => m.KokyakuName)</span> 御中</td>
+            <td></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td class="r">今井運送株式会社</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td class="r">広島県廿日市木材港北13-43</td>
+        </tr>
+        <tr>
+            <td>お世話になります。</td>
+            <td class="r">TEL0829-34-1564</td>
+        </tr>
+        <tr>
+            <td>下記の件よろしくお願い致します。</td>
+            <td class="r">FAX08926-34-1561</td>
+        </tr>
+    </table>
+    <br />
+    <br />
+    <table class="grid">
+        <tr>
+            <td width="25%">@Html.LabelFor(m => m.SyasyuDaisuu)</td>
+            <td>@(Html.DisplayFor(m => m.SyasyuDaisuu))台</td>
+        </tr>
+    </table>
+    <br />
+    <table class="grid">
+        <tr>
+            <td width="25%">
+                <div>貨物　荷姿</div>
+                <div>重量　個数</div>
+            </td>
+            <td>@Html.DisplayFor(m => m.LuggageDisplay)</td>
+        </tr>
+    </table>
+    <br />
+    <table class="grid">
+        <tr>
+            <td width="25%">@Html.LabelFor(m => m.EquipmentDisplay)</td>
+            <td>@Html.DisplayFor(m => m.EquipmentDisplay)</td>
+        </tr>
+    </table>
+    <br />
+    <table class="grid">
+        <tr>
+            <td width="25%" style="border-bottom: none;">@Html.LabelFor(m => m.PickupInfo)</td>
+            <td style="text-align: left; border-bottom: none;">@Html.DisplayFor(m => m.PickupInfo.DateAndTime)</td>
+        </tr>
+        <tr>
+            <td valign="top" style="border-top: none;">@Html.LabelFor(m => m.PickupInfo.FullAddress)</td>
+            <td style="border-top: none;">
+                <div>@Html.DisplayFor(m => m.PickupInfo.BuildingName)</div>
+                <div>@Html.DisplayFor(m => m.PickupInfo.Post_code)</div>
+                <div>@Html.DisplayFor(m => m.PickupInfo.Address)</div>
+            </td>
+        </tr>
+    </table>
+    <br />
+    <table class="grid">
+        <tr>
+            <td width="25%" style="border-bottom: none;">@Html.LabelFor(m => m.DeliveryInfo)</td>
+            <td style="text-align: left; border-bottom: none;">@Html.DisplayFor(m => m.DeliveryInfo.DateAndTime)</td>
+        </tr>
+        <tr>
+            <td valign="top" style="border-top: none;">@Html.LabelFor(m => m.DeliveryInfo.FullAddress)</td>
+            <td style="border-top: none;">
+                <div>@Html.DisplayFor(m => m.DeliveryInfo.BuildingName)</div>
+                <div>@Html.DisplayFor(m => m.DeliveryInfo.Post_code)</div>
+                <div>@Html.DisplayFor(m => m.DeliveryInfo.Address)</div>
+            </td>
+        </tr>
+    </table>
+    <br />
+    <table class="grid">
+        <tr>
+            <td width="25%">@Html.LabelFor(m => m.Remarks)</td>
+            <td>@Html.DisplayFor(m => m.Remarks)</td>
+        </tr>
+    </table>
+    <br />
+    <table class="grid">
+        <tr>
+            <td width="25%">運送会社</td>
+            <td></td>
+            <td width="25%" style="border: none;"></td>
+        </tr>
+        <tr>
+            <td>車種</td>
+            <td></td>
+            <td style="border: none;"></td>
+        </tr>
+        <tr>
+            <td>車番</td>
+            <td></td>
+            <td style="border: none;"></td>
+        </tr>
+        <tr>
+            <td>乗務員名</td>
+            <td></td>
+            <td style="border: none;"></td>
+        </tr>
+        <tr>
+            <td>携帯</td>
+            <td></td>
+            <td style="border: none;"></td>
+        </tr>
+        <tr>
+            <td>入場時間</td>
+            <td></td>
+            <td style="border: none;"></td>
+        </tr>
+    </table>
+</body>
+</html>

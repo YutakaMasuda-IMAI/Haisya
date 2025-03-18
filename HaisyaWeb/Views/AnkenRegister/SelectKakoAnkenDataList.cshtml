@@ -1,0 +1,214 @@
+﻿@model AnkenModel.SelectKakoAnkenListDto
+
+
+@*<link href="~/lib/tablesorter/dist/css/theme.blue.css" rel="stylesheet" />*@
+
+<style>
+
+  .table-KakoAnkenListModal {
+    overflow: auto;
+    width: 100%;
+    max-height: 700px;
+  }
+
+    .table-KakoAnkenListModal table {
+      margin: 0;
+      border-spacing: 0;
+      width: 100%;
+      font-size: 12px;
+    }
+
+    .table-KakoAnkenListModal th {
+      white-space: nowrap;
+      position: sticky;
+      top: -1px;
+      left: 0;
+      border-right: 1px solid #999;
+      border-bottom: 1px solid #999;
+      background-color: lemonchiffon;
+      text-align: center;
+      padding: 0.2rem 0 0.2rem 0;
+    }
+
+    .table-KakoAnkenListModal td {
+      white-space: nowrap;
+      padding: 2px;
+      border-right: 1px solid #999;
+      border-bottom: 1px solid #999;
+    }
+
+    .table-KakoAnkenListModal tr:first-child th {
+      border-top: 1px solid #999;
+    }
+
+    .table-KakoAnkenListModal th:first-child {
+      border-left: 1px solid #999;
+    }
+
+    .table-KakoAnkenListModal tr:first-child th:first-child {
+      z-index: 1;
+    }
+
+
+
+
+  .sight-settings {
+    float: left;
+    border-top: 1px solid #ffcc99;
+    padding: 5px 5px;
+    width: 99%;
+    display: inline-table;
+  }
+
+    .sight-settings .title {
+      width: 25%;
+      display: table-cell;
+      vertical-align: middle;
+      padding: 5px 10px;
+      background-color: #FFF6EE;
+    }
+
+    .sight-settings .buttons {
+      width: 25%;
+      display: table-cell;
+      vertical-align: middle;
+      background-color: #FFFaF5;
+    }
+
+    .sight-settings .description {
+      width: 34%;
+      display: table-cell;
+      vertical-align: middle;
+      padding: 5px 10px;
+      background-color: #FFF6EE;
+      font-size: 13px;
+    }
+</style>
+
+
+<table id="myTableKakoAnken" class="table " style="width: 100%;" border="1">
+  <thead>
+    <tr align="center">
+      <th rowspan="1">
+        <a data-koumoku="Kubun_Sort" href="#" style="">選択</a>
+      </th>
+
+      <th rowspan="1">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('配車担当')" style="">配車<br />担当</a>
+      </th>
+      <th rowspan="1">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('積日')" style="">積日</a>
+      </th>
+      <th rowspan="1">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('卸日')" style="">卸日</a>
+      </th>
+
+      <th rowspan="1">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('顧客')" style="">顧客</a>
+      </th>
+      <th rowspan="1">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('積地')" style="">積地</a>
+      </th>
+      <th rowspan="1">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('卸地')" style="">卸地</a>
+      </th>
+      <th rowspan="1">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('車種')" style="">車種</a>
+      </th>
+      <th rowspan="1">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('暫定金額')" style="">暫定金額</a>
+      </th>
+      <th rowspan="1">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('確定金額')" style="">確定金額</a>
+      </th>
+      <th rowspan="1">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('Luggage')" style="">荷物</a>
+      </th>
+      @*<th hidden>
+      <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('配車担当Id')" style="">配車担当Id</a>
+    </th>*@
+      @*<th hidden>
+        <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('顧客Id')" style="">顧客Id</a>
+      </th>*@
+    </tr>
+  </thead>
+  <tbody>
+
+    @{
+      var datalist = Model.AnkenDataLists.OrderBy(m => m.Anken_Order).ToList();
+    }
+
+    @foreach (var item in datalist)
+    {
+    <tr>
+      <td rowspan="1" width="70px">
+        <button class="btn btn-success" style="width: 100%; padding:0;" onclick="submitAnkenEdit(@(item.Anken_ID))">選択</button>
+      </td>
+
+      <td rowspan="1" align="center" width="70px">
+        @Html.DisplayFor(modelItem => item.Tantou_Name)
+      </td>
+      <td rowspan="1" align="center" width="70px">
+        @Convert.ToDateTime(item.START_PointDate).ToString("MM/dd")<br />
+        @*@Html.DisplayFor(modelItem => item.START_PointTime)*@
+      </td>
+      <td rowspan="1" align="center" width="70px">
+        @Convert.ToDateTime(item.END_PointDate).ToString("MM/dd")<br />
+        @*@Html.DisplayFor(modelItem => item.END_PointTime)*@
+      </td>
+      <td rowspan="1" align="left" width="250px">
+        @Html.DisplayFor(modelItem => item.KokyakuName)
+      </td>
+      <td rowspan="1" align="left" width="250px">
+        @Html.DisplayFor(modelItem => item.START_BuildingName)<br />
+        @Html.DisplayFor(modelItem => item.START_Address)
+      </td>
+      <td rowspan="1" align="left" width="250px">
+        @Html.DisplayFor(modelItem => item.END_BuildingName)<br />
+        @Html.DisplayFor(modelItem => item.END_Address)
+      </td>
+      <td rowspan="1" align="center" width="150px">
+        @Html.DisplayFor(modelItem => item.SyasyuDisplay)<br />
+        @Convert.ToInt32(item.Daisuu).ToString("0台")
+      </td>
+      <td rowspan="1" align="center" width="70px">
+        @Convert.ToInt32(item.ZanteiAmount).ToString("C")
+      </td>
+      <td rowspan="1" align="center" width="70px">
+        @Convert.ToInt32(item.KakuteiAmount).ToString("C")
+      </td>
+      <td rowspan="1" align="left" width="150px">
+        @Html.DisplayFor(modelItem => item.Luggage)
+      </td>
+      @*<td rowspan="1" hidden>
+      @Html.DisplayFor(modelItem => item.TantouID)
+    </td>*@
+      @*<td rowspan="1" hidden>
+        @Html.DisplayFor(modelItem => item.KokyakuId)
+      </td>*@
+    </tr>
+    }
+  </tbody>
+</table>
+
+
+<script>
+
+  $(document).ready(function () {
+
+    //$("#myTableKakoAnken").tablesorter({
+    //  theme: 'blue',
+    //  widthFixed: true,
+    //  widgets: ['zebra', 'columns', 'filter', 'resizable', 'stickyHeaders'],
+    //  //フィルタのリセットボタンを追加する場合に設定する。
+    //  widgetOptions: {
+    //    filter_reset: 'button.reset-filter-button',
+    //    resizable: true,
+    //  }
+    //});
+
+
+  });
+
+
+</script>

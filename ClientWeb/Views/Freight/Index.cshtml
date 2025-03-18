@@ -1,0 +1,46 @@
+﻿@{
+    ViewData["Title"] = "荷物情報";
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/Freight.css" />
+
+</head>
+<body>
+
+    <div class="">
+
+
+        <div id="tab">
+            <div class="cp_tab">
+
+                <input type="radio" name="cp_tab" id="tab1_1" aria-controls="otherFreightList" value="tab1_1">
+                <label for="tab1_1">他社荷物情報</label>
+                <input type="radio" name="cp_tab" id="tab1_2" aria-controls="theirFreightList" value="tab1_2">
+                <label for="tab1_2">自社荷物情報</label>
+
+                <div class="cp_tabpanels">
+                    <div id="otherFreightList" class="cp_tabpanel">
+                        <div>
+                            <div style="height:450px">
+                                <div class="chart-container" style="position: relative; height:400px; width:1500px;">
+                                    <h6>担当者の利益推移グラフ</h6>
+                                    <canvas id="chartYosyaSalesTracmeito"></canvas>
+                                </div>
+                            </div>
+                            <div id="theirFreightList">
+                                @*@await Html.PartialAsync("YosyaSalesTracmaitoList", Model)*@
+                            </div>
+                        </div>
+                    </div>
+                    <div id="theirFreightList" class="cp_tabpanel">
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+</body>

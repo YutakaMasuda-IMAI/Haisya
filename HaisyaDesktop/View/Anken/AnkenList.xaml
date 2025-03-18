@@ -1,0 +1,342 @@
+﻿<Window x:Class="HaisyaDesktop.View.Anken.AnkenList"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HaisyaDesktop.View.Anken"
+        xmlns:control="clr-namespace:HaisyaDesktop.Control"
+        mc:Ignorable="d"
+        WindowStyle="ThreeDBorderWindow"
+        Title="案件一覧画面" MinHeight="450" MinWidth="800" Loaded="Window_Loaded">
+  <Window.Resources>
+    <Style x:Key="ComboboxStyle" TargetType="ComboBox">
+      <Setter Property="Background" Value="White"/>
+      <!--<Setter Property="SelectedValuePath" Value="Id" />-->
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="FontSize" Value="18" />
+    </Style>
+    <Style x:Key="CenterGridHeaderStyle" TargetType="DataGridColumnHeader" 
+           BasedOn="{StaticResource {x:Type DataGridColumnHeader}}">
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    </Style>
+    <Style x:Key="CenterGridHeaderStyle2" TargetType="DataGridColumnHeader" 
+           BasedOn="{StaticResource DataGridColumnHeader2}">
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="Background" Value="PaleGreen" />
+    </Style>
+  </Window.Resources>
+
+  <Grid x:Name="MainGrid">
+    <Grid.RowDefinitions>
+      <RowDefinition x:Name="Head" Height="50" />
+      <RowDefinition Height="40" />
+      <RowDefinition Height="*" />
+      <RowDefinition x:Name="Tail" Height="50" />
+    </Grid.RowDefinitions>
+
+    <Grid Grid.Row="0">
+      <Grid.Background>
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+          <GradientStop Color="Black"/>
+          <GradientStop Color="LightGray" Offset="1"/>
+        </LinearGradientBrush>
+      </Grid.Background>
+
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition />
+        <ColumnDefinition />
+        <ColumnDefinition />
+        <ColumnDefinition />
+        <ColumnDefinition />
+        <ColumnDefinition />
+      </Grid.ColumnDefinitions>
+
+      <Button Name="btnMenu" Grid.Column="0" Content="メニュー" Style="{StaticResource MenuButtonCommonStyle}" Click="btnMenu_Click" />
+      <Button Name="btnMenu1" Grid.Column="1" Content="" Style="{StaticResource MenuButtonCommonStyle}" />
+      <Button Name="btnMenu2" Grid.Column="2" Content="" Style="{StaticResource MenuButtonCommonStyle}" />
+      <Button Name="btnMenu3" Grid.Column="3" Content="" Style="{StaticResource MenuButtonCommonStyle}" />
+      <Button Name="btnMenu4" Grid.Column="4" Content="" Style="{StaticResource MenuButtonCommonStyle}" />
+      <Button Name="btnMenu5" Grid.Column="5" Content="" Style="{StaticResource MenuButtonCommonStyle}" />
+    </Grid>
+
+    <Grid Grid.Row="3">
+      <Grid.Background>
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+          <GradientStop Color="Black" Offset="1"/>
+          <GradientStop Color="LightGray" Offset="0"/>
+        </LinearGradientBrush>
+      </Grid.Background>
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition />
+        <ColumnDefinition />
+        <ColumnDefinition />
+        <ColumnDefinition />
+        <ColumnDefinition />
+        <ColumnDefinition />
+      </Grid.ColumnDefinitions>
+
+      <Button x:Name="btnUnder1" Grid.Column="1" Content="" Style="{StaticResource MenuButtonCommonStyle}"  />
+      <Button x:Name="btnUnder2" Grid.Column="2" Content="" Style="{StaticResource MenuButtonCommonStyle}" />
+      <Button x:Name="btnUnder0" Grid.Column="0" Content="案件新規登録" Style="{StaticResource MenuButtonCommonStyle}" Click="AnkenAddNew_Click"  />
+      <Button x:Name="btnUnder4" Grid.Column="4" Content="" Style="{StaticResource MenuButtonCommonStyle}" />
+      <Button x:Name="btnUnder3" Grid.Column="3" Content="" Style="{StaticResource MenuButtonCommonStyle}" ></Button>
+    </Grid>
+
+    <Grid Grid.Row="1" Background="WhiteSmoke">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="0.18*" />
+        <ColumnDefinition Width="0.13*" />
+        <ColumnDefinition Width="0.1*" />
+        <ColumnDefinition Width="0.1*" />
+        <ColumnDefinition Width="0.32*" />
+        <!--<ColumnDefinition Width="0.1*" />-->
+      </Grid.ColumnDefinitions>
+
+      <DockPanel Grid.Column="0" Margin="1" >
+        <Button Content="前日" Width="60" Tag="Before" Click="TargetDateChange_Click" DockPanel.Dock="Left" />
+        <Button Content="翌日" Width="60" Tag="After" Click="TargetDateChange_Click" DockPanel.Dock="Right" />
+        <CalendarButton Width="20" Background="LightGreen" DockPanel.Dock="Right" Margin="3"></CalendarButton>
+        <TextBlock Text="{Binding TartgetDate.Value, StringFormat=yy/MM/dd}" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="20" />
+      </DockPanel>
+
+
+      <DockPanel Grid.Column="1" Margin="20,2,2,2" >
+        <TextBlock Text="案件担当：" VerticalAlignment="Center" FontSize="18"  />
+        <ComboBox x:Name="cboTantou" ItemsSource="{Binding TantouItems}" SelectedValue="{Binding SelectTantouID.Value}" SelectedValuePath="Id"  DisplayMemberPath="Name" Style="{StaticResource ComboboxStyle}"></ComboBox>
+      </DockPanel>
+      <DockPanel Grid.Column="2" Margin="10,2,2,2" >
+        <TextBlock Text="車種：" VerticalAlignment="Center" FontSize="18" />
+        <ComboBox ItemsSource="{Binding SyasyuItems}" SelectedValue="{Binding SelectSyasyu.Value}"  SelectedValuePath="Name"  DisplayMemberPath="Name" Style="{StaticResource ComboboxStyle}"></ComboBox>
+      </DockPanel>
+      <DockPanel Grid.Column="3" Margin="10,2,2,2" >
+        <TextBlock Text="型：" VerticalAlignment="Center" FontSize="18" />
+        <ComboBox ItemsSource="{Binding KataItems}" SelectedValue="{Binding SelectKata.Value}"  SelectedValuePath="Name"  DisplayMemberPath="Name" Style="{StaticResource ComboboxStyle}"></ComboBox>
+      </DockPanel>
+      <StackPanel Orientation="Horizontal" Grid.Column="4" Margin="20,0,1,0" >
+        <TextBlock Text="グループ化：" VerticalAlignment="Center" FontSize="18" />
+        <Border BorderBrush="Black" BorderThickness="1" CornerRadius="2" Padding="0" Margin="1,0,2,0" Background="Transparent">
+          <StackPanel Orientation="Horizontal" Margin="0" VerticalAlignment="Center">
+            <RadioButton x:Name="Group_none" Content="なし" GroupName="grouping" Margin="5,0,0,0" Tag="none" Checked="OnGroupingNone" FontSize="16" VerticalContentAlignment="Center" Padding="0" />
+            <RadioButton x:Name="Group_AnkenStatusDisplay" Content="ｽﾃｰﾀｽ" GroupName="grouping" Margin="-60,0,0,0" Tag="AnkenStatusDisplay" Checked="OnGrouping" FontSize="16" VerticalContentAlignment="Center" Padding="0" />
+            <RadioButton x:Name="Group_AnkenStep" Content="進捗" GroupName="grouping" Margin="-40,0,0,0" Tag="AnkenStep" Checked="OnGrouping" FontSize="16" VerticalContentAlignment="Center" Padding="0" />
+            <!--<RadioButton Content="案件" GroupName="grouping" Margin="-60,0,-10,0" Tag="AnkenKubunDisplay Checked="OnGrouping" FontSize="16" VerticalContentAlignment="Center" Padding="0" />-->
+            <RadioButton x:Name="Group_SyasyuDisplay" Content="車種" GroupName="grouping" Margin="-50,0,-40,0" Tag="SyasyuDisplay" Checked="OnGrouping" FontSize="16" VerticalContentAlignment="Center" Padding="0" />
+            <RadioButton x:Name="Group_Tantou_Name" Content="担当" GroupName="grouping" Margin="-10,0,-40,0" Tag="Tantou_Name" Checked="OnGrouping" FontSize="16" VerticalContentAlignment="Center" Padding="0" />
+            <TextBlock x:Name="RegulationSelected" Visibility="Hidden" Text="{Binding SelectOnGrouping.Value, UpdateSourceTrigger=PropertyChanged}" Width="0" />
+          </StackPanel>
+        </Border>
+      </StackPanel>
+
+    </Grid>
+
+    <Grid Grid.Row="2" >
+      <Grid >
+        <DataGrid x:Name="dgAnkenList" ItemsSource="{Binding AnkenList}" FontSize="14" RowHeight="40" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" >
+          <DataGrid.Columns>
+            <control:DataGridCheckBoxColumnWithAlignment Header="選択" Binding="{Binding Select}" Selector.IsSelected="False" HeaderStyle="{StaticResource CenterGridHeaderStyle}"  />
+
+            <DataGridTemplateColumn Header="案件画面" HeaderStyle="{StaticResource CenterGridHeaderStyle}" >
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate>
+                  <Button Name="btnDetail" Content="詳細" Width="80" Margin="0,1" Click="btnDetail_Click" FontSize="15" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+
+            <DataGridTemplateColumn Header="発注書" HeaderStyle="{StaticResource CenterGridHeaderStyle}" >
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate>
+                  <Button Name="btnPrintOrder" Content="発行" Width="80" Margin="0,1" Click="btnPrintOrder_Click" FontSize="15" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+
+            <DataGridTemplateColumn Header="案件複製" HeaderStyle="{StaticResource CenterGridHeaderStyle}" >
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate>
+                  <Button Name="btnCopy" Content="複製" Width="80" Margin="0,1" Click="btnCopy_Click" FontSize="15" />
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+
+            <control:DataGridTextColumnWithAlignment IsReadOnly="True" Header="配車&#10;担当" Binding="{Binding TantouID}" Visibility="Hidden" HeaderStyle="{StaticResource CenterGridHeaderStyle}" />
+            <control:DataGridTextColumnWithAlignment IsReadOnly="True" Header="配車&#10;担当" Binding="{Binding Tantou_Name}" HorizontalAlignment="Center" HeaderStyle="{StaticResource CenterGridHeaderStyle}" />
+
+            <!--<control:DataGridTextColumnWithAlignment IsReadOnly="True" Header="案件状況" Binding="{Binding AnkenStep}" />-->
+
+            <DataGridTemplateColumn Header="案件&#10;状況" IsReadOnly="True"  HeaderStyle="{StaticResource CenterGridHeaderStyle}">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate>
+                  <DockPanel >
+                    <TextBlock Text="{Binding AnkenStatusDisplay}" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0" >
+                      
+                    </TextBlock>
+                    <DockPanel.Style>
+                      <Style TargetType="DockPanel">
+                        <Style.Triggers>
+                          <DataTrigger Binding="{Binding Anken_Status}" Value="0">
+                            <Setter Property="Background" Value="Transparent" />
+                          </DataTrigger>
+                          <DataTrigger Binding="{Binding Anken_Status}" Value="1">
+                            <Setter Property="Background" Value="GoldenRod" />
+                          </DataTrigger>
+                          <DataTrigger Binding="{Binding Anken_Status}" Value="2">
+                            <Setter Property="Background" Value="LightYellow" />
+                          </DataTrigger>
+                          <DataTrigger Binding="{Binding Anken_Status}" Value="5">
+                            <Setter Property="Background" Value="Transparent" />
+                          </DataTrigger>
+                        </Style.Triggers>
+                      </Style>
+                    </DockPanel.Style>
+                  </DockPanel>
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+
+            <DataGridTemplateColumn Header="進捗&#10;状況" IsReadOnly="True" HeaderStyle="{StaticResource CenterGridHeaderStyle}" >
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate>
+                  <DockPanel >
+                    <TextBlock Text="{Binding AnkenStep}" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0" />
+                    <DockPanel.Style>
+                      <Style TargetType="DockPanel">
+                        <Style.Triggers>
+                          <DataTrigger Binding="{Binding AnkenStep}" Value="新規">
+                            <Setter Property="Background" Value="Transparent" />
+                          </DataTrigger>
+                          <DataTrigger Binding="{Binding AnkenStep}" Value="変更">
+                            <Setter Property="Background" Value="Transparent" />
+                          </DataTrigger>
+                          <DataTrigger Binding="{Binding AnkenStep}" Value="配車中">
+                            <Setter Property="Background" Value="Transparent" />
+                          </DataTrigger>
+                          <DataTrigger Binding="{Binding AnkenStep}" Value="配車確定">
+                            <Setter Property="Background" Value="Transparent" />
+                          </DataTrigger>
+                          <DataTrigger Binding="{Binding AnkenStep}" Value="傭車予定">
+                            <Setter Property="Background" Value="Plum" />
+                          </DataTrigger>
+                          <DataTrigger Binding="{Binding AnkenStep}" Value="傭車確定">
+                            <Setter Property="Background" Value="LightPink" />
+                          </DataTrigger>
+                        </Style.Triggers>
+                      </Style>
+                    </DockPanel.Style>
+                  </DockPanel>
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>
+
+            <!--<DataGridTemplateColumn Header="ステータス" IsReadOnly="True">
+              <DataGridTemplateColumn.CellTemplate>
+                <DataTemplate>
+                  <DockPanel >
+                    <TextBlock Text="{Binding AnkenStatus}" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0" />
+                    <DockPanel.Style>
+                      <Style TargetType="DockPanel">
+                        <Style.Triggers>
+                          <DataTrigger Binding="{Binding AnkenStatus}" Value="未確認">
+                            <Setter Property="Background" Value="Yellow" />
+                          </DataTrigger>
+                          <DataTrigger Binding="{Binding AnkenStatus}" Value="未確認">
+                            <Setter Property="Background" Value="OrangeRed" />
+                          </DataTrigger>
+                          <DataTrigger Binding="{Binding AnkenStatus}" Value="仮配車">
+                            <Setter Property="Background" Value="LightGreen" />
+                          </DataTrigger>
+                          <DataTrigger Binding="{Binding AnkenStatus}" Value="車番未連絡">
+                            <Setter Property="Background" Value="DodgerBlue" />
+                          </DataTrigger>
+                          <DataTrigger Binding="{Binding AnkenStatus}" Value="車番連絡済">
+                            <Setter Property="Background" Value="Transparent" />
+                          </DataTrigger>
+                          <DataTrigger Binding="{Binding AnkenStatus}" Value="案件共有中">
+                            <Setter Property="Background" Value="Violet" />
+                          </DataTrigger>
+                        </Style.Triggers>
+                      </Style>
+                    </DockPanel.Style>
+                  </DockPanel>
+                </DataTemplate>
+              </DataGridTemplateColumn.CellTemplate>
+            </DataGridTemplateColumn>-->
+
+            <!--<control:DataGridTextColumnWithAlignment IsReadOnly="True" Header="ステータス" Binding="{Binding AnkenStatus}" />-->
+
+            <control:DataGridTextColumnWithAlignment IsReadOnly="True" Header="積日" Binding="{Binding StartDatetimeDisplay}" HeaderStyle="{StaticResource CenterGridHeaderStyle}"  >
+             
+            </control:DataGridTextColumnWithAlignment>
+            <control:DataGridTextColumnWithAlignment IsReadOnly="True" Header="卸日" Binding="{Binding EndDatetimeDisplay}" HeaderStyle="{StaticResource CenterGridHeaderStyle}"  />
+
+            <control:DataGridTextColumnWithAlignment IsReadOnly="True" Header="顧客" Binding="{Binding KokyakuId}" Visibility="Hidden" HeaderStyle="{StaticResource CenterGridHeaderStyle}"  />
+            <control:DataGridTextColumnWithAlignment IsReadOnly="True" Header="顧客" Binding="{Binding KokyakuName}" />
+
+            <control:DataGridTextColumnWithAlignment IsReadOnly="True" Header="積地" Binding="{Binding StartAddressDisplay}" HeaderStyle="{StaticResource CenterGridHeaderStyle}"  />
+            <control:DataGridTextColumnWithAlignment IsReadOnly="True" Header="卸地" Binding="{Binding EndAddressDisplay}" HeaderStyle="{StaticResource CenterGridHeaderStyle}"  />
+
+            <control:DataGridTextColumnWithAlignment IsReadOnly="True" Header="車種" Binding="{Binding SyasyuDaisuDisplay}" HorizontalAlignment="Left" HeaderStyle="{StaticResource CenterGridHeaderStyle}"  />
+
+            <!--<control:DataGridTextColumnWithAlignment IsReadOnly="True" Header="荷物" Binding="{Binding FreightItemDisplay}" />-->
+
+            <control:DataGridTextColumnWithAlignment IsReadOnly="True" Header="暫定&#10;金額" Binding="{Binding ZanteiAmount, StringFormat={}{0:N0}}" HorizontalAlignment="Right" HeaderStyle="{StaticResource CenterGridHeaderStyle}"  />
+            <control:DataGridTextColumnWithAlignment IsReadOnly="True" Header="確定&#10;金額" Binding="{Binding KakuteiAmount, StringFormat={}{0:N0}}" HorizontalAlignment="Right" HeaderStyle="{StaticResource CenterGridHeaderStyle}"  />
+
+            <control:DataGridTextColumnWithAlignment IsReadOnly="True" Header="区分" Binding="{Binding TantouKubunDisplay}" HorizontalAlignment="Center" HeaderStyle="{StaticResource CenterGridHeaderStyle2}"  />
+            <control:DataGridTextColumnWithAlignment IsReadOnly="True" Header="担当&#10;車番" Binding="{Binding CarNum}" HorizontalAlignment="Center" HeaderStyle="{StaticResource CenterGridHeaderStyle2}"  />
+            <control:DataGridTextColumnWithAlignment IsReadOnly="True" Header="担当&#10;乗務員" Binding="{Binding DriverName}" HeaderStyle="{StaticResource CenterGridHeaderStyle2}"  />
+            <control:DataGridTextColumnWithAlignment IsReadOnly="True" Header="携帯電話" Binding="{Binding DriverPhoneNum}" HeaderStyle="{StaticResource CenterGridHeaderStyle2}"  />
+
+            <control:DataGridTextColumnWithAlignment IsReadOnly="True" Header="傭車１" Binding="{Binding SubCon1Display}" HeaderStyle="{StaticResource CenterGridHeaderStyle2}"  />
+            <control:DataGridTextColumnWithAlignment IsReadOnly="True" Header="傭車２" Binding="{Binding SubCon2Display}" HeaderStyle="{StaticResource CenterGridHeaderStyle2}"  />
+            <control:DataGridTextColumnWithAlignment IsReadOnly="True" Header="傭車３" Binding="{Binding SubCon3Display}" HeaderStyle="{StaticResource CenterGridHeaderStyle2}"  />
+
+          </DataGrid.Columns>
+          <DataGrid.GroupStyle>
+            <GroupStyle>
+              <GroupStyle.ContainerStyle>
+                <Style TargetType="{x:Type GroupItem}">
+                  <Setter Property="Margin" Value="0,0,0,10"/>
+                  <Setter Property="Template">
+                    <Setter.Value>
+                      <ControlTemplate TargetType="{x:Type GroupItem}">
+                        <Expander IsExpanded="True" Background="SlateBlue" Foreground="White">
+                          <Expander.Header>
+                            <StackPanel Orientation="Horizontal" >
+                              <TextBlock Text="{Binding Name}" Margin="5,0,5,0"/>
+                              <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="("/>
+                                <TextBlock Text="{Binding ItemCount}"/>
+                                <TextBlock Text=")"/>
+                              </StackPanel>
+                            </StackPanel>
+                          </Expander.Header>
+                          <Expander.Content>
+                            <ItemsPresenter />
+                          </Expander.Content>
+                        </Expander>
+                      </ControlTemplate>
+                    </Setter.Value>
+                  </Setter>
+                </Style>
+              </GroupStyle.ContainerStyle>
+            </GroupStyle>
+          </DataGrid.GroupStyle>
+          <DataGrid.RowStyle>
+            <Style TargetType="DataGridRow">
+              <Setter Property="Foreground" Value="Black"/>
+              <Setter Property="Background" Value="Beige"/>
+              <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                  <Setter Property="Foreground" Value="Black"/>
+                  <Setter Property="Background" Value="CornflowerBlue"/>
+                </Trigger>
+              </Style.Triggers>
+            </Style>
+            
+          </DataGrid.RowStyle>
+        </DataGrid>
+      </Grid>
+    </Grid>
+  </Grid>
+</Window>

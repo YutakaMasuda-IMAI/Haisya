@@ -1,0 +1,270 @@
+﻿@model AnkenModel.AnkenRegisterModel
+
+<div id="pointDetail">
+  <table id="tablePointList" width="100%">
+    <tbody>
+      @{
+        var pointlist = Model.PointList.OrderBy(m => m.Kubun).ThenBy(m => m.Point_Order).ToList();
+        for (int i = 0; i < pointlist.Count; i++)
+        {
+          <tr id="@(i)" data-id="@(i)">
+            <td style="padding-left: 0px;">
+              <div>
+                <div class="" style="display: flex; padding-right: 5px;">
+                  <div class="col-sm-10">
+                    @Html.Label("緯度", "緯度", new { @class = "col-form-label", @style = "width: 40px; padding: 0;" })
+                    @Html.TextBoxFor(model => Model.PointList[i].Lat, null, new { @class = "col-sm-4 pointInputCheck", @style = "background: none; border: none; padding: 0;", @readonly = "readonly" })
+                    @Html.Label("経度", "　経度", new { @class = "col-form-label", @style = "width: 60px; padding: 0" })
+                    @Html.TextBoxFor(model => Model.PointList[i].Lng, null, new { @class = "col-sm-4", @style = "background: none; border: none; padding: 0;", @readonly = "readonly" })
+                  </div>
+                  <div class="col-sm-2">
+                    <button name="PointList[@(i)].btnPointRegister" class="btn btn-anken" style="height: 20px; padding: 0; width: 100%; flex-flow: wrap-reverse; line-height: 0; "
+                            data-toggle="modal" data-backdrop="static" data-target="#modal-option" onclick="btnPointRegister_Click('PointList[@(i)]'); return false;">
+                      <span style="font-size: 12px; color: red; font-weight: bold; vertical-align: middle;">地点登録</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="" style="display: flex; padding-right: 5px;">
+                  <div class="col-sm-10" style="display: flex;">
+                    <label class="label-Title control-label align-self-center align-middle text-left" style="padding: 0; color: #FFFFFF; width: 18px;">住所</label>
+                    <div id="drop-area-@(i)" class="drop-area" style="border: .1em solid #bbb; padding: 0px 0px 0px 2px; margin: 0; background-color: white; width: 100%;"
+                         data-pointlist-i="@(i)"
+                         >
+                      @Html.TextBoxFor(model => model.PointList[i].BuildingName, null, new { @class = "", @Style = "border: none; width: 100%; background: none;", @readonly = "readonly" })<br />
+                      <div style="display:inline-flex">〒@Html.TextBoxFor(model => model.PointList[i].Post_code, null, new { @class = "", @Style = "border: none; width: 100%; background: none;", @readonly = "readonly" })</div><br />
+                      @Html.TextBoxFor(model => model.PointList[i].Address, null, new { @class = "", @Style = "border: none; width: 100%;; background: none;", @readonly = "readonly" })
+                    </div>
+                  </div>
+                  <div class="col-sm-2" style="">
+                    <button name="PointList[@(i)].GetAddress" onclick="GetAddress('PointList', @(i)); return false;" class="btn btn-anken size17" style="border-radius: 15%; height: 100%; width: 100%;"
+                                @(Model.PageType == "DilyReport" ? "disabled" : "")>設定</button>
+                  </div>
+                </div>
+                <div class="row" style="margin-top: 5px;">
+                  <div class="col-7" style="display: flex;min-width: 450px;">
+                    @Html.DropDownListFor(model => model.PointList[i].Kubun, new SelectList(Model.PointSelectList, "Value", "Text", "Selected"), new { @class = "form-control dropDownList", @style = "padding: 0; margin-left: 5px; width: 70px; text-align: center;" })
+                    <div name="divPointTime" style="display: flex;">
+                      <label class="label-Title control-label align-self-center align-middle text-left" style="padding: 0; color: #FFFFFF; text-align: right;">日時</label>
+                      @Html.EditorFor(model => model.PointList[i].PointDateTime, null, null, new { htmlAttributes = new { @Class = "form-control txt-time pointInputCheckTime", @Style = "padding: 0; margin-left: 5px; width: 180px; text-align: center;" }, })
+                      @Html.DropDownListFor(model => model.PointList[i].PointTimeKubun, new SelectList(Model.PointComboBoxItemsTimeKubun, "Value", "Text", "Selected"), new { @class = "form-control dropDownList", @style = "padding: 0; margin-left: 10px; width: 50px; text-align: center;" })
+                      @Html.DropDownListFor(model => model.PointList[i].PointStatusKubun, new SelectList(Model.PointComboBoxItemsStatusKubun, "Value", "Text", "Selected"), new { @class = "form-control dropDownList", @style = "padding: 0; margin-left: 10px; width: 50px; text-align: center;" })
+                    </div>
+                    @Html.ValidationMessageFor(model => model.PointList[i].PointDateTime, "", new { id = "SelectFerry", @class = "text-danger align-middle" })
+                    @Html.ValidationMessageFor(model => model.PointList[i].PointTimeKubun, "", new { id = "SelectFerry", @class = "text-danger align-middle" })
+                    @Html.ValidationMessageFor(model => model.PointList[i].PointStatusKubun, "", new { id = "SelectFerry", @class = "text-danger align-middle" })
+
+                  </div>
+                  <div class="col-4" style="display: flex; min-width: 250px;">
+                    <label class="label-Title control-label align-self-center align-middle text-left" style="padding: 0; color: #FFFFFF; text-align: right; margin-left: 10px; height: 26px; text-wrap: nowrap;">引き<br />込み</label>
+                    @Html.DropDownListFor(model => model.PointList[i].PointRoadTypeKubun, new SelectList(Model.PointSelectRoadTypeList, "Value", "Text", "Selected"), new { @onchange = "javascript:PointListDisplayChange()", @class = "form-control dropDownList", @style = "padding: 0; width: 70px; text-align: center;", })
+                    @{
+                      if (!(i == Model.PointList.Count - 1))
+                      {
+                        string btnDisabled = "";
+                        if (Model.PointList[i].Point_Order == 1)
+                        {
+                          btnDisabled = "disabled";
+                        }
+                        <button name="PointList[@(i)].addButton" class="btn btn-outline-danger" style="float: right; width: 60px; margin-left: 10px; height: 26px; padding: 1px 0 0 0;" onclick="btnAddPointOnClick(@(i)); return false;">追加</button>
+                        <button name="PointList[@(i)].deleteButton" class="btn btn-outline-danger" @(btnDisabled) style="float: right; width: 60px; margin-left: 10px; height: 26px; padding: 1px 0 0 0; " onclick="btnDeletePointOnClick(this); return false;">削除</button>
+                      }
+                    }
+                  </div>
+
+                </div>
+              </div>
+              <br />
+            </td>
+            @Html.HiddenFor(model => model.PointList[i].Address_Code)
+            @Html.HiddenFor(model => model.PointList[i].BuildingZid)
+            @Html.HiddenFor(model => model.PointList[i].BuildingZid_Attr)
+            @Html.HiddenFor(model => model.PointList[i].Address_Level)
+            @Html.HiddenFor(model => model.PointList[i].PointId)
+            @Html.HiddenFor(model => model.PointList[i].FlgGenchiKakunin)
+            @Html.HiddenFor(model => model.PointList[i].Address2)
+            @Html.HiddenFor(model => model.PointList[i].Address3)
+            @Html.HiddenFor(model => model.PointList[i].Address4)
+            @Html.HiddenFor(model => model.PointList[i].TitleDisplay)
+            @Html.HiddenFor(model => model.PointList[i].Point_Order)
+          </tr>
+        }
+      }
+    </tbody>
+  </table>
+</div>
+
+
+<script>
+
+  const PageTypeForPoint = '@(Model.PageType)';
+
+
+
+  /**
+ * ポイント行追加処理
+ * @@param paramID
+ */
+  async function btnAddPointOnClick(paramID) {
+    await btnAddPointExec(paramID);
+
+    if (PageTypeForPoint == "DilyReport") {
+      //行追加によるjqueryの読み直し
+      $('.drop-area').droppable({
+        drop: async function (event, ui) {
+          await pointDrop(event, ui);
+        },
+        over: async function (event, ui) {
+          await pointDropOver(event, ui);
+        },
+        out: async function (event, ui) {
+          await pointDropOut(event, ui);
+        },
+      });
+    }
+  };
+
+  async function btnAddPointExec(paramID) {
+
+    //let pointKubun = await alertThreeButtonsMsg("", "追加するポイントを選択してください。", "question", "積み", "経由", "卸し");
+
+    const BaseID = 0;
+
+    let rowID = Number(1);
+    let newID = 0;
+
+    // table要素を取得
+    let tableElem = document.getElementById('tablePointList');
+    // 行（tr要素）を取得
+    let rowElems = tableElem.rows;
+
+    // 取得した行（tr要素）を繰り返しHTMLを取得;
+    for (i = 0, len = rowElems.length; i < len; i++) {
+      if (rowElems[i].id == paramID) {
+        rowID = i + 1;
+      }
+      if (rowElems[i].id > paramID) {
+        rowElems[i].id = (Number(rowElems[i].id) + 1).toString();
+        let elements = rowElems[i].querySelectorAll('[name^="PointList["]');
+        elements.forEach((inputObj) => {
+          if (typeof inputObj.name != "undefined") {
+            if (inputObj.name.indexOf("Point_Order") > 0) {
+              inputObj.defaultValue = Number(inputObj.value) + 1;
+            };
+          }
+        });
+      }
+    }
+
+    var inputDateTime = $('#PointList_0__PointDateTime').val();
+    var date = new Date(inputDateTime);
+    if (!isNaN(date.getDate())) { inputDateTime = new Date(date); }
+
+    newID = paramID + 1
+
+    let row_len = insertRow(tableElem, newID, BaseID);
+    let elements = document.querySelectorAll('[name^="PointList[' + row_len + ']"]');
+    elements.forEach((inputObj) => {
+      inputObj.value = "";
+
+      //alert(inputObj.name + ';;' + inputObj.name.indexOf("deleteButton"));
+      if (inputObj.name.indexOf("deleteButton") > 0) {
+        inputObj.disabled = false;
+      };
+      if (inputObj.name.indexOf("addButton") > 0) {
+        inputObj.outerHTML = inputObj.outerHTML.replace("btnAddPointOnClick(" + BaseID + ")", "btnAddPointOnClick(" + rowID + ")");
+      };
+      if (inputObj.name.indexOf("GetAddress") > 0) {
+        inputObj.outerHTML = inputObj.outerHTML.replace("GetAddress('PointList', " + BaseID + ")", "GetAddress('PointList', " + row_len + ")");
+      };
+      if (inputObj.name.indexOf("btnPointRegister") > 0) {
+        inputObj.outerHTML = inputObj.outerHTML.replace("btnPointRegister_Click('PointList[" + BaseID + "]')", "btnPointRegister_Click('PointList[" + row_len + "]')");
+      };
+      if (inputObj.name.indexOf("PointRoadTypeKubun") > 0) inputObj.value = 2;
+      if (inputObj.name.indexOf("PointTimeKubun") > 0) inputObj.value = 1;
+      if (inputObj.name.indexOf("PointStatusKubun") > 0) inputObj.value = 1;
+      if (inputObj.name.indexOf("PointId") > 0) inputObj.defaultValue = row_len;
+      if (inputObj.name.indexOf("Point_Order") > 0) inputObj.defaultValue = Number(rowID + 1);
+      if (inputObj.name.indexOf("].Kubun") > 0) inputObj.addEventListener('change', PointListDisplayChange);
+      if (inputObj.name.indexOf("PointDateTime") > 0) inputObj.value = formatDate3(inputDateTime);
+    });
+    PointListDisplayChange();
+    if (typeof MapResize == 'function') { MapResize(); }
+
+    let $item = document.getElementById(newID);
+    $item.dataset.id = row_len;
+
+  };
+
+  /**
+  * 行追加処理
+  * */
+  function insertRow(tableElem, insertRow, baseRow) {
+    // 行（tr要素）を取得
+    let rowElems = tableElem.rows;
+    // tbody要素にtr要素（行）を最後に追加
+    let trElem = tableElem.tBodies[0].insertRow(insertRow);
+    trElem.id = (Number(insertRow)).toString();
+    let row_len = rowElems.length - 1;
+    let html = rowElems[baseRow].innerHTML;
+    trElem.innerHTML = repalceidName(row_len, html);
+    return row_len;
+  };
+
+  /**
+  *　idとnameの書換え
+  * @@param row_len
+  * @@param html
+  */
+  function repalceidName(row_len, html) {
+    html = replace_all(html, "PointList_0", "PointList_" + row_len + "");
+    html = replace_all(html, "PointList[0]", "PointList[" + row_len + "]");
+    html = replace_all(html, "drop-area-0", "drop-area-" + row_len + "");
+
+    return html;
+  }
+
+  /**　ポイントリストの画面制御処理　 */
+  function PointListDisplayChange() {
+
+    let val = this.value;
+    //alert(val);
+
+    // table要素を取得
+    let tableElem = document.getElementById('tablePointList');
+    // 行（tr要素）を取得
+    let rowElems = tableElem.rows;
+    // roadtypeの値
+    let kubun = "";
+
+    // 取得した行（tr要素）を繰り返しHTMLを取得;
+    for (i = 0, len = rowElems.length; i < len; i++) {
+      let elements = rowElems[i].querySelectorAll('[name$="].Kubun"]');
+      elements.forEach((inputObj) => {
+        kubun = inputObj.value;
+      });
+
+      if (kubun != null && kubun.length > 0) {
+        elements = rowElems[i].querySelectorAll('[Name^="PointList["]');
+        elements.forEach((inputObj) => {
+          if (inputObj.name.indexOf("PointDateTime") > 0) { if (kubun == "2") { inputObj.value = ""; inputObj.disabled = true; } else { inputObj.disabled = false; } };
+          if (inputObj.name.indexOf("PointTimeKubun") > 0) { if (kubun == "2") { inputObj.value = ""; inputObj.disabled = true; } else { inputObj.disabled = false; } };
+          if (inputObj.name.indexOf("PointStatusKubun") > 0) { if (kubun == "2") { inputObj.value = ""; inputObj.disabled = true; } else { inputObj.disabled = false; } };
+        });
+      }
+
+    }
+
+  };
+
+
+  /**
+ * ポイント行削除処理
+ * @@param paramID
+ */
+  function btnDeletePointOnClick(obj) {
+    // 削除ボタンを押下された行を取得
+    let tr = obj.parentNode.parentNode.parentNode.parentNode.parentNode;
+    // trのインデックスを取得して行を削除する
+    tr.parentNode.deleteRow(tr.sectionRowIndex);
+  };
+</script>

@@ -1,0 +1,52 @@
+﻿<Window x:Class="HaisyaDesktop.View.DataLoad"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HaisyaDesktop.View"
+        mc:Ignorable="d" Height="100" Width="300" Loaded="Window_Loaded" 
+        ResizeMode="NoResize" IsEnabled="False" ShowInTaskbar="False"
+        xmlns:System="clr-namespace:System;assembly=mscorlib"
+        Style="{DynamicResource  DefaultWindowStyle}">
+
+  <Window.Resources>
+    <System:Double x:Key="CaptionHeight">100</System:Double>
+    <Style TargetType="{x:Type Window}" x:Key="DefaultWindowStyle">
+      <Setter Property="WindowChrome.WindowChrome">
+        <Setter.Value>
+          <WindowChrome CornerRadius="3" GlassFrameThickness="0" ResizeBorderThickness="20" UseAeroCaptionButtons="False" CaptionHeight="{DynamicResource CaptionHeight}" />
+        </Setter.Value>
+      </Setter>
+      <Setter Property="SnapsToDevicePixels" Value="True"/>
+      <Setter Property="UseLayoutRounding" Value="True"/>
+      <Setter Property="Background" Value="#FF14A9FF"/>
+      <!-- 背景の色：灰色 -->
+      <Setter Property="BorderBrush" Value="#FF14A9FF"/>
+      <!-- 枠線の色：青色 -->
+      <Setter Property="BorderThickness" Value="1"/>
+      <!-- 枠線 -->
+      <Setter Property="Foreground" Value="White"/>
+    </Style>
+  </Window.Resources>
+
+  <Grid Margin="10">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="8*"/>
+      <RowDefinition Height="20"/>
+      <RowDefinition Height="2*"/>
+    </Grid.RowDefinitions>
+
+    <Grid Grid.Row="0">
+      <Label Content="データロード中..." HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" />
+    </Grid>
+
+    <StatusBar x:Name="sBar" Grid.Row="1" Margin="0,2" Padding="0">
+      <ProgressBar x:Name="pBar" Width="{Binding Path=ActualWidth, ElementName=sBar}" 
+                   Height="20" Value="{Binding StatusValue.Value}" Padding="0"  />
+      <!--<Label Content="{Binding StatusContent.Value}" Width="" Padding="0" Margin="0" />-->
+      <!--<Separator/>-->
+      <!--<Label Content="処理しています..."/>-->
+    </StatusBar>
+
+  </Grid>
+</Window>

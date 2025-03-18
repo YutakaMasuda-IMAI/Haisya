@@ -1,0 +1,161 @@
+﻿@model HaisyaWeb.Models.SettingModel.EmployeeMenuDto
+
+@{
+
+    var listData = Model.CompanyUserList.OrderBy(m => m.Employee_Number).ToList();
+}
+
+
+
+@*<div class="setting-separator">会社情報<span style="font-size: 12px; color: red;"></span></div>*@
+
+<div class="contents-wrap-middle">
+  <h4 class="">使い方</h4>
+  <span>
+    <span style="background-color: #FF9966 ">・同時に複数のユーザーが変更処理を実施するとデータが壊れたり、不整合が発生したりします。必ず１ユーザーのみで実施してください。</span>
+  </span>
+</div>
+
+<div class="clearfix">
+  @if (Model.EditEnabled)
+  {
+    <button class="btn btn-primary" style="width: 200px;margin: 2px;" onclick="ExecShowDetailOnClick('新規', ''); return false;">新規登録</button>
+  }
+  <div id="option_attendance_setting" class="sight-settings">
+    <div class="tables">
+      <table id="tableMain" width="100%" class="table table-setting table-bordered border-info table-striped">
+        <thead>
+          <tr align="center">
+            <th>ユーザID</th>
+            <th hidden>会社ID</th>
+            <th hidden>支店ID</th>
+            <th>支店<br />営業所<br />事業所</th>
+            <th>従業員CD</th>
+            <th>性</th>
+            <th>名</th>
+            <th>表示名</th>
+            <th>配車<br />担当</th>
+            <th>営業<br />担当</th>
+            <th>請求<br />担当</th>
+            <th>更新日</th>
+            <th>非表示</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          @{
+            int i = 1;
+            foreach (var item in listData)
+            {
+                    <tr id="@(i)">
+                      <td align="center" width="70px">@(item.User_ID)</td>
+                      <td align="center" width="100px" hidden>@(item.Company_ID)</td>
+                      <td align="center" width="100px" hidden>@(item.Branch_ID)</td>
+                      @{
+                          var shiten = Model.M_CompanyBranchList.FirstOrDefault(m => m.Branch_ID == item.Branch_ID);
+                          string EmployeeNumber = item.Employee_Number == 0 ? "" : item.Employee_Number.ToString();
+                      }
+                      <td align="center" width="130px">@(shiten.Branch_Name_Abbr)</td>
+                      <td align="center" width="100px">@(EmployeeNumber)</td>
+                      <td align="center" width="80px">@(item.Last_Name)</td>
+                      <td align="center" width="80px">@(item.First_Name)</td>
+                      <td align="center" width="100px">@(item.Display_Name)</td>
+
+                      <td align="center" width="40px">@if ((bool)item.Tantou_Flg) { <label style="font-weight:bold; color:blue;">あり</label> } else { <label>-</label> }</td>
+                      <td align="center" width="40px">@if ((bool)item.Eigyo_Flg) { <label style="font-weight:bold; color:blue;">あり</label> } else { <label>-</label> }</td>
+                      <td align="center" width="40px">@if ((bool)item.Seikyu_Flg) { <label style="font-weight:bold; color:blue;">あり</label> } else { <label>-</label> }</td>
+
+                      <td align="right" width="190px">@Convert.ToDateTime(item.UP_DATE).ToString("yyyy/MM/dd HH:mm:ss")</td>
+                      <td align="center" width="20px">@Html.CheckBoxFor(model => item.Del_Flg, new { @class = "form-control text-left form-check-input", @onclick = "return false;" })</td>
+                      <td align="center" width="90px" style="margin: 0; vertical-align: middle; ">
+                        @if (Model.EditEnabled)
+                        {
+                          <button class="btn btn-outline-success" style="width: 100%; padding: 0; font-size: 12px; height: 30px; " onclick="ExecShowDetailOnClick('@(item.User_ID)'); return false;">詳細</button>
+                        }
+                      </td>
+                    </tr>
+              i++;
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!--<div>-->
+  @*//モダール表示用のスペースを追加*@
+  <!--<div id="ModalHere" data-keyboard="false" data-backdrop="static"></div>
+  <div id="SortHere" hidden></div>
+</div>-->
+
+
+
+<script>
+
+  function ExecShowDetailOnClick(paramUserID) {
+
+      CommonWaitStart();
+
+    $.post('@Url.RouteUrl("Default", new { controller = "Setting", Action = "CompanyUserModal" })',
+      {
+        UserID: paramUserID,
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】" + response.partialView);
+          $("#ModalHere").html(response.partialView);
+          $("#ModalHere").find('.modal').modal('show');
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+          console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+        CommonWaitEnd();
+      });
+  };
+
+  function closeModel() {
+    $('#ModalHere').find('.modal').modal('hide');
+    $("#ModalHere").html('');
+  };
+
+  function closeModelAndRefresh() {
+    $('#ModalHere').find('.modal').modal('hide');
+    location.reload();
+    document.getElementById("btnSortCommit").disabled = "disabled";
+    alertInfo("登録が完了しました。");
+  };
+
+  function varidationCheckForOverlap(displayName, employeeNumber) {
+
+    // table要素を取得
+    var tableElem = document.getElementById('tableMain');
+
+    // 行（tr要素）を取得
+    var rowElems = tableElem.rows;
+
+    // 取得した行（tr要素）を繰り返しHTMLを取得
+    var htmlStr = '';
+    for (i = 1, len = rowElems.length; i < len; i++) {
+
+      var employeeNumberA = rowElems[i].cells[4].innerHTML;
+      var displayNameA = rowElems[i].cells[7].innerHTML;
+
+      //alert(syasyu + ";;;;" + kata);
+      //alert(syasyuA + ";;;;" + kataA);
+
+      if (employeeNumberA == employeeNumber || displayNameA == displayName) {
+        return true;
+      }
+    }
+
+    return false;
+
+  };
+</script>

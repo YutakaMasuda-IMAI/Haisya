@@ -1,0 +1,187 @@
+﻿@model HaisyaWeb.Models.HaisyaModel.AttendanceModalViewModel
+
+<div class="modal-content" style="background: #C0C0C0;">
+  <div class="modal-header" style="padding: 0.2rem 0 0 0;">
+    <div class="row" style="width: 100%;">
+      <div class="col-7">
+        <h1 class="modal-title fs-3" id="exampleModalLabel">休暇設定＆備考入力</h1>
+      </div>
+      <div class="col-5">
+        @if (Model.EditEnabled)
+        {
+          <button class="btn btn-success" onclick="clickRegisterAttendanceModa(); return false;">登録</button>
+        }
+        else
+        {
+          <button class="btn btn-success" disabled>登録</button>
+        }
+        <button id="btnClose2" class="btn btn-secondary" style="float:right;">閉じる</button>
+      </div>
+    </div>
+  </div>
+  <div class="model-body" style="margin: 0 3px;">
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAttendanceModal", @class = "contact-form", @style = "padding: 0;", @onsubmit = "return false;" }))
+    {
+      <div hidden>
+        @Html.TextBoxFor(model => model.EditEnabled)
+        @Html.TextBoxFor(model => model.EditEnabledForKintai)
+        @Html.TextBoxFor(model => model.Date, new{ id = "DateRegister"})
+        @Html.TextBoxFor(model => model.CompanyDriver.Driver_ID)
+        @Html.TextBoxFor(model => model.CompanyDriver.Employee_Number)
+      </div>
+      <table class="table jbc-table table-hedder" style="padding: 0; border-collapse: collapse; ">
+        <tbody>
+          <tr>
+            <th width="300px" colspan="2">
+              <div class="appeal-box box" style="vertical-align: middle; display: inline-block; padding: 0;">
+                <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0; pointer-events: none; visibility: hidden;" onselectstart="return false;" alt="<<">＜＜</span>
+                <input id="TargetDayLavelModal3" class="calender calenderModal3" type="text" readonly style="width: 210px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none; background: none;" value="1900/01/01" />
+                <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0; pointer-events: none; visibility: hidden;" onselectstart="return false;" alt=">>">＞＞</span>
+              </div>
+            </th>
+            <td width="30%" colspan="2">
+              @(Model.CompanyDriver.Display_Name)
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="row">
+        <div class="col-6" style="text-align: center;">車番:@(Model.CompanyDriver.Syaban_Number)</div>
+        <div class="col-6" style="text-align: center;">車種:@(Model.CompanyDriver.Syasyu)@(Model.CompanyDriver.Kata)</div>
+      </div>
+      <div class="">
+        <table class="table table-secondary" width="100%" style="" border="1">
+          <tr>
+            <th>休暇設定</th>
+            <td>
+              <div class="" id="holidaySettingDiv" style="display: -webkit-inline-box; _display: inline; padding: 0; width: 70%;">
+                @if (Model.EditEnabled && Model.EditEnabledForKintai)
+                {
+                  @Html.DropDownListFor(model => model.LeaveKubun, new SelectList(Model.LeaveKubunList, "Value", "Text", "Selected"), "休暇区分を選択", new { @class = "form-control list dropDownList", @style = "" })
+                }
+                else
+                {
+                  @Html.DropDownListFor(model => model.LeaveKubun, new SelectList(Model.LeaveKubunList, "Value", "Text", "Selected"), "休暇区分を選択", new { @class = "form-control list dropDownList readonly", @style = "", @disabled = "disabled" })
+                  @if (Model.KintaiCommit != null && Model.KintaiCommit.確定区分 == 1)
+                  {<label>締め済</label>}
+                }
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th>休暇理由</th>
+            <td>
+              <div class="" id="holidayReasonDiv" style="display: -webkit-inline-box; _display: inline; padding: 0; width: 70%;">
+                @if (Model.EditEnabled && Model.EditEnabledForKintai)
+                {
+                  @Html.DropDownListFor(model => model.LeaveReason, new SelectList(Model.LeaveReasonList, "Value", "Text", "Selected"), "休暇理由を選択", new { @class = "form-control list dropDownList", @style = "" })
+                }
+                else
+                {
+                  @Html.DropDownListFor(model => model.LeaveReason, new SelectList(Model.LeaveReasonList, "Value", "Text", "Selected"), "休暇理由を選択", new { @class = "form-control list dropDownList readonly", @style = "", @disabled = "disabled" })
+                  @if (Model.KintaiCommit != null && Model.KintaiCommit.確定区分 == 1)
+                  {<label>締め済</label>}
+                }
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <th>一覧用備考</th>
+            <td>
+              <div class="" style="display: inline-block; padding: 0; width: 50%;">
+                @if (Model.EditEnabled)
+                {
+                  @Html.TextBoxFor(model => model.Remark, new { @class = "form-control", @style = "width: 100%; display: inline-block; font-size: 12px; padding: 2px;", @maxlength = "100" })
+                }
+                else
+                {
+                  @Html.TextBoxFor(model => model.Remark, new { @class = "form-control", @style = "width: 100%; display: inline-block; font-size: 12px; padding: 2px;", @maxlength = "100", @readonly = "readonly" })
+                }
+              </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+    }
+  </div>
+</div>
+
+
+
+<script>
+  $(function () {
+
+     var disp = new Date("@Model.Date");
+
+    /** 日付を文字列にフォーマットする */
+    var formatted = `${disp.getFullYear()}\年${(disp.getMonth() + 1).toString().padStart(2, '0')}\月${disp.getDate().toString().padStart(2, '0')}\日\(${weeks[disp.getDay().toString()]}\)`.replace(/\n|\r/g, '');
+    $("input#TargetDayLavelModal3").val(formatted);
+    $('#Date').val('@Model.Date');
+  });
+
+  function clickRegisterAttendanceModa() {
+
+    if (VaridationCheckAttendanceModal()) {
+      return false;
+    }
+
+    //Formの参照を取る
+    let $form = $('#frmAttendanceModal');
+
+    $.ajax({
+          url: '@Url.RouteUrl("Default", new { controller = "Haisya", Action = "RegisterAttendanceModal" })',
+          type: 'post',
+          data: $form.serialize(),
+        }).done(function (response) {
+          if (response.message != null) {
+              alertError(`【エラー】${response.message}`);
+              return false;
+          } else {
+            console.log(response);
+            alertInfo("正常に登録されました。");
+            $('#btnClose2').trigger('click');
+          }
+        }).fail(function (xhr) {
+          alertError(xhr, "【ネットワークエラー】");
+            console.log(xhr);
+            return false;
+        }).always(function (xhr, msg) {
+            console.log(xhr, msg);
+        });
+
+    return false;
+  }
+
+  function VaridationCheckAttendanceModal() {
+
+    if ($('#LeaveKubun').val() > 0) {
+      if (!($('#LeaveReason').val() != null && $('#LeaveReason').val() > 0)) {
+        alertInputError("休暇理由が選択されていません");
+        $('#LeaveReason').css('background-color', 'lightcoral');
+        return true;
+      } else {
+        $('#LeaveReason').css('background-color', 'white');
+      }
+    };
+  };
+
+  function selectedChangeDayModal3(move) {
+    var dt = new Date($('#Search_SelectDay').val());
+    dt.setDate(dt.getDate() + move);
+    $("#Search_SelectDay").val(formatDate(dt));
+
+    /** 日付を文字列にフォーマットする */
+    var formatted = `${dt.getFullYear()}\年${(dt.getMonth() + 1).toString().padStart(2, '0')}\月${dt.getDate().toString().padStart(2, '0')}\日\(${weeks[dt.getDay().toString()]}\)`.replace(/\n|\r/g, '');
+    $("input#TargetDayLavelModal3").val(formatted);
+    dataListDisplay();
+  };
+
+  function formatDateModal(date) {
+    var yyyy = date.getFullYear();
+    var mm = ('00' + (date.getMonth() + 1)).slice(-2);
+    var dd = ('00' + date.getDate()).slice(-2);
+    const ymd = String(yyyy) + '/' + String(mm) + '/' + String(dd);
+    return ymd;
+  };
+
+</script>

@@ -1,0 +1,598 @@
+﻿@model HaisyaWeb.Models.ReportModel.PDFReportModel
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>車番連絡票</title>
+  <link href="~/lib/jquery-ui/dist/themes/base/jquery-ui.css" rel="stylesheet" />
+  <link href="~/lib/jquery-ui/dist/themes/base/theme.css" rel="stylesheet" />
+
+  <script src="~/lib/jquery/dist/jquery.js" charset="utf-8"></script>
+  <script src="~/lib/jquery-ui/dist/jquery-ui.js" charset="utf-8"></script>
+  <link href="~/css/Reset.css" rel="stylesheet" />
+  <style>
+    @@media print {
+      body, html {
+        width: 297mm; /* A4 landscape */
+        height: 210mm; /* A4 landscape */
+      }
+    }
+
+    @@page {
+      size: A4 landscape;
+      margin: 5mm;
+    }
+
+    /* Reset css page */
+    /* 請求書１のCSS */
+    *:where(:not(html, iframe, canvas, img, svg, video, audio):not(svg *, symbol *)) {
+      all: unset;
+      display: revert;
+    }
+    /* Preferred box-sizing value */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    /* Reapply the pointer cursor for anchor tags */
+    a, button {
+      cursor: revert;
+    }
+    /* Remove list styles (bullets/numbers) */
+    ol, ul, menu {
+      list-style: none;
+    }
+    /* For images to not be able to exceed their container */
+    img {
+      max-width: 100%;
+    }
+    /* removes spacing between cells in tables */
+    table {
+      border-collapse: collapse;
+    }
+    /* Safari - solving issue when using user-select:none on the body text input doesn't working */
+    input, textarea {
+      -webkit-user-select: auto;
+    }
+    /* revert the 'white-space' property for textarea elements on Safari */
+    textarea {
+      white-space: revert;
+    }
+    /* minimum style to allow to style meter element */
+    meter {
+      -webkit-appearance: revert;
+      appearance: revert;
+    }
+      /* reset default text opacity of input placeholder */
+      meter::placeholder {
+        color: unset;
+      }
+      /* fix the feature of 'hidden' attribute.
+                                                           display:revert; revert to element instead of attribute */
+      meter:where([hidden]) {
+        display: none;
+      }
+      /* revert for bug in Chromium browsers
+                                                           - fix for the content editable attribute will work properly.
+                                                           - webkit-user-select: auto; added for Safari in case of using user-select:none on wrapper element*/
+      meter:where([contenteditable]:not([contenteditable="false"])) {
+        -moz-user-modify: read-write;
+        -webkit-user-modify: read-write;
+        overflow-wrap: break-word;
+        -webkit-line-break: after-white-space;
+        -webkit-user-select: auto;
+      }
+      /* apply back the draggable feature - exist only in Chromium and Safari */
+      meter:where([draggable="true"]) {
+        -webkit-user-drag: element;
+      }
+
+    /* Reset css page */
+    .page-init {
+      opacity: 0;
+    }
+
+    .car-number-contact-sheet {
+      /* width: 297mm; */
+      /* height: 420mm; */
+      height: auto;
+      /* font-family: "msp gothic", "Hiragino Maru Gothic Pro", "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "HG丸ｺﾞｼｯｸM-PRO", "HGMaruGothicMPRO"; */
+      font-family: "ＭＳ Ｐゴシック", serif;
+      font-size: 14px;
+      line-height: 1.5;
+      /* backgound-colorの有効化 */
+      -webkit-print-color-adjust: exact;
+      letter-spacing: 1px;
+      /* 最後のページで改ページが入らないように制御 */
+    }
+
+      .car-number-contact-sheet:last-child {
+        page-break-after: auto;
+      }
+
+      .car-number-contact-sheet .title-wrapper {
+        /*         display: flex;
+                                    align-items: center;
+                                    justify-content: space-between;
+                                    padding-block-start: 10px;
+                                    font-weight: bold; */
+        display: table;
+        width: 100%;
+        /* padding-top: 10px; */
+        font-weight: bold;
+      }
+
+        .car-number-contact-sheet .title-wrapper .company {
+          width: fit-content;
+          font-size: 20px;
+          display: table-cell;
+          vertical-align: middle;
+          text-align: left;
+        }
+
+          .car-number-contact-sheet .title-wrapper .company .name {
+            font-size: 21px;
+            padding: 0 30px;
+            border-bottom: 2px solid #000;
+          }
+
+        .car-number-contact-sheet .title-wrapper .date {
+          text-align: right;
+          font-size: 18px;
+          padding: 0 20px;
+        }
+
+      .car-number-contact-sheet .detail-wrapper {
+        /* display: flex;
+                                justify-content: space-between;
+                                align-items: center; */
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+      }
+
+        .car-number-contact-sheet .detail-wrapper .content {
+          display: table-cell;
+          vertical-align: middle;
+          width: 32%;
+        }
+
+          .car-number-contact-sheet .detail-wrapper .content .fax {
+            font-size: 18px;
+            margin: 0 auto;
+            margin-bottom: 10px;
+            width: fit-content;
+            padding-inline-end: 30px;
+            font-weight: bold;
+          }
+
+            .car-number-contact-sheet .detail-wrapper .content .fax .num {
+              font-size: 24px;
+              font-style: italic;
+              color: #000;
+            }
+
+          .car-number-contact-sheet .detail-wrapper .content .text-light {
+            font-size: 14px;
+            text-align: center;
+            font-family: "游ゴシック体", YuGothic, "游ゴシック Medium", "Yu Gothic Medium", "游ゴシック", "Yu Gothic", sans-serif;
+          }
+
+          .car-number-contact-sheet .detail-wrapper .content .title {
+            display:inline-block;
+            font-size: 30px;
+            padding: 5px 40px;
+            width: fit-content;
+            border-bottom: 1px solid #000;
+            font-weight: bold;
+            line-height: 1;
+          }
+
+          .car-number-contact-sheet .detail-wrapper .content .name {
+            font-size: 18px;
+            font-weight: bold;
+          }
+
+          .car-number-contact-sheet .detail-wrapper .content .text {
+            font-size: 12px;
+            font-weight: bold;
+          }
+
+            .car-number-contact-sheet .detail-wrapper .content .text a {
+              color: #000;
+            }
+
+            .car-number-contact-sheet .detail-wrapper .content .text.mb {
+              /* margin-block-end: 25px; */
+              margin-bottom: 25px;
+            }
+
+          .car-number-contact-sheet .detail-wrapper .content:nth-child(2) {
+            width: 40%;
+          }
+
+          .car-number-contact-sheet .detail-wrapper .content:nth-child(3) {
+            width: 28%;
+          }
+
+      .car-number-contact-sheet table {
+        border: 2px solid #000;
+        font-size: 21px;
+        text-align: center;
+        box-sizing: border-box;
+        width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        table-layout: fixed;
+      }
+
+        .car-number-contact-sheet table td, .car-number-contact-sheet table table th {
+          /* border-inline: 1px solid #000;
+                                    padding-inline: 5px; */
+          /* border-left: 1px solid #000; */
+          /* border-right: 1px solid #000; */
+          padding-left: 5px;
+          padding-right: 5px;
+          line-height: 140%;
+          text-align: right; /* セルはデフォルトで右寄せ */
+          break-inside: avoid; /* テーブルの行で改ページ禁止 */
+          page-break-inside: avoid;
+          text-align: center;
+        }
+
+        /* .car-number-contact-sheet .table-detail-wrap {
+                    page-break-after: always;
+                  } */
+
+        .car-number-contact-sheet table tr {
+          /* display: flex; */
+          /* border-block-end: 3px double #000; */
+          border-bottom: 3px double #000;
+          page-break-inside: avoid !important;
+        }
+
+          .car-number-contact-sheet table tr .bd {
+            /* border-block-start: 1px solid #000; */
+            border-top: 1px solid #000;
+            width: 100%;
+            /* line-height: 1; */
+            min-height: 22.34px;
+          }
+
+          .car-number-contact-sheet table tr .text {
+            letter-spacing: -3px;
+            /* line-height: 1; */
+            min-height: 22.34px;
+          }
+
+          .car-number-contact-sheet table tr td span {
+            text-align: center;
+          }
+
+          .car-number-contact-sheet table tr td span.line {
+            display: inline-block;
+            width: 100%;
+            height: 1px;
+            background-color: black;
+            margin: 0;
+          }
+
+          .car-number-contact-sheet table tr th,
+          .car-number-contact-sheet table tr td {
+            /* border-inline-end: 1px solid #000; */
+            display: table-cell;
+            border-right: 1px solid #000;
+            line-height: 30px;
+            padding: 0;
+            word-wrap: break-word;
+            word-break: break-all;
+            white-space: normal;
+            vertical-align: middle;
+          }
+
+            .car-number-contact-sheet table tr td .row {
+              height: 50%;
+            }
+
+          .car-number-contact-sheet table tr th {
+            overflow: hidden;
+          }
+
+            .car-number-contact-sheet table tr th .text {
+              line-height: 1.1;
+            }
+
+            .car-number-contact-sheet table tr th .bd {
+              line-height: 1.1;
+              margin-top: -2px;
+              text-align: center;
+            }
+
+            .car-number-contact-sheet table tr th:last-child {
+              border: none;
+            }
+
+          .car-number-contact-sheet table tr td {
+            vertical-align: middle;
+            letter-spacing: -1px;
+            /* white-space: nowrap; */
+            overflow: hidden;
+          }
+
+            .car-number-contact-sheet table tr td a {
+              color: #000;
+              letter-spacing: 0;
+            }
+
+            .car-number-contact-sheet table tr td:nth-child(1) {
+              width: 4%;
+            }
+
+            .car-number-contact-sheet table tr td:nth-child(2) {
+              width: 8.4%;
+            }
+
+            .car-number-contact-sheet table tr td:nth-child(3) {
+              width: 8.5%;
+            }
+
+            .car-number-contact-sheet table tr td:nth-child(4) {
+              width: 10%;
+            }
+
+            .car-number-contact-sheet table tr td:nth-child(5) {
+              width: 16%;
+            }
+
+            .car-number-contact-sheet table tr td:nth-child(6) {
+              width: 11%;
+            }
+
+            .car-number-contact-sheet table tr td:nth-child(7) {
+              width: 10%;
+            }
+
+            .car-number-contact-sheet table tr td:nth-child(8) {
+              width: 17.1%;
+            }
+
+            .car-number-contact-sheet table tr td:nth-child(9) {
+              width: 15%;
+            }
+
+            .car-number-contact-sheet table tr td:last-child {
+              border: none;
+            }
+
+          .car-number-contact-sheet table tr:first-child {
+            /* border-block-end: 2px solid #000; */
+            border-bottom: 2px solid #000;
+          }
+
+        .car-number-contact-sheet table .last {
+          border: none;
+          height: 125px;
+        }
+
+          .car-number-contact-sheet table .last td {
+            border: none;
+            width: 100% !important;
+          }
+
+        .car-number-contact-sheet table tbody {
+          margin-bottom: 10px;
+        }
+  </style>
+</head>
+<body class="car-number-contact-sheet" style="position: relative">
+  <div class="page-init">
+    <div class="title-wrapper">
+      <p class="company"><span class="name">@(Model.CarNumberContactSheet.CommonInfo.CustomerName)</span>御中</p>
+      <p class="date">@Model.CarNumberContactSheet.CommonInfo.Day.ToString("yyyy年M月d日")</p>
+    </div>
+    <div class="detail-wrapper">
+      <div class="content">
+        <p class="fax">送付先FAXNo.<span class="num">@(Model.CarNumberContactSheet.CommonInfo.CustomerFax)</span></p>
+        <p class="text-light">いつも、お世話になっております。</p>
+        <p class="text-light">下記の通り車番をご連絡致します。</p>
+      </div>
+      <div class="content">
+        <h1 class="title">車番連絡表</h1>
+      </div>
+      <div class="content">
+        <p class="name">@(Model.CarNumberContactSheet.CommonInfo.CompanyName)</p>
+        <p class="text">　〒@(Model.CarNumberContactSheet.CommonInfo.CompanyPost)　@(Model.CarNumberContactSheet.CommonInfo.CompanyAddress)</p>
+        <p class="text">　  　TEL　@(Model.CarNumberContactSheet.CommonInfo.CompanyPhone)</p>
+        <p class="text">　  　FAX　@(Model.CarNumberContactSheet.CommonInfo.CompanyFax)</p>
+        <p class="text">　 配車担当 ： @(Model.CarNumberContactSheet.CommonInfo.CompanyTantouName)</p>
+        <p class="text">　  　携帯a   ： @(Model.CarNumberContactSheet.CommonInfo.TantouPhone)</p>
+        <p class="text mb">　 E-mail   ：@(Model.CarNumberContactSheet.CommonInfo.CompanyEmail)</p>
+        <p class="text">　  　URL   ： @(Model.CarNumberContactSheet.CommonInfo.CompanyUrl)</p>
+      </div>
+    </div>
+    <div class="table-detail-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 4%;"><p>NO</p></th>
+            <th style="width: 8.4%;"><p class="text">積日</p><p class="bd">積場所</p></th>
+            <th style="width: 8.5%;"><p class="text">卸日</p><p class="bd">卸場所</p></th>
+            <th style="width: 10%;"><p>会社名</p></th>
+            <th style="width: 16%;"><p>車　　番</p></th>
+            <th style="width: 11%;"><p>車種</p></th>
+            <th style="width: 10%;"><p>乗務員</p></th>
+            <th style="width: 17.1%;"><p>携帯番号</p></th>
+            <th style="width: 15%;"><p>備考</p></th>
+          </tr>
+        </thead>
+        <tbody>
+          @{
+            int i = 1;
+          }
+          @foreach (var item in Model.CarNumberContactSheet.CarNumberContactSheetList)
+          {
+            <tr data-row="@i">
+              <td>@(i++)</td>
+              <td>
+                <span>
+                  @item.StartDate.ToString("M月d日(ddd)", new System.Globalization.CultureInfo("ja-JP"))
+                </span>
+                <span class="line"></span>
+                <span>
+                  @item.StartAddress
+                </span>
+              </td>
+              <td>
+                <span>
+                  @item.EndDate.ToString("M月d日(ddd)", new System.Globalization.CultureInfo("ja-JP"))
+                </span>
+                <span class="line"></span>
+                <span>
+                  @item.EndAddress
+                </span>
+              </td>
+              <td>@item.CompanyNameAbbr</td>
+              <td>@item.SyabanNumber</td>
+              <td>@item.SyasyuDisplay</td>
+              <td>@item.DriverName</td>
+              <td>@item.DriverPhone</td>
+              <td>@item.Note</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="page-print">
+  </div>
+  <script>
+    function getDPI() {
+      const dpi = 96 * window.devicePixelRatio;
+      return dpi;
+    }
+
+    function getA4Dimensions(dpi) {
+      // A4 (210mm x 297mm)
+      const widthInInches = 210 / 25.4; // A4 width in inches
+      const heightInInches = 297 / 25.4; // A4 height in inches
+
+      const widthInPixels = Math.round(widthInInches * dpi);
+      const heightInPixels = Math.round(heightInInches * dpi);
+
+      return {
+        width: widthInPixels + 120 * widthInInches / heightInInches,
+        height: heightInPixels + 120
+      };
+    }
+    const sizeA4 = getA4Dimensions(getDPI())
+    console.log(sizeA4);
+    // $("body").css("width", sizeA4.height + "px");
+
+    // Height of A4
+    const pageHeight = Math.round(sizeA4.width + 38);
+    console.log("pageHeight: ", pageHeight);
+    $(document).ready(function () {
+      // pageHeight+=100;
+      const startTime = new Date().getTime();
+      function createPages() {
+        const originalTable = $(".table-detail-wrap");
+        const rows = originalTable.find("tbody tr");
+        const totalRows = rows.length;
+        let currentHeight = 0;
+        let startIndex = 0;
+        let indexFirst = 0;
+        let breackFirst = 0;
+
+        const titleWrapperHeight = $(".title-wrapper").outerHeight(true);
+        const detailWrapperHeight = $(".detail-wrapper").outerHeight(true);
+        const thead = $(".table-detail-wrap table thead").outerHeight(true);
+
+        currentHeight = titleWrapperHeight + detailWrapperHeight;
+        let lastTableClone = null;
+        rows.each(function (index) {
+          currentHeight += $(this).outerHeight(true);
+          startIndex++;
+          if (currentHeight > pageHeight) {
+            lastTableClone = copyTableAndRemoveRowsBeforeIndex(originalTable, index);
+            currentHeight = 0;
+            if (breackFirst == 0) {
+              indexFirst = index;
+            }
+            breackFirst++;
+          }
+        });
+
+        rows.slice(indexFirst).remove();
+
+      }
+
+      function copyTableAndRemoveRowsBeforeIndex(originalTable, startIndex) {
+        const tableClone = originalTable.clone();
+        const rows = tableClone.find("tbody tr");
+        const totalRows = rows.length;
+        $(".page-init").append(tableClone);
+        const thead = $(".table-detail-wrap table thead").outerHeight(true);
+        let currentHeight = thead;
+        rows.each(function (i) {
+          if (i < startIndex) {
+            $(this).remove();
+          }
+          else {
+            currentHeight += $(this).outerHeight(true);
+            if (currentHeight > pageHeight) {
+              $(this).next().nextAll().remove();
+            }
+          }
+        });
+
+        return tableClone;
+      }
+
+      // createPages();
+
+      let html = $("html").html();
+      html = html.replace(/\.page-init/g, "._temp");
+
+      const url = '@Url.RouteUrl("Default", new { controller = "Report", Action = "CreatePdfBill" })'
+
+      const blob = new Blob([html], { type: 'text/plain' });
+      const formData = new FormData();
+      formData.append('fileHtml', blob, 'largeData.txt');
+      $.ajax({
+        url,
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        xhrFields: {
+          responseType: 'blob'
+        },
+        success: function (blob) {
+          const url = URL.createObjectURL(blob);
+
+          $("body").css("width", "100%")
+          $("body").css("overflow", "hidden");
+
+          const iframe = document.createElement("iframe");
+          iframe.src = url;
+          iframe.type = "application/pdf";
+          iframe.style.width = "100%";
+          iframe.style.height = "100vh";
+          iframe.style.border = "none";
+          document.body.appendChild(iframe);
+
+          $(".page").remove();
+          $("div").remove();
+
+          const endTime = new Date().getTime();
+          const totalTime = (endTime - startTime) / 1000;
+          console.log(`Total time: ${totalTime}s`)
+        }
+      });
+    });
+  </script>
+</body>
+</html>

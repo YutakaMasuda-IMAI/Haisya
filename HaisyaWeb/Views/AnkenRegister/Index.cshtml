@@ -1,0 +1,199 @@
+﻿@model HaisyaWeb.Models.AnkenModel.SearchModelForAnkenList
+
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "登録選択";
+}
+
+
+<head>
+  <meta charset="UTF-8">
+  <title>Display a map</title>
+  <link href="~/css/Anken.css" rel="stylesheet" />
+</head>
+
+<style>
+
+  .contact-form .btn {
+    height: 40%;
+    width: 95%;
+    margin-top: 4%;
+    font-size: 30px;
+    padding: 0px;
+  }
+
+  .contact-form .div {
+    height: 85%;
+    width: 45%;
+    margin-top: 0.8%;
+    font-size: 30px;
+  }
+
+  .contact-form .control-label {
+    font-size: 20px;
+    color: red;
+    margin-left: 5rem;
+  }
+
+</style>
+
+<body>
+  <form id="frmMain" class="contact-form">
+    <div hidden>
+      @Html.TextBoxFor(model => Model.SelectDay)
+      @Html.TextBoxFor(model => Model.SelectTantou)
+      @Html.TextBoxFor(model => Model.SelectSyasyu)
+      @Html.TextBoxFor(model => Model.SelectKata)
+      @Html.TextBoxFor(model => Model.SelectGroup)
+      @Html.TextBoxFor(model => Model.BackMenuAction)
+    </div>
+
+    <table width="100%">
+      <tr>
+        <td>
+          <div role="document">
+            <div class="">
+              <div id="divAnkenSelectKubun" class="model-body" style="">
+                <div style="text-align: center; height: 500px;">
+                  <div style="display: inline-flex; ">
+                    <h2 style="padding: 1rem 0 0 0;">まずは、登録する案件の種類を選択してください。</h2>
+                    @if (Model.BackMenuAction == "Home") { }
+                    else
+                    {<button name="btnClose" value="Close" class="btn btn-outline-success" style="width: 200px; margin: 5px; margin-left: 50px;" onclick="BackMenu(); return false;">閉じる</button>}
+                  </div>
+                  <div style="display: inline-flex; width: 90%; height: calc(100% - 90px); margin-top: 1rem;" class="center">
+                    <div class="row" style="padding: 0 1em; border: .3em solid #00FF00; border-radius: 5px; margin: 0; font-size: 20px; width: 100%; vertical-align: middle; display: inline-flex; ">
+                      <div class="col-4" style="">
+                        <button id="btnAnkenKubun1" name="btnAnkenKubun" value="0" class="btn btn-outline-primary button-30" style="" onclick="return false;">自動車運送</button>
+                        @*<button id="btnAnkenKubun2" name="btnAnkenKubun" value="1" class="btn btn-outline-primary button-30" style="" onclick="return false;">自動車運送<br />(過去案件から)</button>*@
+                      </div>
+                      <div class="col-4" style="border-left: .1em solid #00FF00; ">
+                        <button id="btnAnkenKubun3" name="btnAnkenKubun" value="2" class="btn btn-outline-warning button-30" style="margin-left: 10px; " onclick="return false;">利用運送</button>
+                        @*<button id="btnAnkenKubun4" name="btnAnkenKubun" value="3" class="btn btn-outline-warning button-30" style="margin-left: 10px; " onclick="return false;">利用運送<br />(過去案件から)</button>*@
+                      </div>
+                      <div class="col-4" style="border-left: .1em solid #00FF00; ">
+                        <button id="btnAnkenKubun5" name="btnAnkenKubun" value="4" class="btn btn-outline-danger button-30" style="margin-left: 20px; " onclick="return false;">専属</button>
+                      </div>
+                    </div>
+                  </div>
+                  
+                </div>
+                <label class="font-weight-bolder control-label" style="">※「自動車運送」でも傭車登録は出来ます。（自車運送の可能性がある場合はこちらで登録をしてください。）</label><br />
+                <label class="font-weight-bolder control-label" style="">※「利用運送」では、傭車登録（見積原価不要）に特化してます。（自車運送が絶対にない場合はこちらから登録してください。）</label>
+
+              </div>
+              
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </form>
+
+
+</body>
+
+<script>
+
+$(function() {
+  $(document).ready(function () {
+
+    
+
+  });
+
+  
+
+
+  $('button[name="btnAnkenKubun"]').on('click', function (event) {
+    var val = $(this).val();
+    $('#Anken_Kubun').val(val);
+    Trans(val);
+  });
+
+
+});
+
+
+
+/**
+  *　前の画面に戻る
+  * */
+function BackMenu() {
+
+  if ($('#WebViewFlg').val() == 0) {
+    logout();
+  }
+
+  var form = document.createElement('form');
+  form.id = "formBackMenu";
+
+  form.action = '@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "BackMenu" })';
+  form.method = 'POST';
+
+  // body に追加
+  document.body.appendChild(form);
+
+  var html = '';
+  html += '            <input type="hidden" id="SelectDay" name="SelectDay" value="' + $('#SelectDay').val() + '" />';
+  html += '            <input type="hidden" id="SelectTantou" name="SelectTantou" value="' + $('#SelectTantou').val() + '" />';
+  html += '            <input type="hidden" id="SelectSyasyu" name="SelectSyasyu" value="' + $('#SelectSyasyu').val() + '" />';
+  html += '            <input type="hidden" id="SelectKata" name="SelectKata" value="' + $('#SelectKata').val() + '" />';
+  html += '            <input type="hidden" id="SelectGroup" name="SelectGroup" value="' + $('#SelectGroup').val() + '" />';
+  html += '            <input type="hidden" id="BackMenuAction" name="BackMenuAction" value="' + $('#BackMenuAction').val() + '" />';
+
+  form.innerHTML = html;
+  form.submit();
+
+
+};
+
+
+  /**
+  *　各登録画面に遷移
+  * */
+  function Trans(val) {
+
+    if ($('#WebViewFlg').val() == 0) {
+      logout();
+    }
+
+    var form = document.createElement('form');
+
+    switch (val) {
+      case '2':   ///利用運送
+        form.action = '@Url.RouteUrl("Default", new { controller = "AnkenRiyoUnso", Action = "RiyoUnsoIndex" })';
+        break;
+      case '3':   ///利用運送 過去案件
+        form.action = '@Url.RouteUrl("Default", new { controller = "AnkenRiyoUnso", Action = "RiyoUnsoIndex" })';
+        break;
+      case '4': ///専属
+        form.action = '@Url.RouteUrl("Default", new { controller = "AnkenSenzoku", Action = "SelectSenzokuDriver" })';
+        break;
+      case '1':   ///自動車運送 過去案件
+        form.action = '@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "SelectKakoAnkenList" })';
+        break;
+      default:  ///自動車運送
+        form.action = '@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "RegisterIndex" })';
+        break;
+    };
+
+    form.method = 'POST';
+
+    // body に追加
+    document.body.appendChild(form);
+
+    var html = '';
+    html += '            <input type="hidden" id="SelectDay" name="SelectDay" value="' + $('#SelectDay').val() + '" />';
+    html += '            <input type="hidden" id="SelectTantou" name="SelectTantou" value="' + $('#SelectTantou').val() + '" />';
+    html += '            <input type="hidden" id="SelectSyasyu" name="SelectSyasyu" value="' + $('#SelectSyasyu').val() + '" />';
+    html += '            <input type="hidden" id="SelectKata" name="SelectKata" value="' + $('#SelectKata').val() + '" />';
+    html += '            <input type="hidden" id="SelectGroup" name="SelectGroup" value="' + $('#SelectGroup').val() + '" />';
+    html += '            <input type="hidden" id="BackMenuAction" name="BackMenuAction" value="' + $('#BackMenuAction').val() + '" />';
+
+    form.innerHTML = html;
+    form.submit();
+
+  };
+
+</script>

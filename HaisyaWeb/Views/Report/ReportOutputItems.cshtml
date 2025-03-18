@@ -1,0 +1,316 @@
+﻿@model HaisyaWeb.Models.ReportModel.SettingReportOutputModel
+@*
+  For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<body id="item">
+  <div id="hiddenItem" hidden>
+    @Html.HiddenFor(model => Model.ItemMasterSelected)
+    @Html.HiddenFor(model => Model.ItemSelected)
+    @Html.HiddenFor(model => Model.DataUnsaved)
+  </div>
+  <div class="col-4">
+    <div style="padding: 8px; background: WhiteSmoke; height: 600px; overflow: auto; border-top: 1px solid #ffcc99;">
+      <table id="tableMasterItem" class="table table-setting table-bordered border-info table-hover" width="100%" style="" border="1">
+        <thead>
+          <tr align="center" style="height: 30px;">
+            <th align="center">項目名</th>
+            <th align="center">初期並び順</th>
+          </tr>
+        </thead>
+        <tbody>
+          @{
+            @foreach (var itemMaster in Model.ReportOutputMasterItems)
+            {
+              <tr class="@(itemMaster.IsAdded ? "isadded" : "")" style="cursor: pointer; height: 30px;" data-id="@(itemMaster.Report_Output_Item_ID)">
+                <td align="left" width="100px">
+                  @(itemMaster.Display_Title)
+                  @if (itemMaster.Report_ItemFlg == 1)
+                  {
+                    <span class="required" style="font-size: 20px"></span>
+                  }
+                </td>
+                <td align="center" width="40px">
+                  @(itemMaster.Sort_Order)
+                </td>
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="col-2" style="margin-top: 64px">
+    <div class="d-flex flex-column align-items-center gap-4">
+      <div>
+        <button id="addButton" value="add" style="width: 100px;" class="btn btn-primary align-items-end" onclick="onAdd();return false;">追加</button>
+      </div>
+      <div>
+        <button id="deleteButton" style="width: 100px;" class="btn btn-danger align-items-end" onclick="onDelete();return false;">削除</button>
+      </div>
+    </div>
+  </div>
+  <div class="col-6">
+    <div style="padding: 8px; background: WhiteSmoke; height: 600px; overflow: auto; border-top: 1px solid #ffcc99;">
+      <table id="tableItem" class="table table-setting table-bordered border-info table-hover" width="100%" style="" border="1">
+        <thead>
+          <tr align="center" style="height: 30px;">
+            <th align="center">項目名</th>
+            <th align="center">並び順</th>
+            <th align="center">CSVタイトル</th>
+          </tr>
+        </thead>
+        <tbody id="list-report-output">
+          @{
+            int i = 0;
+            @foreach (var item in Model.ReportOutputItems)
+            {
+              <tr style="cursor: pointer;" data-id="@(item.Report_Output_Item_ID)" class="@(item.Report_ItemFlg == 1 ? "isrequied" : "")">
+                <td align="left" width="40%">
+                  @(item.Display_Title)
+                  @if (item.Report_ItemFlg == 1)
+                  {
+                    <span class="required" style="font-size: 20px"></span>
+                  }
+                </td>
+                <td align="center" width="20%">
+                  @(i + 1)
+                </td>
+                <td align="left" width="40%">
+                  @Html.TextBoxFor(model => model.ReportOutputItems[i].Csv_Title, new { @class = "form-control input-csv" })
+                </td>
+              </tr>
+              i++;
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</body>
+<script>
+  $(function () {
+    $('.input-csv').change(function () {
+      $('#DataUnsaved').val(1);
+    });
+
+    var addButton = document.getElementById('addButton');
+    var deleteButton = document.getElementById('deleteButton');
+
+    addButton.disabled = true;
+    deleteButton.disabled = true;
+
+    var tableMaster = document.getElementById("tableMasterItem");
+    var masterRows = tableMaster.getElementsByTagName("tr");
+    for (i = 0; i < masterRows.length; i++) {
+      const itemSelect = $("#ItemMasterSelected").val();
+      const currentRow = tableMaster.rows[i];
+
+      // Mark selected item
+      const dataId = currentRow.getAttribute("data-id");
+      if (dataId == $("#ItemMasterSelected").val()) {
+        currentRow.classList.add("selected");
+      }
+
+      const createClickHandler =
+        function (row) {
+          return function () {
+            const val = row.getAttribute("data-id");
+            $("#ItemMasterSelected").val(val);
+            MarkSelectedItem(masterRows, row, true);
+          };
+        };
+      currentRow.onclick = createClickHandler(currentRow);
+    }
+
+    var tableItem = document.getElementById("tableItem");
+    var itemRows = tableItem.getElementsByTagName("tr");
+    for (i = 0; i < itemRows.length; i++) {
+      const currentRow = tableItem.rows[i];
+
+      // Mark selected item
+      const dataId = currentRow.getAttribute("data-id");
+      if (dataId == $("#ItemSelected").val()) {
+        currentRow.classList.add("selected");
+      }
+
+      const createClickHandler =
+        function (row) {
+          return function () {
+            const val = row.getAttribute("data-id");
+            $("#ItemSelected").val(val);
+            MarkSelectedItem(itemRows, row);
+          };
+        };
+      currentRow.onclick = createClickHandler(currentRow);
+    }
+  })
+
+  $("#list-report-output").sortable(
+    {
+      forcePlaceholderSize: true,
+      helper: function (event, tr) {
+        const $originals = tr.children();
+        const $helper = tr.clone();
+        $helper.children().each(function (index) {
+          $(this).css("border-bottom", "1px solid rgba(var(--bs-info-rgb), var(--bs-border-opacity))");
+          $(this).width($originals.eq(index).width() + 18);
+        });
+        return $helper;
+      },
+      update: function () {
+        const order = [];
+        $(this).children().each(function () {
+          order.push($(this).data("id"));
+        })
+        updateSortOrder(order);
+      }
+    }
+  );
+
+  $("#list-report-output").disableSelection();
+
+  function MarkSelectedItem(rows, selectedRow, isMaster = false) {
+    for (i = 0; i < rows.length; i++) {
+      rows[i].classList.remove("selected");
+    }
+
+    selectedRow.classList.add("selected");
+
+    if (isMaster) {
+      if (selectedRow.classList.contains('isadded') && selectedRow.classList.contains('selected')) {
+        addButton.disabled = true;
+      } else {
+        addButton.disabled = false;
+      }
+    } else {
+      if (selectedRow.classList.contains('ui-sortable-handle') && selectedRow.classList.contains('isrequied')) {
+        deleteButton.disabled = true;
+      } else {
+        deleteButton.disabled = false;
+      }
+    }
+  }
+
+  function onAdd() {
+    const data = getBodyValues();
+
+    $.post('@Url.RouteUrl("Default", new { controller = "Report", Action = "AddReportOutputItem" })',
+      data,
+    ).done(function (response) {
+      if (response.errorMessage != null) {
+        alertError(`【エラー】${response.errorMessage}`);
+        return false;
+      } else {
+        $('#DataReportOutput').html(response.partialView);
+        return;
+      }
+    }).fail(function (xhr) {
+      alertError(xhr, "【ネットワークエラー】");
+      return false;
+    }).always(function (xhr, msg) {
+      /*  console.log(xhr, msg);*/
+    });
+  }
+
+  function onDelete() {
+    const data = getBodyValues();
+
+    $.post('@Url.RouteUrl("Default", new { controller = "Report", Action = "DeleteReportOutputItem" })',
+      data,
+    ).done(function (response) {
+      if (response.errorMessage != null) {
+        alertError(`【エラー】${response.errorMessage}`);
+        return false;
+      } else {
+        $('#DataReportOutput').html(response.partialView);
+        return;
+      }
+    }).fail(function (xhr) {
+      alertError(xhr, "【ネットワークエラー】");
+      return false;
+    }).always(function (xhr, msg) {
+      /*  console.log(xhr, msg);*/
+    });
+  }
+
+  async function onCreate() {
+    if ($('#Search_SettingType').val() == 2) {
+      const confirm = await alertYesNoMsg("", "同会社内全員のCSV出力に影響しますが、よろしいでしょうか。", "warning", "はい", "いいえ");
+      if (confirm) {
+        handleCreate();
+      }
+    }
+    else {
+      handleCreate();
+    }
+  }
+
+  function handleCreate() {
+    const data = getBodyValues();
+
+    $.post('@Url.RouteUrl("Default", new { controller = "Report", Action = "CreateReportOutputItem" })',
+      data,
+    ).done(function (response) {
+      if (response.errorMessage != null) {
+        alertError(`【エラー】${response.errorMessage}`);
+        return false;
+      } else {
+        $('#DataReportOutput').html(response.partialView);
+        $('#DataUnsaved').val(0);
+        alertSuccess('登録処理が完了しました。');
+        return;
+      }
+    }).fail(function (xhr) {
+      alertError(xhr, "【ネットワークエラー】");
+      return false;
+    }).always(function (xhr, msg) {
+      /*  console.log(xhr, msg);*/
+    });
+  }
+
+  function updateSortOrder(sortOrders) {
+    const data = getBodyValues();
+
+    $.post('@Url.RouteUrl("Default", new { controller = "Report", Action = "UpdateSortOrder" })',
+      { ...data, SortOrders: sortOrders },
+    ).done(function (response) {
+      if (response.errorMessage != null) {
+        alertError(`【エラー】${response.errorMessage}`);
+        return false;
+      } else {
+        $('#DataReportOutput').html(response.partialView);
+        return;
+      }
+    }).fail(function (xhr) {
+      alertError(xhr, "【ネットワークエラー】");
+      return false;
+    }).always(function (xhr, msg) {
+      /*  console.log(xhr, msg);*/
+    });
+  }
+
+  function getBodyValues() {
+    const reportOutputMasterItems = @Html.Raw(Json.Serialize(@Model.ReportOutputMasterItems));
+    const reportOutputItems = @Html.Raw(Json.Serialize(@Model.ReportOutputItems));
+    reportOutputItems.forEach((item, i) => {
+      const csvTitle = $(`#ReportOutputItems_${i}__Csv_Title`).val();
+      item.csv_Title = csvTitle;
+    })
+    const search = @Html.Raw(Json.Serialize(@Model.Search));
+
+    const values = {
+      ItemMasterSelected: $("#ItemMasterSelected").val(),
+      ItemSelected: $("#ItemSelected").val(),
+      ReportOutputItems: reportOutputItems,
+      ReportOutputMasterItems: reportOutputMasterItems,
+      Search: {
+        SettingType: $('#Search_SettingType').val(),
+      },
+    }
+
+    return values;
+  }
+
+</script>

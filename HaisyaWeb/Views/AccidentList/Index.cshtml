@@ -1,0 +1,360 @@
+﻿@model HaisyaWeb.Models.AccidentListModel.DataListModel
+
+@{
+  Layout = "_Layout";
+  ViewData["Title"] = "事故一覧";
+}
+
+<head>
+  <link href="~/css/List.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div id="hiddenItem" hidden>
+    @Html.HiddenFor(model => Model.Search.FromDate)
+    @Html.HiddenFor(model => Model.Search.ToDate)
+    @Html.HiddenFor(model => Model.Search.AccidentReason)
+    @Html.HiddenFor(model => Model.Search.AccidentName)
+    @Html.HiddenFor(model => Model.Search.DriverName)
+    @Html.HiddenFor(model => Model.Search.CarNumber)
+    @Html.HiddenFor(model => Model.Search.WfRadioButtons)
+    @Html.HiddenFor(model => Model.Search.IsBack)
+    @Html.HiddenFor(model => Model.SortParam.SortOrder)
+    @Html.HiddenFor(model => Model.SortParam.SortItemParam)
+  </div>
+  <div>
+    <div id="hedder" class="row" style="margin-bottom: -20px;">
+      <h6 class="heading-pagetitle">事故一覧</h6>
+      <div class="form-group" style="width: 100%">
+        <div class="row">
+          <table class="table jbc-table table-hedder" style="padding: 0; border-collapse: collapse; ">
+            <tbody>
+              <tr>
+                <th width="400px" style="text-align:left;">
+                  <div style="padding: 0; border-radius: 0px;">
+                    @Html.LabelFor(model => model.Search.AccidentCategory, htmlAttributes: new { @class = "control-label text-end search-label2 required", @style = "width: 120px;" })
+                    <select id="jiko-select" class="form-control search-select" style="width: 100px;" onchange="changeAccidentReasonValue(this)">
+                    </select>
+                  </div>
+                </th>
+                <th>
+                  <div style="padding: 0; border-radius: 0px;">
+                    @Html.LabelFor(model => model.Search.AccidentName, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "width: 90px;" })
+                    @Html.TextBoxFor(model => Model.Search.AccidentName, null, new { @class = "form-control search-text", @style = "width: 200px;", @id = "selectAccidentName" })
+                  </div>
+                </th>
+                <th style="text-align:right;">事故発生日</th>
+                <th style="text-align:center;" width="350px">
+                  <div class="appeal-box box" style="vertical-align: middle; display: inline-block; padding: 0;">
+                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeDay(-1)" onselectstart="return false;" alt="<<" tooltip="前月">＜＜</span>
+                    <input id="fCalendar" class="calender" type="text" readonly style="width: 200px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
+                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeDay(1)" onselectstart="return false;" alt=">>" tooltip="翌月">＞＞</span>
+                  </div>
+                </th>
+                <th style="text-align: center;" width="15px">～</th>
+                <th style="text-align:center;" width="350px">
+                  <div id="divTargetDayLavelTo" class="appeal-box box" style="vertical-align: middle; display: inline-block; padding: 0;">
+                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeDay2(-1)" onselectstart="return false;" alt="<<" tooltip="前月">＜＜</span>
+                    <input id="tCalendar" class="calender" type="text" readonly style="width: 200px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
+                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeDay2(1)" onselectstart="return false;" alt=">>" tooltip="翌月">＞＞</span>
+                  </div>
+                </th>
+              </tr>
+              <tr>
+                <th>
+                  <div style="padding: 0; border-radius: 0px;">
+                    @Html.LabelFor(model => model.Search.DriverName, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "width:120px;" })
+                    @Html.TextBoxFor(model => Model.Search.DriverName, null, new { @class = "form-control search-text", @style = "width: 200px;", @id = "selectDriverName" })
+                  </div>
+                </th>
+                <th >
+                  <div style="padding: 0; margin: 0 15px 0 0; border-radius: 0px;">
+                    @Html.LabelFor(model => model.Search.CarNumber, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "width:90px;" })
+                    @Html.TextBox("Search.CarNumber", Model.Search.CarNumber, new
+                    {
+                        @type = "text",
+                        @class = "form-control search-text",
+                        @style = "width: 140px;",
+                        @id = "selectCarNumber"
+                    })
+                  </div>
+                </th>
+                <th style="" colspan="4">
+                  <div class="search-div" style=" width: 330px;">
+                    <label class="search-label">WF処理者</label>
+                    <label class="radio-label"><input type="radio" name="wfRadioButtons" value="0">ログイン者</label>
+                    <label class="radio-label"><input type="radio" name="wfRadioButtons" value="1">全て</label>
+                  </div>
+                </th>
+              </tr>
+            </tbody>
+          </table>
+          <div style="display: flex;flex-direction: row;align-items: baseline;align-content: center;justify-content: flex-end;">
+            <button class="btn btn-primary btn-sm" style="width: 100px; margin-right: 10px;" onclick="PDFReport();return false;">印刷</button>
+            <button class="btn btn-primary btn-sm" style="width: 100px;" onclick="submitEdit(0); return false;">新規登録</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="JikoDataList" class="data-list" style="margin-top: 25px;"></div>
+  </div>
+</body>
+
+
+<script>
+    const weeks = ['日', '月', '火', '水', '木', '金', '土'];
+    let accidentName = '';
+    let carNumber = '';
+    let driverName = '';
+    let accidentReason = 0;
+
+    $(window).on('load', function () {
+        radio = document.getElementsByName('wfRadioButtons');
+        // 初期設定：全て
+        radio.item(1).checked = true;
+        populateSelect();
+        if($('#Search_IsBack').val().toLowerCase() === 'true'){
+            if($('#Search_AccidentReason').val()){
+                $('#jiko-select').val($('#Search_AccidentReason').val())
+                accidentReason = $('#Search_AccidentReason').val();
+            }
+            if($('#Search_WfRadioButtons').val()){
+                $("input[name='wfRadioButtons'][value='" + $('#Search_WfRadioButtons').val() + "']").prop('checked', true);
+            }
+            accidentName = $('#selectAccidentName').val();
+            carNumber = $('#selectCarNumber').val();
+            driverName = $('#selectDriverName').val();
+        }
+        dataListDisplay();
+    });
+
+    $(function () {
+        $('input[name="wfRadioButtons"]:radio').change(function () {
+            dataListDisplay();
+        });
+
+        var disp = new Date($('#Search_FromDate').val());
+        var dispTo = new Date($('#Search_ToDate').val());
+
+        /** 日付を文字列にフォーマットする */
+        var formatted =
+            `${disp.getFullYear()}\年${(disp.getMonth() + 1).toString().padStart(2, '0')}\月${disp.getDate().toString().padStart(2, '0')}\日\(${weeks[disp.getDay().toString()]}\)`.replace(
+                /\n|\r/g,
+                '',
+            );
+            var formattedTo =
+            `${disp.getFullYear()}\年${(dispTo.getMonth() + 1).toString().padStart(2, '0')}\月${dispTo.getDate().toString().padStart(2, '0')}\日\(${weeks[dispTo.getDay().toString()]}\)`.replace(
+                /\n|\r/g,
+                '',
+            );
+        $('input#fCalendar').val(formatted);
+        $('input#tCalendar').val(formattedTo);
+    });
+
+    $(document).ready(function () {
+        $(document).on('input', '#selectAccidentName', function () {
+            accidentName = $(this).val();
+            dataListDisplay();
+        });
+
+        $(document).on('input', '#selectDriverName', function () {
+            driverName = $(this).val();
+            dataListDisplay();
+        });
+
+        $(document).on('input', '#selectCarNumber', function () {
+            carNumber = $(this).val();
+
+            // 4桁数値
+            if (carNumber.length > 4) {
+                carNumber = carNumber.slice(0, 4);
+                $(this).val(carNumber);
+            }
+            dataListDisplay();
+        });
+
+        $('#fCalendar').datepicker({
+            buttonImage: '../img/calender.png', // カレンダーアイコン画像
+            buttonText: 'カレンダーから選択', // ツールチップ表示文言
+            buttonImageOnly: true, // 画像として表示
+            showOn: 'both', // カレンダー呼び出し元の定義
+            onSelect: function (dateText, inst) {
+                console.log('選択した日付: ' + dateText);
+                var selectedDate = $(this).datepicker('getDate');
+                var formattedDate = $.datepicker.formatDate('yy-mm-dd', selectedDate);
+                var dt = new Date(formattedDate);
+                $('#Search_FromDate').val(formatDate(dt));
+                dataListDisplay();
+            },
+        });
+
+        $('#tCalendar').datepicker({
+            buttonImage: '../img/calender.png', // カレンダーアイコン画像
+            buttonText: 'カレンダーから選択', // ツールチップ表示文言
+            buttonImageOnly: true, // 画像として表示
+            showOn: 'both', // カレンダー呼び出し元の定義
+            onSelect: function (dateText, inst) {
+                console.log('選択した日付: ' + dateText);
+                var selectedDate = $(this).datepicker('getDate');
+                var formattedDate = $.datepicker.formatDate('yy-mm-dd', selectedDate);
+                var dt = new Date(formattedDate);
+                $('#Search_ToDate').val(formatDate(dt));
+                dataListDisplay();
+            },
+        });
+    });
+
+    function formatDate(date) {
+        var yyyy = date.getFullYear();
+        var mm = ('00' + (date.getMonth() + 1)).slice(-2);
+        var dd = ('00' + date.getDate()).slice(-2);
+        const ymd = String(yyyy) + '/' + String(mm) + '/' + String(dd);
+        return ymd;
+    }
+
+    function dataListDisplay() {
+        var wfradiobuttons = $('input[name="wfRadioButtons"]:checked').val();
+        $.post(
+            '@Url.RouteUrl("Default", new { controller = "AccidentList", Action = "JsonGetDataListForAccidentList" })',
+            {
+                AccidentReason: accidentReason,
+                AccidentName: accidentName,
+                FromDate: $('#Search_FromDate').val(),
+                ToDate: $('#Search_ToDate').val(),
+                DriverName: driverName,
+                CarInt: carNumber,
+                WfRadioButtons: wfradiobuttons,
+                sortItemParam: $('#SortParam_SortItemParam').val(),
+                sortOrder: $('#SortParam_SortOrder').val(),
+            },
+            function (data) {
+                $('#JikoDataList').html(data.partialView);
+            },
+        );
+    }
+
+    // 事故区分セレクトにバックからもらったデータによってオプションを追加する
+    function populateSelect() {
+        // 事故区分を選択
+        const selectElement = document.getElementById('jiko-select');
+        const accidentTypes = @Html.Raw(Json.Serialize(Model.Search.AccidentTypes));
+
+        selectElement.innerHTML = ''; // すでにあったメンバーをクリアする
+
+        // 初期値
+        const option = document.createElement('option');
+        option.value = 0;
+        option.textContent = '';
+        selectElement.appendChild(option);
+
+        // バックからもらった事故タイプにとって事故リストを作って
+        for (let i = 0; i < accidentTypes.length; i++) {
+            const option = document.createElement('option');
+            option.value = accidentTypes[i].sortOrder;
+            option.textContent = accidentTypes[i].code_Name;
+            selectElement.appendChild(option);
+        }
+
+        accidentReason = 0;
+    }
+
+    // 事故区分のonchangeの関数
+    function changeAccidentReasonValue(i) {
+        accidentReason = i.value;
+        dataListDisplay();
+    }
+
+    function submitEdit(jikoid) {
+        var form = document.createElement('form');
+
+        form.action = '@Url.RouteUrl("Default", new { controller = "Accident", Action = "AccidentInputIndex" })';
+        form.method = 'POST';
+
+        // body に追加
+        document.body.appendChild(form);
+
+        var html = '';
+        html += '            <input type="hidden" id="jikoId" name="jikoId" value="' + jikoid + '" />';
+        html += '            <input type="hidden" id="FromDate" name="FromDate" value="' + $('#Search_FromDate').val() + '" />';
+        html += '            <input type="hidden" id="ToDate" name="ToDate" value="' + $('#Search_ToDate').val() + '" />';
+        html += '            <input type="hidden" id="AccidentReason" name="AccidentReason" value="' + $('#jiko-select').val() + '" />';
+        html += '            <input type="hidden" id="AccidentName" name="AccidentName" value="' + $('#selectAccidentName').val() + '" />';
+        html += '            <input type="hidden" id="DriverName" name="DriverName" value="' + $('#selectDriverName').val() + '" />';
+        html += '            <input type="hidden" id="CarNumber" name="CarNumber" value="' + $('#selectCarNumber').val() + '" />';
+        html += '            <input type="hidden" id="WfRadioButtons" name="WfRadioButtons" value="' + $("input[name='wfRadioButtons']:checked").val() + '" />';
+
+        form.innerHTML = html;
+        form.submit();
+    }
+
+    function selectedChangeDay(move) {
+        var dt = new Date($('#Search_FromDate').val());
+        dt.setDate(dt.getDate() + move);
+        $('#Search_FromDate').val(formatDate(dt));
+
+        /** 日付を文字列にフォーマットする */
+        var formatted =
+            `${dt.getFullYear()}\年${(dt.getMonth() + 1).toString().padStart(2, '0')}\月${dt.getDate().toString().padStart(2, '0')}\日\(${weeks[dt.getDay().toString()]}\)`.replace(
+                /\n|\r/g,
+                '',
+            );
+        $('input#fCalendar').val(formatted);
+        dataListDisplay();
+    }
+
+    function selectedChangeDay2(move) {
+        var dt = new Date($('#Search_ToDate').val());
+        dt.setDate(dt.getDate() + move);
+        $('#Search_ToDate').val(formatDate(dt));
+
+        /** 日付を文字列にフォーマットする */
+        var formatted =
+            `${dt.getFullYear()}\年${(dt.getMonth() + 1).toString().padStart(2, '0')}\月${dt.getDate().toString().padStart(2, '0')}\日\(${weeks[dt.getDay().toString()]}\)`.replace(
+                /\n|\r/g,
+                '',
+            );
+        $('input#tCalendar').val(formatted);
+        dataListDisplay();
+    }
+
+    // 「事故明細」印刷
+    function openReport() {
+        window.open('@Url.RouteUrl("Default", new { controller = "Report", Action = "JIKO_DETAIL_LIST" })');
+    };
+
+    // PDFReport
+    async function PDFReport() {
+        const report_type = "JIKO_DETAIL_LIST";
+        // Get info of report type JIKO_DETAIL_LIST
+        $.ajax({
+            url: '@Url.RouteUrl("Default", new { controller = "Report", Action = "ReportSearchByReportType" })' + '/' + report_type,
+            type: 'GET',
+            success: function (response) {
+                if (response) {
+                    var searchKubunId = response.report_Serch_Kubun_List[0].report_Serch_Kubun_ID;
+                    var namePdf = namePdf = response.report_Serch_Kubun_List[0].report_Html + ".pdf";
+
+                    const params = {
+                        Accident_Reason: accidentReason,
+                    };
+
+                    // Preview PDF
+                    const url = '@Url.RouteUrl(new { controller = "Report", action = "PreviewPDFReport", template = "__Template__" })'
+                        .replace("__Template__", namePdf);
+
+                    $("#form-pdf-export").remove();
+
+                    const form = $('<form id="form-pdf-export" target="_blank" method="post" action="' + url + '"></form>');
+                    form.append('<input type="hidden" name="SerchKubunID" value="' + searchKubunId + '" />');
+                    form.append('<input type="hidden" name="searchJson" value="' + encodeURIComponent(JSON.stringify(params)) + '" />');
+                    $('body').append(form);
+                    form.submit();
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error('Error:', error);
+            }
+        });
+    }
+</script>

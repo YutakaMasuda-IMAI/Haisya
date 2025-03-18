@@ -1,0 +1,1056 @@
+﻿@model CommonDialogModel.SelectAddressModel
+
+@*@{
+    Layout = "_ModalLayout";
+  }*@
+
+<head>
+
+  <!-- ローダーのURLをscriptでロードする -->
+  <!-- ログイン認証の場合 -->
+  @*<script src="@(Model.MapsApiForJSUrl)" charset="utf-8"></script>*@
+
+</head>
+
+
+<style>
+
+  #ZMapCommon {
+    position: absolute;
+    top: 200px;
+    bottom: 0;
+    width: 99%;
+  }
+
+  .div-area {
+    margin: auto;
+    flex-wrap: wrap;
+    display: flex;
+    padding: 0 5px 0 5px
+  }
+
+  .tab_class {
+    width: calc(100%/3);
+    height: 50px;
+    background-color: aquamarine;
+    line-height: 50px;
+    font-size: 15px;
+    text-align: center;
+    display: block;
+    float: left;
+    order: -1;
+    border: double;
+  }
+
+  input[name="tab_name"] {
+    display: none;
+  }
+
+  input:checked + .tab_class {
+    background-color: cadetblue;
+    color: aliceblue;
+  }
+
+  .content_class {
+    display: none;
+    width: 100%;
+  }
+
+  input:checked + .tab_class + .content_class {
+    display: block;
+  }
+
+  .table-AddressListDataModal {
+    overflow: auto;
+    /*width: 100%;*/
+    max-height: 700px;
+  }
+
+    .table-AddressListDataModal table {
+      margin: 0;
+      border-spacing: 0;
+      width: 100%;
+      font-size: 12px;
+    }
+
+    .table-AddressListDataModal th {
+      white-space: nowrap;
+      position: sticky;
+      top: -1px;
+      left: 0;
+      border-right: 1px solid #999;
+      border-bottom: 1px solid #999;
+      background-color: lemonchiffon;
+      text-align: center;
+      padding: 0.2rem 0 0.2rem 0;
+    }
+
+    .table-AddressListDataModal td {
+      white-space: nowrap;
+      padding: 2px;
+      border-right: 1px solid #999;
+      border-bottom: 1px solid #999;
+    }
+
+    .table-AddressListDataModal tr:first-child th {
+      border-top: 1px solid #999;
+    }
+
+    .table-AddressListDataModal th:first-child {
+      border-left: 1px solid #999;
+    }
+
+    .table-AddressListDataModal tr:first-child th:first-child {
+      z-index: 1;
+    }
+
+  .table-address {
+    width: 100%;
+  }
+
+    .table-address th {
+      padding: 0;
+      text-align: center;
+    }
+
+    .table-address td {
+      padding: 0;
+      height: 15px;
+      text-align: center;
+    }
+
+      .table-address td button {
+        width: 90%;
+        height: 95%
+      }
+
+        .table-address td button input {
+          color: white;
+        }
+</style>
+
+
+<div id="hiddenItem" hidden>
+  @Html.HiddenFor(Model => Model.CompanyID)
+  @Html.HiddenFor(Model => Model.SelectedID)
+  @Html.HiddenFor(Model => Model.UserID)
+  @Html.HiddenFor(Model => Model.WebViewFlg)
+  <input id="area" value="0">
+  <input id="ken" value="0">
+  <input id="shiku" value="0">
+  <input id="choiki" value="0">
+  <input id="map_lat" value="0">
+  <input id="map_lng" value="0">
+  <table id="tableAreaKenList">
+    <tbody>
+      @foreach (var item in Model.AreaKenList)
+      {
+        <tr>
+          <td align="center" width="100px">@(item.Area_ID)</td>
+          <td align="center" width="100px">@(item.Ken)</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+
+<div class="modal-dialog container" role="document" style="width: 1250px;">
+  <div class="modal-content">
+    <div class="model-body">
+      <div class="div-area">
+        <input type="radio" name="tab_name" id="tabCommonDialog1" checked>
+        <label class="tab_class" for="tabCommonDialog1">住所選択</label>
+        <div class="content_class">
+          <div class="row content-sarch">
+            <div class="col-6 col-sm-3">
+              <table class="table table-address">
+                <thead>
+                  <tr><th>エリア</th></tr>
+                </thead>
+                <tbody>
+                  @foreach (var item in Model.AreaList)
+                  {
+                    <tr><td><button class="btn btn-dark" onclick="onClickArea(@(item.Area_ID)); return false;">@(item.Area)</button></td></tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+            <div class="col-6 col-sm-3">
+              <table id="tableKen" class="table table-address">
+                <thead>
+                  <tr><th>都道府県</th></tr>
+                </thead>
+                <tbody id="tableKen-body">
+                </tbody>
+              </table>
+            </div>
+            <div class="col-6 col-sm-3" style="height:550px; overflow-y:auto;">
+              <table id="tableShiku" class="table table-address" >
+                <thead>
+                  <tr><th>市区町村</th></tr>
+                </thead>
+                <tbody id="tableShiku-body">
+                </tbody>
+              </table>
+            </div>
+            <div class="col-6 col-sm-3" style="height:550px; overflow-y:auto;">
+              <table id="tableChoiki" class="table table-address">
+                <thead>
+                  <tr><th>町域</th></tr>
+                </thead>
+                <tbody id="tableChoiki-body">
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <input type="radio" name="tab_name" id="tabCommonDialog2">
+        <label class="tab_class" for="tabCommonDialog2">使用履歴</label>
+        <div class="content_class">
+          <div class="row content-sarch">
+            <div class="col-6 col-sm-6 table-AddressListDataModal dataList" style="height: 500px; margin: 0; overflow-x: hidden;">
+              <table id="tableShiyoritsu">
+              </table>
+            </div>
+            <div class="col-6 col-sm-6 table-AddressListDataModal dataList" style="border-left: groove; height: 500px; margin: 0; padding-left: 0; width: 49%; overflow-x: hidden;">
+              <table id="tableShiyoRireki">
+              </table>
+            </div>
+          </div>
+        </div>
+        @if (Model.MapDisplayKubun == 0)
+        {
+        <input type="radio" name="tab_name" id="tabCommonDialog3">
+        <label class="tab_class" for="tabCommonDialog3">地図選択</label>
+        <div class="content_class" style="height: 500px;">
+          <div id="addressList" class="" style="padding: 0; max-height: 500px;"></div>
+          <div id="maptd" class="" style="padding: 0;">
+            @if (Model.WebViewFlg == 0)
+            {
+              <div id="mapHead">
+                <!-- ログイン認証の場合 -->
+                <button onclick="logout(); return false;" style="width: 100px;height:30px;font-size:12px;">logout</button>
+              </div>
+              <table width="100%">
+                <tr>
+                  <th width="40px" class="text-end">
+                    <label class="label-Title-Required control-label align-self-center align-middle" style="">住所<br />検索</label>
+                  </th>
+                  <td style="padding-left: 1rem;">
+                    <input type="text" id="txtAddress" class="form-control" />
+                  </td>
+                  <td style="width: 200px;">
+                    <button class="btn btn-success" id="btnMapCenter" style="float: right; width:95%;">中心場所設定</button>
+                  </td>
+                </tr>
+              </table>
+              <div id="MapContainerCommon" class="" style="margin: 0; padding: 0; height: calc(100% - 70px);">
+                <div id="ZMapCommon" style="background:#00ffff;"></div>
+              </div>
+            }
+            else
+            {
+              <table width="100%">
+                <tr>
+                  <th width="40px" class="text-end">
+                    <label class="label-Title-Required control-label align-self-center align-middle text-end" style="padding: 0; color: #ff00dc;">住所<br />検索</label>
+                  </th>
+                  <td style="padding-left: 1rem;">
+                    <input type="text" id="txtAddress" class="form-control" />
+                  </td>
+                  <td style="width: 200px;">
+                    <button class="btn btn-success" id="btnMapCenter" style="float: right; width:95%;">中心場所設定</button>
+                  </td>
+                </tr>
+              </table>
+              <div id="MapContainerCommon" class="" style="margin: 0; padding: 0; height: calc(100% - 45px);">
+                <div id="ZMapCommon" style="background:#00ffff;"></div>
+              </div>
+            }
+          </div>
+
+        </div>
+        } else
+            {
+        <div hidden>
+          <button id="btnMapCenter"></button>
+        </div>
+            }
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<script>
+
+
+
+  var AddressItemShiku;
+  var AddressItemCho;
+
+  $('#addressList').hide();
+  $('#info_label').hide();
+
+  var result = {};
+
+  $(async function () {
+
+    $("#txtAddress").keydown(function (event) {
+      if (event.key === "Enter") {
+        let val = $(this).val();
+        SetMapCenterFromAddress(val);
+      }
+    });
+
+  });
+
+  SetListUtilizationRate();
+  SetListForRirekiData();
+
+  /**
+   * 画面を閉じる
+   * selectAddressModalCloseCallBack
+   * */
+  function ModalCommonDialog() {
+
+    if ($('#WebViewFlg').val() == 0) {
+      logout();
+    }
+
+    if (typeof selectAddressModalCloseCallBack == 'function') {
+      // 関数があった場合の処理内容
+      selectAddressModalCloseCallBack();
+    } else {
+      // 関数がない場合の処理内容
+      $('#ModalCommonDialog').dialog("close");
+    }
+    $('#ModalCommonDialog').html('');
+
+    if (document.getElementById("scriptZipsite") != null) {
+      document.getElementById("scriptZipsite").remove();
+    };
+  };
+
+  /**
+   *　地図選択ボタン処理
+   **/
+  document.getElementById('btnMapCenter').addEventListener('click', function () {
+   /* alert("click");*/
+
+   if (mapC == null || mapC.getCenter() == null) { return false; }
+
+    let latLng = mapC.getCenter();
+
+    $('#map_lat').val(latLng.lat);
+    $('#map_lng').val(latLng.lng);
+
+    let latlon = String(latLng.lng) + ',' + String(latLng.lat);
+    //alert(latlon);
+
+    $.post('@Url.RouteUrl("Default", new { controller = "Map", Action = "MapGetAddressFromPosition" })',
+      {
+        position: String(latlon),
+        range: 180,
+      })
+      .done(function (response) {
+
+          if (response.errorMessage != null) {
+              alertError(`【エラー】${response.errorMessage}`);
+              return false;
+          } else {
+            $('#maptd').hide();
+
+            $('#addressList').html(response.partialView);
+            $('#addressList').show();
+
+            return;
+          }
+      })
+      .fail(function (xhr) {
+        alertError(xhr, "【ネットワークエラー】");
+          console.log(xhr);
+        return false;
+      })
+      .always(function (xhr, msg) {
+      /*    console.log(xhr, msg);*/
+      });
+    return false;
+
+  });
+
+
+
+  /** 地図の住所選択リストからの戻るボタン処理 */
+  function addressListBack() {
+
+    $('#addressList').hide();
+    $('#maptd').show();
+  };
+
+  /**
+ *　住所検索用画面からの選択時処理
+ * @@param address_code
+ * @@param BuildingZid
+ * @@param BuildingZid_Attr
+ * @@param buildingName
+ * @@param address
+ * @@param post_code
+ * @@param address_level
+ * @@param address2
+ * @@param address3
+ * @@param address4
+ */
+  function SetAddressData(address_code, BuildingZid, BuildingZid_Attr, buildingName, address, post_code, address_level, address2, address3, address4) {
+
+    result["Address"] = address;
+    result["Address_Code"] = address_code;
+    result["Address_Level"] = address_level;
+    result["Post_code"] = post_code;
+    result["Lat"] = $('#map_lat').val();
+    result["Lng"] = $('#map_lng').val();
+    result["Address2"] = address2;
+    result["Address3"] = address3;
+    result["Address4"] = address4;
+
+    result["BuildingName"] = buildingName;
+    result["BuildingZid"] = BuildingZid;
+    result["BuildingZid_Attr"] = BuildingZid_Attr;
+
+    selectOnClick(result);
+  };
+
+
+  /**
+   *
+   * @@param addressVal
+   */
+  function SetMapCenterFromAddress(addressVal) {
+
+    $.post('@Url.RouteUrl("Default", new { controller = "Map", Action = "GetlatlonFromAddress" })',
+    {
+      address: String(addressVal),
+
+    })
+    .done(function (response) {
+
+      if (response.errorMessage != null) {
+          alertError(`【エラー】${response.errorMessage}`);
+          return false;
+      } else {
+        //alert(response.latlon_lat + ";;;" + response.latlon_lng);
+        mapC.setCenter(new ZDC.LatLng(Number(response.latlon_lat), Number(response.latlon_lng)));
+        //map.setZoom(Number(15));
+      }
+    })
+    .fail(function (xhr) {
+      alert('fail:' + xhr);
+      console.log(xhr);
+      return false;
+    })
+    .always(function (xhr, msg) {
+      /*    console.log(xhr, msg);*/
+    });
+
+  };
+
+  /**
+   * 一覧データ選択時の処理
+   * selectAddressModalCloseCallBack
+   * @@param data
+   */
+    function selectOnClick(data) {
+        //コールバック関数チェック
+        if (typeof selectAddressSelectedCallBack == 'function') {
+            // 関数があった場合の処理内容
+            selectAddressSelectedCallBack(data);
+        }
+        $('#ModalCommonDialog').html('');
+        $('#ModalCommonDialog').dialog('close');
+    };
+
+  /**
+   * 使用率データを表示
+   * */
+  function SetListUtilizationRate() {
+
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "JsonGetAddressListForUtilizationRate" })',
+      {
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】" + response.partialView);
+          $('#tableShiyoritsu').html(response.partialView);
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+        console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+        console.log(xhr, msg);
+      });
+  };
+
+  /**
+   * 使用履歴を表示
+   * */
+  function SetListForRirekiData() {
+
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "JsonGetAddressListForRireki" })',
+      {
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】" + response.partialView);
+          $('#tableShiyoRireki').html(response.partialView);
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+        console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+        console.log(xhr, msg);
+      });
+  };
+
+    // 地図オブジェクト
+    var mapC = null;
+
+
+    ZisAuth.addEventListener("load", function (e) {
+      login();
+      //window.scroll({ top: 0 });
+    });
+
+    ZisAuth.addEventListener("loaded", function (e) {
+      //window.scroll({ top: 0 });
+      alert("loaded");
+    });
+
+    // failedイベントリスナー設定
+    // 認証クラスでエラーが発生した場合にfailedが発行される
+    ZisAuth.addEventListener("failed", function (e) {
+      alert("エラーが発生しました。(" + e.status.code + ")");
+    });
+
+    // readyイベントリスナー設定
+    // 認証クラスで地図が利用可能な場合にreadyが発行される
+    ZisAuth.addEventListener("ready", function (e) {
+      MapPreview();
+    });
+
+    // clickイベントリスナー設定
+    // 認証クラスで地図が利用可能な場合にclickが発行される
+    ZisAuth.addEventListener('click', function (mapC) {
+      alert("aaa");
+    });
+
+  /**
+   *
+   * */
+  function MapPreview() {
+
+    if (@($"{Model.MapDisplayKubun != 0}".ToString().ToLower())) { return false; }
+
+    // マップエレメント要素を取得する
+    let mapElement = document.getElementById("ZMapCommon");
+
+    // MapOptionsをデフォルト値から変更する場合各パラメータに値を設定
+    let mapOptions = ZisAuth.getMapOption();
+    mapOptions.zipsMapType = "kP8KjZdn";
+    mapOptions.center = new ZDC.LatLng(34.35132785373264, 132.35272922092014);
+    mapOptions.zoom = 10; // ★ズームレベルを設定
+    mapOptions.minZoom = 3
+    mapOptions.maxZoom = 22;
+    mapOptions.touchOperation = true;
+
+    // 地図を生成
+    mapC = new ZDC.Map(
+      mapElement,
+      mapOptions,
+      function () {
+        // Success callback
+        // コントロールを追加する
+        // コンパスの表示
+        mapC.addControl(new ZDC.Compass('top-right'));
+        // ズームボタンの表示
+        mapC.addControl(new ZDC.ZoomButton('bottom-right'));
+        // スケールバーの表示
+        mapC.addControl(new ZDC.ScaleBar('bottom-left'));
+        // 中心マーカーを作成します
+        mapC.addControl(new ZDC.CenterMarker());
+
+        //window.scroll({ top: 0 });
+
+        //完了ダイアログ
+        Swal.fire({
+          title: '処理終了'
+          , html: '処理を終了しました。'
+          , type: 'info'
+          , timer: 1
+        });
+      },
+      function () {
+        // Failure callback
+      }
+    );
+
+  }
+
+
+
+  function login() {
+    //alert("login");
+    const obj = {
+      uid: "@(Model.MapApiSettings.AuthAid.Uid)"
+      , pwd: "@(Model.MapApiSettings.AuthAid.Pwd)"
+      , sid: "@(Model.MapApiSettings.AuthAid.Sid)"
+      , device_flag: 1
+    }
+    ZisAuth.login(obj);
+
+  }
+
+  function logout() {
+    ZisAuth.logout();
+    //alert("logout");
+  };
+
+
+
+  /** */
+  function MapPoint() {
+
+    if (mapC == null || mapC.getCenter() == null) { return false; }
+
+    let latLng = mapC.getCenter();
+    $('#' + sId + '__Lat').val(latLng.lat);
+    $('#' + sId + '__Lng').val(latLng.lng);
+
+    let slatlon = String(latLng.lng) + ',' + String(latLng.lat);
+
+  };
+
+
+
+
+  function onClickArea(area) {
+    $("#area").val(area);
+    $("#tableKen-body").remove();
+    $("#tableShiku-body").remove();
+    $("#tableChoiki-body").remove();
+    SetListKen(area, "tableKen", "tableKen-body", "onClickKen", "btnKen");
+    SetBtnEnabled("btnKen", true);
+    AfterAreaBtnOnClick(area);
+  };
+
+  function onClickKen(ken) {
+    $("#ken").val(ken);
+    SetListShiku(ken);
+    SetBtnEnabled("btnShiku", true);
+    AfterKenBtnOnClick(ken);
+  };
+
+  function onClickShiku(Shiku) {
+    $("#shiku").val(Shiku);
+    SetListChoiki(Shiku);
+  };
+
+  function onClickChoiki(Choiki) {
+    $("#choiki").val(Choiki);
+  };
+
+  function ondblClickShiku(Shiku) {
+    $("#shiku").val(Shiku);
+    SeachAddressModalOnSelectedAddress($("#ken").val(), $("#shiku").val(), '');
+    ModalCommonDialogClose();
+  };
+
+  function ondblClickChoiki(Shiku) {
+    $("#choiki").val(Shiku);
+    SeachAddressModalOnSelectedAddress($("#ken").val(), $("#shiku").val(), $("#choiki").val());
+    ModalCommonDialogClose();
+  };
+
+  /**
+   *　住所検索画面で住所選択時の処理
+   * @@param ken
+   * @@param shiku
+   * @@param choiki
+   */
+  function SeachAddressModalOnSelectedAddress(ken, shiku, choiki) {
+
+    let addressVal = ken + shiku + choiki;
+    //if (choiki != '') { addressVal += choiki; }
+    $('#address').val(addressVal);
+    if (addressVal == "") { return false; }
+
+    $.post('@Url.RouteUrl("Default", new { controller = "Map", Action = "GetlatlonFromAddress" })',
+    {
+      address: String(addressVal),
+      modal_flg: 0,
+
+    })
+    .done(function (response) {
+
+      if (response.errorMessage != null) {
+          alertError(`【エラー】${response.errorMessage}`);
+          return false;
+      } else {
+        //alert(response.latlon_lat + ";;;" + response.latlon_lng);
+        //map.setCenter(new ZDC.LatLng(Number(response.latlon_lat), Number(response.latlon_lng)));
+        //map.setZoom(Number(15));
+        result["Address"] = addressVal;
+        result["Address_Code"] = response.address_code;
+        result["Address_Level"] = response.address_level;
+        result["Post_code"] = response.post_code;
+        result["Lat"] = response.latlon_lat;
+        result["Lng"] = response.latlon_lng;
+        result["Address2"] = ken;
+        result["Address3"] = shiku;
+        result["Address4"] = choiki;
+
+        selectOnClick(result);
+      }
+    })
+    .fail(function (xhr) {
+      alert('fail:' + xhr);
+      console.log(xhr);
+      return false;
+    })
+    .always(function (xhr, msg) {
+      /*    console.log(xhr, msg);*/
+    });
+
+  };
+
+
+  /**
+   * エリアボタン選択後処理
+   * @@param param
+   */
+  function AfterAreaBtnOnClick(param) {
+
+    $('#info_label').show();
+
+    AddressItemShiku = null;
+    AddressItemCho = null;
+
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "GetAddressShiku" })',
+      {
+        area: param,
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】" + response.result);
+          var obj = JSON.parse(response.result);
+          AddressItemShiku = obj;
+          SetBtnEnabled("btnKen", false);
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+        console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+        console.log(xhr, msg);
+        $('#info_label').hide();
+      });
+
+  };
+
+  /**
+   * 都道府県ボタンクリック後処理
+   * @@param param
+   */
+  function AfterKenBtnOnClick(param) {
+
+    $('#info_label').show();
+
+    AddressItemCho = null;
+
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "GetAddressChoiki" })',
+      {
+        area: $("#area").val(),
+        ken: param,
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】" + response.result);
+          var obj = JSON.parse(response.result);
+          AddressItemCho = obj;
+          SetBtnEnabled("btnShiku", false);
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+        console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+        console.log(xhr, msg);
+        $('#info_label').hide();
+      });
+
+  };
+
+  /**
+   * 都道府県ボタンリストの作成
+   * @@param paramAreaId
+   * @@param tableName
+   * @@param bodyName
+   * @@param onclick
+   * @@param btnName
+   */
+  function SetListKen(paramAreaId, tableName, bodyName, onclick, btnName) {
+
+    // テーブル取得
+    var table = document.getElementById(tableName);
+    // tbodyの取得
+    var tbody = document.createElement("tbody");
+    tbody.setAttribute('id', bodyName);
+    table.appendChild(tbody);
+
+    // 行を行末に追加
+    var row = tbody.insertRow(-1);
+    row.style.verticalAlign = "middle";
+
+    // セルの挿入
+    var cell1;
+
+
+    // table要素を取得
+    var tableElem = document.getElementById('tableAreaKenList');
+
+    // 行（tr要素）を取得
+    var rowElems = tableElem.rows;
+
+
+    // 取得した行（tr要素）を繰り返しHTMLを取得
+    var htmlStr = '';
+    for (i = 1, len = rowElems.length; i < len; i++) {
+
+      var areaId = rowElems[i].cells[0].innerHTML;
+      var kenName = rowElems[i].cells[1].innerHTML;
+
+      if (paramAreaId == areaId) {
+        AddRow(tbody, kenName, onclick, btnName);
+      }
+    }
+
+    return false;
+
+  };
+
+  /**
+   * 市区町村ボタンリストの作成
+   * @@param ken
+   */
+  function SetListShiku(ken) {
+
+    if (AddressItemShiku == null) { return false; }
+
+    $("#tableShiku-body").remove();
+    $("#tableChoiki-body").remove();
+
+    // テーブル取得
+    var table = document.getElementById("tableShiku");
+
+    var tbody = document.createElement("tbody");
+    tbody.setAttribute('id', 'tableShiku-body');
+    table.appendChild(tbody);
+
+
+    // 行を行末に追加
+    var row = tbody.insertRow(-1);
+    row.style.verticalAlign = "middle";
+
+    // セルの挿入
+    var cell1;
+
+    AddressItemShiku.forEach(data => {
+      if (data.KEN == ken) {
+        AddRow(tbody, data.SHI_KU_CHO, "onClickShiku", "btnShiku", "ondblClickShiku");
+      }
+    });
+
+  };
+
+  /**
+   * 町域ボタンリストの作成
+   * @@param shiku
+   */
+  function SetListChoiki(shiku) {
+
+    if (AddressItemCho == null) { return false; }
+
+    $("#tableChoiki-body").remove();
+
+    // テーブル取得
+    var table = document.getElementById("tableChoiki");
+
+    var tbody = document.createElement("tbody");
+    tbody.setAttribute('id', 'tableChoiki-body');
+    table.appendChild(tbody);
+
+
+    // 行を行末に追加
+    var row = tbody.insertRow(-1);
+    row.style.verticalAlign = "middle";
+
+    // セルの挿入
+    var cell1;
+
+    var kenVal = $("#ken").val();
+    var shikuVal = $("#shiku").val();
+
+    AddressItemCho.forEach(data => {
+      if (data.KEN == kenVal && data.SHI_KU_CHO == shikuVal) {
+        AddRow(tbody, data.CHO_IKI, "onClickChoiki", "btnChoiki", "ondblClickChoiki");
+      }
+    });
+
+  };
+
+  /**
+   * 住所選択ボタンのHTMLを作成する
+   * @@param tbody
+   * @@param textVal
+   * @@param ckickEvent
+   * @@param name
+   * @@param dblclickEvent
+   */
+  function AddRow(tbody, textVal, ckickEvent, name, dblclickEvent) {
+    var row = tbody.insertRow(-1);
+    var cell1 = row.insertCell(-1);
+    if (dblclickEvent == null) {
+      cell1.innerHTML = '<button name=' + name + ' class="btn btn-dark" onclick="' + ckickEvent + '(\'' + textVal + '\'); return false;">' + textVal + '</button>';
+    } else {
+      cell1.innerHTML = '<button name=' + name + ' class="btn btn-dark" onclick="' + ckickEvent + '(\'' + textVal + '\'); return false;" ondblclick="' + dblclickEvent + '(\'' + textVal + '\'); return false;">' + textVal + '</button>';
+    }
+
+  };
+
+  /**
+   * 住所選択ボタンの表示非表示を行う
+   * @@param name　ボタンclass名
+   * @@param flgEnebled
+   */
+  function SetBtnEnabled(name, flgEnebled) {
+
+    var btns = document.getElementsByName(name);
+
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].disabled = flgEnebled;
+    }
+
+  };
+
+  /**　使用率を表示 */
+  function SetListUtilizationRate() {
+
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "JsonGetAddressListForUtilizationRate" })',
+      {
+        CompanyID: $("#CompanyID").val(),
+        UserID: $("#UserID").val(),
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】" + response.result);
+          //var obj = JSON.parse(response.result);
+
+          //$("#tableShiyoritsu-body").remove();
+          //var table = document.getElementById("tableShiyoritsu");
+          //var tbody = document.createElement("tbody");
+          //tbody.setAttribute('id', 'tableShiyoritsu-body');
+          //table.appendChild(tbody);
+          //AddBtnRireki(tbody, obj, "onClickRireki");
+          $('#tableShiyoritsu').html(response.partialView);
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+        console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+        console.log(xhr, msg);
+      });
+  };
+
+  /** 使用履歴を表示 */
+  function SetListForRirekiData() {
+
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "JsonGetAddressListForRireki" })',
+      {
+        CompanyID: $("#CompanyID").val(),
+        UserID: $("#UserID").val(),
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】" + response.result);
+          //var obj = JSON.parse(response.result);
+
+          //$("#tableRireki-body").remove();
+          //var table = document.getElementById("tableShiyoRireki");
+          //var tbody = document.createElement("tbody");
+          //tbody.setAttribute('id', 'tableRireki-body');
+          //table.appendChild(tbody);
+          //AddBtnRireki(tbody, obj, "onClickRireki");
+          $('#tableShiyoRireki').html(response.partialView);
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+        console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+        console.log(xhr, msg);
+      });
+  };
+
+  /**
+ * 画面を閉じる
+ * selectCustomerModalCloseCallBack
+ * */
+  function ModalCommonDialogClose() {
+
+    $('#ModalCommonDialog').html('');
+
+    if (typeof selectAddressModalCloseCallBack == 'function') {
+      // 関数があった場合の処理内容
+      selectAddressModalCloseCallBack();
+    } else {
+      // 関数がない場合の処理内容
+      let button = document.getElementById('btnCloseCommon');
+      if (button != null) { button.click(); }
+    }
+    
+  };
+
+</script>
+<script src="~/js/EnterKeyCancel.js"></script>
+

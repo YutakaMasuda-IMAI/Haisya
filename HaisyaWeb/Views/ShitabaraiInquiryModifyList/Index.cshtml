@@ -1,0 +1,333 @@
+﻿@model HaisyaWeb.Models.ShitabaraiInquiryModifyListModel.DataListModel
+
+@{
+  Layout = "_Layout";
+  ViewData["Title"] = "下払問合せ変更承認一覧";
+}
+
+<head>
+  <link href="~/css/List.css" rel="stylesheet" />
+</head>
+
+<body class="container">
+  <div id="hiddenItem" hidden>
+    @Html.HiddenFor(model => Model.Company_ID)
+    @Html.HiddenFor(model => Model.Search.SelectDay)
+    @Html.HiddenFor(model => Model.Search.BackMenuAction)
+    @Html.HiddenFor(model => Model.SortParam.SortItemParam)
+    @Html.HiddenFor(model => Model.SortParam.SortOrder)
+  </div>
+  <div>
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "Form2" }))
+    {
+      <div id="hedder" class="row" style="margin-bottom: -20px;">
+        <h6 class="heading-pagetitle">下払問合せ変更承認一覧</h6>
+        <div class="form-group" style="width: 100%">
+          <div class="row">
+            <table class="table jbc-table table-hedder" style="padding: 0; border-collapse: collapse;width:100%; ">
+              <tbody>
+                @* １行目 *@
+                <tr>
+                  <th style="width: 300px;">
+                    <div class="appeal-box box d-flex align-items-center" style="vertical-align: middle; display: inline-block; padding: 0;">
+                      <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;"
+                            onclick="selectedChangeDay(-1)" onselectstart="return false;" alt="<<" tooltip="前日">＜＜</span>
+                      <div class="YearMonth" style="padding: 0px 5px;top: -5px;color: rgb(136, 136, 136);font-size: 18px;position: relative;cursor: pointer;padding: 0; margin: 0 5px;">
+                        <input id="TargetDayLavel" class="calender" type="text" readonly onchange="dataListDisplay()"
+                               style="width: 120px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;"
+                               value="1900/01/01" />
+                      </div>
+                      <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;"
+                            onclick="selectedChangeDay(1)" onselectstart="return false;" alt=">>" tooltip="翌日">＞＞</span>
+                    </div>
+                  </th>
+                  <th style="width: 150px;">
+                    <div style="padding: 0; margin: 0 15px 0 0; border-radius: 0px;">
+                      @Html.LabelFor(model => model.Search.SelectShimebi, htmlAttributes: new { @class = "control-label text-end search-label2 required", @style = "" })
+                      @Html.TextBoxFor(model => Model.Search.SelectShimebi, null, new { @class = "form-control search-text", @style = "width: 50px; display: inline-block;text-align:right", @maxlength = "2" })
+                    </div>
+                  </th>
+                  <th style="width: 300px;">
+                    @Html.LabelFor(model => model.Search.SelectShitabaraiTantou, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "" })
+                    <div class="" style="display: inline-block; _display: inline; padding: 0; width: 100px;">
+                      @Html.DropDownListFor(model => model.Search.SelectShitabaraiTantou, new SelectList(Model.Search.TantouSelectList, "Value", "Text", "Selected"), new { @class = "form-control search-select", @style = "width:140px;" })
+                    </div>
+                  </th>
+                  <th style="width: 400px;">
+                    <div class="search-div" style="width:290px;">
+                      <label class="search-label">@Html.LabelFor(model => model.Search.SelectHakkouKubun, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "color: #ff00dc; margin-left: 5px;" })</label>
+                      <input type="hidden" id="SelectHakkouKubun" name="SelectHakkouKubun" value="@Model.Search.SelectHakkouKubun" />
+                      <label class="radio-label"><input type="radio" name="num_of_hakkoukubun" value="1" checked>WEB</label>
+                      <label class="radio-label"><input type="radio" name="num_of_hakkoukubun" value="2">帳票</label>
+                    </div>
+                  </th>
+                  <th>
+                    <div class="search-div" style="width:270px;">
+                      <label class="search-label">@Html.LabelFor(model => model.Search.SelectKingakuHenkou, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "color: #ff00dc; margin-left: 5px;" })</label>
+                      <input type="hidden" id="SelectKingakuHenkou" name="SelectKingakuHenkou" value="@Model.Search.SelectKingakuHenkou" />
+                      <label class="radio-label"><input type="radio" name="num_of_kingaku" value="1" checked>あり</label>
+                      <label class="radio-label"><input type="radio" name="num_of_kingaku" value="0">なし</label>
+                    </div>
+                  </th>
+                </tr>
+                @* ２行目 *@
+                <tr>
+                  <th colspan="5">
+                    <table>
+                      <tr>
+                        <th>
+                          <label class="toggle-button-customer">
+                            <input id="Search_RangeSearch" type="checkbox" @(Model.Search.RangeSearch ? "checked" : "") />
+                          </label>
+                        </th>
+                        <th>
+                          <div style="display: inline-block; _display: inline; padding: 0;" class="div-search-customer">
+                            @Html.LabelFor(m => m.Search.Customer1, htmlAttributes: new { @class = "label search-label2" })
+                            <button id="btnCustomer1" type="button" class="btn btn-info btn-sm btn-select" style="width:80px;">選択</button>
+                            @Html.TextBoxFor(m => m.Search.Customer1, htmlAttributes: new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 100px; display: inline-block;" })
+                            @Html.TextBoxFor(m => m.Search.Customer_name1, htmlAttributes: new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 300px; display: inline-block;" })
+                            @Html.Hidden("Customer_ID", "", new { @id = "hiddenCustomerID" })
+                          </div>
+                        </th>
+                        <th>
+                          <label class="label search-label2" id="lbl-to" style="visibility: hidden;">　～</label>
+                        </th>
+                        <th>
+                          <div style="display: inline-block; _display: inline; padding: 0;">
+                            @Html.LabelFor(m => m.Search.Customer2, htmlAttributes: new { @id = "lbl-search-customer2", @class = "label search-label2", @style = "visibility: hidden;" })
+                            <button id="btnCustomer2" type="button" class="btn btn-info btn-sm btn-select" style="width:80px;visibility: hidden; ">選択</button>
+                            @Html.TextBoxFor(m => m.Search.Customer2, htmlAttributes: new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 100px;visibility: hidden;" })
+                            @Html.TextBoxFor(m => m.Search.Customer_name2, htmlAttributes: new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 300px;visibility: hidden;" })
+                            @Html.Hidden("Customer_IDTo", "", new { @id = "hiddenCustomerIDTo" })
+                          </div>
+                        </th>
+                      </tr>
+                    </table>
+                  </th>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="DataList" class="data-list" style="">
+        </div>
+      </div>
+    }
+  </div>
+</body>
+
+<script>
+  $(window).on('load', function () {
+    var disp = new Date($('#Search_SelectDay').val());
+
+    /** 日付を文字列にフォーマットする */
+    var formatted = `${disp.getFullYear()}\年${(disp.getMonth() + 1).toString().padStart(2, '0')}\月`.replace(
+      /\n|\r/g,
+      '',
+    );
+    $('input#TargetDayLavel').val(formatted);
+
+    dataListDisplay();
+
+    // 発行区分を設定する
+    var hakkoukubun = $('#SelectHakkouKubun').val(); // Get the value from
+    $('input[name="num_of_hakkoukubun"][value="' + hakkoukubun + '"]').prop('checked', true); // Set the corresponding radio button
+
+    // 金額変更を設定する
+    var kingakuhenkou = $('#SelectKingakuHenkou').val(); // Get the value from
+    $('input[name="num_of_kingaku"][value="' + kingakuhenkou + '"]').prop('checked', true); // Set the corresponding radio button
+
+    TurnRangeSearch($('#Search_RangeSearch').prop('checked'));
+  });
+
+  let currentButton = '';
+  $(function () {
+    $(".calender").ympicker({
+      buttonImage: "../img/calender.png",
+      dateFormat: "yy\年mm\月",
+    });
+    $('input[name="num_of_hakkoukubun"]:radio').change(function () {
+      var checkedValue = $('input[name="num_of_hakkoukubun"]:radio:checked').val();
+      document.getElementById('SelectHakkouKubun').value = checkedValue;
+      dataListDisplay();
+    });
+
+    $('input[name="num_of_kingaku"]:radio').change(function () {
+      var checkedValue = $('input[name="num_of_kingaku"]:radio:checked').val();
+      document.getElementById('SelectKingakuHenkou').value = checkedValue;
+      dataListDisplay();
+    });
+
+    $('#tglSelectYosyasaki').on('change', function () {
+      tglSelectYosyasaki($('#tglSelectYosyasaki').prop('checked'));
+    });
+
+    $('#Search_SelectShitabaraiTantou').on('change', function () {
+      dataListDisplay();
+    });
+
+    $('#Search_SelectShimebi').on('change', function () {
+      dataListDisplay();
+    });
+
+    $('#Search_RangeSearch').on('change', function () {
+      TurnRangeSearch($('#Search_RangeSearch').prop('checked'));
+    });
+
+    $('#btnCustomer1').on('click', function (event) {
+      currentButton = 'from';
+
+      let selectedId = $('#hiddenCustomerID').val();
+      let id = @(Model.Company_ID);
+
+      openCommonDialogForCustomer(id, '', selectedId);
+
+      return false;
+    });
+
+    $('#btnCustomer2').on('click', function (event) {
+      currentButton = 'to';
+
+      let selectedId = $('#hiddenCustomerIDTo').val();
+      let id = @(Model.Company_ID);
+
+      openCommonDialogForCustomer(id, '', selectedId);
+
+      return false;
+    });
+  });
+
+  function selectedChangeDay(move) {
+    var dt = new Date($('#Search_SelectDay').val());
+    dt.setMonth(dt.getMonth() + move);
+    $('#Search_SelectDay').val(formatDate(dt));
+
+    /** 日付を文字列にフォーマットする */
+    var formatted = `${dt.getFullYear()}\年${(dt.getMonth() + 1).toString().padStart(2, '0')}\月`.replace(/\n|\r/g, '');
+    $('input#TargetDayLavel').val(formatted);
+    dataListDisplay();
+  }
+
+  function formatDate(date) {
+    var yyyy = date.getFullYear();
+    var mm = ('00' + (date.getMonth() + 1)).slice(-2);
+    var dd = ('00' + date.getDate()).slice(-2);
+    const ymd = String(yyyy) + '/' + String(mm) + '/' + String(dd);
+    return ymd;
+  }
+
+  function dataListFirstSortChange(name) {
+    if (typeof name === "undefined") {
+      return;
+    }
+    var sortName = $("#SortParam_SortItemParam").val();
+    var sortOrder = $("#SortParam_SortOrder").val();
+    if (name != sortName) {
+      $("#SortParam_SortOrder").val("asc");
+    }
+    if (sortOrder.indexOf("desc") != -1) {
+      $("#SortParam_SortOrder").val("asc");
+    } else {
+      $("#SortParam_SortOrder").val("desc");
+    }
+    $("#SortParam_SortItemParam").val(name);
+    dataListDisplay();
+  }
+
+  function dataListDisplay() {
+    if ($('#Search_SelectShimebi').val() == '') {
+      if ($('#myTable').length === 0) {
+        var noData = "<div class=\"no-data-row\">\
+                <h4 class=\"no-data-row-text\">データ無し</h4>\
+              </div>";
+        $('#DataList').html(noData);
+      }
+      return;
+    }
+    $.post(
+      '@Url.RouteUrl("Default", new { controller = "ShitabaraiInquiryModifyList", Action = "JsonGetDataListForShitabaraiInquiryModifyList" })',
+      {
+        SelectDay: $('#Search_SelectDay').val(),
+        SelectShitabaraiTantou: $('#Search_SelectShitabaraiTantou').val(),
+        SelectHakkouKubun: document.getElementById('SelectHakkouKubun').value,
+        SelectKingakuHenkou: document.getElementById('SelectKingakuHenkou').value,
+        SelectShimebi: $('#Search_SelectShimebi').val(),
+        Customer1: $('#Search_Customer1').val(),
+        Customer2: $('#Search_Customer2').val(),
+        RangeSearch: $('#Search_RangeSearch').prop('checked'),
+        sortItemParam: $('#SortParam_SortItemParam').val(),
+        sortOrder: $('#SortParam_SortOrder').val(),
+      },
+      function (data) {
+        $('#DataList').html(data.partialView);
+      },
+    );
+  }
+
+  function TurnRangeSearch(on) {
+    if (on) {
+      $('#lbl-to').prop('style', 'display: inline-block;');
+      $('#lbl-search-customer2').prop('style', 'display: inline-block;');
+      $('#btnCustomer2').prop('style', 'width: 80px;margin: 2px;');
+      $('#Search_Customer2').prop('style', 'width: 100px; display: inline-block;');
+      $('#Search_Customer_name2').prop('style', 'width: 300px; display: inline-block;');
+    } else {
+      $('#lbl-to').prop('style', 'display: inline-block;visibility:hidden;');
+      $('#lbl-search-customer2').prop('style', 'display: inline-block;visibility:hidden;');
+      $('#btnCustomer2').prop('style', 'width:80px;visibility:hidden;');
+      $('#Search_Customer2').prop('style', 'width: 100px;display: inline-block;visibility:hidden;');
+      $('#Search_Customer_name2').prop('style', 'width: 300px;display: inline-block;visibility:hidden;');
+
+      $('#Search_Customer2').val('');
+      $('#Search_Customer_name2').val('');
+    }
+  }
+
+  function clickbtnYosyaFromTo(kind) {
+    console.log('clickbtnYosyaFromTo()');
+    let id = $('#Company_ID').val();
+
+    $.post('@Url.RouteUrl("Default", new { controller = "ShitabaraiInquiryModifyList", Action = "IndexModal" })', {
+      CompanyID: id,
+      ModalType: kind, // From or To
+    })
+      .done(function (response) {
+        if (response.errorMessage != null) {
+          alertError(`【エラー】${response.errorMessage}`);
+          return false;
+        } else {
+          $('#ModalHere').html(response.partialView);
+          $('#ModalHere').find('.modal').modal('show');
+          return;
+        }
+      })
+      .fail(function (xhr) {
+        alertError(xhr, '【ネットワークエラー】');
+        console.log(xhr);
+        return false;
+      })
+      .always(function (xhr, msg) {});
+    return false;
+  }
+
+  function ModalClose() {
+    $('#ModalHere').find('.modal').modal('hide');
+  }
+
+  function selectCustomerSelectedCallBack(obj) {
+    console.log(obj);
+    console.log(obj['Customer_Branch_Code']);
+    console.log(obj['Customer_Branch_Name_Abbr']);
+    console.log(obj['Customer_Branch_ID']);
+    if (currentButton === 'from') {
+      $('#Search_Customer1').val(obj['Customer_Branch_Code']);
+      $('#Search_Customer_name1').val(obj['Customer_Branch_Name_Abbr']);
+      $('#hiddenCustomerID').val(obj['Customer_Branch_ID']);
+    } else if (currentButton === 'to') {
+      $('#Search_Customer2').val(obj['Customer_Branch_Code']);
+      $('#Search_Customer_name2').val(obj['Customer_Branch_Name_Abbr']);
+      $('#hiddenCustomerIDTo').val(obj['Customer_Branch_ID']);
+    }
+    dataListDisplay();
+  }
+</script>

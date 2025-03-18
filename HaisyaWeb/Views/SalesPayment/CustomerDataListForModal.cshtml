@@ -1,0 +1,83 @@
+﻿@model HaisyaWeb.Models.YosyaModel.YosyaDataListModel
+
+@if (Model.YosyaDataList2.Count() == 0)
+{
+<div class="no-data-row">
+  <h4 class="no-data-row-text">データ無し</h4>
+</div>
+}
+else
+{ }
+<table id="myTable" class="ex_table-tokuisaki table-bordered border-info search-list" width="100%" border="1">
+  <thead>
+  <tr align="center">
+    <th width="50px">選択</th>
+    <th width="20px">
+      <a data-koumoku="Kubun_Sort" href="#" style="">傭車<br />ID</a>
+    </th>
+    <th width="100px">
+      <a data-koumoku="Kubun_Sort" href="#" style="">傭車コード</a>
+    </th>
+    <th width="100px">
+      <a data-koumoku="Kubun_Sort" href="#" style="">傭車名前</a>
+    </th>
+    <th>
+      <a data-koumoku="Kubun_Sort" href="#" style="">アドレス１</a>
+    </th>
+    <th>
+      <a data-koumoku="Kubun_Sort" href="#" style="">アドレス２</a>
+    </th>
+    <th width="50px">
+      <a data-koumoku="Kubun_Sort" href="#" style="">電話番号１</a>
+    </th>
+    <th width="50px">
+      <a data-koumoku="Kubun_Sort" href="#" style="">電話番号２</a>
+    </th>
+    <th width="50px">
+      <a data-koumoku="Kubun_Sort" href="#" style="">FAX番号1</a>
+    </th>
+  </tr>
+  </thead>
+  <tbody>
+    @{
+      int i = 0;
+    }
+    @foreach (var item in Model.YosyaDataList2.OrderBy(m => m.Company_ID).ToList())
+    {
+      i++;
+      var color = i % 2 == 1 ? "row-even" : "row-odd";
+      <tr>
+        <td class="@(color)">
+          <button class="btn btn-success" style="width: 100%; padding:0;" onclick="submitYosyaData('@(item.Yosya_ID)','@(item.Yosya_Code)','@(item.Yosya_Name)'); return false;">選択</button>
+        </td>
+        <td class="@(color)" align="center">
+          @Html.DisplayFor(modelItem => item.Yosya_ID)
+        </td>
+        <td class="@(color)">
+          @Html.DisplayFor(modelItem => item.Yosya_Code)
+        </td>
+        <td class="@(color)">
+          @Html.DisplayFor(modelItem => item.Yosya_Name)
+        </td>
+        <td class="@(color)">
+          @Html.DisplayFor(modelItem => item.Address1)
+        </td>
+        <td class="@(color)">
+          @Html.DisplayFor(modelItem => item.Address2)
+        </td>
+        <td class="@(color)">
+          @Html.DisplayFor(modelItem => item.Phone1)
+        </td>
+        <td class="@(color)">
+          @Html.DisplayFor(modelItem => item.Phone2)
+        </td>
+        <td class="@(color)">
+          @Html.DisplayFor(modelItem => item.Fax1)
+        </td>
+      </tr>
+    }
+  </tbody>
+</table>
+}
+
+

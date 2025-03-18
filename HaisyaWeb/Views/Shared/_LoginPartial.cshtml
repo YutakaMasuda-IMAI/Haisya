@@ -1,0 +1,193 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using HaisyaWeb.Models.DB
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<style>
+  .btn-logout {
+  }
+
+  /* ヘッダ右上の表示情報 */
+  #user-header {
+    //float: right;
+    //font-size: 110%;
+    margin-top: 4px;
+    //margin-right: 20px;
+    text-align: right;
+    white-space: nowrap;
+  }
+
+    #user-header div {
+      display: inline-block;
+    }
+
+    #user-header .search-icon {
+      font-size: 24px;
+      padding: 18px;
+      top: 4px;
+      position: relative;
+    }
+
+    #user-header #user-helper.hide {
+      display: none;
+    }
+
+    #user-header #user-helper {
+      display: inline-block;
+      font-size: 18px;
+    }
+
+    #user-header #header-user-info {
+      display: inline-block;
+      font-size: 16px;
+    }
+
+      #user-header #header-user-info #company-name, #user-header #header-user-info #manager-name {
+        padding: 10px;
+      }
+
+    #user-header .glyphicon {
+      margin-right: 6px;
+    }
+
+  #help {
+    margin-right: 1em;
+  }
+
+  #user-header .caret {
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #000000;
+    display: inline-block;
+    opacity: 0.3;
+    vertical-align: middle;
+  }
+
+  #user-header a {
+    color: #7D7D7D;
+    text-decoration: underline;
+  }
+
+  #manager-name {
+    position: relative;
+  }
+
+    #manager-name a {
+      text-decoration: none;
+    }
+
+  #rollover-menu {
+    background: #ffffff;
+    border: 1px solid;
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 40px;
+    /*    z-index: 100;*/
+    font-size: 12px;
+  }
+
+    #rollover-menu li {
+      padding: 10px;
+      text-align: center;
+    }
+
+      #rollover-menu li:hover {
+        background: #479fff;
+        color: #ffffff;
+        cursor: pointer;
+      }
+</style>
+
+<div id="user-header" class="navbar-nav">
+  @*<div>@User.Identity.IsAuthenticated</div>*@
+  @*@if (SignInManager.IsSignedIn(User))*@
+  @if (User.Identity.IsAuthenticated)
+  {
+    @*<li class="nav-item">
+        <a class="nav-link text-dark" style="min-width:120px;" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage">ようこそ @User.Identity.Name! </a>
+      </li>
+      <li class="nav-item">
+        <form class="form-inline" asp-area="" asp-controller="Account" asp-action="LogoutExec" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+          <button type="submit" class="btn-logout nav-link btn btn-link text-dark">Logout</button>
+        </form>
+      </li>*@
+    <div hidden>
+      <input type="hidden" id="loginId_Partial" value="@(User.Claims.ToList()[0].Value)" />
+    </div>
+
+    <div id="header-user-info" style="height:63px; position: relative; margin-top: 0px; vertical-align:middle;">
+      <div id="company-name" style="margin-top: 15px;display: inline;">
+        <span class="glyphicon glyphicon-home" aria-hidden="true"></span><input type="text" id="CompanyName" style="border: none;" />
+      </div>
+      <div id="manager-name" style="display: inline-block; padding-bottom: 5px;" onmouseout="rollout()" onmouseover="rollover()">
+        <a href="#">
+          <span class="glyphicon glyphicon-user"></span>
+          @User.Identity.Name 様                <span class="caret"></span>
+        </a>
+        <ul id="rollover-menu" style="display: none;z-index: 1000;">
+          @*<li><a class="" asp-area="" asp-controller="Account" asp-action="" data-submenu-name="" style="text-decoration: none;" onclick="return false;">アカウント情報の変更</a></li>*@
+          <li><a class="" asp-area="" asp-controller="Account" asp-action="LogoutExec" data-submenu-name="anken" style="text-decoration: none; font-size: 14px;">ログアウト</a></li>
+          @*<li></li>*@
+        </ul>
+      </div>
+    </div>
+
+
+
+  }
+  else
+  {
+    @*<li class="nav-item">
+          <a class="nav-link text-dark" asp-area="" asp-page="/Account/Register">Register</a>
+      </li>*@
+    @*<li class="nav-item">
+      <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login">Login</a>
+    </li>*@
+
+    <div id="header-user-info" style="height:63px; position: relative; margin-top: 0px; vertical-align:middle;">
+      <a class="nav-link text-dark" asp-area="" asp-controller="Account" asp-action="Login"　style="text-decoration: none; font-size: 14px;">ログイン</a>
+    </div>
+
+  }
+</div>
+
+
+<script>
+  function rollover() {
+    document.getElementById("rollover-menu").style.display = "block";
+  }
+  function rollout() {
+    document.getElementById("rollover-menu").style.display = "none";
+  }
+
+
+
+  $(function () {
+    $(document).ready(function () {
+
+      $.ajax({
+          url: '@Url.RouteUrl("Default", new { controller = "Home", Action = "GetLoginUserInfo" })',
+          type: 'post',
+        }).done(function (response) {
+          if (response.errorMessage != null) {
+              alertError(`【エラー】${response.errorMessage}`);
+              return false;
+          } else {
+            var obj = response.result;
+            $('#CompanyName').val(obj["company_Name"]);
+            return;
+          }
+        }).fail(function (xhr) {
+          alertError(xhr, "【ネットワークエラー】");
+          console.log(xhr);
+          return false;
+        }).always(function (xhr, msg) {
+            console.log(xhr, msg);
+        });
+
+    });
+  });
+
+</script>

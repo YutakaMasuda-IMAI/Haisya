@@ -1,0 +1,546 @@
+﻿@model HaisyaWeb.Models.FixAmountApprovalDetailModel.DataListModel
+
+<div class="category-title">入金情報</div>
+<div class="table-div" style="margin-top:5px;">
+  <table id="PaymentDataListTable" class="list" style="width: 400px;">
+    <thead>
+      <tr align="center">
+        <th class="detail-list" width="100px">日付</th>
+        <th class="detail-list" width="200px">入金項目</th>
+        <th class="detail-list" width="100px">入金額</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var item in Model.NyukinList)
+      {
+        <tr>
+          <td align="center">
+            @item.Process_Date.ToString("M月d日")
+          </td>
+          <td>
+            @item.NyukinItem
+          </td>
+          <td align="right">
+            @Convert.ToInt32(item.Total_Amount).ToString("#,0")
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<div class="category-title">請求明細</div>
+<div class="table-div" style="text-align:left;margin-top:5px;">
+@if (Model.CheckSeikyu.Check_Kubun != 1 || (Model.CheckSeikyu.Check_Kubun == 1 && Model.CheckSeikyu.Check_Status != 1))
+{
+  <button id="bulkApprovalBtn" type="button" class="btn btn-primary btn-sm" style="width: 80px;margin-bottom:5px;">一括確定</button>
+}
+else
+{
+  <button type="button" class="btn btn-primary btn-sm" style="width: 80px; margin-bottom: 5px;" disabled>一括確定</button>
+}
+</div>
+
+@if (Model.SeikyuMeisaiList == null || Model.SeikyuMeisaiList.Count() == 0)
+{
+  <div style="width: 100%; background: #339966 ">
+    <h4 style="text-align:left; margin-left: 20px;color: white;">データ無し</h4>
+  </div>
+}
+else
+{
+  <div class="table-div" style="margin-top:5px;">
+    <table id="ClaimDataListTable" class="ClaimDataListTable list" style="width: 100%;" border="1">
+      <thead>
+        <tr align="center">
+          <th class="detail-list" width="30px">@Html.CheckBox("checkbox", false, new { @class = "", id = "selectAllCheckbox" })</th>
+          <th class="detail-list" width="80px">日付</th>
+          <th class="detail-list" width="50px">車番</th>
+          <th class="detail-list" width="80px">車種</th>
+          <th class="detail-list" width="100px">発地</th>
+          <th class="detail-list" width="100px">着地</th>
+          <th class="detail-list" width="100px">案件情報</th>
+          <th class="detail-list">品名</th>
+          <th class="detail-list" width="50px">数量</th>
+          <th class="detail-list" width="50px">単位</th>
+          <th class="detail-list" width="70px">単価</th>
+          <th class="detail-list" width="70px">運賃</th>
+          @{
+            if (Model.CustomerUriageCalc.Warimashi1_Name != null && Model.CustomerUriageCalc.Warimashi1_Visible == true)
+            {
+                <th class="detail-list" width="70px">@Html.DisplayFor(model => model.CustomerUriageCalc.Warimashi1_Name)</th>
+            }
+            else
+            {
+                <th hidden></th>
+            }
+            if (Model.CustomerUriageCalc.Warimashi2_Name != null && Model.CustomerUriageCalc.Warimashi2_Visible == true)
+            {
+                <th class="detail-list" width="70px">@Html.DisplayFor(model => model.CustomerUriageCalc.Warimashi2_Name)</th>
+            }
+            else
+            {
+                <th hidden></th>
+            }
+            if (Model.CustomerUriageCalc.Warimashi3_Name != null && Model.CustomerUriageCalc.Warimashi3_Visible == true)
+            {
+                <th class="detail-list" width="70px">@Html.DisplayFor(model => model.CustomerUriageCalc.Warimashi3_Name)</th>
+            }
+            else
+            {
+                <th hidden></th>
+            }
+            if (Model.CustomerUriageCalc.Warimashi4_Name != null && Model.CustomerUriageCalc.Warimashi4_Visible == true)
+            {
+                <th class="detail-list" width="70px">@Html.DisplayFor(model => model.CustomerUriageCalc.Warimashi4_Name)</th>
+            }
+            else
+            {
+                <th hidden></th>
+            }
+            if (Model.CustomerUriageCalc.Warimashi5_Name != null && Model.CustomerUriageCalc.Warimashi5_Visible == true)
+            {
+                <th class="detail-list" width="70px">@Html.DisplayFor(model => model.CustomerUriageCalc.Warimashi5_Name)</th>
+            }
+            else
+            {
+                <th hidden></th>
+            }
+          }
+          <th class="detail-list" width="70px">通行料</th>
+          <th class="detail-list" width="70px">合計金額</th>
+          <th class="detail-list" width="60px">摘要</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var item in Model.SeikyuMeisaiList.ToList())
+        {
+          bool isUnapproved = item.CheckDetail?.Approval_Datetime == null && item.CheckDetail?.Approval_User == 0;
+
+          <tr>
+            <td align="center" rowspan="2">
+              @if (isUnapproved)
+              {
+                @Html.CheckBox("checkbox", false, new { @class = "rowCheckbox" })
+              }
+              @Html.Hidden("Check_Seikyu_ID", item.CheckDetail.Check_Seikyu_ID)
+              @Html.Hidden("Uriage_Unchin_ID", item.CheckDetail.Uriage_Unchin_ID)
+            </td>
+            <td align="center">
+              @(item.Up.Display_Date.HasValue ? item.Up.Display_Date.Value.ToString("M月d日") : "")
+            </td>
+            <td align="center">
+              @Html.DisplayFor(modelItem => item.Up.Syaban)
+            </td>
+            <td>
+              @Html.DisplayFor(modelItem => item.Up.SyasyuKataName)
+            </td>
+            <td>
+              @Html.DisplayFor(modelItem => item.Up.Tsumi)
+            </td>
+            <td>
+              @Html.DisplayFor(modelItem => item.Up.Oroshi)
+            </td>
+            <td>
+              @Html.DisplayFor(modelItem => item.Up.Work_Name)
+            </td>
+            <td>
+              @Html.DisplayFor(modelItem => item.Up.Luggage)
+            </td>
+            <td align="right">
+              @Convert.ToInt32(item.Up.Qty).ToString("#,0")
+            </td>
+            <td>
+              @Html.DisplayFor(modelItem => item.Up.UnitData)
+            </td>
+            <td align="right">
+              @Convert.ToInt32(item.Up.UnitPrice).ToString("#,0")
+            </td>
+            <td align="right">
+              @Convert.ToInt32(item.Up.SeikyuUnchin).ToString("#,0")
+            </td>
+            @{
+              if (Model.CustomerUriageCalc.Warimashi1_Name != null && Model.CustomerUriageCalc.Warimashi1_Visible == true)
+              {
+                <td align="right">
+                  @Convert.ToInt32(item.Up.Warimashi1).ToString("#,0")
+                </td>
+              }
+              else
+              {
+                <td hidden></td>
+              }
+              if (Model.CustomerUriageCalc.Warimashi2_Name != null && Model.CustomerUriageCalc.Warimashi2_Visible == true)
+              {
+                <td align="right">
+                  @Convert.ToInt32(item.Up.Warimashi2).ToString("#,0")
+                </td>
+              }
+              else
+              {
+                <td hidden></td>
+              }
+              if (Model.CustomerUriageCalc.Warimashi3_Name != null && Model.CustomerUriageCalc.Warimashi3_Visible == true)
+              {
+                <td align="right">
+                  @Convert.ToInt32(item.Up.Warimashi3).ToString("#,0")
+                </td>
+              }
+              else
+              {
+                <td hidden></td>
+              }
+              if (Model.CustomerUriageCalc.Warimashi4_Name != null && Model.CustomerUriageCalc.Warimashi4_Visible == true)
+              {
+                <td align="right">
+                  @Convert.ToInt32(item.Up.Warimashi4).ToString("#,0")
+                </td>
+              }
+              else
+              {
+                <td hidden></td>
+              }
+              if (Model.CustomerUriageCalc.Warimashi5_Name != null && Model.CustomerUriageCalc.Warimashi5_Visible == true)
+              {
+                <td align="right">
+                  @Convert.ToInt32(item.Up.Warimashi5).ToString("#,0")
+                </td>
+              }
+              else
+              {
+                <td hidden></td>
+              }
+            }
+            <td align="right">
+              @Convert.ToInt32(item.Up.Tatekaekin).ToString("#,0")
+            </td>
+            <td align="right">
+              @Convert.ToInt32(item.Up.SeikyuTotal).ToString("#,0")
+            </td>
+            <td align="center">
+              <div style="width:60px;overflow:auto;">
+                @Html.DisplayFor(modelItem => item.Up.Remarks1)  @Html.DisplayFor(modelItem => item.Up.Remarks2)
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td align="left" colspan="7">
+              <div>
+                @if (Model.CheckSeikyu.Check_Kubun != 1 || (Model.CheckSeikyu.Check_Kubun == 1 && Model.CheckSeikyu.Check_Status != 1))
+                {
+                  <label style="padding-left:20px;">
+                    @Html.RadioButton($"ApprovalStatus_{item.Down.Check_Seikyu_ID}_{item.Up.Uriage_Unchin_ID}", 0, isUnapproved == true) 暫定
+                  </label>
+                  <label style="padding-left:20px;">
+                    @Html.RadioButton($"ApprovalStatus_{item.Down.Check_Seikyu_ID}_{item.Up.Uriage_Unchin_ID}", 1, isUnapproved == false) 確定
+                  </label>
+                }
+                else
+                {
+                  <label style="padding-left:20px;">
+                    @Html.RadioButton($"ApprovalStatus_{item.Down.Check_Seikyu_ID}_{item.Up.Uriage_Unchin_ID}", 0, isUnapproved == true, new { @disabled = "disabled" }) 暫定
+                  </label>
+                  <label style="padding-left:20px;">
+                    @Html.RadioButton($"ApprovalStatus_{item.Down.Check_Seikyu_ID}_{item.Up.Uriage_Unchin_ID}", 1, isUnapproved == false, new { @disabled = "disabled" }) 確定
+                  </label>
+                }
+              </div>
+            </td>
+            <td align="right" style="@(item.Down.Qty.HasValue ? "background-color: rgba(249, 219, 120, 1)" : "")">
+              @(item.Down.Qty.HasValue ? item.Down.Qty.Value.ToString("#,0") : "")
+            </td>
+            <td align="center" style="@(!string.IsNullOrEmpty(item.Down.UnitData) ? "background-color: rgba(249, 219, 120, 1)" : "")" data-unit="@item.Down.Unit">
+              @Html.DisplayFor(modelItem => item.Down.UnitData)
+            </td>
+            <td align="right" style="@(item.Down.UnitPrice.HasValue ? "background-color: rgba(249, 219, 120, 1)" : "")">
+              @(item.Down.UnitPrice.HasValue ? Convert.ToInt32(item.Down.UnitPrice.Value).ToString("#,0") : "")
+            </td>
+            <td align="right" style="@(item.Down.SeikyuUnchin.HasValue ? "background-color: rgba(249, 219, 120, 1)" : "")">
+              @(item.Down.SeikyuUnchin.HasValue ? Convert.ToInt32(item.Down.SeikyuUnchin.Value).ToString("#,0") : "")
+            </td>
+            @{
+              if (Model.CustomerUriageCalc.Warimashi1_Name != null && Model.CustomerUriageCalc.Warimashi1_Visible == true)
+              {
+                <td align="right" style="@(item.Down.Warimashi1.HasValue ? "background-color: rgba(249, 219, 120, 1)" : "")">
+                  @(item.Down.Warimashi1.HasValue ? Convert.ToInt32(item.Down.Warimashi1.Value).ToString("#,0") : "")
+                </td>
+              }
+              else
+              {
+                <td hidden></td>
+              }
+              if (Model.CustomerUriageCalc.Warimashi2_Name != null && Model.CustomerUriageCalc.Warimashi2_Visible == true)
+              {
+                <td align="right" style="@(item.Down.Warimashi2.HasValue ? "background-color: rgba(249, 219, 120, 1)" : "")">
+                  @(item.Down.Warimashi2.HasValue ? Convert.ToInt32(item.Down.Warimashi2.Value).ToString("#,0") : "")
+                </td>
+              }
+              else
+              {
+                <td hidden></td>
+              }
+              if (Model.CustomerUriageCalc.Warimashi3_Name != null && Model.CustomerUriageCalc.Warimashi3_Visible == true)
+              {
+                <td align="right" style="@(item.Down.Warimashi3.HasValue ? "background-color: rgba(249, 219, 120, 1)" : "")">
+                  @(item.Down.Warimashi3.HasValue ? Convert.ToInt32(item.Down.Warimashi3.Value).ToString("#,0") : "")
+                </td>
+              }
+              else
+              {
+                <td hidden></td>
+              }
+              if (Model.CustomerUriageCalc.Warimashi4_Name != null && Model.CustomerUriageCalc.Warimashi4_Visible == true)
+              {
+                <td align="right" style="@(item.Down.Warimashi4.HasValue ? "background-color: rgba(249, 219, 120, 1)" : "")">
+                  @(item.Down.Warimashi4.HasValue ? Convert.ToInt32(item.Down.Warimashi4.Value).ToString("#,0") : "")
+                </td>
+              }
+              else
+              {
+                <td hidden></td>
+              }
+              if (Model.CustomerUriageCalc.Warimashi5_Name != null && Model.CustomerUriageCalc.Warimashi5_Visible == true)
+              {
+                <td align="right" style="@(item.Down.Warimashi5.HasValue ? "background-color: rgba(249, 219, 120, 1)" : "")">
+                  @(item.Down.Warimashi5.HasValue ? Convert.ToInt32(item.Down.Warimashi5.Value).ToString("#,0") : "")
+                </td>
+              }
+              else
+              {
+                <td hidden></td>
+              }
+            }
+            <td align="right" style="@(item.Down.Tatekaekin.HasValue ? "background-color: rgba(249, 219, 120, 1)" : "")">
+              @(item.Down.Tatekaekin.HasValue ? Convert.ToInt32(item.Down.Tatekaekin.Value).ToString("#,0") : "")
+            </td>
+            <td align="right" style="@(item.Down.SeikyuTotal.HasValue ? "background-color: rgba(249, 219, 120, 1)" : "")">
+              @(item.Down.SeikyuTotal.HasValue ? Convert.ToInt32(item.Down.SeikyuTotal.Value).ToString("#,0") : "")
+            </td>
+            <td align="center">
+              @if (Model.CheckSeikyu.Check_Kubun != 1 || (Model.CheckSeikyu.Check_Kubun == 1 && Model.CheckSeikyu.Check_Status != 1))
+              {
+                @if (item.Down.Check_Seikyu_ID != 0 || item.Down.Uriage_Unchin_ID != 0)
+                {
+                  <button id="btnTokuisakiFrom" class="btn btn-info btn-sm" style="width: 60px;" onclick="openIndexModal(@item.CheckDetail.Check_Seikyu_ID, @item.CheckDetail.Uriage_Unchin_ID); return false;">
+                    @(isUnapproved ? "未承認" : "承認済み")
+                  </button>
+                }
+              }
+              else
+              {
+                <button class="btn btn-info btn-sm" style="width:60px; " onclick="return false;" disabled>
+                  @(isUnapproved ? "未承認" : "承認済み")
+                </button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+
+<script>
+  // 全選択チェックボックスの処理
+  $('#selectAllCheckbox').change(function () {
+    $('.rowCheckbox').prop('checked', this.checked);
+  });
+
+  //請求明細モーダルの表示
+  function openIndexModal(Check_Seikyu_ID, Uriage_Unchin_ID) {
+    $.post('@Url.RouteUrl("Default", new { controller = "FixAmountApprovalDetail", Action = "IndexModal" })', {
+      Check_Seikyu_ID: Check_Seikyu_ID,
+      Uriage_Unchin_ID: Uriage_Unchin_ID,
+    })
+      .done(function (response) {
+        if (response.message != null) {
+          alertError(`【エラー】${response.message}`);
+          return false;
+        } else {
+          $('#ModalHere').html(response.partialView);
+          $('#ModalHere').find('.modal').modal('show');
+          return;
+        }
+      })
+      .fail(function (xhr) {
+        alertError('fail:' + xhr);
+        console.log(xhr);
+        return false;
+      })
+      .always(function (xhr, msg) {});
+    return false;
+  }
+
+  $('#bulkApprovalBtn').click(function () {
+    var checkedCount = $('.rowCheckbox:checked').length;
+
+    // チェックされたチェックボックスが0個の場合、エラーアラートを表示して処理を中断
+    if (checkedCount === 0) {
+      alertError('処理対象を選択してください');
+      return;
+    }
+
+    var updateCheckSeikyuChangeList = [];
+    var updateUriageUnchinList = [];
+
+    $('.rowCheckbox:checked').each(function () {
+      var row = $(this).closest('tr');
+      var nextRow = row.next('tr');
+
+      var commonData = {
+        Uriage_Unchin_ID: parseInt(row.find('input[name="Uriage_Unchin_ID"]').val()),
+        Qty: parseFloat(nextRow.find('td:eq(1)').text().trim()) || 0,
+        Unit: parseInt(nextRow.find('td:eq(2)').attr('data-unit')) || null,
+        UnitPrice:
+          parseFloat(
+            nextRow
+              .find('td:eq(3)')
+              .text()
+              .trim()
+              .replace(/[^0-9.-]+/g, ''),
+          ) || 0,
+        SeikyuUnchin:
+          parseFloat(
+            nextRow
+              .find('td:eq(4)')
+              .text()
+              .trim()
+              .replace(/[^0-9.-]+/g, ''),
+          ) || 0,
+        Warimashi1:
+          parseFloat(
+            nextRow
+              .find('td:eq(5)')
+              .text()
+              .trim()
+              .replace(/[^0-9.-]+/g, ''),
+          ) || 0,
+        Warimashi2:
+          parseFloat(
+            nextRow
+              .find('td:eq(6)')
+              .text()
+              .trim()
+              .replace(/[^0-9.-]+/g, ''),
+          ) || 0,
+        Warimashi3:
+          parseFloat(
+            nextRow
+              .find('td:eq(7)')
+              .text()
+              .trim()
+              .replace(/[^0-9.-]+/g, ''),
+          ) || 0,
+        Warimashi4:
+          parseFloat(
+            nextRow
+              .find('td:eq(8)')
+              .text()
+              .trim()
+              .replace(/[^0-9.-]+/g, ''),
+          ) || 0,
+        Warimashi5:
+          parseFloat(
+            nextRow
+              .find('td:eq(9)')
+              .text()
+              .trim()
+              .replace(/[^0-9.-]+/g, ''),
+          ) || 0,
+        Tatekaekin:
+          parseFloat(
+            nextRow
+              .find('td:eq(10)')
+              .text()
+              .trim()
+              .replace(/[^0-9.-]+/g, ''),
+          ) || 0,
+        SeikyuTotal:
+          parseFloat(
+            nextRow
+              .find('td:eq(11)')
+              .text()
+              .trim()
+              .replace(/[^0-9.-]+/g, ''),
+          ) || 0,
+        CalcPrice: null,
+        Insert_Datetime: "1990-01-01",
+        Insert_User: 0,
+        Update_Datetime: "1990-01-01",
+        Update_User: 0,
+      };
+
+      updateCheckSeikyuChangeList.push({
+        ...commonData,
+        Check_Seikyu_ID: parseInt(row.find('input[name="Check_Seikyu_ID"]').val()),
+      });
+      // updateUriageUnchinList.push(commonData);
+    });
+
+    var batchRegistrationModel = {
+      UpdateCheckSeikyuChangeList: updateCheckSeikyuChangeList,
+      UpdateUriageUnchinList: null, //updateUriageUnchinList,
+      Check_Kubun: @Model.CheckSeikyu.Check_Kubun,
+      Check_Seikyu_ID: @Model.Check_Seikyu_ID,
+      Print_Seikyu_ID: @Model.Print_Seikyu_ID,
+      User_ID: 0,
+    };
+
+    console.log(JSON.stringify(batchRegistrationModel));
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "FixAmountApprovalDetail", Action = "BatchRegistration" })',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(batchRegistrationModel),
+      success: function (response) {
+        if (response.message != null) {
+          alertError(`【エラー】${response.message}`);
+        }
+        else {
+          alert('一括確定が完了しました。');
+        }
+        dataListDisplay();
+      },
+      error: function (xhr, status, error) {
+        alert('一括確定中にエラーが発生しました。');
+        console.error(error);
+      },
+    });
+  });
+
+  $('input[type="radio"][name^="ApprovalStatus"]').change(function () {
+    var row = $(this).closest('tr');
+    var prevRow = row.prev('tr');
+
+    var checkSeikyuId = parseInt(prevRow.find('input[name="Check_Seikyu_ID"]').val());
+    var uriageUnchinId = parseInt(prevRow.find('input[name="Uriage_Unchin_ID"]').val());
+    var approvalStatus = parseInt(row.find('input[name^="ApprovalStatus"]:checked').val());
+    var data = {
+      Check_Seikyu_ID: checkSeikyuId,
+      Uriage_Unchin_ID: uriageUnchinId,
+      Check_Kubun: @Model.CheckSeikyu.Check_Kubun,
+      ApprovalStatus: approvalStatus,
+      User_ID: 0,
+    };
+
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "FixAmountApprovalDetail", Action = "UpdateApprovalStatus" })',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(data),
+      success: function (response) {
+        if (response.message != null) {
+          alertError(`【エラー】${response.message}`);
+        }
+        else {
+          alert('切り替えが完了しました。');
+        }
+        dataListDisplay();
+      },
+      error: function (xhr, status, error) {
+        alert('エラーが発生しました。');
+        console.error(error);
+      },
+    });
+  });
+</script>

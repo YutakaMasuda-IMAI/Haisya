@@ -1,0 +1,937 @@
+﻿@model HaisyaWeb.Models.AnkenModel.SelectAddressModalDto
+
+
+
+@{
+  Layout = "_ModalLayout";
+}
+@*<link href="~/css/Anken.css" rel="stylesheet" />*@
+
+<style>
+  .div-area {
+    /*width: 80%;*/
+    margin: auto;
+    flex-wrap: wrap;
+    display: flex;
+    padding: 0 5px 0 5px
+  }
+
+  .tab_class {
+    width: calc(100%/4);
+    height: 50px;
+    background-color: aquamarine;
+    line-height: 50px;
+    font-size: 15px;
+    text-align: center;
+    display: block;
+    float: left;
+    order: -1;
+    border: double;
+  }
+
+  input[name="tab_name"] {
+    display: none;
+  }
+
+  input:checked + .tab_class {
+    background-color: cadetblue;
+    color: aliceblue;
+  }
+
+  .content_class {
+    display: none;
+    width: 100%;
+  }
+
+  input:checked + .tab_class + .content_class {
+    display: block;
+  }
+
+  .table-address-address-common-dialog {
+    width: 100%;
+  }
+  .table-address-address-common-dialog th {
+    padding:0;
+    text-align:center;
+   
+  }
+    .table-address-address-common-dialog td {
+      padding: 0;
+      height: 15px;
+      text-align: center;
+    }
+
+      .table-address-address-common-dialog td button {
+        width: 90%;
+        height: 95%
+      }
+
+      .table-address-address-common-dialog td button input {
+        color: white;
+      }
+
+  .content-sarch {
+    margin-top: 2px;
+    border-top-style: groove;
+    margin-right: 0;
+    margin-left: 0;
+  }
+</style>
+
+<div hidden>
+  <input id="area" type="hidden" value="0">
+  <input id="ken" type="hidden" value="0">
+  <input id="shiku" type="hidden" value="0">
+  <input id="choiki" type="hidden" value="0">
+  @Html.HiddenFor(model => Model.CompanyID)
+  @Html.HiddenFor(model => Model.UserID)
+</div>
+
+<div role="dialog" id="modal-option" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document" style="max-width:1200px">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>住所検索</h3>
+        <button type="button" class="btn btn-close" onclick="ModalClose(); return false;"></button>
+      </div>
+      <div class="model-body">
+        <div class="div-area">
+          <input type="radio" name="tab_name" id="tab1" checked>
+          <label class="tab_class" for="tab1">住所選択検索</label>
+          <div class="content_class">
+            <div class="row content-sarch">
+              <div class="col-6 col-sm-3">
+                <table class="table-address-address-common-dialog table">
+                  <thead>
+                    <tr><th>エリア</th></tr>
+                  </thead>
+                  <tbody>
+                    @foreach (var item in Model.AreaList)
+                    {
+                      <tr><td><button class="btn btn-dark" onclick="onClickArea(@(item.Area_ID)); return false;">@(item.Area)</button></td></tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+              <div class="col-6 col-sm-3">
+                <table id="tableKen" class="table table-address-address-common-dialog">
+                  <thead>
+                    <tr><th>都道府県</th></tr>
+                  </thead>
+                  <tbody id="tableKen-body">
+                  </tbody>
+                </table>
+              </div>
+              <div class="col-6 col-sm-3">
+                <table id="tableShiku" class="table table-address-address-common-dialog">
+                  <thead>
+                    <tr><th>市区町村</th></tr>
+                  </thead>
+                  <tbody id="tableShiku-body">
+                  </tbody>
+                </table>
+              </div>
+              <div class="col-6 col-sm-3">
+                <table id="tableChoiki" class="table table-address-address-common-dialog">
+                  <thead>
+                    <tr><th>町域</th></tr>
+                  </thead>
+                  <tbody id="tableChoiki-body">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <input type="radio" name="tab_name" id="tab2">
+          <label class="tab_class" for="tab2">履歴</label>
+          <div class="content_class">
+            <div class="row content-sarch">
+              <div class="col-6 col-sm-6">
+                <table id="tableShiyoritsu" class="table table-address-address-common-dialog">
+                  <thead>
+                    <tr><th>使用率 Top30</th></tr>
+                  </thead>
+                  <tbody id="tableShiyoritsu-body">
+                  </tbody>
+                </table>
+              </div>
+              <div class="col-6 col-sm-6" style="border-left: groove;">
+                <table id="tableRireki" class="table table-address-address-common-dialog">
+                  <thead>
+                    <tr><th>直近使用 Top30</th></tr>
+                  </thead>
+                  <tbody id="tableRireki-body">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          <input type="radio" name="tab_name" id="tab3">
+          <label class="tab_class" for="tab3">入力検索</label>
+          <div class="content_class ">
+            <div class="row content-sarch">
+              <div class="col-4 col-sm-4">
+                <p style="text-align: center; font-weight: bold; ">絞り込み</p>
+                <div class="row">
+                  <div class="col-5 col-sm-5">
+                    <table class="table table-address-address-common-dialog">
+                      <thead>
+                        <tr><th>エリア</th></tr>
+                      </thead>
+                      <tbody>
+                        <tr><td><button class="btn btn-dark" onclick="onClickAreaForSarch(1); return false;">北海道</button></td></tr>
+                        <tr><td><button class="btn btn-dark" onclick="onClickAreaForSarch(2); return false;">東北</button></td></tr>
+                        <tr><td><button class="btn btn-dark" onclick="onClickAreaForSarch(3); return false;">北陸</button></td></tr>
+                        <tr><td><button class="btn btn-dark" onclick="onClickAreaForSarch(4); return false;">関東</button></td></tr>
+                        <tr><td><button class="btn btn-dark" onclick="onClickAreaForSarch(5); return false;">中部</button></td></tr>
+                        <tr><td><button class="btn btn-dark" onclick="onClickAreaForSarch(6); return false;">近畿</button></td></tr>
+                        <tr><td><button class="btn btn-dark" onclick="onClickAreaForSarch(7); return false;">中国</button></td></tr>
+                        <tr><td><button class="btn btn-dark" onclick="onClickAreaForSarch(8); return false;">四国</button></td></tr>
+                        <tr><td><button class="btn btn-dark" onclick="onClickAreaForSarch(9); return false;">九州</button></td></tr>
+                        <tr><td><button class="btn btn-dark" onclick="onClickAreaForSarch(10); return false;">沖縄</button></td></tr>
+                        <tr><td><button class="btn btn-dark" onclick="onClickAreaForSarch(99); return false;">すべて</button></td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="col-7 col-sm-7">
+                    <table id="tableKenForSarch" class="table table-address-address-common-dialog">
+                      <thead>
+                        <tr><th>都道府県</th></tr>
+                      </thead>
+                      <tbody id="tableKenForSarch-body">
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="col-8 col-sm-8" style="border-left: groove;">
+                <p style="text-align: center; font-weight: bold; margin-bottom: 0; ">入力検索</p>
+                <div style="text-align: center; padding-left: 100px;">
+                  <input type="text" id="txtKey" class="form-control" style="background-color: aliceblue; width: 200px; display: inline-block; " />
+                  <button class="btn btn-success" style="width: 100px;" onclick="onClickbtnSarchKey(); return false;">検索</button>
+                  <button class="btn btn-info" style="width: 100px; margin-left: 5px;" onclick="btnClearOnClick(); return false;">クリア</button>
+                  <label class="label label-Title" style="font-size: 10px; vertical-align: super;">※検索項目を入力後にEnterキーで検索開始</label>
+                </div>
+                <form id="frmSarchToWaite" style="text-align: center; margin-top: 20px;"><img src="~/img/loading1.gif" /></form>
+                <form id="frmSarch">
+                  <div class="row" style="border-width: medium; border-top: double; margin-top: 5px; ">
+                    <div class="col-6 col-sm-6">
+                      <table id="tableAddressForSarch" class="table table-address-address-common-dialog">
+                        <thead>
+                          <tr><th>住所一覧</th></tr>
+                        </thead>
+                        <tbody id="tableAddressForSarch-body">
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="col-6 col-sm-6" style="border-left: groove;">
+                      <table id="tableTatemonoForSarch" class="table table-address-address-common-dialog">
+                        <thead>
+                          <tr><th>建物一覧</th></tr>
+                        </thead>
+                        <tbody id="tableTatemonoForSarch-body">
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          <input type="radio" name="tab_name" id="tab4">
+          <label class="tab_class" for="tab4">登録ポイント</label>
+          <div class="content_class">
+            <div class="row content-sarch">
+              <div class="col-4 col-sm-4">
+                <p style="text-align: center; font-weight: bold; ">絞り込み</p>
+                <div class="row">
+                  <div class="col-5 col-sm-5">
+                    <table class="table table-address-address-common-dialog">
+                      <thead>
+                        <tr><th>エリア</th></tr>
+                      </thead>
+                      <tbody>
+                        <tr><td><button class="btn btn-dark" onclick="onClickAreaForSave(1); return false;">北海道</button></td></tr>
+                        <tr><td><button class="btn btn-dark" onclick="onClickAreaForSave(2); return false;">東北</button></td></tr>
+                        <tr><td><button class="btn btn-dark" onclick="onClickAreaForSave(3); return false;">北陸</button></td></tr>
+                        <tr><td><button class="btn btn-dark" onclick="onClickAreaForSave(4); return false;">関東</button></td></tr>
+                        <tr><td><button class="btn btn-dark" onclick="onClickAreaForSave(5); return false;">中部</button></td></tr>
+                        <tr><td><button class="btn btn-dark" onclick="onClickAreaForSave(6); return false;">近畿</button></td></tr>
+                        <tr><td><button class="btn btn-dark" onclick="onClickAreaForSave(7); return false;">中国</button></td></tr>
+                        <tr><td><button class="btn btn-dark" onclick="onClickAreaForSave(8); return false;">四国</button></td></tr>
+                        <tr><td><button class="btn btn-dark" onclick="onClickAreaForSave(9); return false;">九州</button></td></tr>
+                        <tr><td><button class="btn btn-dark" onclick="onClickAreaForSave(10); return false;">沖縄</button></td></tr>
+                        <tr><td><button class="btn btn-dark" onclick="onClickAreaForSave(99); return false;">すべて</button></td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="col-7 col-sm-7">
+                    <table id="tableKenForSave" class="table table-address-address-common-dialog">
+                      <thead>
+                        <tr><th>都道府県</th></tr>
+                      </thead>
+                      <tbody id="tableKenForSave-body">
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+              <div class="col-8 col-sm-8" style="border-left: groove;">
+                <form id="frmSarchForSave">
+                  <div class="row" style="margin-top: 5px; ">
+                    <div class="col-12 col-sm-12">
+                      <table id="tableAddressForSave" class="table table-address-address-common-dialog">
+                        <thead>
+                          <tr><th>住所登録一覧</th></tr>
+                        </thead>
+                        <tbody id="tableAddressForSave-body">
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+<script>
+
+  $(function () {
+
+    $("#frmSarchToWaite").hide();
+
+    SetListUtilizationRate();
+    SetListForRirekiData();
+    SetListForSaveData();
+
+    $('#txtKey').on('keydown ', function (event) {
+      if (event.key === 'Enter') {
+        var val = $(this).val();
+        SetListForSarch(val);
+      }
+    });
+
+  });
+
+  var AddressItemShiku;
+  var AddressItemCho;
+
+
+  function onClickbtnSarchKey() {
+    var val = $('#txtKey').val();
+    SetListForSarch(val);
+    return false;
+  };
+
+
+  function onClickArea(area) {
+    $("#area").val(area);
+    $("#tableKen-body").remove();
+    $("#tableShiku-body").remove();
+    $("#tableChoiki-body").remove();
+    SetListKen(area, "tableKen", "tableKen-body", "onClickKen", "btnKen");
+    SetBtnEnabled("btnKen", true);
+    AfterAreaBtnOnClick(area);
+  };
+
+  function onClickAreaForSarch(area) {
+    $("#tableKenForSarch-body").remove();
+    if (area == 99) {
+      FilterListForSarch('ＺＺＺ');
+    } else {
+      SetListKen(area, "tableKenForSarch", "tableKenForSarch-body", "onClickKenForSarch", "btnKenForSarch");
+    }
+  };
+
+  function onClickAreaForSave(area) {
+    $("#tableKenForSave-body").remove();
+    if (area == 99) {
+      FilterListForSave('ＺＺＺ');
+    } else {
+      SetListKen(area, "tableKenForSave", "tableKenForSave-body", "onClickKenForSave", "btnKenForSave");
+    }
+  };
+
+  function onClickKenForSarch(ken) {
+    //alert(ken);
+    FilterListForSarch(ken);
+  };
+
+  function onClickKenForSave(ken) {
+    FilterListForSave(ken);
+  };
+
+  function btnClearOnClick() {
+    $('#txtKey').val('');
+    $("#tableAddressForSarch-body").remove();
+    $("#tableTatemonoForSarch-body").remove();
+  };
+
+  function onClickKen(ken) {
+    $("#ken").val(ken);
+    SetListShiku(ken);
+    AfterKenBtnOnClick(ken);
+  };
+
+  function onClickShiku(Shiku) {
+    $("#shiku").val(Shiku);
+    SetListChoiki(Shiku);
+  };
+
+  function onClickChoiki(Choiki) {
+    $("#choiki").val(Choiki);
+  };
+
+  function ondblClickShiku(Shiku) {
+    $("#shiku").val(Shiku);
+    SeachAddressModalOnSelectedAddress($("#ken").val(), $("#shiku").val(), '');
+    ModalClose();
+  };
+
+  function ondblClickChoiki(Shiku) {
+    $("#choiki").val(Shiku);
+    SeachAddressModalOnSelectedAddress($("#ken").val(), $("#shiku").val(), $("#choiki").val());
+    ModalClose();
+  };
+
+  function onClickRireki(lat, lng, address) {
+    SeachAddressModalOnSelectedPoint(lat, lng, address);
+    ModalClose();
+  };
+
+  function onClickAddressForSarch(address) {
+    SeachAddressModalOnSelectedAddress(address);
+    ModalClose();
+  }
+
+  function AfterAreaBtnOnClick(param) {
+
+    AddressItemShiku = null;
+    AddressItemCho = null;
+
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "GetAddressShiku" })',
+      {
+        area: param,
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】" + response.result);
+          var obj = JSON.parse(response.result);
+          AddressItemShiku = obj;
+          SetBtnEnabled("btnKen", false);
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+        console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+        console.log(xhr, msg);
+      });
+
+  };
+
+  function AfterKenBtnOnClick(param) {
+
+    AddressItemCho = null;
+
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "GetAddressChoiki" })',
+      {
+        area: $("#area").val(),
+        ken: param,
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】" + response.result);
+          var obj = JSON.parse(response.result);
+          AddressItemCho = obj;
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+        console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+        console.log(xhr, msg);
+      });
+
+  };
+
+  function SetListKen(area, tableName, bodyName, onclick, btnName) {
+
+    // テーブル取得
+    var table = document.getElementById(tableName);
+    // tbodyの取得
+    var tbody = document.createElement("tbody");
+    tbody.setAttribute('id', bodyName);
+    table.appendChild(tbody);
+
+    // 行を行末に追加
+    var row = tbody.insertRow(-1);
+    row.style.verticalAlign = "middle";
+
+    // セルの挿入
+    var cell1;
+
+    if (area == 1) {
+      AddRow(tbody, "北海道", onclick, btnName );
+    } else if (area == 2) {
+      AddRow(tbody, "青森県",  onclick, btnName );
+      AddRow(tbody, "岩手県",  onclick, btnName );
+      AddRow(tbody, "宮城県",  onclick, btnName );
+      AddRow(tbody, "秋田県",  onclick, btnName );
+      AddRow(tbody, "山形県",  onclick, btnName );
+      AddRow(tbody, "福島県",  onclick, btnName );
+    } else if (area == 3) {
+      AddRow(tbody, "新潟県",  onclick, btnName );
+      AddRow(tbody, "富山県",  onclick, btnName );
+      AddRow(tbody, "石川県", onclick, btnName);
+      AddRow(tbody, "福井県", onclick, btnName);
+    } else if (area == 4) {
+      AddRow(tbody, "長野県", onclick, btnName);
+      AddRow(tbody, "岐阜県", onclick, btnName);
+      AddRow(tbody, "山梨県", onclick, btnName);
+      AddRow(tbody, "静岡県", onclick, btnName);
+      AddRow(tbody, "愛知県", onclick, btnName);
+    } else if (area == 5) {
+      AddRow(tbody, "東京都", onclick, btnName);
+      AddRow(tbody, "神奈川県", onclick, btnName);
+      AddRow(tbody, "千葉県", onclick, btnName);
+      AddRow(tbody, "埼玉県", onclick, btnName);
+      AddRow(tbody, "群馬県", onclick, btnName);
+      AddRow(tbody, "栃木県", onclick, btnName);
+      AddRow(tbody, "茨城県", onclick, btnName);
+    } else if (area == 6) {
+      AddRow(tbody, "京都府",  onclick, btnName );
+      AddRow(tbody, "大阪府",  onclick, btnName );
+      AddRow(tbody, "兵庫県",  onclick, btnName );
+      AddRow(tbody, "奈良県",  onclick, btnName );
+      AddRow(tbody, "和歌山県",  onclick, btnName );
+      AddRow(tbody, "滋賀県",  onclick, btnName );
+      AddRow(tbody, "三重県",  onclick, btnName );
+    } else if (area == 7) {
+      AddRow(tbody, "広島県",  onclick, btnName );
+      AddRow(tbody, "山口県",  onclick, btnName );
+      AddRow(tbody, "島根県",  onclick, btnName );
+      AddRow(tbody, "鳥取県",  onclick, btnName );
+      AddRow(tbody, "岡山県",  onclick, btnName );
+    } else if (area == 8) {
+      AddRow(tbody, "徳島県",  onclick, btnName );
+      AddRow(tbody, "香川県",  onclick, btnName );
+      AddRow(tbody, "愛媛県",  onclick, btnName );
+      AddRow(tbody, "高知県",  onclick, btnName );
+    } else if (area == 9) {
+      AddRow(tbody, "福岡県",  onclick, btnName );
+      AddRow(tbody, "佐賀県",  onclick, btnName );
+      AddRow(tbody, "長崎県",  onclick, btnName );
+      AddRow(tbody, "熊本県",  onclick, btnName );
+      AddRow(tbody, "宮崎県",  onclick, btnName );
+      AddRow(tbody, "大分県",  onclick, btnName );
+      AddRow(tbody, "鹿児島県",  onclick, btnName );
+    } else if (area == 10) {
+      AddRow(tbody, "沖縄県",  onclick, btnName );
+    }
+
+  };
+
+  function SetListShiku(ken) {
+
+    if (AddressItemShiku == null) { return false; }
+
+    $("#tableShiku-body").remove();
+    $("#tableChoiki-body").remove();
+
+    // テーブル取得
+    var table = document.getElementById("tableShiku");
+
+    var tbody = document.createElement("tbody");
+    tbody.setAttribute('id', 'tableShiku-body');
+    table.appendChild(tbody);
+
+
+    // 行を行末に追加
+    var row = tbody.insertRow(-1);
+    row.style.verticalAlign = "middle";
+
+    // セルの挿入
+    var cell1;
+
+    AddressItemShiku.forEach(data => {
+      if (data.KEN == ken) {
+        AddRow(tbody, data.SHI_KU_CHO, "onClickShiku", "btnShiku", "ondblClickShiku");
+      }
+    });
+
+  };
+
+  function SetListChoiki(shiku) {
+
+    if (AddressItemCho == null) { return false; }
+
+    $("#tableChoiki-body").remove();
+
+    // テーブル取得
+    var table = document.getElementById("tableChoiki");
+
+    var tbody = document.createElement("tbody");
+    tbody.setAttribute('id', 'tableChoiki-body');
+    table.appendChild(tbody);
+
+
+    // 行を行末に追加
+    var row = tbody.insertRow(-1);
+    row.style.verticalAlign = "middle";
+
+    // セルの挿入
+    var cell1;
+
+    var kenVal = $("#ken").val();
+    var shikuVal = $("#shiku").val();
+
+    AddressItemCho.forEach(data => {
+      if (data.KEN == kenVal && data.SHI_KU_CHO == shikuVal) {
+        AddRow(tbody, data.CHO_IKI, "onClickChoiki", "btnChoiki", "ondblClickChoiki");
+      }
+    });
+
+  };
+
+  function SetListUtilizationRate() {
+
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "JsonGetAddressListForUtilizationRate" })',
+      {
+        CompanyID: $("#CompanyID").val(),
+        UserID: $("#UserID").val(),
+        returnKubun: 1,
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】" + response.result);
+          var obj = JSON.parse(response.result);
+
+          $("#tableShiyoritsu-body").remove();
+          var table = document.getElementById("tableShiyoritsu");
+          var tbody = document.createElement("tbody");
+          tbody.setAttribute('id', 'tableShiyoritsu-body');
+          table.appendChild(tbody);
+          AddBtnRireki(tbody, obj, "onClickRireki");
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+        console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+        console.log(xhr, msg);
+      });
+  };
+
+  function SetListForRirekiData() {
+
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "JsonGetAddressListForRireki" })',
+      {
+        CompanyID: $("#CompanyID").val(),
+        UserID: $("#UserID").val(),
+        returnKubun: 1,
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】SetListForRirekiData:" + response.result);
+          var obj = JSON.parse(response.result);
+
+          $("#tableRireki-body").remove();
+          var table = document.getElementById("tableRireki");
+          var tbody = document.createElement("tbody");
+          tbody.setAttribute('id', 'tableRireki-body');
+          table.appendChild(tbody);
+          AddBtnRireki(tbody, obj, "onClickRireki");
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+        console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+        console.log(xhr, msg);
+      });
+  };
+
+  function SetListForSaveData() {
+
+    $.post('@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "JsonGetSavePointList" })',
+      {
+        CompanyID: $("#CompanyID").val(),
+        UserID: $("#UserID").val(),
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】SetListForSaveData:" + response.result);
+          var obj = JSON.parse(response.result);
+
+          if (obj != null && obj.length > 0) {
+            $("#tableAddressForSave-body").remove();
+            var table = document.getElementById("tableAddressForSave");
+            var tbody = document.createElement("tbody");
+            tbody.setAttribute('id', 'tableAddressForSave-body');
+            table.appendChild(tbody);
+
+            obj.forEach((element) => {
+              // 行を行末に追加
+              var row = tbody.insertRow(-1);
+              row.style.verticalAlign = "middle";
+              // セルの挿入
+              var cell1 = row.insertCell(-1);
+              var cell2 = row.insertCell(-1);
+              cell1.hidden = true;
+
+              cell1.innerHTML = element.Address;
+              var html = '';
+              html += '<button class="btn btn-dark" onclick="onClickRireki(\'' + element.Lat + '\',\'' + element.Lng + '\',\'' + element.Address + '\'); return false;">';
+              html += '<div style="padding: 0px 0px 0px 2px; margin: 0; background: none; width: 100%; line-height: initial; text-align: left; display: inline-flex;">';
+              if (element.BuildingName != null) { html += '<label class="" readonly="readonly" style="border: none; width: 100%; background: none;">' + element.BuildingName + '</label>'; }
+              if (element.Post_code != null) { html += '<div style="display:inline-flex; float: left; font-size: 12px; width: 150px;">〒<label class="" readonly="readonly" style="border: none; width: 100%; background: none;">' + element.Post_code + '</label></div>'; }
+              html += '<label class="" readonly="readonly" style="border: none; width: 100%; background: none; font-size: 12px;">' + element.Address + '</label>';
+              html += '</div>';
+              html += '</button>';
+              cell2.innerHTML = html;
+
+            });
+          }
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+        console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+        console.log(xhr, msg);
+      });
+  };
+
+
+  function AddBtnRireki(tbody, pointList, ckickEvent) {
+
+    pointList.forEach((element) => {
+
+      // 行を行末に追加
+      var row = tbody.insertRow(-1);
+      row.style.verticalAlign = "middle";
+
+      // セルの挿入
+      var cell1 = row.insertCell(-1);
+
+      var html = '';
+      html += '<button class="btn btn-dark" onclick="' + ckickEvent + '(\'' + element.Lat + '\',\'' + element.Lng + '\',\'' + element.Address + '\'); return false;">';
+      html += '<div style="padding: 0px 0px 0px 2px; margin: 0; background: none; width: 100%; line-height: initial; text-align: left;">';
+      if (element.BuildingName != null) { html += '<label class="" readonly="readonly" style="border: none; width: 100%; background: none;">' + element.BuildingName + '</label><br>'; }
+      if (element.Post_code != null) { html += '<div style="display:inline-flex; float: left; font-size: 12px;; width: 100%">〒<label class="" readonly="readonly" style="border: none; width: 70px; background: none;">' + element.Post_code + '</label>'; }
+      html += '<label class="" readonly="readonly" style="border: none; width: 100%; background: none; font-size: 12px;">' + element.Address + '</label></div>';
+      html += '</div>';
+      html += '</button>';
+
+      cell1.innerHTML = html;
+
+    });
+  };
+
+
+  function AddRow(tbody, textVal, ckickEvent, name, dblclickEvent) {
+    var row = tbody.insertRow(-1);
+    var cell1 = row.insertCell(-1);
+    if (dblclickEvent == null) {
+      cell1.innerHTML = '<button name=' + name + ' class="btn btn-dark" onclick="' + ckickEvent + '(\'' + textVal + '\'); return false;">' + textVal + '</button>';
+    } else {
+      cell1.innerHTML = '<button name=' + name + ' class="btn btn-dark" onclick="' + ckickEvent + '(\'' + textVal + '\'); return false;" ondblclick="' + dblclickEvent + '(\'' + textVal + '\'); return false;">' + textVal + '</button>';
+    }
+
+  }
+
+  function SetBtnEnabled(name ,flgEnebled) {
+
+    var btns = document.getElementsByName(name);
+
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].disabled  = flgEnebled;
+    }
+
+  }
+
+  function SetListForSarch(key) {
+
+    $("#frmSarch").hide();
+    $("#frmSarchToWaite").show();
+
+    $.post('@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "JsonGetAddressListForKey" })',
+      {
+        key: key,
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】" + response.result);
+          var obj = JSON.parse(response.result);
+          var addressObj = obj.SearchPostCodeList;
+          var tatemonoObj = obj.SearchTatemonoList;
+
+          if (addressObj != null && addressObj.length > 0) {
+            $("#tableAddressForSarch-body").remove();
+            var table = document.getElementById("tableAddressForSarch");
+            var tbody = document.createElement("tbody");
+            tbody.setAttribute('id', 'tableAddressForSarch-body');
+            table.appendChild(tbody);
+
+            addressObj.forEach((element) => {
+              // 行を行末に追加
+              var row = tbody.insertRow(-1);
+              row.style.verticalAlign = "middle";
+              // セルの挿入
+              var cell1 = row.insertCell(-1);
+              var cell2 = row.insertCell(-1);
+              cell1.hidden = true;
+
+              cell1.innerHTML = element.KEN + element.SHI_KU_CHO + element.CHO_IKI;
+              cell2.innerHTML = '<button class="btn btn-dark" onclick="onClickAddressForSarch(\'' + element.KEN + element.SHI_KU_CHO + element.CHO_IKI + '\'); return false;" style="text-align: left;">' + element.KEN + element.SHI_KU_CHO + element.CHO_IKI + '</button>';
+            });
+          }
+          if (tatemonoObj != null && tatemonoObj.length > 0) {
+            $("#tableTatemonoForSarch-body").remove();
+            var table = document.getElementById("tableTatemonoForSarch");
+            var tbody = document.createElement("tbody");
+            tbody.setAttribute('id', 'tableTatemonoForSarch-body');
+            table.appendChild(tbody);
+
+            tatemonoObj.forEach((element) => {
+              // 行を行末に追加
+              var row = tbody.insertRow(-1);
+              row.style.verticalAlign = "middle";
+              // セルの挿入
+              var cell1 = row.insertCell(-1);
+              var cell2 = row.insertCell(-1);
+              cell1.hidden = true;
+
+              cell1.innerHTML = element.address;
+              var html = '';
+              html += '<button class="btn btn-dark" onclick="onClickRireki(\'' + element.position.lat + '\',\'' + element.position.lng + '\',\'' + element.address + '\'); return false;">';
+              html += '<div style="padding: 0px 0px 0px 2px; margin: 0; background: none; width: 100%; line-height: initial; text-align: left;">';
+              if (element.building_name != null) { html += '<label class="" readonly="readonly" style="border: none; width: 100%; background: none;">' + element.building_name + '</label><br>'; }
+              if (element.post_code != null) { html += '<div style="display:inline-flex; float: left; font-size: 12px;">〒<label class="" readonly="readonly" style="border: none; width: 100%; background: none;">' + element.post_code + '</label></div>'; }
+              html += '<label class="" readonly="readonly" style="border: none; width: 100%; background: none; font-size: 12px;">' + element.address + '</label>';
+              html += '</div>';
+              html += '</button>';
+              cell2.innerHTML = html;
+
+            });
+          }
+          $("#frmSarchToWaite").hide();
+          $("#frmSarch").show();
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+        console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+        console.log(xhr, msg);
+      });
+
+  };
+
+  function FilterListForSarch(ken) {
+
+    // table要素を取得
+    var tableElem = document.getElementById('tableAddressForSarch');
+    // 行（tr要素）を取得
+    var rowElems = tableElem.rows;
+
+    // 取得した行（tr要素）を繰り返しHTMLを取得
+    var htmlStr = '';
+    for (var i = 1, len = rowElems.length; i < len; i++) {
+      var address = rowElems[i].cells[0].innerHTML;
+      var btn = rowElems[i].cells[1].innerHTML;
+
+      // 文字列を検索
+      if (address.indexOf(ken) != -1 || ken == 'ＺＺＺ') {
+        rowElems[i].cells[1].hidden = false;
+      } else {
+        rowElems[i].cells[1].hidden = true;
+      }
+    }
+
+
+    // table要素を取得
+    tableElem = document.getElementById('tableTatemonoForSarch');
+    // 行（tr要素）を取得
+    rowElems = tableElem.rows;
+
+    // 取得した行（tr要素）を繰り返しHTMLを取得
+    var htmlStr = '';
+    for (var i = 1, len = rowElems.length; i < len; i++) {
+      var address = rowElems[i].cells[0].innerHTML;
+      var btn = rowElems[i].cells[1].innerHTML;
+
+      // 文字列を検索
+      if (address.indexOf(ken) != -1 || ken == 'ＺＺＺ') {
+        rowElems[i].cells[1].hidden = false;
+      } else {
+        rowElems[i].cells[1].hidden = true;
+      }
+    }
+
+
+
+  };
+
+  function FilterListForSave(ken) {
+
+    // table要素を取得
+    var tableElem = document.getElementById('tableAddressForSave');
+    // 行（tr要素）を取得
+    var rowElems = tableElem.rows;
+
+    // 取得した行（tr要素）を繰り返しHTMLを取得
+    var htmlStr = '';
+    for (var i = 1, len = rowElems.length; i < len; i++) {
+      var address = rowElems[i].cells[0].innerHTML;
+      var btn = rowElems[i].cells[1].innerHTML;
+
+      // 文字列を検索
+      if (address.indexOf(ken) != -1 || ken == 'ＺＺＺ') {
+        rowElems[i].cells[1].hidden = false;
+      } else {
+        rowElems[i].cells[1].hidden = true;
+      }
+    }
+
+  };
+
+
+
+</script>

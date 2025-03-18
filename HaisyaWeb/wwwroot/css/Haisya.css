@@ -1,0 +1,532 @@
+﻿body {
+}
+
+
+
+img.ui-datepicker-trigger {
+    cursor: pointer;
+    margin-left: 7px !important;
+    vertical-align: top;
+    margin: 3px 0 0 3px;
+    height: 25px;
+}
+
+.toggle-button-002 {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 120px;
+    height: 26px;
+    border-radius: 10px;
+    border: 3px solid #ff8d8d;
+    box-sizing: content-box;
+    cursor: pointer;
+    transition: border-color .4s;
+}
+
+    .toggle-button-002:has(:checked) {
+        border-color: #4bd865;
+    }
+
+    .toggle-button-002::after {
+        position: absolute;
+        top: 50%;
+        left: 2px;
+        transform: translateY(-50%);
+        width: 70px;
+        height: 26px;
+        border-radius: 10%;
+        background-color: #ff8d8d;
+        transition: left .4s;
+        content: '単日指定';
+        font-weight: 600;
+        font-size: .9em;
+        text-align: center;
+    }
+
+    .toggle-button-002:has(:checked)::before {
+        left: 80px;
+        background-color: #75bbff;
+    }
+
+    .toggle-button-002:has(:checked)::after {
+        left: 47px;
+        background-color: #4bd865;
+        content: '範囲指定';
+        font-weight: 600;
+        font-size: .9em;
+        text-align: center;
+    }
+
+    .toggle-button-002 input {
+        display: none;
+    }
+
+table.table-hedder {
+    margin: 0 0 2px 0;
+}
+
+    table.table-hedder th {
+        /*border: 1px solid black;*/
+        vertical-align: middle;
+        padding: 0;
+    }
+
+    table.table-hedder tr {
+        height: 35px;
+    }
+
+.ex_DriverDataList {
+    /*table-layout: fixed;*/
+    border: 5px;
+}
+    .ex_DriverDataList tbody tr {
+        cursor: pointer;
+    }
+
+    .ex_DriverDataList th {
+        font-size: 13px;
+        padding: 0.0rem 0.1rem 0.0rem 0.1rem !important;
+        vertical-align: middle;
+        border: 1px solid lightgrey;
+    }
+
+    .ex_DriverDataList tr {
+    }
+
+    .ex_DriverDataList td {
+        font-size: 12px;
+        padding: 0.0rem 0.1rem 0.0rem 0.2rem !important;
+        overflow: hidden;
+        white-space: nowrap;
+        color: black;
+        vertical-align: middle;
+        border: 1px solid lightgrey;
+    }
+
+    .ex_DriverDataList .holiday td {
+        background: #A9A9A9 !important;
+    }
+
+    .ex_DriverDataList tr:nth-child(odd) td {
+        background: #e7fbb5;
+    }
+
+    .ex_DriverDataList td {
+        background: #e7fbb5;
+      }
+
+.toggle-button-recipt {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 80px;
+    height: 30px;
+    border-radius: 50px;
+    box-sizing: content-box;
+    background-color: #ff8d8d33;
+    cursor: pointer;
+    transition: background-color .4s;
+}
+
+    .toggle-button-recipt:has(:checked) {
+        background-color: #75bbff33;
+    }
+
+    .toggle-button-recipt::before {
+        position: absolute;
+        left: 5px;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background-color: #ff8d8d;
+        content: '';
+        transition: left .4s;
+    }
+
+    .toggle-button-recipt:has(:checked)::before {
+        left: 45px;
+        background-color: #75bbff;
+    }
+
+    .toggle-button-recipt::after {
+        position: absolute;
+        left: 20px;
+        transform: translateX(-50%);
+        color: #fff;
+        font-weight: 600;
+        font-size: .9em;
+        content: '未';
+        transition: left .4s;
+    }
+
+    .toggle-button-recipt:has(:checked)::after {
+        left: 60px;
+        content: '済';
+    }
+
+    .toggle-button-recipt input {
+        display: none;
+    }
+
+.heading-014 {
+    display: inline-block;
+    position: relative;
+    padding: .1em 2.4em .3em 1em;
+    background-color: #a9ceec;
+    color: #333333;
+}
+
+    .heading-014::before {
+        position: absolute;
+        bottom: -1px;
+        right: 9px;
+        z-index: -1;
+        transform: rotate(5deg);
+        width: 70%;
+        height: 50%;
+        background-color: #d0d0d0;
+        content: "";
+        filter: blur(4px);
+    }
+
+
+
+
+.heading-018 {
+    padding: .5em .7em;
+    border: 2px solid #2589d0;
+    box-shadow: 5px 5px #2589d0;
+    color: #2589d0;
+}
+
+
+
+.div-nimotsu {
+    border: black;
+    border-style: groove;
+    margin: 5px;
+    border-radius: 10px;
+    height: 70px;
+    padding-left: .2rem;
+}
+
+    .div-nimotsu li {
+        display: flex;
+        align-items: center;
+        gap: 0 5px;
+        padding: .05em;
+        font-size: 14px;
+    }
+
+        .div-nimotsu li::before {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            background-image: url('data:image/svg+xml;charset=utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Cpath%20fill%3D%22%232589d0%22%20d%3D%22M8.2%2C20.6l-7.8-7.8c-0.5-0.5-0.5-1.2%2C0-1.7L2%2C9.4c0.5-0.5%2C1.2-0.5%2C1.7%2C0L9%2C14.7L20.3%2C3.4c0.5-0.5%2C1.2-0.5%2C1.7%2C0l1.7%2C1.7%20c0.5%2C0.5%2C0.5%2C1.2%2C0%2C1.7L9.8%2C20.6C9.4%2C21.1%2C8.6%2C21.1%2C8.2%2C20.6L8.2%2C20.6z%22%2F%3E%3C%2Fsvg%3E');
+            content: '';
+        }
+
+
+
+table.table-timetree {
+    border-collapse: collapse;
+    border: 1px solid #000;
+    background: #FFF;
+}
+
+table.table-timetree:not(caption) {
+    background-color: white;
+}
+
+
+table.table-timetree th {
+    background: #DDD;
+    line-height: 20px;
+    padding: 0;
+    margin: 0;
+}
+
+    table.table-timetree td {
+        padding: 0;
+        margin: 0;
+        
+    }
+
+.table-timetree-tr div {
+    background-color: transparent;
+    max-height: 53px;
+}
+
+.table-timetree-disable-tr div {
+    background-color: transparent;
+}
+
+.table-timetree .drag-area {
+    background-color: white;
+}
+
+#hedder .row {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+
+
+.bdr {
+    border-right: 1px solid #000;
+}
+
+.bdb {
+    border-bottom: 1px solid #000;
+}
+
+.bdd {
+    border-right: 1px dotted #000;
+}
+
+.stn {
+    height: 20px;
+    text-align: center;
+}
+
+.stn2 {
+    height: 20px;
+    text-align: left;
+    font-size: 12px;
+    line-height: 16px;
+}
+
+.stn3 {
+    height: 20px;
+    text-align: left;
+    font-size: 12px;
+}
+
+.sth {
+    float: left;
+    width: 40px;
+    height: 20px;
+}
+
+.stt {
+    float: left;
+    width: 10px;
+    height: 53px;
+}
+
+.stt2 {
+    float: left;
+    width: 10px;
+    height: 53px;
+}
+
+.mn {
+    border-radius: 5px;
+    height: 42px;
+    overflow: hidden;
+    position: absolute;
+    margin: 1px;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.mnc1 {
+    background-color: wheat;
+    border: 1px solid #5AC472;
+}
+
+    .mnc1.active {
+        cursor: move;
+    }
+
+.mnc2 {
+    background: #00FF33;
+    border: 1px solid #499BDF;
+}
+
+/*休暇用スケジュールの背景色*/
+.mnc3 {
+    background-color: lightgrey;
+    border: 1px solid #499BDF;
+}
+
+
+.mnc4 {
+    background-color: cornflowerblue;
+    border: 1px solid #499BDF;
+}
+
+    .mnc4.active {
+        cursor: move;
+    }
+
+
+.ui-resizable-e {
+    right: -5px;
+    width: 10px;
+}
+
+.parent {
+    overflow-x: scroll;
+}
+
+.contents {
+    /*margin: 20px;*/
+    position: relative;
+    /*overflow-x: scroll;*/
+}
+
+.schedule-title {
+    padding: 0 !important;
+}
+
+
+table.table-schedule-title {
+    padding: 0 !important;
+    width: 100%;
+    height: 100%;
+}
+
+    table.table-schedule-title tr td {
+        padding: 0 0 0 2px !important;
+        /*border-bottom: solid;*/
+        text-align: left;
+        white-space: nowrap;
+        font-size: 10px;
+    }
+
+.table-schedule-item {
+    padding: 0 !important;
+    width: 100%;
+    height: 100%;
+}
+
+.btn-remove-anken {
+    position: absolute;
+   /* top: 2px; */
+    right: 2px;
+    cursor: pointer;
+    color: #DCDCDC;
+}
+
+table.table-schedule-item tr td {
+    padding: 0 0 0 2px !important;
+    /*border-bottom: solid;*/
+    text-align: left;
+    white-space: nowrap;
+    font-size: 10px;
+}
+
+table.table-schedule-item-holiday {
+    padding: 0 !important;
+    width: 100%;
+    height: 100%;
+}
+
+    table.table-schedule-item-holiday tr td {
+        padding: 0 0 0 6px !important;
+        /*border-bottom: solid;*/
+        text-align: left;
+        white-space: nowrap;
+        font-size: 16px;
+        color: white;
+    }
+
+
+table.table-schedule-itemEx {
+    padding: 0 !important;
+    width: 100%;
+    height: 100%;
+}
+
+    table.table-schedule-itemEx tr td {
+        padding: 0 0 0 2px !important;
+        /*border-bottom: solid;*/
+        text-align: left;
+        /*white-space: nowrap;*/
+        font-size: 10px;
+    }
+
+.schedule-head {
+}
+
+table.ex_Luggage {
+    background: none;
+}
+
+    table.ex_Luggage tr th ,
+    table.ex_Luggage tr td div div div label {
+        padding: 0 0 0 2px !important;
+        font-size: 12px;
+        white-space: nowrap;
+        text-align: center;
+        width: 10%;
+    }
+
+    table.ex_Luggage tr td {
+        padding: 0 0 0 2px !important;
+        font-size: 12px;
+        white-space: nowrap;
+        width: 25%;
+        background: none;
+    }
+
+
+table.ex_LuggageList tr td {
+    padding: 0 0 0 2px !important;
+    font-size: 12px;
+    white-space: nowrap;
+    width: 25%;
+}
+
+.ex_LuggageList-tr td div {
+    background: #ffffff;
+    cursor: move;
+}
+
+.ex_LuggageList-disable-tr td div {
+    background: #DCDCDC;
+}
+
+table.ex_LuggageList .reported td div {
+    background: #f7b069 !important;
+}
+
+.text_kokyaku:hover .icon_clear_kokyaku {
+    display: block;
+}
+
+.icon_clear_kokyaku {
+    position: absolute;
+    right: 8px;
+    top: 2px;
+    display: none;
+    cursor: pointer;
+}
+
+.dot-spin {
+    width: 10px;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    animation: dot-spin 1s infinite linear alternate;
+}
+
+.loader-block-driver {
+    left: 0px;
+    width: 100%;
+    background: transparent;
+    height: 51px;
+    display: flex;
+    position: absolute;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+}
+
+
+#tblCollapseSearch .row{
+    padding:0;
+}

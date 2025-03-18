@@ -1,0 +1,128 @@
+﻿@model HaisyaWeb.Models.ShitabaraiCheckDataModel.ShitabaraiSummModel
+
+@{ 
+  var sd = Model.Shitabarai_day_to;
+  if (!string.IsNullOrWhiteSpace(sd))
+    sd = sd[0..(Model.Shitabarai_day_to.LastIndexOf("("))] + "まで";
+}
+<div style="width: 100%; height: 100%">
+  @Html.HiddenFor(model => Model.PDF_flag)
+  @Html.HiddenFor(model => Model.Select_day)
+  @Html.HiddenFor(model => Model.Shitabarai.Zei_Kubun)
+  @Html.HiddenFor(model => Model.Shitabarai.Shime_Day)
+  @Html.HiddenFor(model => Model.Shitabarai.Yosya_Branch_ID)
+  <table>
+    <tbody>
+      <tr>
+        <td colspan="2">@Html.DisplayFor(m => m.Confirm_message)</td>
+      </tr>
+      <tr>
+        <td colspan="2">@Html.DisplayFor(m => m.Description)</td>
+      </tr>
+      <tr>
+        <td style="width: 120px;">@Html.LabelFor(m => m.Select_day, htmlAttributes: new { @style = "font-weight: initial;" })</td>
+        <td>@(Html.DisplayFor(m => m.Select_day))分</td>
+      </tr>
+      <tr>
+        <td>@Html.LabelFor(m => m.Publish_day, htmlAttributes: new { @style = "font-weight: initial;" })</td>
+        <td>@(Model.Publish_day[0..(Model.Publish_day.LastIndexOf("("))])</td>
+      </tr>
+      <tr>
+        <td>@Html.LabelFor(m => m.Shitabarai_day_to, htmlAttributes: new { @style = "font-weight: initial;" })</td>
+        <td>@sd</td>
+      </tr>
+      <tr>
+        <td>@Html.LabelFor(m => m.Shitabarai, htmlAttributes: new { @style = "font-weight: initial;" })</td>
+        <td>@Html.DisplayFor(m => m.Shitabarai.Yosya_Name)</td>
+      </tr>
+      @foreach (var Yosya_Name in Model.Shitabarai_list.Select(x => x.Yosya_Name).Distinct().Skip(1))
+      {
+        <tr>
+          <td></td>
+          <td>@Yosya_Name</td>
+        </tr>
+      }
+      @if (!string.IsNullOrWhiteSpace(Model.Selected_layout))
+      {
+      <tr>
+        <td>
+          @Html.LabelFor(m => m.Layout, htmlAttributes: new { @style = "font-weight: initial;" })
+        </td>
+        <td>
+          @Html.DropDownListFor(m => m.Layout, new SelectList(Model.Layouts, "Value", "Text"), new { @style = "width: 175px;display: inline-block;", @onchange = "selectedChange(this)" })
+        </td>
+      </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<script>
+  // 「請求書」印刷
+  function openReport() {
+
+    const PDFFlag = $('#PDF_flag').val();
+
+    if (PDFFlag == "1") {
+      PDFReport();
+    } else {
+      ExportCSV();
+    }
+  };
+
+  //PDFReport
+  async function PDFReport() {
+    const searchKubun = $('#Layout').val()?.split(" ");
+    const searchKubunId = searchKubun[0];
+    const namePdf = searchKubun[1] + ".pdf";
+
+    const yearMonth = $('#Select_day').val();
+    const seikyuMonth = `${yearMonth.substring(0, 4)}-${yearMonth.substring(5, 7)}`;
+    const shimeDay = $('#Shitabarai_Shime_Day').val();
+    const customerBranchId = $('#Shitabarai_Yosya_Branch_ID').val();
+    const zeiKubun = $('#Shitabarai_Zei_Kubun').val();
+    const params = { seikyuMonth, shimeDay, customerBranchId, zeiKubun };
+
+    const url = '@Url.RouteUrl(new { controller = "Report", action = "PreviewPDFReport", template = "__Template__" })'
+      .replace("__Template__", namePdf);
+
+    $("#form-pdf-export").remove();
+
+    const form = $('<form id="form-pdf-export" target="_blank" method="post" action="' + url + '"></form>');
+    form.append('<input type="hidden" name="SerchKubunID" value="' + searchKubunId + '" />');
+    form.append('<input type="hidden" name="searchJson" value="' + encodeURIComponent(JSON.stringify(params)) + '" />');
+    $('body').append(form);
+    form.submit();
+  }
+
+  //CSVをエクスポート
+  async function ExportCSV() {
+    const searchKubun = $('#Layout').val()?.split(" ");
+    const searchKubunId = searchKubun[0];
+    const namePdf = searchKubun[1] + ".pdf";
+
+    const yearMonth = $('#Select_day').val();
+    const seikyuMonth = `${yearMonth.substring(0, 4)}-${yearMonth.substring(5, 7)}`;
+    const shimeDay = $('#Shitabarai_Shime_Day').val();
+    const customerBranchId = $('#Shitabarai_Yosya_Branch_ID').val();
+    const zeiKubun = $('#Shitabarai_Zei_Kubun').val();
+    const params = { seikyuMonth, shimeDay, customerBranchId, zeiKubun };
+
+    const url = '@Url.RouteUrl(new { controller = "Report", action = "ExportCSV" })';
+
+    $("#form-csv-export").remove();
+
+    const form = $('<form id="form-csv-export" method="post" action="' + url + '"></form>');
+    form.append('<input type="hidden" name="SerchKubunID" value="' + searchKubunId + '" />');
+    form.append('<input type="hidden" name="searchJson" value="' + encodeURIComponent(JSON.stringify(params)) + '" />');
+    $('body').append(form);
+    form.submit();
+  }
+  function selectedChange(i) {
+    $('#Print_Pattern').remove();
+    $('#namePdf').remove();
+    const searchKubun = i.value?.split(" ");
+    $('#summ-data').append('<input type="hidden" id="Print_Pattern" name="Print_Pattern" value="' + searchKubun[0] + '" />')
+    $('#summ-data').append('<input type="hidden" id="namePdf" name="namePdf" value="' + searchKubun[1] + '" />')
+  }
+</script>

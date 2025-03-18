@@ -1,0 +1,20 @@
+﻿body {
+}
+
+
+.ex_table-tokuisaki {
+}
+
+    .ex_table-tokuisaki th {
+        padding: 0.2rem 0.2rem 0.2rem 0.2rem;
+        background-color: chartreuse;
+    }
+
+    .ex_table-tokuisaki td {
+        padding: 0.2rem 0.2rem 0.2rem 0.2rem;
+    }
+
+
+.ex-table-th {
+    padding: 0.2rem 0.2rem 0.2rem 0.2rem;
+}

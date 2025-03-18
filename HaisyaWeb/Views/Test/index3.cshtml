@@ -1,0 +1,63 @@
+@{
+  Layout = "_Layout";
+  ViewData["Title"] = "テスト一覧";
+}
+
+<head>
+  <link href="~/css/Test.css" rel="stylesheet" />
+  <style>
+    .btn-test {
+      width: 200px !important;
+      height: 50px;
+      font-size: 20px;
+    }
+  </style>
+  <script src="https://app.zip-site.com/auth/jsapi/loader.htm"></script>
+
+</head>
+
+<div hidden>
+  <input data-val="true" id="Company_ID" name="Company_ID" type="text" value="1">
+  <input data-val="true" id="User_ID" name="User_ID" type="text" value="1">
+</div>
+
+
+
+<div class="containe" style="text-align: center;">
+  <h1>配車指示書テスト</h1>
+  <div class="row" style="border: groove; padding: 1rem; display: inline-table;">
+    <div class="row" style="display: inline-block; margin-top: 1rem;">
+        <label for="ankenID">案件ID</label>
+        <input id="ankenID" style="width: 100px;" />
+    </div>
+    <button class="btn-test" onclick="testHaisyaShijiSyo(); return false;">配車指示書起動</button>  
+  </div>
+</div>
+
+
+
+<script>
+function closeModel() {
+    $('#ModalHere').find('.modal').modal('hide');
+    $('#ModalHere').html('');
+  };
+function testHaisyaShijiSyo(){
+    $.post('@Url.RouteUrl("Default", new { controller = "Haisya", Action = "GetOperationInstructions" })',
+    {
+        AnkenID: $("#ankenID").val(),
+    }).done(function (response) {
+        if (response.errorMessage != null) {
+            alertError(`【エラー】${response.errorMessage}`);
+            return false;
+        } else {
+            $("#ModalHere").html(response.partialView);
+            //$('#ModalHere').modal('show');
+            $("#ModalHere").find('.modal').modal('show');
+            return;
+        }
+    }).fail(function (xhr) {
+        console.log(xhr);
+        return false;
+    });
+}
+</script>

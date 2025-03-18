@@ -1,0 +1,495 @@
+@model HaisyaWeb.Models.CompletedPaymentsModel.PaymentInputViewModel
+
+@{
+  Layout = "_Layout";
+  ViewData["Title"] = "入金入力画面";
+}
+
+<head>
+<style>
+  .red-button {
+    border-radius: 8px;
+    background-color: rgba(234, 51, 35, 1);
+    border: none;
+    color: white;
+    white-space: nowrap;
+  }
+  th.detail-list {
+    background-color: #DAE9F8 !important;
+  }
+  th.detail-list2 {
+    background-color: #FDF3D1 !important;
+  }
+  th.detail-list3 {
+    background-color: #EDECED !important;
+  }
+</style>
+<link href="~/css/Entry.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div id="hiddenItem" hidden>
+    @Html.HiddenFor(model => Model.searchParams.SelectMonth)
+    @Html.HiddenFor(model => Model.searchParams.SelectShimebi)
+    @Html.HiddenFor(model => Model.searchParams.SelectTantou)
+    @Html.HiddenFor(model => Model.searchParams.RangeSearch)
+    @Html.HiddenFor(model => Model.searchParams.BackMenuAction)
+    @Html.HiddenFor(model => Model.searchParams.TokuisakiName)
+    @Html.HiddenFor(model => Model.searchParams.SelectTokuisakiID)
+    @Html.HiddenFor(model => Model.searchParams.SelectTokuisakiIDTo)
+    @Html.HiddenFor(model => Model.searchParams.SelectTokuisakiName)
+    @Html.HiddenFor(model => Model.searchParams.SelectTokuisakiNameTo)
+  </div>
+  <div id="hedder" class="row">
+    <div class="table-div">
+      <table class="head-button">
+        <tr>
+          <td><h3 id="labelTitle" class="heading-40">入金入力</h3></td>
+          <td><button class="btn btn-outline-success" style="width:120px;" onClick="updateButton();">登録</button></td>
+          @*<td><button class="btn btn-outline-info" style="width:200px;" onClick="openFileDialog()">CSV一括取り込み</button></td>*@
+          <td></td>
+          <td style="text-align:right;"><button class="btn btn-outline-warning" style="width:100px;" onClick="BackButton()">一覧に戻る</button></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="table-div">
+    <table class="list">
+      <thead>
+        <tr>
+          <th class="detail-list" width="120px">請求年月</th>
+          <th class="detail-list" width="60px">締日</th>
+          <th class="detail-list" width="100px">請求方法</th>
+          <th class="detail-list" width="200px">請求担当</th>
+          <th class="detail-list">請求先</th>
+          <th class="detail-list" width="100px">税区分</th>
+          <th class="detail-list" width="100px">更新</th>
+          <th class="detail-list" width="120px">売上締日</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td align="center">@(Model.SeikyuData.Seikyu_Month.ToString("yyyy/MM/dd") ?? "")</td>
+          <td align="center">@Html.DisplayFor(model => model.SeikyuData.Shime_Day)日</td>
+          <td align="center">
+            @(Model.SeikyuData.Inquiry_Status == 1 ? "WEB" : "帳票")
+          </td>
+          <td></td>
+          <td>@Html.DisplayFor(model => model.SeikyuData.Customer_Name)</td>
+          <td align="center">
+            @(Model.SeikyuData.Zei_Kubun == 0 ? "課税" : "非課税")
+          </td>
+          <td align="center">
+            @(Model.SeikyuData.Reg_Status == 0 ? "可" : "不可")
+          </td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-div" style="margin-top:10px;">
+    <table class="list">
+    <thead>
+      <tr>
+        <th class="detail-list" width="150px">運賃計</th>
+        <th class="detail-list" width="150px">明細件数</th>
+        <th class="detail-list">送信アドレス1</th>
+        <th class="detail-list" width="200px">電話番号1</th>
+        <th class="detail-list" width="200px">FAX番号1</th>
+      </tr>
+      <tr>
+        <th class="detail-list">立替計</th>
+        <th class="detail-list"></th>
+        <th class="detail-list">送信アドレス2</th>
+        <th class="detail-list">電話番号2</th>
+        <th class="detail-list">FAX番号2</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td align="right">@(Model.SeikyuData.SeikyuUnchin?.ToString("#,0") ?? "0")</td>
+        <td align="right">@Html.DisplayFor(model => model.SeikyuData.Meisai_Count)</td>
+        <td>@Html.DisplayFor(model => model.SeikyuData.Mail_Address1)</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td align="right">
+          @(Model.SeikyuData.Tatekaekin?.ToString("#,0") ?? "0")
+        </td>
+        <td align="right"></td>
+        <td>@Html.DisplayFor(model => model.SeikyuData.Mail_Address2)</td>
+        <td></td>
+        <td></td>
+      </tr>
+    </tbody>
+    </table>
+  </div>
+  <div id="PaymentInputDataList"></div>
+</body>
+
+<script>
+  $(document).ready(function () {
+    dataListDisplay();
+  });
+
+  function dataListDisplay() {
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "CompletedPayments", action = "GetPaymentInputDataList" })',
+      type: 'GET',
+      contentType: 'application/json',
+      data: { Seikyu_ID: @Model.SeikyuData.Seikyu_ID },
+      success: function (response) {
+        $('#PaymentInputDataList').html(response.partialView);
+        return false;
+      },
+      error: function (xhr) {
+        alertError('【ネットワークエラー】:' + xhr);
+        console.log(xhr);
+      },
+      complete: async function (xhr, msg) {},
+    });
+  }
+
+  // 登録or更新ボタンを押下時のメソッド
+  function updateButton() {
+    var Seikyu_ID = @Model.SeikyuId;
+    var paymentTableItems = [];
+    var repaymentTableItems = [];
+    var errorMessages = [];
+
+    // 行番号を指定するためのカウンター
+    var paymentRowCount = 1;
+    var repaymentRowCount = 1;
+
+    // 支払テーブルのデータチェック
+    $('#paymentTableBody tr').each(function () {
+      var $row = $(this);
+      var errors = [];
+
+      var Process_Date = $row.find('input[name$=".Process_Date"]').val();
+      if (!Process_Date) {
+        errors.push('入金日');
+      }
+
+      var Cash_Amount = $row.find('input[name$=".Cash_Amount"]').val();
+      if (Cash_Amount === '') {
+        errors.push('現金');
+      } else {
+        Cash_Amount = parseFloat(Cash_Amount) || 0;
+      }
+
+      var Transfer_Amount = $row.find('input[name$=".Transfer_Amount"]').val();
+      if (Transfer_Amount === '') {
+        errors.push('振込');
+      } else {
+        Transfer_Amount = parseFloat(Transfer_Amount) || 0;
+      }
+
+      var Draft_Amount = $row.find('input[name$=".Draft_Amount"]').val();
+      if (Draft_Amount === '') {
+        errors.push('手形');
+      } else {
+        Draft_Amount = parseFloat(Draft_Amount) || 0;
+      }
+
+      var Service_Charge_Amount = $row.find('input[name$=".Service_Charge_Amount"]').val();
+      if (Service_Charge_Amount === '') {
+        errors.push('手数料');
+      } else {
+        Service_Charge_Amount = parseFloat(Service_Charge_Amount) || 0;
+      }
+
+      var Unchin_Offset = $row.find('input[name$=".Unchin_Offset"]').val();
+      if (Unchin_Offset === '') {
+        errors.push('運賃相殺');
+      } else {
+        Unchin_Offset = parseFloat(Unchin_Offset) || 0;
+      }
+
+      var General_Offset = $row.find('input[name$=".General_Offset"]').val();
+      if (General_Offset === '') {
+        errors.push('一般相殺');
+      } else {
+        General_Offset = parseFloat(General_Offset) || 0;
+      }
+
+      var Adjustment_Amount = $row.find('input[name$=".Adjustment_Amount"]').val();
+      if (Adjustment_Amount === '') {
+        errors.push('調整金');
+      } else {
+        Adjustment_Amount = parseFloat(Adjustment_Amount) || 0;
+      }
+
+      if (errors.length > 0) {
+        errorMessages.push('入金情報の' + paymentRowCount + '行目の' + errors.join('と') + 'を入力してください');
+      }
+
+      var item = {
+        Nyukin_ID: parseInt($row.find('input[name$=".Nyukin_ID"]').val()) || 0,
+        Seikyu_ID: Seikyu_ID,
+        Process_Date: Process_Date,
+        Process_Kubun: 0,
+        Cash_Amount: Cash_Amount,
+        Transfer_Amount: Transfer_Amount,
+        Draft_Amount: Draft_Amount,
+        Service_Charge_Amount: Service_Charge_Amount,
+        Unchin_Offset: Unchin_Offset,
+        General_Offset: General_Offset,
+        Adjustment_Amount: Adjustment_Amount,
+        Total_Amount: parseFloat($row.find('.total-amount').text().replace(/,/g, '')) || 0,
+        Remarks: $row.find('input[name$=".Remarks"]').val(),
+      };
+      paymentTableItems.push(item);
+      paymentRowCount++;
+    });
+
+    // 返済テーブルのデータチェック
+    $('#repaymentTableBody tr').each(function () {
+      var $row = $(this);
+      var errors = [];
+
+      var Process_Date = $row.find('input[name$=".Process_Date"]').val();
+      if (!Process_Date) {
+        errors.push('返金日');
+      }
+
+      var Cash_Amount = $row.find('input[name$=".Cash_Amount"]').val();
+      if (Cash_Amount === '') {
+        errors.push('現金');
+      } else {
+        Cash_Amount = parseFloat(Cash_Amount) || 0;
+      }
+
+      var Transfer_Amount = $row.find('input[name$=".Transfer_Amount"]').val();
+      if (Transfer_Amount === '') {
+        errors.push('振込');
+      } else {
+        Transfer_Amount = parseFloat(Transfer_Amount) || 0;
+      }
+
+      var Draft_Amount = $row.find('input[name$=".Draft_Amount"]').val();
+      if (Draft_Amount === '') {
+        errors.push('手形');
+      } else {
+        Draft_Amount = parseFloat(Draft_Amount) || 0;
+      }
+
+      var Service_Charge_Amount = $row.find('input[name$=".Service_Charge_Amount"]').val();
+      if (Service_Charge_Amount === '') {
+        errors.push('手数料');
+      } else {
+        Service_Charge_Amount = parseFloat(Service_Charge_Amount) || 0;
+      }
+
+      var Unchin_Offset = $row.find('input[name$=".Unchin_Offset"]').val();
+      if (Unchin_Offset === '') {
+        errors.push('運賃相殺');
+      } else {
+        Unchin_Offset = parseFloat(Unchin_Offset) || 0;
+      }
+
+      var General_Offset = $row.find('input[name$=".General_Offset"]').val();
+      if (General_Offset === '') {
+        errors.push('一般相殺');
+      } else {
+        General_Offset = parseFloat(General_Offset) || 0;
+      }
+
+      var Adjustment_Amount = $row.find('input[name$=".Adjustment_Amount"]').val();
+      if (Adjustment_Amount === '') {
+        errors.push('調整金');
+      } else {
+        Adjustment_Amount = parseFloat(Adjustment_Amount) || 0;
+      }
+
+      if (errors.length > 0) {
+        errorMessages.push('返金情報の' + repaymentRowCount + '行目の' + errors.join('と') + 'を入力してください');
+      }
+
+      var item = {
+        Nyukin_ID: parseInt($row.find('input[name$=".Nyukin_ID"]').val()) || 0,
+        Seikyu_ID: Seikyu_ID,
+        Process_Date: Process_Date,
+        Process_Kubun: 1,
+        Cash_Amount: Cash_Amount,
+        Transfer_Amount: Transfer_Amount,
+        Draft_Amount: Draft_Amount,
+        Service_Charge_Amount: Service_Charge_Amount,
+        Unchin_Offset: Unchin_Offset,
+        General_Offset: General_Offset,
+        Adjustment_Amount: Adjustment_Amount,
+        Total_Amount: parseFloat($row.find('.total-amount').text().replace(/,/g, '')) || 0,
+        Remarks: $row.find('input[name$=".Remarks"]').val(),
+      };
+      repaymentTableItems.push(item);
+      repaymentRowCount++;
+    });
+
+    if (errorMessages.length > 0) {
+      alertCustomInputError(errorMessages.join('<br>'));
+      return;
+    }
+
+    var combinedData = {
+      PaymentNyukinList: paymentTableItems,
+      RepaymentNyukinList: repaymentTableItems,
+      Seikyu_ID: Seikyu_ID,
+    };
+
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "CompletedPayments", action = "PostPaymentInputData" })',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(combinedData),
+      success: function (response) {
+        if (response.message != null) {
+          alertError(`【エラー】${response.message}`);
+        }
+        else {
+          console.log('Success:', response);
+        }
+        BackButton();
+      },
+      error: function (xhr, status, error) {
+        console.error('Error:', error);
+      },
+    });
+  }
+
+  // 一覧に戻るボタン押下時のメソッド
+  function ValidationBackButton() {
+    // 内容の変更確認
+    if (!compareRepaymentNyukin() || !comparePaymentNyukin()) {
+      alertYesNoMsg('確認', '変更した内容は破棄します。よろしいですか？', 'question', 'はい', 'いいえ');
+      return;
+    }
+    BackButton();
+  }
+
+  function BackButton() {
+    var form = document.createElement('form');
+
+    form.action =
+      '@Url.RouteUrl("Default", new { controller = "CompletedPayments", Action = "CompletedPaymentsIndex" })';
+    form.method = 'POST';
+
+    // body に追加
+    document.body.appendChild(form);
+
+    form.innerHTML = $('#hiddenItem').html();
+    form.submit();
+  }
+
+  async function openFileDialog() {
+    try {
+      // マルチファイル選択を要求
+      const fileHandles = await window.showOpenFilePicker({
+        multiple: true,
+        types: [
+          {
+            description: 'CSV files',
+            accept: { 'text/csv': ['.csv'] },
+          },
+        ],
+      });
+      var checkFileFormat = true;
+      // ファイルごと処理
+      const filePromises = fileHandles.map(async (fileHandle) => {
+        const file = await fileHandle.getFile();
+        if (!file.name.toLowerCase().endsWith('.csv')) {
+          checkFileFormat = false;
+        }
+        const text = await file.text();
+        return parseCSV(text);
+      });
+      const results = await Promise.all(filePromises);
+      if (!checkFileFormat) {
+        alertError('ファイルは CSV 形式ではありません。');
+        return;
+      }
+      sendDataToBackend(results[0]);
+    } catch (error) {
+      console.error('Error opening files:', error);
+    }
+  }
+
+  function parseCSV(text) {
+    const rows = text
+      .trim()
+      .split('\n')
+      .map((row) => row.split(','));
+
+    let obj = {};
+    let nyukin = [];
+    let count = 0;
+    for (let i = 1; i < rows.length; i++) {
+      obj = {};
+      for (let j = 0; j < rows[i].length; j++) {
+        let key = rows[0][j];
+        let value = rows[i][j];
+        if (key === 'Seikyu_ID' || key === 'Process_Kubun' || key === 'Nyukin_ID' || key === 'Del_Flg') {
+          obj[key] = Number(value);
+        } else if (key === 'Process_Date') {
+          obj[key] = formatDate(value);
+        } else if (
+          key === 'Cash_Amount' ||
+          key === 'Transfer_Amount' ||
+          key === 'Draft_Amount' ||
+          key === 'Check_Amount' ||
+          key === 'Service_Charge_Amount' ||
+          key === 'Unchin_Offset' ||
+          key === 'General_Offset' ||
+          key === 'Adjustment_Amount' ||
+          key === 'Total_Amount'
+        ) {
+          obj[key] = parseFloat(value);
+        } else if (key === 'Remarks') {
+          obj[key] = value;
+        }
+      }
+      nyukin.push(obj);
+    }
+
+    return nyukin;
+  }
+
+  function sendDataToBackend(nyukinLists) {
+    var seikyu = $('#PrintSeikyu_Seikyu_ID').val();
+    const model = {
+      PaymentNyukinList: nyukinLists,
+      Seikyu_ID: parseInt(seikyu),
+    };
+    const json = JSON.stringify(model);
+
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "CompletedPayments", action = "InsertNyukin" })',
+      type: 'POST',
+      contentType: 'application/json',
+      data: json,
+      success: function (response) {
+        if (response.message != null) {
+          alertError(`【エラー】${response.message}`);
+        }
+        else {
+          alert('ファイル取り込みに成功しました。');
+        }
+        dataListDisplay();
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        alertError('CSV取込み失敗しました');
+        console.error('Error sending data to backend:', textStatus, errorThrown);
+      },
+    });
+  }
+
+  function formatDate(value) {
+    const date = new Date(value);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+</script>

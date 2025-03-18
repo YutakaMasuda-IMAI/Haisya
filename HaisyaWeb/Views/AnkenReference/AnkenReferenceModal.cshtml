@@ -1,0 +1,545 @@
+﻿@model AnkenModel.AnkenReferenceModel
+
+
+@{
+  Layout = "_ModalLayout";
+}
+
+
+@{
+  int lineheight = 20;
+  int lineTileWidth = 85;
+}
+
+<style>
+  #AnkenReferenceModal .modal-body-Main {
+    border: solid;
+  }
+
+  #AnkenReferenceModal .divTitle {
+    border-top: groove;
+    font-size: 10px;
+    height: @(lineheight)px;
+    padding-left: 0.5rem;
+    background-color: chartreuse;
+  }
+
+  #AnkenReferenceModal .divdata {
+    border-top: groove;
+    border-right: groove;
+    font-size: 11px;
+    height: @(lineheight)px;
+    padding: 0 0 0 0.5rem;
+    color: black;
+    margin: 0;
+    White-space: nowrap;
+  }
+
+  #AnkenReferenceModal .divdata2 {
+    border-top: groove;
+    border-right: groove;
+    font-size: 11px;
+    height: @(lineheight)px;
+    padding: 0 0 0 0;
+    color: black;
+    margin: 0;
+    White-space: nowrap;
+  }
+
+  #AnkenReferenceModal .divMain {
+    display: inline-flex;
+    /*margin-left: 0;*/
+    /*padding-left: 0;*/
+    padding: 0;
+    margin:0;
+  }
+
+  #AnkenReferenceModal .number {
+    width: 70px;
+    text-align: right;
+  }
+
+  #AnkenReferenceModal .change {
+    background-color: yellow;
+  }
+
+  #AnkenReferenceModal .borderLine {
+    border-top: solid;
+  }
+
+  #AnkenReferenceModal .table-DriverList {
+    font-size: 10px;
+    font-weight: bold;
+  }
+
+</style>
+
+@{
+    string seikyuKubun = Model.AnkenData.SeikyuKubun == 0 ? "確定運賃" : "暫定運賃";
+    string nmberCommLimitKubun = Model.AnkenData.NumberCommLimitKubun == 0 ? "要" : "不要";
+    string ankenStatus = Model.CodeList.FirstOrDefault(m => m.Code_ID == 21 && m.Code_Data == Model.AnkenData.Anken_Status.ToString()).Code_Name;
+    string haisyaPlanKubun = Model.CodeList.FirstOrDefault(m => m.Code_ID == 22 && m.Code_Data == Model.AnkenData.HaisyaPlanKubun.ToString()).Code_Name;
+    string tollKubun = Model.CodeList.FirstOrDefault(m => m.Code_ID == 23 && m.Code_Data == Model.AnkenData.Toll_Kubun.ToString()).Code_Name;
+    var updateUser = Model.CompanyUserList.FirstOrDefault(m => m.User_ID == Model.AnkenData.Update_User);
+    var publishGroup = Model.CompanyUserGroupList.FirstOrDefault(m => m.Group_ID == Model.AnkenData.PublishGroup_ID);
+
+    var maxCount = Model.AnkenPointList.Where(m => m.Point_Order != 1).GroupBy(m => m.Anken_Order).Select(m => new { Anken_Order = m.Key, aaa = m.Count() }).OrderByDescending(m => m.aaa).FirstOrDefault();
+    int maxCountA = maxCount == null ? 0 : maxCount.aaa - 1;
+
+}
+
+<div hidden>
+  @Html.TextBoxFor(model => model.AnkenData.Anken_ID)
+  @Html.TextBoxFor(model => model.Company_ID)
+  <input type="text" id="selectAnkenDisplayID" />
+</div>
+
+@*<div role="dialog" id="modal-option" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel">
+
+  </div>*@
+
+<div class="modal-dialog container" role="document" style="width: 1000px;">
+  <div class="modal-content">
+    <div class="modal-header">
+      @*<h1 class="modal-title fs-3" id="exampleModalLabel" style="width:120px;">案件照会</h1>*@
+      <div class="row text-center" style="margin:0 2rem; width:100%;">
+        <button type="button" id="btnTabletTransfer" class="btn btn-success col-2" onclick="btnTabletTransferOnClick(); return false;" style="margin: 0 1rem 0 0.5rem;">タブレット送信</button>
+        <button type="button" class="btn btn-primary" onclick="btnAnkenRegisterOnClick(); return false;" style="margin: 0 0.5rem 0 0.5rem; width: 100px; ">案件修正</button>
+        <button type="button" class="btn btn-info" onclick="return false;" style="margin: 0 0.5rem 0 0.5rem; width: 90px;">見積書</button>
+        <button 
+          type="button" 
+          name="ReportSearchKubunId" 
+          class="btn btn-info"
+          data-kubun_id="@Model.Report_Serch_Kubun?.Report_Serch_Kubun_ID"
+          data-report_html="@Model.Report_Serch_Kubun?.Report_Html"
+          data-display_id="@Model.AnkenDisplayID"
+          onclick="btnTransportInstructionClick();"
+          style="margin: 0 0.5rem 0 0.5rem; width: 90px;"
+          @(Model?.Report_Serch_Kubun?.Report_Serch_Kubun_ID == null ? "disabled" : "")
+        >指示書</button>
+        <button type="button" class="btn btn-info" onclick="return false;" style="margin: 0 0.5rem 0 0.5rem; width: 90px;">発注書</button>
+        <button type="button" class="btn btn-light" onclick="btnDailyOnClick();" style="margin: 0 0.5rem 0 1rem; width: 100px;">日報管理</button>
+      </div>
+      @*<a href="#" data-dismiss="modal" class="btn btn-close" onclick="WindowsCloseModel(); return false;" style="width:30px;"></a>*@
+    </div>
+
+    <div id="AnkenReferenceModal" class="modal-body contact-form" style="margin-top: 0.4rem;">
+      <div class="modal-body-Main ">
+        <div class="row" style="margin-left:0;">
+          <div id="div-body-left" class="col-sm-5 border divMain">
+            <div style="width: @(lineTileWidth)px;">
+              <div class="divTitle">登録日時</div>
+              <div class="divTitle">案件名</div>
+              <div class="divTitle">案件状況</div>
+              <div class="divTitle">顧客名</div>
+              <div class="divTitle">顧客担当</div>
+              <div class="divTitle">車種</div>
+              <div class="divTitle">台数</div>
+              <div class="divTitle">配車担当</div>
+              <div class="divTitle">営業担当</div>
+              <div class="divTitle">配車予定</div>
+              <div class="divTitle">案件公開</div>
+              <div class="divTitle">車番連絡</div>
+              <div class="divTitle">荷待時間</div>
+              <div class="divTitle">労務費計算</div>
+              <div class="divTitle">運賃ｴﾘｱ</div>
+
+              <div class="divTitle borderLine">ルート</div>
+              <div class="divTitle">所要時間</div>
+              <div class="divTitle">距離</div>
+              <div class="divTitle">有料道路</div>
+              <div class="divTitle">見積原価</div>
+              <div class="divTitle">標準運賃</div>
+
+              <div class="divTitle borderLine">荷物</div>
+              <div class="divTitle">装備品</div>
+              <div class="divTitle">特記事項</div>
+
+              <div class="divTitle borderLine">高速代</div>
+              <div class="divTitle">高速金額</div>
+              <div class="divTitle">高速備考</div>
+
+            </div>
+            <div style="width: calc(100% - (@(lineTileWidth)px)); ">
+              <div class="divdata ">@(Model.AnkenData.Update_Datetime) &nbsp;&nbsp; @(updateUser == null ? "" : updateUser.Display_Name)</div>
+              <div class="divdata ">@(Model.AnkenData.Work_Name)</div>
+              <div class="divdata ">@(ankenStatus)</div>
+              <div class="divdata ">@(Model.AnkenData.KokyakuName)</div>
+              <div class="divdata ">@(Model.AnkenData.KokyakuTantouName)</div>
+              <div class="divdata ">@(Model.AnkenData.SyasyuDisplay)</div>
+              <div class="divdata ">@Convert.ToDouble(Model.AnkenData.Daisuu).ToString("#,###台")</div>
+              <div class="divdata ">@(Model.AnkenData.TantouID)</div>
+              <div class="divdata ">@(Model.AnkenData.EigyoID)</div>
+              <div class="divdata ">@(haisyaPlanKubun)</div>
+              <div class="divdata ">@(publishGroup == null ? "" : publishGroup.Display_Name)</div>
+              <div class="divdata ">@(nmberCommLimitKubun) : @(Model.AnkenData.NumberCommLimitDateTime)</div>
+              <div class="divdata ">積み：@(Model.AnkenData.TsumiTaskTime) ； 卸し：@(Model.AnkenData.OroshiTaskTime)</div>
+              <div class="divdata ">@(Model.AnkenData.DriverGrossCalc)</div>
+              <div class="divdata ">@(Model.AnkenData.Area)</div>
+
+              <div class="" style="height:120px;">
+                <div class="" style="display: flex;">
+                  <div style="width: 50%;">
+                    <div class="divdata2 borderLine" style="padding-left: 0.5rem;">@(Model.AnkenData.RouteTypeDisplay)</div>
+                    <div class="divdata2 "><div class="number">@(Model.AnkenData.Route_TotalTime)</div></div>
+                    <div class="divdata2 "><div class="number">@Convert.ToDouble(Model.AnkenData.Route_TotalDistance).ToString("#,###km")</div></div>
+                    <div class="divdata2 "><div class="number">@Convert.ToDouble(Model.AnkenData.Route_Totaltoll).ToString("#,###円")</div></div>
+                    <div class="divdata2 "><div class="number">@Convert.ToDouble(Model.AnkenData.Route_GrossAmountTotal).ToString("#,###円")</div></div>
+                    <div class="divdata2 "><div class="number">@Convert.ToDouble(Model.AnkenData.Route_StdALLFreight).ToString("#,###円")</div></div>
+                  </div>
+                  <div style="width: @(lineTileWidth)px;">
+                    <div class="divTitle borderLine">運賃区分</div>
+                    <div class="divTitle">基本運賃</div>
+                    <div class="divTitle">追加費用</div>
+                    <div class="divTitle">有料道路</div>
+                    <div class="divTitle">値引額</div>
+                    <div class="divTitle">請求運賃</div>
+                  </div>
+                  <div style="width: 50%;">
+                    <div class="divdata2 borderLine" style="padding-left: 0.5rem;">@(seikyuKubun)</div>
+                    <div class="divdata2 "><div class="number">@Convert.ToDouble(Model.AnkenData.BaseFee).ToString("#,###円")</div></div>
+                    <div class="divdata2 "><div class="number">@Convert.ToDouble(Model.AnkenData.ExtraCharge).ToString("#,###円")</div></div>
+                    <div class="divdata2 "><div class="number">@Convert.ToDouble(Model.AnkenData.Toll).ToString("#,###円")</div></div>
+                    <div class="divdata2 "><div class="number">@Convert.ToDouble(Model.AnkenData.Discount).ToString("#,###円")</div></div>
+                    <div class="divdata2 "><div class="number">@Convert.ToDouble(Model.AnkenData.GrossAmount).ToString("#,###円")</div></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="divdata borderLine ">@(Model.AnkenData.Luggage)</div>
+              <div class="divdata ">@(Model.AnkenData.Equipment)</div>
+              <div class="divdata ">@(Model.AnkenData.Remarks)</div>
+
+              <div class="divdata borderLine ">@(tollKubun)</div>
+              <div class="divdata "><div class="number">@Convert.ToDouble(Model.AnkenData.Toll_Money).ToString("#,###円")</div></div>
+              <div class="divdata ">@(Model.AnkenData.Toll_Remarks)</div>
+
+            </div>
+
+          </div>
+          <div id="div-body-right" class="col-sm-7 " style="padding-left: 0; display: grid; border-left: solid !important;">
+            <div class="divMain" style="width: 100%; height: auto; display: block;">
+              <div class="divMain" style="width: 100%; height:auto; vertical-align:top;">
+                <div style="width: @(lineTileWidth)px;">
+
+                  <div class="divTitle ">経由区分1</div>
+                  <div class="divTitle ">経由建物名1</div>
+                  <div class="divTitle">経由住所1</div>
+
+                  @{
+                    for (int i = 0; i <= maxCountA; i++)
+                    {
+                      <div class="divTitle borderLine">経由区分@(i + 2)</div>
+                      <div class="divTitle">経由建物名@(i + 2)</div>
+                      <div class="divTitle">経由住所@(i + 2)</div>
+                    }
+                  }
+
+                </div>
+
+                <div style="width: calc(100% - (@(lineTileWidth)px)); ">
+
+                  @{
+                    var start = Model.AnkenPointList.Where(m => m.Anken_Order == Model.AnkenData.Anken_Order && m.Kubun != 2).OrderBy(m => m.Point_Order).FirstOrDefault();
+                    var end = Model.AnkenPointList.Where(m => m.Anken_Order == Model.AnkenData.Anken_Order && m.Kubun != 2).OrderByDescending(m => m.Point_Order).FirstOrDefault();
+
+                    var keiyu = Model.AnkenPointList.Where(m => m.Anken_Order == Model.AnkenData.Anken_Order && m.Point_Order != start.Point_Order && m.Point_Order != end.Point_Order).OrderBy(m => m.Point_Order).ToList();
+                  }
+
+                  <div class="divdata ">@(Model.CodeList.FirstOrDefault(m => m.Code_ID == 3 && m.Code_Data == start.Kubun.ToString()).Code_Name) &nbsp;&nbsp;&nbsp; @(start.PointDate == null ? "" : Convert.ToDateTime(start.PointDate).ToString("yyyy/MM/dd")) @(start.PointTime)</div>
+                  <div class="divdata ">@(start.BuildingName)</div>
+                  <div class="divdata ">@(start.Post_code) &nbsp;&nbsp; @(start.Address)</div>
+
+                  @{
+                    for (int r = 0; r < maxCountA; r++)
+                    {
+                      var keiyuData = keiyu.Count() <= r ? null : keiyu[r];
+
+                      if (keiyuData != null)
+                      {
+                        <div class="divdata borderLine ">@(Model.CodeList.FirstOrDefault(m => m.Code_ID == 3 && m.Code_Data == keiyuData.Kubun.ToString()).Code_Name) &nbsp;&nbsp;&nbsp; @(keiyuData.PointDate == null ? "" : Convert.ToDateTime(keiyuData.PointDate).ToString("yyyy/MM/dd")) @(keiyuData.PointTime)</div>
+                        <div class="divdata ">@(keiyuData.BuildingName)</div>
+                        <div class="divdata ">@(keiyuData.Post_code) &nbsp;&nbsp; @(keiyuData.Address)</div>
+                      }
+                      else if (keiyuData == null)
+                      {
+                        <div class="divdata borderLine "></div>
+                        <div class="divdata "></div>
+                        <div class="divdata "></div>
+                      }
+                    }
+                  }
+
+                  <div class="divdata borderLine ">@(Model.CodeList.FirstOrDefault(m => m.Code_ID == 3 && m.Code_Data == end.Kubun.ToString()).Code_Name) &nbsp;&nbsp;&nbsp; @(end.PointDate == null ? "" : Convert.ToDateTime(end.PointDate).ToString("yyyy/MM/dd")) @(end.PointTime)</div>
+                  <div class="divdata ">@(end.BuildingName)</div>
+                  <div class="divdata ">@(end.Post_code) &nbsp;&nbsp; @(end.Address)</div>
+
+                </div>
+              </div>
+
+              <div class="" style="border-top: solid; height: calc(100% - (@(lineheight * (((maxCountA + 2) * 3)))px));">
+                <div>
+                  <h6>配車情報</h6>
+                </div>
+                <div>
+                  <table id="tableDriverList" class="table-DriverList table table-sm table-bordered border-success align-middle " width="100%">
+                    <thead class="table-primary">
+                      <tr class="text-center">
+                        <th hidden></th>
+                        <th style="width: 30px;">台数</th>
+                        <th style="width: 30px;">順序</th>
+                        <th colspan="2">行先</th>
+                      </tr>
+                      <tr class="text-center">
+                        <th hidden></th>
+                        <th colspan="2">区分</th>
+                        <th>乗務員</th>
+                        <th style="width: 40px;">傭車</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @{
+                        var haisyalist = Model.HaisyaDataList.OrderBy(m => m.Daisuu_Sort).ThenBy(m => m.Anken_Key).ToList();
+                      }
+
+                      @foreach (var haisya in haisyalist)
+                      {
+                        <tr class="border-bottom">
+                          <td hidden>0</td>
+                          <td class="text-center">@(haisya.Daisuu_Sort)/@(haisya.Daisuu)</td>
+                          <td class="text-center">@(haisya.Anken_Key)</td>
+                          <td colspan="2">@(haisya.Display2)</td>
+                        </tr>
+                        <tr>
+
+                          <td hidden>@(haisya.AnkenDisplay_ID)</td>
+                          @if (haisya.Driver_ID == null)
+                          {
+                            <td colspan="2"></td>
+                            <td>
+                              <label class="text-bg-danger">未配車</label>
+
+                            </td>
+                          }
+                          else
+                          {
+                            //1:自車、2:傭車、3:専属庸車、4:専属、5:自車専任
+                            <td colspan="2" class="text-center">@Html.DropDownListFor(model => haisya.Haisya_Kubun, new SelectList(Model.HaisyaKubunSelectList, "Value", "Text", "Selected"), new { @class = "display-only", @disabled = "disabled", @style = "font-weight: bold;" })</td>
+                            <td>
+                              @if (haisya.Yosya_Count == 2) { 
+                                @("第１傭車：" + haisya.Yosya_Display1) @("　　　第２傭車：" + haisya.Yosya_Display2)
+                              }
+                              else
+                              {
+                                @(haisya.SYABAN) <span> </span> @(haisya.Syasyu_Disp) <span> </span> @(haisya.Driver_Branch_Name) <span> </span> @(haisya.Driver_Name)
+                              }
+
+                            </td>
+                          }
+
+                          <td>
+                            @if (Model.EditEnabled && (haisya.Haisya_Kubun == null || haisya.Haisya_Kubun == 2 || haisya.Haisya_Kubun == 3))
+                            {
+                              <button class="btn btn-danger" style="width: 40px; font-size: 10px; padding: 0;" onclick="btnCustomerDriverOnClick(@(haisya.AnkenDisplay_ID),@(haisya.Driver_Branch_ID)); return false;">設定</button>
+                            }
+                          </td>
+
+                        </tr>
+                      }
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+
+
+      </div>
+    </div>
+    <div class="modal-footer" style="padding: 0;">
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+
+
+
+  $(function () {
+
+
+
+
+  });
+
+
+
+  /********************************************************
+   * 共通傭車選択
+   ******************************************************* */
+  /**
+   * 傭車選択共通ダイアログを表示する
+   * @@param ankenDisplayID
+   * @@param driverID
+   */
+  function btnCustomerDriverOnClick(ankenDisplayId, yosyaBranchId) {
+    event.preventDefault();
+
+    $('#selectAnkenDisplayID').val(ankenDisplayId);
+
+     $.post('@Url.RouteUrl("Default", new { controller = "AnkenReference", Action = "JsonSenzokuDriverRegModal" })',
+      {
+        ankenDisplayID: ankenDisplayId,
+        yosyaBranchId: yosyaBranchId
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】" + response.partialView);
+          $("#ModalHere2").html(response.partialView);
+          DailogOpen("ModalHere2", "専属乗務員設定", 800, 570);
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+        console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+      });
+
+  };
+
+
+
+  /**
+  * 日報登録画面に遷移する
+  *
+  */
+  function btnDailyOnClick() {
+    var ankenDisplayID = $('#selectAnkenDisplayID').val();
+    var ankenId = @Model.AnkenData.Anken_ID;
+    submitAnkenEdit(ankenDisplayID,ankenId);
+  }
+
+  /**
+ * 共通乗務員選択ダイアログで一覧選択されたときのCallBack関数
+ * */
+  function selectCustomerDriverSelectedCallBack(obj) {
+
+
+  };
+
+  /**
+   * 傭車ドライバー情報を選択行のセルに設定
+   * @@param ankenDisplayID
+   * @@param displayVal
+   */
+  function SetDriverInfo(ankenDisplayID, displayVal) {
+
+    // table要素を取得
+    var tableElem = document.getElementById('tableDriverList');
+
+    // 行（tr要素）を取得
+    var rowElems = tableElem.rows;
+
+
+    // 取得した行（tr要素）を繰り返しHTMLを取得
+    var htmlStr = '';
+    for (i = 1, len = rowElems.length; i < len; i++) {
+
+      var displayID = rowElems[i].cells[0].innerHTML;
+
+      if (displayID > 0 && displayID == ankenDisplayID) {
+
+        //alert(rowElems[i].cells[2].innerHTML);
+        rowElems[i].cells[1].textContent = "傭車";
+        rowElems[i].cells[2].textContent = displayVal;
+        rowElems[i].cells[2].style.backgroundColor = 'yellow';
+      }
+
+    }
+
+    $("#ModalHere2").dialog('close');
+  };
+
+  function btnTabletTransferOnClick() {
+      openCommonDialogForCompanyDriver($('#Company_ID').val());
+  };
+
+
+    /**
+   *　案件修正画面
+   * */
+  function btnAnkenRegisterOnClick() {
+    event.preventDefault();
+
+    ///処理中ダイアログ
+    Swal.fire({
+      title: '案件修正画面遷移中'
+      , html: '表示されるまでそのままお待ちください。'
+      , allowOutsideClick: true     //枠外をクリックしても画面を閉じない
+      , showConfirmButton: false
+      , didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+
+    if ($('#WebViewFlg').val() == 0) {
+      logout();
+    }
+
+    let form = document.createElement('form');
+    form.id = "formBackMenu";
+
+    form.action = '@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "Index" })';
+    form.method = 'POST';
+
+    // body に追加
+    document.body.appendChild(form);
+
+    let html = '';
+    html += '            <input type="hidden" id="ankenId" name="ankenId" value="' + $('#AnkenData_Anken_ID').val() + '" />';
+
+    form.innerHTML = html;
+    form.submit();
+
+
+  };
+
+  function UpdateColapseForYosya() {
+    if ($('#tblCollapseYosya').hasClass('show')) {
+      $('#tblCollapseYosya').removeClass("show");
+    }
+    else {
+      $('#tblCollapseYosya').addClass("show");
+    }
+  };
+
+  const btnTransportInstructionClick = () => {
+    const params = {
+      Anken_Display_ID: `${$("button[name=ReportSearchKubunId]").data("display_id")}`,
+    };
+
+    const searchKubunId = $("button[name=ReportSearchKubunId]").data("kubun_id");
+    const namePdf = $("button[name=ReportSearchKubunId]").data("report_html") + ".pdf";
+
+    const url = '@Url.RouteUrl(new { controller = "Report", action = "PreviewPDFReport", template = "__Template__" })'
+      .replace("__Template__", namePdf);
+
+    $("#form-pdf-export").remove();
+
+    const form = $('<form id="form-pdf-export" target="_blank" method="post" action="' + url + '"></form>');
+    form.append('<input type="hidden" name="SerchKubunID" value="' + searchKubunId + '" />');
+    form.append('<input type="hidden" name="searchJson" value="' + encodeURIComponent(JSON.stringify(params)) + '" />');
+    $('body').append(form);
+    form.submit();
+  }
+</script>

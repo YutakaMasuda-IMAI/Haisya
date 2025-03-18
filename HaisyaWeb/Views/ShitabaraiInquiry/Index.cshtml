@@ -1,0 +1,470 @@
+﻿@using static HaisyaWeb.Models.ShitabaraiCheckDataModel
+
+@model DataListModel
+
+@{
+  Layout = "_Layout";
+  ViewData["Title"] = "下払問合せ発行処理一覧";
+}
+
+<link href="~/css/List.css" rel="stylesheet" type="text/css" />
+
+<div id="hedder" class="row" style="margin-bottom: -20px;">
+  <h6 class="heading-pagetitle">下払問合せ発行処理一覧</h6>
+  <form id="form-filter">
+    @Html.HiddenFor(m => m.Company_ID)
+    @Html.HiddenFor(model => Model.SortParam.SortItemParam)
+    @Html.HiddenFor(model => Model.SortParam.SortOrder)
+    <div class="form-group" style="width: 100%">
+      <div class="row">
+        <table class="table jbc-table table-hedder" style="padding: 0; border-collapse: collapse;width:100%; ">
+          <tbody>
+            <tr>
+              <th width="360px">
+                <div class="appeal-box box d-flex align-items-center" style="vertical-align: middle; display: inline-block; padding: 0;">
+                  <span class="calendar-nav" onclick="AddMonths(-1)" onselectstart="return false;">＜＜</span>
+                  <div class="YearMonth" style="padding: 0px 5px;top: -5px;color: rgb(136, 136, 136);font-size: 18px;position: relative;cursor: pointer;padding: 0; margin: 0 5px;">
+                    @Html.TextBoxFor(m => m.Search.SelectDay, htmlAttributes: new
+                      {
+                        @class = "calender",
+                        @readonly = "readonly",
+                        @onchange = "Search()",
+                        @style = "width: 120px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none; background-color: whitesmoke;"
+                      })
+                  </div>
+                  <span class="calendar-nav" onclick="AddMonths(1)" onselectstart="return false;">＞＞</span>
+                </div>
+              </th>
+              <th width="250px">
+                @Html.LabelFor(m => m.Search.SelectShimebi, htmlAttributes: new { @class = "required control-label align-self-center align-middle text-end", @style = "padding: 0 10px 0 0; width: 70px;" })
+                @Html.TextBoxFor(m => m.Search.SelectShimebi, htmlAttributes: new { @onchange = "Search();", @class = "form-control search-text", @style = "width: 50px; display: inline-block;text-align:right", @maxlength = "2" })
+              </th>
+              <th width="300px">
+                @Html.LabelFor(m => m.Search.SelectShitabaraiTantou, htmlAttributes: new { @class = "label", @style = "padding: 0 10px 0 0;" })
+                @Html.DropDownListFor(m => m.Search.SelectShitabaraiTantou, new SelectList(Model.Search.TantouSelectList, "Value", "Text"), new { @onchange = "Search();", @class = "form-control search-select", @style = "width: 175px;" })
+              </th>
+              <th></th>
+            </tr>
+            <tr>
+              <th colspan="4">
+                <table>
+                  <tr>
+                    <th>
+                      <label class="toggle-button-customer label" style="margin-right: 10px;">
+                        <input id="single-search" type="checkbox" />
+                      </label>
+                    </th>
+                    <th>
+                      <div style="display: inline-block; _display: inline; padding: 0;" class="div-search-customer">
+                        @Html.LabelFor(m => m.Search.Customer1, htmlAttributes: new { @class = "label search-label2" })
+                        <button id="btnCustomer1" class="btn btn-info btn-sm btn-select" style="width:80px;">選択</button>
+                        @Html.TextBoxFor(m => m.Search.Customer1, htmlAttributes: new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 100px; display: inline-block;", @id = "Search_Customer1" })
+                        @Html.TextBoxFor(m => m.Search.Customer_name1, htmlAttributes: new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 300px; display: inline-block;", @id = "Search_Customer_name1" })
+                        @Html.Hidden("Customer_ID", "", new { @id = "hiddenCustomerID" })
+                      </div>
+                    </th>
+                    <th><label class="label search-label2" id="lbl-to" style="visibility: hidden;">～</label></th>
+                    <th>
+                      <div style="display: inline-block; _display: inline; padding: 0;">
+                        @Html.LabelFor(m => m.Search.Customer2, htmlAttributes: new { @id = "lbl-search-customer2", @class = "label search-label2", @style = "visibility: hidden;" })
+                        <button id="btnCustomer2" class="btn btn-info btn-sm btn-select" style="width:80px;visibility: hidden; ">選択</button>
+                        @Html.TextBoxFor(m => m.Search.Customer2, htmlAttributes: new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 100px;visibility: hidden;", @id = "Search_Customer2" })
+                        @Html.TextBoxFor(m => m.Search.Customer_name2, htmlAttributes: new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 300px;visibility: hidden;", @id = "Search_Customer_name2" })
+                        @Html.Hidden("Customer_IDTo", "", new { @id = "hiddenCustomerIDTo" })
+                      </div>
+                    </th>
+                  </tr>
+                </table>
+              </th>
+            </tr>
+            <tr>
+              <th>
+                <div class="d-flex align-items-center">
+                  @Html.LabelFor(m => m.Search.PublishDay, htmlAttributes: new { @class = "label required", @style = "padding: 0 10px 0 0;" })
+                  <div class="DatePublishDay">
+                    @Html.TextBoxFor(m => m.Search.PublishDay, htmlAttributes: new
+                    {
+                      @class = "calender-publish-date form-control search-text",
+                      @style = "width:180px;text-align:center;",
+                      @readonly = "readonly",
+                      @onchange = "Search()",
+                    })
+                  </div>
+                </div>
+              </th>
+              <th colspan="2">
+                <div class="d-flex align-items-center">
+                  @Html.LabelFor(m => m.Search.ShitabaraiDayTo, htmlAttributes: new { @class = "label", @style = "padding: 0 10px 0 0;" })
+                  <div class="DateShitabaraiDayTo">
+                    @Html.TextBoxFor(m => m.Search.ShitabaraiDayTo, htmlAttributes: new
+                      {
+                        @class = "calender-sale-date form-control search-text",
+                        @style = "width:180px;text-align:center;",
+                        @readonly = "readonly",
+                        @onchange = "Search()",
+                      })
+                  </div>
+                </div>
+              </th>
+              <th style="text-align:right;">
+                <input type="button" value="一括WEB問合せ" )" class="btn btn-primary align-items-end" onclick="PublishShitabarai('', @((int)ConfirmationViews.BULK));" />
+              </th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="data-list" class="data-list" style="margin:0;">
+        @await Html.PartialAsync("_DataList.cshtml", Model)
+      </div>
+    </div>
+  </form>
+  <form id="summ-data" style="visibility: hidden;">
+    @await Html.PartialAsync("~/Views/ShitabaraiInquiry/_ShitabaraiData.cshtml", new ShitabaraiSummModel())
+  </form>
+</div>
+
+
+@section Scripts {
+  <script>
+    const weeks = ['日', '月', '火', '水', '木', '金', '土'];
+    var btnCustomer = '';
+    function AddMonths(months) {
+      var ym = $('#Search_SelectDay').val();
+      var dt = new Date(ym.slice(0, 4), ym.slice(5, 7) - 1, 1);
+      dt.setMonth(dt.getMonth() + months);
+      $('#Search_SelectDay').val(YearMonthString(dt)).trigger('change');
+    }
+
+    let currentButton = '';
+    $(function () {
+      $(".calender").ympicker({
+        buttonImage: "../img/calender.png",
+        dateFormat: "yy\年mm\月",
+      });
+      $('#Search_PublishDay').datepicker({
+        buttonImage: '../img/calender.png', // カレンダーアイコン画像
+        buttonText: 'カレンダーから選択', // ツールチップ表示文言
+        buttonImageOnly: true, // 画像として表示
+        showOn: 'both', // カレンダー呼び出し元の定義
+        onSelect: function (dateText, inst) {
+          var dt = $(this).datepicker('getDate');
+          var formattedDate = `${dt.getFullYear()}\年${(dt.getMonth() + 1).toString().padStart(2, '0')}\月${dt.getDate().toString().padStart(2, '0')}\日\(${weeks[dt.getDay().toString()]}\)`.replace(/\n|\r/g, '');
+          $('#Publish_day').val(formattedDate);
+        },
+      });
+      $('#Search_ShitabaraiDayTo').datepicker({
+        buttonImage: '../img/calender.png', // カレンダーアイコン画像
+        buttonText: 'カレンダーから選択', // ツールチップ表示文言
+        buttonImageOnly: true, // 画像として表示
+        showOn: 'both', // カレンダー呼び出し元の定義
+        onSelect: function (dateText, inst) {
+          var dt = $(this).datepicker('getDate');
+          var formattedDate = `${dt.getFullYear()}\年${(dt.getMonth() + 1).toString().padStart(2, '0')}\月${dt.getDate().toString().padStart(2, '0')}\日\(${weeks[dt.getDay().toString()]}\)`.replace(/\n|\r/g, '');
+          $('#Shitabarai_day_to').val(formattedDate);
+        },
+      });
+      $('#single-search').on('change', function () {
+        TurnRangeSearch($('#single-search').prop('checked'));
+      });
+
+      $('#btnCustomer1').on('click', function (event) {
+        currentButton = 'from';
+
+        let selectedId = $('#hiddenCustomerID').val();
+        let id = @(Model.Company_ID);
+
+        openCommonDialogForCustomer(id, "", selectedId);
+
+        return false;
+      });
+
+      $('#btnCustomer2').on('click', function (event) {
+        currentButton = 'to';
+
+        let selectedId = $('#hiddenCustomerIDTo').val();
+        let id = @(Model.Company_ID);
+
+        openCommonDialogForCustomer(id, "", selectedId);
+
+        return false;
+      });
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Enter') {
+          event.preventDefault();
+          Search();
+        }
+      });
+
+      Search();
+    });
+
+    function submitYosyaData(yosyaID, yosyaCode2, yosyaName, ModalType) {
+      $('#Search_YousyasakiName' + ModalType).val(yosyaName);
+      $('#Search_YousyasakiCode' + ModalType).val(yosyaCode2);
+      ModalClose();
+      Search();
+    }
+
+    function dataListFirstSortChange(name) {
+        if (typeof name === "undefined") {
+            return;
+        }
+        var sortName = $("#SortParam_SortItemParam").val();
+        var sortOrder = $("#SortParam_SortOrder").val();
+        if (name != sortName) {
+            $("#SortParam_SortOrder").val("asc");
+        }
+        if (sortOrder.indexOf("desc") != -1) {
+            $("#SortParam_SortOrder").val("asc");
+        } else {
+            $("#SortParam_SortOrder").val("desc");
+        }
+        $("#SortParam_SortItemParam").val(name);
+        Search();
+    }
+
+    function Search() {
+      if ($('#Search_PublishDay').val() == '' || $('#Search_SelectShimebi').val() == '') {
+        $('#data-list').html(`
+          <div class="no-data-row">
+            <h4 class="no-data-row-text">データ無し</h4>
+          </div>
+        `);
+        return;
+      }
+      $('#Select_day').val($('#Search_SelectDay').val());
+      $('#Select_shimebi').val($('#Search_SelectShimebi').val());
+      $('#Publish_day').val($('#Search_PublishDay').val());
+      $('#Shitabarai_day_to').val($('#Search_ShitabaraiDayTo').val());
+      $('#shitabarai').html('');
+      $('#shitabarai-list').html('');
+      $.ajax({
+        type: 'POST',
+        data: $('#form-filter').serialize(),
+        url: '@Url.RouteUrl("Default", new { controller = "ShitabaraiInquiry", action = "Search" })',
+        success: function (result) {
+          $('#data-list').html(result.partialView);
+        },
+      });
+    }
+
+    function TurnRangeSearch(on) {
+      if (on) {
+        $('#lbl-to').prop('style', 'display: inline-block;');
+        $('#lbl-search-customer2').prop('style', 'display: inline-block;');
+        $('#btnCustomer2').prop('style', 'width: 80px;margin: 2px;');
+        $('#Search_Customer2').prop('style', 'width: 100px; display: inline-block;');
+        $('#Search_Customer_name2').prop('style', 'width: 300px; display: inline-block;');
+      } else {
+        $('#lbl-to').prop('style', 'display: inline-block;visibility:hidden;');
+        $('#lbl-search-customer2').prop('style', 'display: inline-block;visibility:hidden;');
+        $('#btnCustomer2').prop('style', 'width:80px;visibility:hidden;');
+        $('#Search_Customer2').prop('style', 'width: 100px;display: inline-block;visibility:hidden;');
+        $('#Search_Customer_name2').prop('style', 'width: 300px;display: inline-block;visibility:hidden;');
+
+        $('#Search_Customer2').val('');
+        $('#Search_Customer_name2').val('');
+      }
+    }
+
+    function selectCustomerSelectedCallBack(obj) {
+      console.log(obj);
+      if (currentButton === 'from') {
+        $('#Search_Customer1').val(obj['Customer_Branch_Code']);
+        $('#Search_Customer_name1').val(obj['Customer_Branch_Name_Abbr']);
+        $('#hiddenCustomerID').val(obj['Customer_Branch_ID']);
+      } else if (currentButton === 'to') {
+        $('#Search_Customer2').val(obj['Customer_Branch_Code']);
+        $('#Search_Customer_name2').val(obj['Customer_Branch_Name_Abbr']);
+        $('#hiddenCustomerIDTo').val(obj['Customer_Branch_ID']);
+      }
+      Search();
+    }
+
+    function ModalClose() {
+      $('#ModalHere').find('.modal').modal('hide');
+      $('#ModalHere').html('');
+    }
+
+    function ShowModal(kind) {
+      $.post('@Url.RouteUrl("Default", new { controller = "ShitabaraiInquiry", Action = "IndexModal" })', {
+        CompanyID: @(Model.Company_ID),
+        ModalType: kind,
+      })
+        .done(function (response) {
+          if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+          } else {
+            $('#ModalHere').html(response.partialView);
+            $('#ModalHere').find('.modal').modal('show');
+            return;
+          }
+        })
+        .fail(function (xhr) {
+          alertError('fail:' + xhr);
+          console.log(xhr);
+          return false;
+        })
+        .always(function (xhr, msg) {});
+      return false;
+    }
+
+    function ShitabaraiHtml(idx, id) {
+      return `
+        <input type='hidden' name='Shitabarai_list[${idx}].Check_Shitabarai_ID' value='${$('#id-' + id).val()}' />
+        <input type='hidden' name='Shitabarai_list[${idx}].Yosya_Name' value='${$('#name-' + id).val()}' />
+        <input type='hidden' name='Shitabarai_list[${idx}].Mail_Address1' value='${$('#mail1-' + id).val()}' />
+        <input type='hidden' name='Shitabarai_list[${idx}].Mail_Address2' value='${$('#mail2-' + id).val()}' />
+        <input type='hidden' name='Shitabarai_list[${idx}].Shime_Day' value='${$('#shime-' + id).val()}' />
+        <input type='hidden' name='Shitabarai_list[${idx}].Yosya_Branch_ID' value='${$('#branch-' + id).val()}' />
+        <input type='hidden' name='Shitabarai_list[${idx}].Uriage_Shiharai_ID' value='${$('#uriage-' + id).val()}' />
+        <input type='hidden' name='Shitabarai_list[${idx}].Uriage_Shiharai_ID_LIST' value='${$('#uriagelist-' + id).val()}' />
+        <input type='hidden' name='Shitabarai_list[${idx}].Zei_Kubun' value='${$('#tax-' + id).val()}' />
+      `;
+    }
+
+    function CheckAll() {
+      event.preventDefault();
+      var f = $('#chk-all').val() > 0;
+      $('#chk-all').val(f ? 0 : 1);
+      $('#chk-all').html(f ? '全解除' : '全選択');
+      var h = '';
+      var idx = 0;
+      $('input:checkbox[name="Order"]').each(function () {
+        $(this).prop('checked', f);
+        var i = $(this).val();
+        if (f) {
+          h += ShitabaraiHtml(idx++, i);
+        }
+      });
+      $('#shitabarai').html('');
+      $('#shitabarai-list').html(h);
+    }
+
+    function PublishShitabarai(id, v) {
+      event.preventDefault();
+      $('#View').val(v);
+      if (id !== '') {
+        $('#shitabarai').html(`
+          <input type='hidden' name='Shitabarai.Check_Shitabarai_ID' value='${$('#id-' + id).val()}' />
+          <input type='hidden' name='Shitabarai.Yosya_Name' value='${$('#name-' + id).val()}' />
+          <input type='hidden' name='Shitabarai.Mail_Address1' value='${$('#mail1-' + id).val()}' />
+          <input type='hidden' name='Shitabarai.Mail_Address2' value='${$('#mail2-' + id).val()}' />
+          <input type='hidden' name='Shitabarai.Shime_Day' value='${$('#shime-' + id).val()}' />
+          <input type='hidden' name='Shitabarai.Yosya_Branch_ID' value='${$('#branch-' + id).val()}' />
+          <input type='hidden' name='Shitabarai.Uriage_Shiharai_ID' value='${$('#uriage-' + id).val()}' />
+          <input type='hidden' name='Shitabarai.Uriage_Shiharai_ID_LIST' value='${$('#uriagelist-' + id).val()}' />
+          <input type='hidden' name='Shitabarai.Zei_Kubun' value='${$('#tax-' + id).val()}' />
+        `);
+      }
+      if (v == @((int)ConfirmationViews.BULK) && $('#shitabarai-list').html().trim().length == 0) {
+        alert('処理対象を選択してください');
+        return;
+      }
+      $.ajax({
+        type: 'POST',
+        data: $('#summ-data').serialize(),
+        url: '@Url.RouteUrl("Default", new { controller = "ShitabaraiInquiry", action = "ConfirmPublishing" })',
+        success: function (result) {
+          $('#ModalHere2').html(result.partialView);
+          $('#ModalHere2').dialog({
+            width: 450,
+            height: 350,
+            modal: true,
+            buttons: [
+              {
+                id: 'issue-button',
+                text: '発行',
+                style: 'width: 120px;',
+                class: 'btn btn-primary align-items-end',
+                click: function () {
+                  if (v == @((int)ConfirmationViews.PRINT) || v == @((int)ConfirmationViews.PREVIEW)) {
+                    openReport();
+
+                  }
+
+                  $(this).dialog('close');
+                  Publish(v);
+                },
+              },
+              {
+                text: 'キャンセル',
+                style: 'width: 120px;',
+                class: 'btn btn-primary align-items-end',
+                click: function () {
+                  $(this).dialog('close');
+                },
+              },
+            ],
+          });
+          if (v == @((int)ConfirmationViews.PRINT) || v == @((int)ConfirmationViews.PREVIEW)) {
+            if ($('#Layout').children('option').length == 0) {
+              $('#issue-button').prop('disabled', true);
+            }
+          }
+          $('.ui-dialog-titlebar').hide();
+        },
+      });
+    }
+
+    function Publish(v) {
+      var action =
+        v == @((int)ConfirmationViews.BULK)
+          ? 'Bulk'
+          : v == @((int)ConfirmationViews.MAIL)
+            ? 'Mail'
+            : v == @((int)ConfirmationViews.PRINT)
+            ? 'Print'
+            : 'Preview';
+      var u = '@Url.RouteUrl("Default", new { controller = "ShitabaraiInquiry", action = "__ACTION__" })'.replace(
+        '__ACTION__',
+        action,
+      );
+
+      if (v == @((int)ConfirmationViews.PRINT) || v == @((int)ConfirmationViews.PREVIEW)) {
+        if (document.getElementById("Print_Pattern") == null || document.getElementById("namePdf") == null) {
+          const searchKubun = $('#Layout').val()?.split(" ");
+          $('#summ-data').append('<input type="hidden" id="Print_Pattern" name="Print_Pattern" value="' + searchKubun[0] + '" />');
+          $('#summ-data').append('<input type="hidden" id="namePdf" name="namePdf" value="' + searchKubun[1] + '" />');
+        }
+      }
+      $.ajax({
+        type: 'POST',
+        data: $('#summ-data').serialize(),
+        url: u,
+        success: function (result) {
+          Search();
+        },
+        error: function (xhr) {
+          alert(`【ネットワークエラー】:${xhr}`);
+        },
+      });
+    }
+
+    function SelectShitabarai() {
+      var i = 0;
+      var h = '';
+      $('input:checkbox[name="Order"]').each(function () {
+        if ($(this).is(':checked') == true) {
+          h += ShitabaraiHtml(i++, $(this).val());
+        }
+      });
+      $('#shitabarai-list').html(h);
+    }
+    function openCustomerDriverOnClick() {
+      openCommonDialogForCustomerDriver(@(Model.Company_ID), "", "", 0);
+    }
+    function selectCustomerDriverSelectedCallBack(result) {
+      $('#Search_YousyasakiCode' + btnCustomer).val(result['Employee_Number']);
+      $('#Search_YousyasakiName' + btnCustomer).val(result['Display_Name']);
+    }
+  </script>
+
+  <script id="data-not-found" type="text/html">
+    <div class="no-data-row">
+      <h4 class="no-data-row-text">データ無し</h4>
+    </div>
+  </script>
+}

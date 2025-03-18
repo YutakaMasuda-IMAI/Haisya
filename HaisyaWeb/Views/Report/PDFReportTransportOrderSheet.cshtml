@@ -1,0 +1,497 @@
+﻿@using HaisyaWeb.Common
+@model HaisyaWeb.Models.ReportModel.PDFReportModel
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="~/lib/jquery-ui/dist/themes/base/jquery-ui.css" rel="stylesheet" />
+  <link href="~/lib/jquery-ui/dist/themes/base/theme.css" rel="stylesheet" />
+
+  <script src="~/lib/jquery/dist/jquery.js" charset="utf-8"></script>
+  <script src="~/lib/jquery-ui/dist/jquery-ui.js" charset="utf-8"></script>
+  <link href="~/css/Reset.css" rel="stylesheet" />
+  <title>輸送発注書</title>
+
+  <style>
+    @@media print {
+      body, html {
+        height: 297mm; /* A4 portrait */
+        width: 210mm; /* A4 portrait */
+      }
+    }
+
+    @@page {
+      size: A4 portrait;
+      margin: 5mm;
+    }
+
+    /* Reset css page */
+    /* 請求書１のCSS */
+    *:where(:not(html, iframe, canvas, img, svg, video, audio):not(svg *, symbol *)) {
+      all: unset;
+      display: revert;
+    }
+    /* Preferred box-sizing value */
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    /* Reapply the pointer cursor for anchor tags */
+    a, button {
+      cursor: revert;
+    }
+    /* Remove list styles (bullets/numbers) */
+    ol, ul, menu {
+      list-style: none;
+    }
+    /* For images to not be able to exceed their container */
+    img {
+      max-width: 100%;
+    }
+    /* removes spacing between cells in tables */
+    table {
+      border-collapse: collapse;
+    }
+    /* Safari - solving issue when using user-select:none on the body text input doesn't working */
+    input, textarea {
+      -webkit-user-select: auto;
+    }
+    /* revert the 'white-space' property for textarea elements on Safari */
+    textarea {
+      white-space: revert;
+    }
+    /* minimum style to allow to style meter element */
+    meter {
+      -webkit-appearance: revert;
+      appearance: revert;
+    }
+      /* reset default text opacity of input placeholder */
+      meter::placeholder {
+        color: unset;
+      }
+      /* fix the feature of 'hidden' attribute.
+                                                                                   display:revert; revert to element instead of attribute */
+      meter:where([hidden]) {
+        display: none;
+      }
+      /* revert for bug in Chromium browsers
+                                                                                   - fix for the content editable attribute will work properly.
+                                                                                   - webkit-user-select: auto; added for Safari in case of using user-select:none on wrapper element*/
+      meter:where([contenteditable]:not([contenteditable="false"])) {
+        -moz-user-modify: read-write;
+        -webkit-user-modify: read-write;
+        overflow-wrap: break-word;
+        -webkit-line-break: after-white-space;
+        -webkit-user-select: auto;
+      }
+      /* apply back the draggable feature - exist only in Chromium and Safari */
+      meter:where([draggable="true"]) {
+        -webkit-user-drag: element;
+      }
+
+    /* Reset css page */
+
+    .page-init {
+      opacity: 0;
+    }
+
+    .page-break {
+      page-break-after: always;
+    }
+
+    .transport-order-sheet {
+      /* width: 210mm; */
+      /* height: 297mm; */
+      font-family: "Hiragino Maru Gothic Pro", "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "HG丸ｺﾞｼｯｸM-PRO", "HGMaruGothicMPRO";
+      font-size: 14px;
+      line-height: 150%;
+      /* backgound-colorの有効化 */
+      -webkit-print-color-adjust: exact;
+      /* 最後のページで改ページが入らないように制御 */
+    }
+
+      .transport-order-sheet:last-child {
+        page-break-after: auto;
+      }
+
+      .transport-order-sheet .title {
+        font-size: 32px;
+        font-weight: bold;
+        text-align: center;
+        letter-spacing: 1px;
+        border: 2px solid #000;
+        padding: 8px 10px;
+        /* margin-block-end: 38px; */
+        margin-bottom: 38px;
+      }
+
+      .transport-order-sheet .issue-date {
+        text-align: right;
+      }
+
+      .transport-order-sheet .customer-name {
+        font-weight: bold;
+        font-size: 18.67px;
+        text-decoration: underline;
+      }
+
+      .transport-order-sheet .head-wrapper {
+        /* display: flex; */
+        display: table;
+        width: 100%;
+        align-items: flex-start;
+        justify-content: space-between;
+        /* margin-block-end: 18px; */
+        margin-bottom: 18px;
+      }
+
+        .transport-order-sheet .head-wrapper .customer-wrapper {
+          display: table-cell;
+        }
+
+          .transport-order-sheet .head-wrapper .customer-wrapper .customer-tell {
+            /* margin-block-end: 15px; */
+            margin-bottom: 15px;
+          }
+
+        .transport-order-sheet .head-wrapper .our-company-wrapper {
+          display: table-cell;
+          text-align: right;
+        }
+
+      .transport-order-sheet .content .content-item {
+        border: 1px solid #000;
+        /* display: flex; */
+        display: table;
+        width: 100%;
+        /* align-items: center; */
+        text-align: center;
+        line-height: 1.5;
+        /* margin-block-end: 25px; */
+        margin-bottom: 25px;
+        box-sizing: border-box;
+      }
+
+        .transport-order-sheet .content .content-item .content-item-title {
+          display: table-cell;
+          width: 23%;
+          font-size: 16px;
+          vertical-align: middle;
+          /* border-inline-end: 1px solid #000; */
+        }
+
+        .transport-order-sheet .content .content-item .content-item-text {
+          display: table-cell;
+          width: 77%;
+          font-size: 16px;
+          white-space: nowrap;
+          overflow: hidden;
+          /* border-inline-start: 1px solid #000; */
+          border-left: 1px solid #000;
+        }
+
+        .transport-order-sheet .content .content-item .wrap-note {
+          word-wrap: break-word;
+          word-break: break-all;
+          white-space: normal;
+        }
+
+          .transport-order-sheet .content .content-item .content-item-text .date,
+          .transport-order-sheet .content .content-item .content-item-text .day,
+          .transport-order-sheet .content .content-item .content-item-text .time {
+            display: inline-block;
+          }
+
+          .transport-order-sheet .content .content-item .content-item-text .date {
+            width: 33%;
+            text-align: right;
+          }
+
+          .transport-order-sheet .content .content-item .content-item-text .day {
+            width: 6.2%;
+          }
+
+          .transport-order-sheet .content .content-item .content-item-text .time {
+            width: 60.8%;
+            text-align: left;
+          }
+
+          .transport-order-sheet .content .content-item .content-item-text.left {
+            text-align: left;
+            padding-left: 5px;
+          }
+
+          .transport-order-sheet .content .content-item .content-item-text.big {
+            font-size: 18.67px;
+          }
+
+        .transport-order-sheet .content .content-item .content-item-title.big {
+          font-size: 21.34px;
+          padding: 20px 0;
+        }
+
+        .transport-order-sheet .content .content-item .content-item-text.bold {
+          font-weight: bold;
+        }
+
+        .transport-order-sheet .content .content-item .content-item-title.lh {
+          line-height: 1.7;
+        }
+
+        .transport-order-sheet .content .content-item .content-item-title-box {
+          display: table-cell;
+          width: 23%;
+          border-right: 1px solid #000;
+        }
+
+          .transport-order-sheet .content .content-item .content-item-title-box .content-item-title {
+            display: block;
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+            width: 100%;
+          }
+
+        .transport-order-sheet .content .content-item .content-item-text-box {
+          display: table-cell;
+          vertical-align: middle;
+          width: 77%;
+        }
+
+          .transport-order-sheet .content .content-item .content-item-text-box .content-item-text {
+            display: block;
+            width: 100%;
+            border: none;
+          }
+
+            .transport-order-sheet .content .content-item .content-item-text-box .content-item-text .bold {
+              font-weight: bold;
+            }
+
+            .transport-order-sheet .content .content-item .content-item-text-box .content-item-text .tel {
+              color: #000;
+            }
+
+            .transport-order-sheet .content .content-item .content-item-text-box .content-item-text.bd {
+              border-bottom: 1px solid #000;
+            }
+
+        .transport-order-sheet .content .content-item.small {
+          border: none;
+          width: 71%;
+          border-top: 1px solid #000;
+          border-left: 1px solid #000;
+          border-right: 1px solid #000;
+          display: table;
+          align-items: center;
+          text-align: center;
+          line-height: 1.5;
+          margin-bottom: 0;
+          box-sizing: border-box;
+        }
+
+          .transport-order-sheet .content .content-item.small .content-item-title {
+            display: table-cell;
+            width: 32.5%;
+          }
+
+          .transport-order-sheet .content .content-item.small .content-item-text {
+            display: table-cell;
+            width: 68%;
+            text-align: left;
+            padding-left: 5px;
+          }
+
+          .transport-order-sheet .content .content-item.small:last-child {
+            border-bottom: 1px solid #000;
+          }
+  </style>
+</head>
+<body class="transport-order-sheet">
+  @foreach (var item in Model.TransportOrderSheet.TransportOrderSheetList)
+  {
+    <div class="page-init">
+      <h1 class="title">輸送発注書</h1>
+      <p class="issue-date">
+        @DateTimeConverter.DateTimeConverterJP(item.OrderDate)
+      </p>
+      <p class="customer-name">@item.CustomerName</p>
+      <div class="head-wrapper">
+        <div class="customer-wrapper">
+          <p class="customer-tell">@item.CustomerFax</p>
+          <p class="message">
+            お世話になります。<br />
+            下記の件よろしくお願い致します。
+          </p>
+        </div>
+        <div class="our-company-wrapper">
+          <p class="company-name">今井運送株式会社</p>
+          <p class="company-address">広島県廿日市木材港北13-43</p>
+          <p class="company-tel">TEL：0829-34-1564</p>
+          <p class="company-fax">FAX：0829-34-1561</p>
+          <p class="staff-name">岡廣 美幸</p>
+        </div>
+      </div>
+      <div class="content">
+        <div class="content-item">
+          <p class="content-item-title">車種・台数</p>
+          <p class="content-item-text">@($"{item.SyasyuDisplay}×{item.Daisuu}台")</p>
+        </div>
+        <div class="content-item">
+          <div class="content-item-title-box">
+            <p class="content-item-title">貨物　荷姿</p>
+            <p class="content-item-title">重量　個数</p>
+          </div>
+          <div class="content-item-text-box">
+            <p class="content-item-text">@item.ProductName　@item.ProductWeight </p>
+          </div>
+        </div>
+        <div class="content-item">
+          <p class="content-item-title">装備品</p>
+          <p class="content-item-text">@item.Device</p>
+        </div>
+        <div class="content-item">
+          <div class="content-item-title-box">
+            <p class="content-item-title">引取日時</p>
+            <p class="content-item-title">場所</p>
+            <p class="content-item-title">　</p>
+            <p class="content-item-title">　</p>
+          </div>
+          <div class="content-item-text-box">
+            <p class="content-item-text bold">
+              <span class="date">@DateTimeConverter.DateTimeConverterJP(@item.StartDate)</span>
+              <span class="day">@DateTimeConverter.GetDayOfWeekInJapanese(@item.StartTime)</span>
+              <span class="time">@DateTimeConverter.GetTimeInHHmm(item.StartTime)</span>
+            </p>
+            <p class="content-item-text">@item.StartAddress1</p>
+            <p class="content-item-text">@item.StartAddress2</p>
+            <p class="content-item-text bold">※工場前の日本通運さんの事務所にて受付してください。</p>
+          </div>
+        </div>
+        <div class="content-item">
+          <div class="content-item-title-box">
+            <p class="content-item-title">納品日時</p>
+            <p class="content-item-title">物件名</p>
+            <p class="content-item-title">場所</p>
+            <p class="content-item-title">　</p>
+          </div>
+          <div class="content-item-text-box">
+            <p class="content-item-text bold">
+              <span class="date">@DateTimeConverter.DateTimeConverterJP(@item.EndDate)</span>
+              <span class="day">@DateTimeConverter.GetDayOfWeekInJapanese(@item.EndTime)</span>
+              <span class="time">@DateTimeConverter.GetTimeInHHmm(item.EndTime)</span>
+            </p>
+            <p class="content-item-text">@item.EndAddress1</p>
+            <p class="content-item-text">@item.EndAddress2</p>
+            <p class="content-item-text bold">※積地で詳細出ます。</p>
+          </div>
+        </div>
+        <div class="content-item">
+          <p class="content-item-title">特記事項</p>
+          <p class="content-item-text wrap-note">@item.Note<br>　<br>　<br>　</p>
+        </div>
+        <div class="content-item small">
+          <p class="content-item-title">運送会社</p>
+          <p class="content-item-text">@item.CompanyName</p>
+        </div>
+        <div class="content-item small">
+          <p class="content-item-title">車種</p>
+          <p class="content-item-text">@item.SyasyuDisplay</p>
+        </div>
+        <div class="content-item small">
+          <p class="content-item-title">車番</p>
+          <p class="content-item-text">@item.SyabanNumber</p>
+        </div>
+        <div class="content-item small">
+          <p class="content-item-title">乗務員名</p>
+          <p class="content-item-text">@item.DriverName</p>
+        </div>
+        <div class="content-item small">
+          <p class="content-item-title">携帯</p>
+          <p class="content-item-text">@item.DriverPhone</p>
+        </div>
+        <div class="content-item small">
+          <p class="content-item-title">入場時間</p>
+          <p class="content-item-text">@item.TotalTimeDelivery</p>
+        </div>
+      </div>
+    </div>
+    <div class="page-break"></div>
+  }
+  <div class="page-print">
+  </div>
+  <script>
+    function getDPI() {
+      const dpi = 96 * window.devicePixelRatio;
+      return dpi;
+    }
+
+    function getA4Dimensions(dpi) {
+      // A4 (210mm x 297mm)
+      const widthInInches = 210 / 25.4; // A4 width in inches
+      const heightInInches = 297 / 25.4; // A4 height in inches
+
+      const widthInPixels = Math.round(widthInInches * dpi);
+      const heightInPixels = Math.round(heightInInches * dpi);
+
+      return {
+        width: widthInPixels + 120 * widthInInches / heightInInches,
+        height: heightInPixels + 120
+      };
+    }
+    const sizeA4 = getA4Dimensions(getDPI())
+    console.log(sizeA4);
+
+    // Height of A4
+    const pageHeight = Math.round(sizeA4.width + 38);
+    console.log("pageHeight: ", pageHeight);
+    $(document).ready(function () {
+
+      const startTime = new Date().getTime();
+
+      let html = $("html").html();
+      html = html.replace(/\.page-init/g, "._temp");
+
+      const url = '@Url.RouteUrl("Default", new { controller = "Report", Action = "CreatePdfPortrait" })'
+
+      const blob = new Blob([html], { type: 'text/plain' });
+      const formData = new FormData();
+      formData.append('fileHtml', blob, 'largeData.txt');
+      $.ajax({
+        url,
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        xhrFields: {
+          responseType: 'blob'
+        },
+        success: function (blob) {
+          const url = URL.createObjectURL(blob);
+
+          $("body").css("width", "100%")
+          $("body").css("overflow", "hidden");
+
+          const iframe = document.createElement("iframe");
+          iframe.src = url;
+          iframe.type = "application/pdf";
+          iframe.style.width = "100%";
+          iframe.style.height = "100vh";
+          iframe.style.border = "none";
+          document.body.appendChild(iframe);
+
+          $(".page").remove();
+          $("div").remove();
+
+          const endTime = new Date().getTime();
+          const totalTime = (endTime - startTime) / 1000;
+          console.log(`Total time: ${totalTime}s`)
+        }
+      });
+    });
+  </script>
+</body>
+</html>

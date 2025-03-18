@@ -1,0 +1,103 @@
+﻿@model CommonDialogModel.SelectAddressModel
+
+
+<style>
+</style>
+
+@if (Model.AnkenPointList.Count() == 0)
+{
+  <div style="width: 100%; background: #3366CC ">
+    <h4 style="text-align:left; margin-left: 20px;color: white;">データ無し</h4>
+  </div>
+}
+
+
+<table id="@(Model.ListIdName)" class="table table-address">
+  <thead>
+    <tr><th>@(Model.TheadTitle)</th></tr>
+  </thead>
+  <tbody>
+    @foreach (var item in Model.AnkenPointList)
+    {
+    <tr>
+      <td>
+        <button class="btn btn-dark" style="width: 99%;">
+          <div style="padding: 0px 0px 0px 2px; margin: 0; background: none; width: 100%; line-height: initial; text-align: left;">
+            @*@Html.LabelFor(modelItem => item.BuildingName, new { @style = "border: none; width: 100%; background: none;" })*@
+            @Html.DisplayFor(modelItem => item.BuildingName)
+            <br>
+            <div style="display:inline-flex; float: left; font-size: 12px;">
+              〒@Html.DisplayFor(modelItem => item.Post_code)
+              @*@Html.LabelFor(modelItem => item.Post_code, new { @style = "border: none; width: 100%; background: none;" })*@
+            </div>
+            @Html.DisplayFor(modelItem => item.Address)
+            @*@Html.LabelFor(modelItem => item.Address, new { @style = "border: none; width: 100%; background: none; font-size: 12px;" })*@
+          </div>
+        </button>
+      </td>
+
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.Address, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.Lat, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.Lng, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.Address_Code, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.BuildingName, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.BuildingZid, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.BuildingZid_Attr, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.Address_Level, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.Post_code, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.Address2, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.Address3, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.Address4, null, new { @readonly = "readonly", })
+      </td>
+
+    </tr>
+    }
+  </tbody>
+</table>
+
+
+<script>
+
+  $(function () {
+
+
+    $('#@(Model.ListIdName) tbody tr').on('click', function () {
+
+      let result = SelectCommonDialog($(this));
+      //alert(data);
+
+      selectOnClick(result);
+
+    });
+
+
+
+
+
+  });
+
+
+</script>

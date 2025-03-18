@@ -1,0 +1,134 @@
+﻿@model CommonDialogModel.SelectSyaryoManagementModel
+
+
+<style>
+
+  .table-tokuisakilist-input {
+    border: none;
+    background: transparent;
+    /*padding: 0;*/
+    margin: 0;
+    font-size: initial;
+  }
+
+</style>
+
+@if (Model.SyaryoManagementList.Count() == 0)
+{
+  <div style="width: 100%; background: #3366CC ">
+    <h4 style="text-align:left; margin-left: 20px;color: white;">データ無し</h4>
+  </div>
+}
+
+
+<table id="myTable" class="ex_table-tokuisaki table-bordered border-info" width="100%" border="1">
+  <thead style="background-color: chartreuse;  ">
+    <tr align="center">
+      <th class="ex-table-th" style="width: 100px; vertical-align: middle;">選択</th>
+      <th class="ex-table-th" style="width: 50px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Syasyu')" style="">車種</a>
+      </th>
+      <th class="ex-table-th" style="width: 50px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Kata')" style="">型</a>
+      </th>
+      <th class="ex-table-th" style="width: 70px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Syaban_Number')" style="">車番</a>
+      </th>
+      <th class="ex-table-th" style="width: 150px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="" style="">フル車番</a>
+      </th>
+      <th class="ex-table-th" style="width: 150px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Syamei')" style="">車名</a>
+      </th>
+      <th class="ex-table-th" style="width: 300px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="" style="">主担当乗務員名</a>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    @{
+      int i = 1;
+    }
+    @foreach (var item in Model.SyaryoManagementList.OrderBy(m => m.Syasyu).ThenBy(m => m.Kata).ThenBy(m => int.Parse(m.Syaban_Number)).ToList())
+    {
+      int rem;
+      int div = Math.DivRem(i, 2, out rem);
+      string color = rem == 0 ? "khaki" : "	whitesmoke";
+      int Driver_ID = 0;
+
+      var tantou = Model.CompanyDriverList.FirstOrDefault(m => m.Driver_ID == 99999);
+      var syaryo = Model.CompanyDriverSyaryoList.OrderBy(m => m.End_Date == null ? DateTime.Parse("2999/01/01") : m.End_Date).FirstOrDefault(m => m.SyaryoManagement_ID == item.SyaryoManagement_ID);
+      if (syaryo != null)
+      {
+        tantou = Model.CompanyDriverList.FirstOrDefault(m => m.Driver_ID == syaryo.Driver_ID);
+        Driver_ID = syaryo.Driver_ID;
+      }
+
+    <tr style="font-size: 12px; font-weight: bold; background-color: @(color); height: 20px;">
+      <td style="vertical-align: middle;">
+        <button name="btnSelectData" class="btn btn-success" style="width: 100%; padding:0;">選択</button>
+      </td>
+
+      <td style="text-align: center;">@(item.Syasyu)</td>
+      <td style="text-align: center;">@(item.Kata)</td>
+      <td style="text-align: center;">@(item.Syaban_Number)</td>
+      <td style="text-align: center;">@(item.Syaban_Chiiki) @(item.Syaban_Bunrui) @(item.Syaban_Kana) @(item.Syaban_Number)</td>
+      <td style="text-align: center;">@(item.Syamei)</td>
+      @if (tantou == null) {
+      <td></td>
+      } else {
+      <td>@(tantou.Employee_Number) @(tantou.Display_Name)</td>
+      }
+
+
+      <td hidden style="vertical-align: middle;" align="center">
+        @Html.TextBoxFor(modelItem => item.SyaryoManagement_ID, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden style="vertical-align: middle;" align="center">
+        @Html.TextBoxFor(modelItem => item.Syasyu, null, new { @readonly = "readonly", @class = "table-tokuisakilist-input", @style = "text-align-last: center; width: 100px;", })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.Kata, null, new { @readonly = "readonly", @class = "table-tokuisakilist-input", @style = "text-align-last: center; width: 100px;", })
+      </td>
+      <td hidden style="text-align-last: center;">
+        @Html.TextBoxFor(modelItem => item.Syaban_Number, null, new { @readonly = "readonly", @class = "table-tokuisakilist-input", @style = "text-align-last: center; width: 100px;", })
+      </td>
+      <td hidden style="font-size: 14px; text-align: center;">
+        @Html.DisplayFor(modelItem => item.Syaban_Chiiki) @Html.DisplayFor(modelItem => item.Syaban_Bunrui) @Html.DisplayFor(modelItem => item.Syaban_Kana) @Html.DisplayFor(modelItem => item.Syaban_Number)
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.Syamei, null, new { @readonly = "readonly", @class = "table-tokuisakilist-input", @style = "width: 150px; text-align-last: center;" })
+      </td>
+      <td hidden>
+        @if (tantou != null)
+        {
+          @Html.TextBoxFor(modelItem => Driver_ID, null, new { @readonly = "readonly", })
+          @Html.DisplayFor(modelItem => tantou.Employee_Number)<label></label> @Html.DisplayFor(modelItem => tantou.Display_Name)
+        }
+      </td>
+    </tr>
+      i++;
+    }
+  </tbody>
+</table>
+
+
+
+<script>
+
+  $(function () {
+
+
+    $('button[name="btnSelectData"]').on('click', function () {
+
+      let result = SelectCommonDialog($(this));
+      //alert(data);
+
+      selectOnClick(result);
+
+    });
+
+
+  });
+
+</script>

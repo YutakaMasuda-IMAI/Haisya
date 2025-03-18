@@ -1,0 +1,25 @@
+{
+  "dependencies": {
+    "secrets1": {
+      "type": "secrets"
+    },
+    "mssql3": {
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:DefaultConnectionNPData",
+      "suggestion": "true",
+      "ignored": "true"
+    },
+    "mssql1": {
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:DefaultConnectionkintai",
+      "suggestion": "true",
+      "ignored": "true"
+    },
+    "mssql2": {
+      "type": "mssql",
+      "connectionId": "ConnectionStrings:DefaultConnection",
+      "suggestion": "true",
+      "ignored": "true"
+    }
+  }
+}

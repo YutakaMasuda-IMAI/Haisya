@@ -1,0 +1,145 @@
+﻿@model HaisyaWeb.Models.AccidentListModel.DataListModel
+
+<link href="~/css/List.css" rel="stylesheet" />
+<div role="dialog" id="addRireki" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog " role="document" style="min-width:1200px;">
+    <div class="modal-content" style="min-height:1200px;width:100%;">
+      <div class="modal-header">
+        <h5 class="modal-title">事故一覧</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <table class="table jbc-table table-hedder" style="width:100%; padding: 0; border-collapse: collapse; ">
+        <tr>
+          <th width="350px">
+            <div style="display:flex;">
+              @Html.LabelFor(model => model.Search.AccidentCategory, htmlAttributes: new { @class = "control-label search-label2", @style = "width:100px;" })
+              <select id="jiko-select" style="width:140px;padding:0px;" class="form-control" onchange="changeAccidentReasonValue(this)">
+              </select>
+            </div>
+          </th>
+          <th width="350px">
+            <div style="display:flex;">
+              @Html.LabelFor(model => model.Search.AccidentName, htmlAttributes: new { @class = "control-label search-label2", @style = "width:100px;margin-top:6px;" })
+              @Html.TextBoxFor(model => Model.Search.AccidentName, null, new { @class = "form-control search-text", @style = "width: 200px; display: inline-block;", @id = "selectAccidentName" })
+            </div>
+          </th>
+          <th colspan="2">
+            <div style="display:flex;">
+              @Html.LabelFor(model => model.Search.AccidentDate, htmlAttributes: new { @class = "control-label search-label2", @style = "width: 100px;margin-top:6px;" })
+              <input style="width: 150px; text-align: center;" class="form-control search-text" type="date" value="" id="fCalendar" name="fromCalendar" oninput="handleFromCalendarChange();" />
+              @Html.LabelFor(model => model.Search.WaveDash, htmlAttributes: new { @class = "control-label search-label2", @style = "width: 20px;margin-top:6px;" })　
+              <input style="width: 150px;text-align:center;" class="form-control search-text" type="date" value="" id="tCalendar" name="toCalendar" oninput="handleToCalendarChange();" />
+            </div>
+          </th>
+        </tr>
+        <tr>
+          <th>
+            <div style="margin: 0 15px 0 0;">
+              @Html.LabelFor(model => model.Search.DriverName, htmlAttributes: new { @class = "control-label search-label2", @style = "width: 100px;" })
+              @Html.TextBoxFor(model => Model.Search.DriverName, null, new { @class = "form-control search-text", @style = "width: 200px; display: inline-block; font-size: 12px; padding: 2px;", @id = "selectDriverName" })
+            </div>
+          </th>
+          <th colspan="3">
+            <div style="margin: 0 15px 0 0;">
+              @Html.LabelFor(model => model.Search.CarNumber, htmlAttributes: new { @class = "control-label search-label2", @style = "width: 100px;" })
+              @Html.TextBox("Search.CarNumber", Model.Search.CarNumber, new
+              {
+                @type = "text",
+                @class = "form-control search-text",
+                @style = "width: 100px; display: inline-block;",
+                @id = "selectCarNumber"
+              })
+            </div>
+          </th>
+        </tr>
+      </table>
+
+      <div id="JikoDataList" class="data-list" style="margin-top: 10px;padding:5px;">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // PartialViewAsJsonのために $(window).on('load', function () じゃなくて.ready
+  $(document).ready(function () {
+    populateSelect();
+    dataListDisplay();
+  });
+
+  $(document).ready(function () {
+    $(document).on('input', '#selectAccidentName', function () {
+　　  accidentName = $(this).val();
+      dataListDisplay();
+    });
+
+    $(document).on('input', '#selectDriverName', function () {
+      driverName = $(this).val();
+      dataListDisplay();
+    });
+
+    $(document).on('input', '#selectCarNumber', function () {
+       carNumber = $(this).val();
+
+      // 4桁数値
+      if (carNumber.length > 4) {
+        carNumber = carNumber.slice(0, 4);
+        $(this).val(carNumber);
+      }
+      dataListDisplay();
+    });
+  });
+
+  function handleFromCalendarChange() {
+    dataListDisplay();
+  }
+
+  function handleToCalendarChange() {
+    dataListDisplay();
+  }
+
+  function dataListDisplay() {
+    var fromCalendar = document.getElementById('fCalendar').value;
+    var toCalendar = document.getElementById('tCalendar').value;
+
+    $.post(
+    '@Url.RouteUrl("Default", new { controller = "AccidentList", Action = "ModalJsonGetDataListForAccidentList" })',
+    {
+      AccidentReason: accidentReason,
+      AccidentName: accidentName,
+      FromDate: fromCalendar,
+      ToDate: toCalendar,
+      DriverName: driverName,
+      CarInt: carNumber,
+    },
+    function (data) {
+    　 $('#JikoDataList').html(data.partialView);
+    },
+);
+  }
+
+  // 事故区分セレクトにバックからもらったデータによってオプションを追加する
+  function populateSelect() {
+    // 事故区分を選択
+    const selectElement = document.getElementById('jiko-select');
+    const accidentTypes = @Html.Raw(Json.Serialize(Model.Search.AccidentTypes));
+
+    selectElement.innerHTML = ''; // すでにあったメンバーをクリアする
+
+    // バックからもらった事故タイプにとって事故リストを作って
+    for (let i = 0; i < accidentTypes.length; i++) {
+      const option = document.createElement('option');
+      option.value = accidentTypes[i].sortOrder;
+      option.textContent = accidentTypes[i].code_Name;
+      selectElement.appendChild(option);
+    }
+    accidentReason = accidentTypes[0].sortOrder;
+  }
+
+  // 事故区分のonchangeの関数
+  function changeAccidentReasonValue(i) {
+    accidentReason = i.value;
+    dataListDisplay();
+  }
+</script>

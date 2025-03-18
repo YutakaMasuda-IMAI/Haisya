@@ -1,0 +1,315 @@
+@model HaisyaWeb.Models.ShitabaraiApprovalModel.IndexModalModel
+@{
+  Layout = "_ModalLayout";
+}
+<style>
+  .table-cell-input {
+    width: 100%;
+    text-align: center;
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-size: 12px;
+  }
+</style>
+
+<div id="hiddenItem" hidden>
+  @* @Html.HiddenFor(model => Model.CompanyID) *@
+</div>
+
+<div role="dialog" id="modal-option" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog container" role="document" style="width: 1300px; min-width: 1300px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-3">下払明細</h1>
+      </div>
+      <div class="model-body" style="padding:10px;">
+        <div class="table-div">
+          <table class="no-line" style="width:100%;">
+            <tr>
+              <th style="width:100px;">　　支払日</th>
+              <td style="width:200px;">
+                @Html.TextBoxFor(m => m.DisplayDate, "{0:yyyy/MM/dd}", new { @class = "form-control", @style = "width:120px;", @readonly = true })
+              </td>
+              <th style="width:40px;">締日</th>
+              <td>
+                @Html.TextBoxFor(m => m.ShimeDay, new { @class = "form-control", @style = "width:50px;", @readonly = true })
+              </td>
+            </tr>
+          </table>
+          <table class="no-line" style="width:100%;">
+            <tr>
+              <th style="width:100px;">下払先会社</th>
+              <td style="display:flex;">
+                @Html.TextBoxFor(m => m.Customer_Code, new { @class = "form-control", @style = "width:100px;", @readonly = true })
+                @Html.TextBoxFor(m => m.Customer_Name, new { @class = "form-control", @style = "width:450px;", @readonly = true })
+              </td>
+            </tr>
+          </table>
+          <table class="no-line" style="width:100%;">
+            <tr>
+              <th style="width:100px;">　　　　積</th>
+              <td style="width:350px;">
+                @Html.TextBoxFor(m => m.Tsumi, new { @class = "form-control", @style = "width:300px;", @readonly = true })
+              </td>
+              <th style="width:30px;">卸</th>
+              <td style="width:350px;">
+                @Html.TextBoxFor(m => m.Oroshi, new { @class = "form-control", @style = "width:300px;", @readonly = true })
+              </td>
+              <th style="width:50px;">品名</th>
+              <td>
+                @Html.TextBoxFor(m => m.Luggage, new { @class = "form-control", @style = "width:300px;", @readonly = true })
+              </td>
+            </tr>
+          </table>
+          <table class="no-line" style="width:100%;">
+            <tr>
+              <th style="width:100px;">　　　車番</th>
+              <td style="width:120px;">
+                @Html.TextBoxFor(m => m.Syaban, new { @class = "form-control", style = "width:100px;", @readonly = true })
+              </td>
+              <th style="width:50px;">数量</th>
+              <td style="width:100px;">
+                @Html.TextBoxFor(m => m.Qty, "{0:N0}", new { @class = "form-control", @oninput = "calculate_price();", style = "width:60px;text-align:right;background: rgba(224, 234, 245, 1);" })
+              </td>
+              <th style="width:50px;">単位</th>
+              <td style="width:100px;text-align:left;">
+                @Html.DropDownListFor(
+                  m => m.Unit,
+                  new SelectList(Model.UnitDto, "Value", "Text"),
+                  new { @class = "form-control dropdown", @id = "SelectedUnit", style = "width:100px;background: rgba(224, 234, 245, 1);" }
+                )
+              </td>
+              <th style="width:50px;">単価</th>
+              <td style="width:150px;">
+                @Html.TextBoxFor(m => m.UnitPrice, "{0:N0}", new { @class = "form-control", @oninput = "calculate_price();", style = "width:100px;text-align:right;background: rgba(224, 234, 245, 1);" })
+
+              </td>
+              <th style="width:80px;">下払運賃</th>
+              <td>
+                @Html.TextBoxFor(m => m.CalcPrice, "{0:N0}", new { @class = "form-control", style = "width:100px;text-align:right;", @readonly = true })
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="table-div">
+          <table id="ClaimDataListTable" class="list" style="width:480px; margin:10px 0px 0px 100px;" border="1">
+            <thead>
+              <tr align="center">
+                <th class="detail-list" width="120px">下払金額</th>
+                <th class="detail-list" width="120px">立替金(税込)</th>
+                <th class="detail-list" width="120px">割増</th>
+                <th class="detail-list" width="120px">下払運賃</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td align="right" style="background: rgba(224, 234, 245, 1);">
+                  @Html.TextBoxFor(m => m.SeikyuUnchin, "{0:N0}", new { @class = "form-control", @style="text-align:right;", @onblur = "kanmaChange(this);", id = "SeikyuUnchin2" })
+                </td>
+                <td align="right" style="background: rgba(224, 234, 245, 1);">
+                  @Html.TextBoxFor(m => m.Tatekaekin, "{0:N0}", new { @class = "form-control", @style = "text-align:right;", @onblur = "kanmaChange(this);"})
+                </td>
+                <td align="right" style="background: rgba(224, 234, 245, 1);">
+                  @Html.TextBoxFor(m => m.Warimashi1, "{0:N0}", new { @class = "form-control", @style = "text-align:right;", @onblur = "kanmaChange(this);" })
+                </td>
+                <td align="right" style="background: rgba(224, 234, 245, 1);">
+                  @Html.TextBoxFor(m => m.SeikyuTotal, "{0:N0}", new { @class = "form-control", @style = "text-align:right;", @onblur = "kanmaChange(this);" })
+                </td>
+              </tr>
+              <tr>
+                <td align="right">@Model.ShiharaiPrice.ToString("N0")</td>
+                <td align="right">@Model.PreviousTatekaekin.ToString("N0")</td>
+                <td align="right">@Model.PreviousWarimashi1.ToString("N0")</td>
+                <td align="right">@Model.PreviousSeikyuTotal.ToString("N0")</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-div">
+          <table class="no-line" style="width:100%; margin:10px 0px 0px 0px;">
+            <tr>
+              <th style="width:100px;">　下払備考</th>
+              <td>
+                <input type="text" class="form-control" id="shitabaraiBikouInput" style="width:100%;background: rgba(224, 234, 245, 1);" name="shitabaraiBikouInput" value="@Html.DisplayFor(m => m.Remarks)" />
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <div class="table-div">
+          <table class="no-line" style="width:100%; margin:10px 0px 0px 0px;">
+            <tr>
+              <td style="width:50%;text-align:center;" align="center">
+                <button id="approvalButton" type="button" class="btn btn-outline-success" style="width:120px;">承認（保存）</button>
+              </td>
+              <td style="width: 50%; text-align: center;" align="center">
+                <button type="button" class="btn btn-outline-warning" style="width:100px;" onclick="CanselButton(); return false;">キャンセル</button>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  $('#approvalButton').click(function () {
+    var warimashi1 = parseFloat(kanmaChangeRevert($('#Warimashi1').val())) || 0;
+    var warimashi2 = parseFloat(kanmaChangeRevert($('#Warimashi2').val())) || 0;
+    var warimashi3 = parseFloat(kanmaChangeRevert($('#Warimashi3').val())) || 0;
+    var warimashi4 = parseFloat(kanmaChangeRevert($('#Warimashi4').val())) || 0;
+    var warimashi5 = parseFloat(kanmaChangeRevert($('#Warimashi5').val())) || 0;
+    var warimashiPrice = warimashi1 + warimashi2 + warimashi3 + warimashi4 + warimashi5;
+    var input = document.getElementById('shitabaraiBikouInput').value;
+
+    if (warimashiPrice !== 0 && input.trim() === '') {
+      alert('割増を入力した場合は、記載は必須となります。');
+      return;
+    }
+    var data = {
+      UpdateCheckShitabaraiDetail: {
+        Qty: isNaN(parseFloat($('#Qty').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Qty').val())),
+        Unit: isNaN(parseInt($('#SelectedUnit').val())) ? 0 : parseInt($('#SelectedUnit').val()),
+        UnitPrice: isNaN(parseFloat($('#UnitPrice').val())) ? 0 : parseFloat(kanmaChangeRevert($('#UnitPrice').val())),
+        CalcPrice: isNaN(parseFloat($('#SeikyuUnchin').val())) ? 0 : parseFloat(kanmaChangeRevert($('#SeikyuUnchin').val())),
+        ShiharaiUnchin: isNaN(parseFloat($('#SeikyuUnchin2').val())) ? 0 : parseFloat(kanmaChangeRevert($('#SeikyuUnchin2').val())),
+        Tatekaekin: isNaN(parseFloat($('#Tatekaekin').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Tatekaekin').val())),
+        Warimashi1: isNaN(parseFloat($('#Warimashi1').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi1').val())),
+        Warimashi2: isNaN(parseFloat($('#Warimashi2').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi2').val())),
+        Warimashi3: isNaN(parseFloat($('#Warimashi3').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi3').val())),
+        Warimashi4: isNaN(parseFloat($('#Warimashi4').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi4').val())),
+        Warimashi5: isNaN(parseFloat($('#Warimashi5').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi5').val())),
+        ShiharaiTotal: isNaN(parseFloat($('#SeikyuTotal').val())) ? 0 : parseFloat(kanmaChangeRevert($('#SeikyuTotal').val())),
+      },
+      UpdateCheckShitabaraiChange: {
+        Qty: isNaN(parseFloat($('#Qty').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Qty').val())),
+        Unit: isNaN(parseInt($('#SelectedUnit').val())) ? 0 : parseInt($('#SelectedUnit').val()),
+        UnitPrice: isNaN(parseFloat($('#UnitPrice').val())) ? 0 : parseFloat(kanmaChangeRevert($('#UnitPrice').val())),
+        CalcPrice: isNaN(parseFloat($('#SeikyuUnchin').val())) ? 0 : parseFloat(kanmaChangeRevert($('#SeikyuUnchin').val())),
+        ShiharaiUnchin: isNaN(parseFloat($('#SeikyuUnchin2').val())) ? 0 : parseFloat(kanmaChangeRevert($('#SeikyuUnchin2').val())),
+        Tatekaekin: isNaN(parseFloat($('#Tatekaekin').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Tatekaekin').val())),
+        Warimashi1: isNaN(parseFloat($('#Warimashi1').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi1').val())),
+        Warimashi2: isNaN(parseFloat($('#Warimashi2').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi2').val())),
+        Warimashi3: isNaN(parseFloat($('#Warimashi3').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi3').val())),
+        Warimashi4: isNaN(parseFloat($('#Warimashi4').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi4').val())),
+        Warimashi5: isNaN(parseFloat($('#Warimashi5').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Warimashi5').val())),
+        ShiharaiTotal: isNaN(parseFloat($('#SeikyuTotal').val())) ? 0 : parseFloat(kanmaChangeRevert($('#SeikyuTotal').val())),
+      },
+      UpdateUriageShitabarai: {
+        Tsumi: $('#Tsumi').val(),
+        Oroshi: $('#Oroshi').val(),
+        Luggage: $('#Luggage').val(),
+        Qty: isNaN(parseFloat($('#Qty').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Qty').val())),
+        Unit: isNaN(parseInt($('#SelectedUnit').val())) ? 0 : parseInt($('#SelectedUnit').val()),
+        UnitPrice: isNaN(parseFloat($('#UnitPrice').val())) ? 0 : parseFloat(kanmaChangeRevert($('#UnitPrice').val())),
+        CalcPrice: isNaN(parseFloat($('#SeikyuUnchin').val())) ? 0 : parseFloat(kanmaChangeRevert($('#SeikyuUnchin').val())),
+        ShiharaiPrice: isNaN(parseFloat($('#SeikyuUnchin2').val())) ? 0 : parseFloat(kanmaChangeRevert($('#SeikyuUnchin2').val())),
+        Tatekaekin: isNaN(parseFloat($('#Tatekaekin').val())) ? 0 : parseFloat(kanmaChangeRevert($('#Tatekaekin').val())),
+        WarimashiPrice: isNaN(warimashiPrice) ? 0 : warimashiPrice,
+        Remarks: input,
+      },
+      Check_Kubun: @Model.Check_Kubun,
+      Check_Shitabarai_ID: @Model.Check_Shitabarai_ID,
+      Uriage_Shiharai_ID: @Model.Uriage_Shiharai_ID,
+      Change_Flg: @Model.Change_Flg,
+    };
+
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "ShitabaraiApproval", action = "PostModalApproval" })',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(data),
+      success: function (result) {
+        if (result.errorMessage != null) {
+          alertError(`【エラー】${result.errorMessage}`);
+        }
+        dataListDisplay();
+        // 成功時の処理
+        ModalClose(); // モーダルを閉じる
+      },
+      error: function (xhr, status, error) {},
+    });
+  });
+
+  function format_number(i) {
+    var s = $(i).val();
+    if (s.length > 0) {
+      var n = parseFloat(s.replace(',', ''));
+      if (isNaN(n)) {
+        s = '';
+      }
+      else {
+        s = n.toLocaleString('ja-JP');
+      }
+    }
+    $(i).val(s);
+    return s;
+  }
+
+  function calculate_price() {
+    var n = parseFloat($('#Qty').val().replace(',', ''));
+    if (isNaN(n)) {
+      n = 0;
+    }
+    var u = parseFloat($('#UnitPrice').val().replace(',', ''));
+    if (isNaN(u)) {
+      u = 0;
+    }
+    format_number('#Qty');
+    format_number('#UnitPrice');
+    if ($('#Qty').val().length == 0 || $('#UnitPrice').val().length == 0) {
+      $('#CalcPrice').val('');
+    }
+    else {
+      $('#CalcPrice').val(u * n);
+      format_number('#CalcPrice');
+    }
+  }
+
+  function decodeHtml(html) {
+    var txt = document.createElement('textarea');
+    txt.innerHTML = html;
+    return txt.value;
+  }
+
+  // 値が変更されているかをチェックする関数
+  function valuesChanged() {
+    var input = document.getElementById('shitabaraiBikouInput').value;
+    return (
+      decodeHtml('@Model.Tsumi') != $('#Tsumi').val() ||
+      decodeHtml('@Model.Oroshi') != $('#Oroshi').val() ||
+      decodeHtml('@Model.Luggage') != $('#Luggage').val() ||
+      '@Model.Qty' != kanmaChangeRevert($('#Qty').val()) ||
+      '@Model.UnitPrice' != kanmaChangeRevert($('#UnitPrice').val()) ||
+      '@Model.SeikyuUnchin' != kanmaChangeRevert($('#SeikyuUnchin2').val()) ||
+      '@Model.Tatekaekin' != kanmaChangeRevert($('#Tatekaekin').val()) ||
+      '@Model.Warimashi1' != kanmaChangeRevert($('#Warimashi1').val()) ||
+      decodeHtml('@Model.Remarks') != input ||
+      '@Model.SeikyuTotal' != kanmaChangeRevert($('#SeikyuTotal').val())
+    );
+  }
+
+  async function CanselButton() {
+    if (valuesChanged()) {
+      let result = await alertYesNoMsg(
+        '確認',
+        '変更した内容を破棄します。よろしいですか？',
+        'question',
+        'はい',
+        'いいえ',
+      );
+      if (!result) {
+        return false;
+      } else {
+        ModalClose();
+      }
+    } else {
+      ModalClose();
+    }
+  }
+</script>

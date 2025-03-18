@@ -1,0 +1,182 @@
+﻿@using Newtonsoft.Json
+@model HaisyaWeb.Models.ShitabaraiInquiryModifyListModel.DataListModel
+
+@if (Model.Result.Count == 0)
+{
+<div class="no-data-row">
+  <h4 class="no-data-row-text">データ無し</h4>
+</div>
+}
+else
+{ 
+<div id="hiddenItem" hidden>
+  @{
+  var jsonData = JsonConvert.SerializeObject(Model.Result);
+  }
+  <input type="hidden" id="shitabaraiDataList" value='@Html.Raw(jsonData)' />
+</div>
+
+<table id="myTable" class="table ex_DataList search-list" style="width: 100%;" border="1">
+  <tr>
+    <th width="70px">
+      詳細
+    </th>
+    <th width="80px">
+      <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Inquiry_Status')" style="">確認方法</a>
+    </th>
+    <th width="80px">
+      <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Check_Status')" style="">ステータス</a>
+    </th>
+    <th width="80px">
+      <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Shiharai_Changed')" style="">金額変更</a>
+    </th>
+    <th width="120px">
+      <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('SHIHARAI_TANTOU')" style="">支払担当</a>
+    </th>
+    <th width="200px">
+      <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Yosya_Name')" style="">傭車先</a>
+    </th>
+    <th>
+      <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Mail_Address1')" style="">送信アドレス</a>
+    </th>
+    <th width="80px">
+      <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Meisai_Count')" style="">明細件数</a>
+    </th>
+    <th width="80px">
+      <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('ShiharaiUnchin')" style="">下払計</a>
+    </th>
+    <th width="80px">
+      <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Tatekaekin')" style="">立替計</a>
+    </th>
+    <th width="80px">
+      <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Anken_Count')" style="">案件件数</a>
+    </th>
+    <th width="90px">
+      <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Kakutei_Count')" style="">支払確定件数</a>
+    </th>
+    <th width="80px">
+      <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Zantei_Count')" style="">暫定件数</a>
+    </th>
+    <th width="80px">
+      <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Kari_Count')" style="">仮件数</a>
+    </th>
+  </tr>
+  <tbody>
+  @{
+  var index = 0;
+  var listData = Model.Result;
+  if (!string.IsNullOrEmpty(Model.SortParam.SortItemParam) && !string.IsNullOrEmpty(Model.SortParam.SortOrder))
+  {
+      if ("asc".Equals(Model.SortParam.SortOrder))
+      {
+          listData = listData.OrderBy(s => s.GetType().GetProperty(Model.SortParam.SortItemParam).GetValue(s, null)).ThenBy(m => m.Inquiry_Status).ToList();
+      }
+      else
+      {
+          listData = listData.OrderByDescending(s => s.GetType().GetProperty(Model.SortParam.SortItemParam).GetValue(s, null)).ThenBy(m => m.Inquiry_Status).ToList();
+      }
+  }
+  }
+  @foreach (var item in listData)
+  {
+    var color = index % 2 == 0 ? "row-even" : "row-odd";
+    <tr>
+      <td class="@(color)" align="center">
+        <button class="btn btn-info" type="button" style="width:90%; padding:0;" onclick="submitDetailButton(@index)">詳細</button>
+      </td>
+      <td class="@(color)" align="center">
+        @(item.Inquiry_Status == 1 ? "WEB" : item.Inquiry_Status == 2 ? "帳票" : "")
+      </td>
+      <td class="@(color)" align="center">
+        @{
+          string Check_Status =
+            item.Check_Status == 0 ? "発行済み" :
+            item.Check_Status == 1 ? "確認中" :
+            item.Check_Status == 2 ? "確認済" :
+            item.Check_Status == 4 ? "承認済" :
+            "";
+        }
+        @Check_Status
+      </td>
+      <td class="@(color)" align="center">
+        @(item.Shiharai_Changed == 0 ? "なし" : item.Shiharai_Changed == 1 ? "あり" : "")
+      </td>
+      <td class="@(color)">
+        @Html.DisplayFor(modelItem => item.SHIHARAI_TANTOU)
+      </td>
+      <td class="@(color)">
+        @Html.DisplayFor(modelItem => item.Yosya_Name)
+      </td>
+      <td class="@(color)">
+        @Html.DisplayFor(modelItem => item.Mail_Address1)
+      </td>
+      <td class="@(color)" align="right">
+        @Convert.ToInt32(item.Meisai_Count).ToString("#,0")
+      </td>
+      <td class="@(color)" align="right">
+        @Convert.ToInt32(item.ShiharaiUnchin).ToString("#,0")
+      </td>
+      <td class="@(color)" align="right">
+        @Convert.ToInt32(item.Tatekaekin).ToString("#,0")
+      </td>
+      <td class="@(color)" align="right">
+        @Convert.ToInt32(item.Anken_Count).ToString("#,0")
+      </td>
+      <td class="@(color)" align="right">
+        @Convert.ToInt32(item.Kakutei_Count).ToString("#,0")
+      </td>
+      <td class="@(color)" align="right">
+        @Convert.ToInt32(item.Zantei_Count).ToString("#,0")
+      </td>
+      <td class="@(color)" align="right">
+        @Convert.ToInt32(item.Kari_Count).ToString("#,0")
+      </td>
+    </tr>
+    index++;
+  }
+  </tbody>
+</table>
+}
+
+<script>
+  // クエリパラメータにT_Check_Shitabarai．Check_Shitabarai_IDを持って遷移する
+  function submitDetailButton(rowIndex) {
+    event.preventDefault();
+    // rowIndexに対応するInquiryIDを取得
+    var jsonData = JSON.parse($('#shitabaraiDataList').val());
+    console.log(jsonData);
+    var checkShitabaraiID = jsonData[rowIndex].Check_Shitabarai_ID;
+
+    // Create a search data object
+    var searchData = {
+      SelectDay: $('#Search_SelectDay').val(),
+      SelectShimebi: $('#Search_SelectShimebi').val(),
+      SelectShitabaraiTantou: $('#Search_SelectShitabaraiTantou').val(),
+      SelectHakkouKubun: document.getElementById('SelectHakkouKubun').value,
+      SelectKingakuHenkou: document.getElementById('SelectKingakuHenkou').value,
+      YousyasakiCode: $('#Search_Customer1').val(),
+      YousyasakiCodeTo: $('#Search_Customer2').val(),
+      YousyasakiName: $('#Search_Customer_name1').val(),
+      YousyasakiNameTo: $('#Search_Customer_name2').val(),
+
+      RangeSearch: $('#Search_RangeSearch').prop('checked'),
+      Customer1: $('#Search_Customer1').val(),
+      Customer2: $('#Search_Customer2').val(),
+      Customer_name1: $('#Search_Customer_name1').val(),
+      Customer_name2: $('#Search_Customer_name2').val(),
+    };
+
+    // Convert the search data to a JSON string
+    var searchJson = JSON.stringify(searchData);
+
+    var form = document.createElement('form');
+    form.action = '@Url.RouteUrl("Default", new { controller = "ShitabaraiApproval", Action = "Index" })';
+    form.method = 'POST';
+    form.innerHTML += '<input type="hidden" id="Search" name="Search" value=\'' + searchJson + "' />";
+    form.innerHTML +=
+      '<input type="hidden" id="Check_Shitabarai_ID" name="Check_Shitabarai_ID" value="' + checkShitabaraiID + '" />';
+
+    document.body.appendChild(form);
+    form.submit();
+  }
+</script>

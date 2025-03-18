@@ -1,0 +1,404 @@
+﻿@using System.Reflection; 
+@using HaisyaWeb.Dto;
+@using static HaisyaWeb.Models.DailyReportModel;
+
+@model DataListModel
+
+@{
+  var i = 0;
+  var t = typeof(HaisyaDataList);
+  var l = Model?.DataDataLists ?? new();
+  var n = nameof(HaisyaDataList.TNippou);
+  var s = Model.SortParam.SortItemParam;
+  Func<HaisyaDataList, object> f = r =>
+    s == nameof(HaisyaDataList.TNippou.Commnet) ? (t.GetRuntimeProperty(n).GetValue(r, null) as T_Nippou_Local)?.Commnet == null ? "なし" : "あり" :
+    s == nameof(HaisyaDataList.Haisya_Kubun) ? r.Haisya_kubun_label() :
+    t.GetRuntimeProperty(s).GetValue(r, null);
+  l = "asc".Equals(Model.SortParam.SortOrder) ?
+    l.OrderBy(f).ThenBy(s => s.Anken_ID).ToList() :
+    l.OrderByDescending(f).ThenBy(s => s.Anken_ID).ToList();
+}
+
+@if (l.Count == 0)
+{
+<div class="no-data-row">
+  <h4 class="no-data-row-text">データ無し</h4>
+</div>
+}
+else
+{
+<style>
+.modal {
+  position: fixed;
+  z-index: 1;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgb(0,0,0);
+  background-color: rgba(0,0,0,0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+td {
+  height: 100%;
+  vertical-align: middle;
+  position: relative;
+}
+
+p {
+  margin: 5px;
+}
+.toggle-button-recipt {
+  display: flex;
+  align-items: center;
+  position: relative;
+  width: 80px;
+  height: 30px;
+  border-radius: 50px;
+  box-sizing: content-box;
+  background-color: #ff8d8d33;
+  cursor: pointer;
+  transition: background-color .4s;
+}
+
+.toggle-button-recipt:has(:checked) {
+  background-color: #75bbff33;
+}
+
+.toggle-button-recipt::before {
+  position: absolute;
+  left: 5px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background-color: #ff8d8d;
+  content: '';
+  transition: left .4s;
+}
+
+.toggle-button-recipt:has(:checked)::before {
+  left: 45px;
+  background-color: #75bbff;
+}
+
+.toggle-button-recipt::after {
+  position: absolute;
+  left: 20px;
+  transform: translateX(-50%);
+  color: #fff;
+  font-weight: 600;
+  font-size: .9em;
+  content: '未';
+  transition: left .4s;
+}
+
+.toggle-button-recipt:has(:checked)::after {
+  left: 60px;
+  content: '済';
+}
+
+.toggle-button-recipt input {
+  display: none;
+}
+</style>
+
+<div id="myModal" class="modal" style="display:none;">
+  <div class="modal-content" style="background-color: white; padding: 20px; border-radius: 10px; width: 500px; height: 200px;">
+    <p>コメント登録</p>
+    <textarea id="comment" rows="5" style="width: 100%;"></textarea>
+    <div>
+      <button id="saveComment" class="btn btn-outline-success" style="margin-top: 10px; width: 180px;;" type="button">登録</button>
+      <button id="closeButton" class="btn btn-outline-warning" style="margin-top: 10px; width: 180px; float: right;" type="button">閉じる</button>
+    </div>
+  </div>
+</div>
+
+<table id="myTable" class="table ex_DataList search-list" style="width: 100%;" border="1">
+<thead>
+  <tr>
+    <th rowspan="2" width="50px">受領</th>
+    <th style="white-space: nowrap;" width="100px" rowspan="2">
+      <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.TNippou.Commnet))')">コメント</a>
+    </th>
+    <th rowspan="2" style="max-width: 150px">
+      <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.Tantou_Name))')">配車担当</a>
+    </th>
+    <th hidden>TantouID</th>
+    <th>
+      <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.SYABAN))')">担当車番</a>
+    </th>
+    <th rowspan="2" width="50px">
+      <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.StartDatetime))')">積日</a>
+    </th>
+    <th rowspan="2" width="50px">
+      <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.EndDatetime))')">卸日</a>
+    </th>
+    <th rowspan="2" hidden>顧客Id</th>
+    <th rowspan="2" width="250px">
+      <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.KokyakuName))')">顧客</a>
+    </th>
+    <th rowspan="2" width="250px">
+      <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.StartAddressDisplay3))')">積地</a>
+    </th>
+    <th rowspan="2" style="max-width: 250px">
+      <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.EndAddressDisplay3))')">卸地</a>
+    </th>
+    <th rowspan="2" style="max-width: 150px">
+      <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.Daisuu))')">車種</a>
+    </th>
+    <th rowspan="2" width="150px">
+      <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.Haisya_Kubun))')">区分</a>
+    </th>
+    <th>
+      <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.ZanteiAmount))')">暫定金額</a>
+    </th>
+    <th>
+      <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.Yosya_Display1))')">傭車１</a>
+    </th>
+  </tr>
+  <tr>
+    <th>
+      <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.Driver_Name))')">担当乗務員</a>
+    </th>
+    <th>
+      <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.KakuteiAmount))')">確定金額</a>
+    </th>
+    <th>
+      <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.Yosya_Display2))')">傭車２</a>
+    </th>
+  </tr>
+</thead>
+<tbody>
+  @foreach (var item in l)
+  {
+    i++;
+    var color = i % 2 == 1 ? "row-even" : "row-odd";
+    <tr>
+      <td class="@(color)" rowspan="2">
+        <label class="toggle-button-recipt">
+          @Html.CheckBoxFor(modelItem => item.SetReciptFlg, new { @class = "receipt-checkbox", data_id = item.Anken_ID, data_display_id = item.TNippou?.AnkenDisplay_ID })
+        </label>
+      </td>
+      <td class="@(color)" rowspan="2" align="center">
+        <button class="btn-select btn btn-info btn-sm openmyModal" style="display: inline-block; height: 50%; background-color: transparent; color: #0dcaf0;" type="button"
+            data-comment="@item?.TNippou?.Commnet" data-receipt_date="@item?.TNippou?.Receipt_Date" data-id="@item.Anken_ID" data-display_id="@item.TNippou?.AnkenDisplay_ID">
+          選択
+        </button>
+        @if (item?.TNippou?.Commnet != null)
+        {
+          <p style="">あり</p>
+        }
+        else
+        {
+          <p style="">なし</p>
+        }
+      </td>
+      <td class="@(color)" rowspan="2" hidden>
+        @Html.DisplayFor(modelItem => item.TantouID)
+      </td>
+      <td class="@(color)" rowspan="2">
+        @Html.DisplayFor(modelItem => item.Tantou_Name)
+      </td>
+      <td class="@(color)" align="center">
+        @Html.DisplayFor(modelItem => item.SYABAN)
+      </td>
+      <td class="@(color)" rowspan="2" align="center">
+        @(item.StartDatetime.ToString("MM/dd") ?? "") <br /> @(item.StartDatetime.ToString("HH:mm") ?? "")
+      </td>
+      <td class="@(color)" rowspan="2" align="center">
+        @(item.EndDatetime.ToString("MM/dd") ?? "") <br /> @(item.EndDatetime.ToString("HH:mm") ?? "")
+      </td>
+      <td class="@(color)" rowspan="2" hidden>
+        @Html.DisplayFor(modelItem => item.KokyakuId)
+      </td>
+      <td class="@(color)" rowspan="2">
+        @Html.DisplayFor(modelItem => item.KokyakuName)
+      </td>
+      <td class="@(color)" rowspan="2">
+        @Html.DisplayFor(modelItem => item.StartAddressDisplay3)<br />
+      </td>
+      <td class="@(color)" rowspan="2">
+        @Html.DisplayFor(modelItem => item.EndAddressDisplay3)<br />
+      </td>
+      <td class="@(color)" rowspan="2" align="center">
+        @Html.DisplayFor(modelItem => item.SyasyuDisplay2)<br />
+        @Convert.ToInt32(item.Daisuu).ToString("0台")
+      </td>
+      <td class="@(color)" rowspan="2" align="center">
+        @Html.Display(item.Haisya_kubun_label())
+      </td>
+      <td class="@(color)" align="right">
+        @Convert.ToInt32(item.ZanteiAmount).ToString("#,0")
+      </td>
+      <td class="@(color)" align="center">
+        @Html.DisplayFor(modelItem => item.Yosya_Display1)
+      </td>
+    </tr>
+    <tr>
+      <td class="@(color)" align="center">
+        @Html.DisplayFor(modelItem => item.Driver_Name)
+      </td>
+      <td class="@(color)" align="right">
+        @Convert.ToInt32(item.KakuteiAmount).ToString("#,0")
+      </td>
+      <td class="@(color)" align="center">
+        @Html.DisplayFor(modelItem => item.Yosya_Display2)
+      </td>
+    </tr>
+  }
+</tbody>
+</table>
+
+<script>
+  var ankenDisplay_ID = 0;
+  var anken_ID = 0;
+  var receipt = 0;
+  var receipt_date = null;
+  var comment = null;
+
+  $(document).ready(function () {});
+
+  // Select the checkbox inside the label with class 'toggle-button-recipt'
+  $('.receipt-checkbox[type="checkbox"]').change(function () {
+    var t = $(this);
+    console.log(t);
+    if ($(this).data('id') !== undefined) {
+      var id = $(this).data('id');
+      var display_id = $(this).data('display-id');
+
+      ankenDisplay_ID = !display_id ? 0 : display_id;
+      anken_ID = id;
+      if (this.checked) {
+        receipt = 1;
+      } else {
+        receipt = 0;
+      }
+      console.log(ankenDisplay_ID, anken_ID, receipt);
+      InsertReceipt(ankenDisplay_ID, anken_ID, receipt);
+    }
+  });
+
+  // Handle button click to show the modal
+  $('.openmyModal').click(function () {
+    if ($(this).data('id') !== undefined) {
+      anken_ID = $(this).data('id');
+      ankenDisplay_ID = $(this).data('display-id');
+      comment = $(this).data('comment');
+      receipt = $(this).data('receipt');
+      receipt_date = $(this).data('receipt_date');
+      // Set the comment inside the textarea
+      $('#comment').val(comment);
+    }
+    showModal();
+  });
+
+  // Show the modal
+  function showModal() {
+    if ($('#comment').val() != '') {
+      $('#saveComment').text('更新');
+    } else {
+      $('#saveComment').text('登録');
+    }
+    $('#myModal').css('display', 'flex');
+  }
+
+  // Hide the modal
+  function hideModal() {
+    $('#myModal').css('display', 'none');
+  }
+
+  // Event handler for the close button and span
+  $('.close, #closeButton').on('click', function () {
+    var confirmResult = true;
+    if ($('#comment').val() !== comment) {
+      confirmResult = confirm('変更内容を破棄してもよろしいですか？');
+    }
+    if (!confirmResult) {
+      retrn;
+    } else {
+      comment = $('#comment').val();
+      hideModal();
+    }
+  });
+
+  // Event handler for the save button
+  $('#saveComment').on('click', function () {
+    comment = $('#comment').val();
+
+    if (anken_ID != 0) {
+      InsertComment(ankenDisplay_ID, anken_ID, comment);
+    }
+    hideModal(); // Close the modal after saving
+  });
+
+  function InsertComment(ankenDisplayId, ankenId, comment) {
+    var postData = {
+      AnkenDisplay_ID: ankenDisplayId,
+      Anken_ID: ankenId,
+      Commnet: comment,
+    };
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "Receipt", action = "InsertCommentAsync2" })',
+      type: 'POST',
+      contentType: 'application/json', // Set content type to JSON
+      data: JSON.stringify(postData), // Stringify the data
+      success: function (response) {
+        if (response.errorMessage != null) {
+          alertError(`【エラー】${response.errorMessage}`);
+        } else {
+          alertSuccess('登録処理が完了しました。');
+          dataListDisplay();
+        }
+      },
+      error: function (xhr) {
+        alertError('【ネットワークエラー】:' + xhr);
+        console.log(xhr);
+      },
+      complete: async function (xhr, msg) {
+        console.log(xhr, msg);
+      },
+    });
+  }
+
+  function InsertReceipt(ankenDisplayId, ankenId, receipt) {
+    console.log(1);
+    var postData = {
+      AnkenDisplay_ID: ankenDisplayId,
+      Anken_ID: ankenId,
+      Receipt: receipt,
+    };
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "Receipt", action = "InsertReceiptAsync2" })',
+      type: 'POST',
+      contentType: 'application/json', // Set content type to JSON
+      data: JSON.stringify(postData), // Stringify the data
+      success: function (response) {
+        if (response.errorMessage != null) {
+          alertError(`【エラー】${response.errorMessage}`);
+        }
+      },
+      error: function (xhr) {
+        alertError('【ネットワークエラー】:' + xhr);
+        console.log(xhr);
+      },
+      complete: async function (xhr, msg) {
+        console.log(xhr, msg);
+      },
+    });
+  }
+  function set_sort(name) {
+    var n = $("#SortParam_SortItemParam").val();
+    if (name != n) {
+      $("#SortParam_SortOrder").val("asc");
+      $("#SortParam_SortItemParam").val(name);
+    }
+    var o = $("#SortParam_SortOrder").val();
+    $("#SortParam_SortOrder").val(o.indexOf("desc") != -1 ? "asc" : "desc");
+    dataListDisplay();
+  }
+</script>
+}

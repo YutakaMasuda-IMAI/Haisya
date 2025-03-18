@@ -1,0 +1,123 @@
+@model DailyReportModel.T_Nippou_Toll_Other
+
+<head>
+  <link href="~/css/Haisya.css" rel="stylesheet" />
+  <style>
+      .modal-dialog {
+    max-width: 600px; /* モーダルウィンドウの最大幅を設定 */
+  }
+
+  .modal-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* 中央揃え */
+  }
+
+    .form-table {
+    margin-top: 10px;
+    width: 580px;
+    border-collapse: collapse;
+    }
+
+    .form-table tr {
+      height: 40px;
+    }
+
+    .form-table th {
+      text-align: left;
+      font-size: 14px;
+      width: 80px;
+    }
+
+    .form-table td {
+      text-align: left;
+      font-size: 14px;
+    }
+
+    .form-table td input {
+      margin: 5px;
+      width: 90%;
+    }
+
+    .form-table td button {
+    }
+  </style>
+</head>
+<div role="dialog" aria-hidden="true" tabindex="-1" class="modal fade">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-3" id="exampleModalLabel">その他有料代追加</h1>
+      </div>
+      <div class="modal-body">
+        <form id="highwayForm" style="width: 100%;">
+          <input type="hidden" id="recordIndex" value="@Model.Index">
+          @Html.HiddenFor(model => model.Futan_Kubun, new { @id = "futanKubun" })
+
+        <table class="form-table">
+          <tr>
+          <th>項目</th>
+          <td>@Html.DropDownListFor(model => model.Toll_Kubun, new SelectList(Model.GroupUserSelectList,"Value", "Text"), "", new { @class = "form-control list ", @id = "tollKubun", @style = "width:100px;text-align:left;margin-left:5px;" })</td>
+          </tr>
+          <tr>
+          <th>発</th>
+          <td>@Html.TextBoxFor(model => model.Start_Name, new { @class = "form-control", @id = "departure" })</td>
+          </tr>
+          <tr>
+          <th>着</th>
+          <td>@Html.TextBoxFor(model => model.End_Name, new { @class = "form-control", @id = "arrival" })</td>
+          </tr>
+          <tr>
+          <th>料金</th>
+          <td>@Html.TextBoxFor(model => model.Toll_Fee, new { @class = "form-control", @id = "fee", @name="fee", @style= "width:80px;text-align:right;" })</td>
+          </tr>
+          <tr>
+          <td colspan="2" style="text-align:right;">
+            <button class="btn btn-outline-danger" style="width:100px;margin-right:50px;" type="button" id="deleteButton" onclick="deleteOtherPaidList()">削除</button>
+            <button class="btn btn-outline-success" style="width:200px;" type="button" id="saveButton" onclick="saveOtherPaidList()">登録</button>
+            <button class="btn btn-outline-success" style="width:200px;" type="button" id="updateButton" onclick="saveOtherPaidList()">更新</button>
+            <button class="btn btn-outline-warning" style="width: 100px; margin-left:100px;margin-right:15px;" type="button" onclick="closeHighwayList()">閉じる</button>
+          </td>
+          </tr>
+        </table>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+  $(document).ready(function() {
+    var recordIndex = $("#recordIndex").val();
+    if (recordIndex === "-1") {
+      $("#updateButton").hide();
+      $("#deleteButton").hide();
+    } else {
+      $("#updateButton").show();
+      $("#deleteButton").show();
+      $("#saveButton").hide();
+    }
+  });
+
+  $(function() {
+    $("#startDatetime, #endDatetime").datepicker({ dateFormat: "yy-mm-dd" });
+  });
+
+  // 料金入力にカンマを追加する処理
+  $("#fee").on("input", function() {
+    var value = $(this).val().replace(/,/g, ''); // カンマを一度除去してから
+    if (!isNaN(value) && value !== "") {
+      var formattedValue = Number(value).toLocaleString(); // カンマ区切りを追加
+      $(this).val(formattedValue);
+    } else {
+      $(this).val(""); // 数値以外の場合は空にする
+    }
+  });
+
+  function closeHighwayList() {
+    $('#ModalHere').find('.modal').modal('hide');
+    $("#ModalHere").html('');
+  }
+</script>
+

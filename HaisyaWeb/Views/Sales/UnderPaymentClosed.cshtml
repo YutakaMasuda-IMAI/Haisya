@@ -1,0 +1,666 @@
+@model HaisyaWeb.Dto.SalesModel
+
+<style>
+  #underPaymentContainer input:not([readonly]):not(:disabled),
+  #underPaymentContainer select:not(:disabled),
+  #underPaymentContainer textarea:not(:disabled) {
+    background-color: #fff;
+  }
+
+  #underPaymentContainer input[readonly],
+  #underPaymentContainer input:disabled,
+  #underPaymentContainer select:disabled,
+  #underPaymentContainer textarea[readonly] {
+    background-color: #fff;
+  }
+</style>
+
+@{
+  var UnderPaymentIndex = 0;
+}
+@foreach (var uriageShitabarai in Model.UriageShitabarai)
+{
+  <div class="under-payment-item" data-index="@UnderPaymentIndex">
+    <div id="underPaymentContainer" style="margin-top: 10px; border: 1px solid #cccccc; padding: 10px;">
+      <div style="display:none;">
+        @Html.HiddenFor(m => uriageShitabarai.Uriage_Shiharai_ID)
+        @Html.HiddenFor(m => uriageShitabarai.Default_Kubun)
+      </div>
+
+      @{
+        var selectedDay = uriageShitabarai.Shime_Day;
+        var matchedCustomer = Model.AddCustomerDto.FirstOrDefault(c => c.CustomerId == uriageShitabarai.Yosya_Branch_ID);
+        var kokyakuId = 0;
+        var kokyakuCode = matchedCustomer?.Code ?? "";
+        var kokyakuName = matchedCustomer?.Name ?? "";
+        var Sort = uriageShitabarai.Sort + 1;
+        var Uriage_Shitabarai_Kubun = uriageShitabarai.Uriage_Kubun;
+      }
+
+      @*赤伝黒伝の表示のみ*@
+      @if (uriageShitabarai.IsCreditSlip)
+      {
+        <input type="hidden" id="Uriage_Shiharai_Kubun_aka" name="Uriage_Shiharai_Kubun_aka" value=@Uriage_Shitabarai_Kubun>
+        <input type="hidden" id="Insert_User_aka" name="Insert_User_aka" value=@uriageShitabarai.Insert_User>
+        <input type="hidden" id="Update_User_aka" name="Update_User_aka" value=@uriageShitabarai.Update_User>
+        <table class="no-line">
+          <tr>
+            <th>支払日</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.Shiharai_Date, "{0:yyyy-MM-dd}", new
+                {
+                  @class = "form-control",
+                  @id = "endDateTime_aka",
+                  type = "date",
+                  @style = "width:140px;background-color: white;",
+                  @onchange = "contentChanged=true; updateShimedayOption($(this));",
+                  @readonly = true,
+                })
+            </td>
+            <th style="white-space: nowrap;">締日</th>
+            <td>
+              <select id="closingDay_aka" class="form-control dropdown" style="width: 60px; background-color: white;" disabled>
+                @for (int i = 1; i <= 31; i++)
+                {
+                  if (i == selectedDay)
+                  {
+                    <option value="@i" selected>@i</option>
+                  }
+                  else
+                  {
+                    <option value="@i">@i</option>
+                  }
+                }
+              </select>
+            </td>
+            <th style="white-space: nowrap;">車番</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.Syaban, new { @class = "form-control", id = "Syaban_aka", @style = "width: 100px; background-color: white;", @readonly = true })
+            </td>
+            <td style="text-align:right;">
+            </td>
+          </tr>
+        </table>
+
+        <table class="no-line">
+          <tr>
+            <th>下払先会社</th>
+            @{
+              if (Model.HaisyaData.Haisya_Kubun == 2 || Model.HaisyaData.Haisya_Kubun == 3)
+              {
+                kokyakuId = Model.Yosya.Yosya_Branch_ID;
+                kokyakuName = Model.Yosya.Customer_Branch_Name_Abbr;
+                kokyakuCode = Model.Yosya.Customer_Branch_Code;
+              }
+              else
+              {
+                kokyakuCode = matchedCustomer?.Code ?? "";
+                kokyakuId = matchedCustomer.CustomerId;
+                kokyakuName = matchedCustomer.Name;
+              }
+
+            }
+            <td style="width:120px;">
+              <input type="text" class="form-control" id="KokyakuCode3_aka" style="background-color: white" value="@kokyakuCode" readonly />
+            </td>
+            <td style="width:auto;">
+              <input type="text" class="form-control" id="KokyakuName3_aka" style="background-color: white" value="@kokyakuName" readonly />
+            </td>
+            <td style="width:100px;">
+              <input type="hidden" class="form-control" id="KokyakuId3_aka" style="background-color: white" value="@kokyakuId" readonly />
+            </td>
+          </tr>
+        </table>
+
+        <table class="no-line">
+          <tr>
+            <th>積</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.Tsumi, new { @class = "form-control", @id = "Tsumi_aka", @style = "background-color: white;", @readonly = true })
+            </td>
+            <th>卸</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.Oroshi, new { @class = "form-control", @id = "Oroshi_aka", @style = "background-color: white;", @readonly = true })
+            </td>
+            <th style="white-space: nowrap;">品名</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.Luggage, new { @class = "form-control", @id = "ItemName_aka", @style = "background-color: white;", @readonly = true })
+            </td>
+          </tr>
+        </table>
+
+        <table class="no-line">
+          <tr>
+            <th style="white-space: nowrap;">数量</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.Qty, new
+                {
+                  @class = "form-control",
+                  @id = "quantity_aka",
+                  type = "text",
+                  @style = "width:100px; text-align: right;",
+                  @oninput = "filterDigitsOnly(this);",
+                  @onblur = "kanmaChange(this);",
+                  @readonly = true
+                })
+            </td>
+            <th style="white-space: nowrap;">単位</th>
+            <td>
+              @Html.DropDownListFor(
+                    m => uriageShitabarai.Unit,
+                    new SelectList(Model.UnitDto, "Value", "Text"),
+                    new { @class = "form-control dropdown", @id = "SelectedUnit_aka", @style = "width:140px; ", @disabled = true }
+                    )
+            </td>
+            <th style="white-space: nowrap;">単価</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.UnitPrice, "{0:N0}", new
+                {
+                  @class = "form-control",
+                  @id = "unitPrice_aka",
+                  type = "text",
+                  @style = "width:140px; text-align: right;",
+                  @oninput = "filterDigitsOnly(this);",
+                  @onblur = "kanmaChange(this);",
+                  @readonly = true
+                })
+            </td>
+            <th style="white-space: nowrap;">下払運賃</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.CalcPrice, "{0:N0}", new
+                {
+                  @class = "form-control",
+                  @id = "totalPrice_aka",
+                  type = "text",
+                  @readonly = true,
+                  @style = "width:100px; text-align: right;"
+                })
+            </td>
+          </tr>
+        </table>
+
+        <table class="no-line">
+          <tr>
+            <th style="white-space: nowrap;">下払金額</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.ShiharaiPrice, "{0:N0}", new
+                {
+                  @class = "form-control under-payment-input",
+                  @id = "underPayment_aka",
+                  type = "text",
+                  name = "underPayment",
+                  @style = "width:100px; text-align: right;",
+                  @oninput = "filterDigitsOnly(this);",
+                  @onblur = "kanmaChange(this);",
+                  @readonly = true
+                })
+            </td>
+            <th style="white-space: nowrap;">割増</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.WarimashiPrice, "{0:N0}", new
+                {
+                  @class = "form-control under-payment-input",
+                  @id = "surcharge_aka",
+                  type = "text",
+                  name = "surcharge",
+                  @style = "width:100px; text-align: right;",
+                  @oninput = "filterDigitsOnly(this);",
+                  @onblur = "kanmaChange(this);",
+                  @readonly = true
+                })
+            </td>
+            <th style="white-space: nowrap;">立替金（税込）</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.Tatekaekin, "{0:N0}", new
+                {
+                  @class = "form-control under-payment-input",
+                  @id = "advance_aka",
+                  type = "text",
+                  name = "advance",
+                  @style = "width:100px; text-align: right;",
+                  @oninput = "filterDigitsOnly(this);",
+                  @onblur = "kanmaChange(this);",
+                  @readonly = true
+                })
+            </td>
+            <th style="white-space: nowrap;">課税区分</th>
+            <td>
+              @Html.DropDownListFor(
+                  m => uriageShitabarai.Zei_Kubun,
+                  new SelectList(Model.KazeiKubunDto, "Value", "Text", 0),
+                  new { @class = "form-control list text-center dropdown", @id = "KazeiKubun_aka", @style = "width:140px;", @disabled = true }
+                )
+            </td>
+          </tr>
+        </table>
+
+        <table class="no-line">
+          <tr>
+            <th>下払備考</th>
+            <td>※割増を入力した場合は、記載必須となります</td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <textarea class="form-control inputtable" id="Remarks_aka" name="Remarks_aka" style="resize: none; overflow-y: auto; height: 100px; width: 100%; background-color: white;" readonly>@Html.Raw(uriageShitabarai.Remarks)</textarea>
+            </td>
+          </tr>
+        </table>
+
+      }
+
+      @*赤伝黒伝用の入力*@
+      @if (uriageShitabarai.IsCreditSlip)
+      {
+        <input type="hidden" id="IsCreditSlip" name="IsCreditSlip" value="1">
+        <input type="hidden" id="Uriage_Shiharai_Kubun" name="Uriage_Shiharai_Kubun" value="1">
+
+        <table class="no-line">
+          <tr>
+            <th>下払日</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.Shiharai_Date, "{0:yyyy-MM-dd}", new
+                  {
+                    @class = "form-control inputtable",
+                    @id = "endDateTime",
+                    type = "date",
+                    @style = "width:140px;background-color: white;",
+                    @onchange = "contentChanged=true; updateShimedayOption($(this));"
+                  })
+            </td>
+            <td style="text-align:right;"><button class="btn btn-outline-danger delete-row-under">削除</button></td>
+          </tr>
+        </table>
+
+        <table class="no-line">
+          <tr>
+            <th>下払先会社</th>
+            @{
+              if (Model.HaisyaData.Haisya_Kubun == 2 || Model.HaisyaData.Haisya_Kubun == 3)
+              {
+                kokyakuId = Model.Yosya.Yosya_Branch_ID;
+                kokyakuName = Model.Yosya.Customer_Branch_Name_Abbr;
+                kokyakuCode = Model.Yosya.Customer_Branch_Code;
+              }
+              else
+              {
+                kokyakuCode = matchedCustomer?.Code ?? "";
+                kokyakuId = matchedCustomer.CustomerId;
+                kokyakuName = matchedCustomer.Name;
+              }
+            }
+            <td style="width:120px;">
+              <input type="text" class="form-control" id="KokyakuCode3" style="background-color: white" value="@kokyakuCode" readonly />
+            </td>
+            <td style="width:auto;">
+              <input type="text" class="form-control" id="KokyakuName3" style="background-color: white" value="@kokyakuName" readonly />
+            </td>
+            <td style="width:100px;">
+              @if (!Model.IsUnderlingReadOnly)
+              {
+                <button class="btn btn-outline-primary btnKokyaku" id="btnKokyaku3" data-index="@UnderPaymentIndex">変更</button>
+              }
+              <input type="hidden" class="form-control" id="KokyakuId3" style="background-color: white" value="@kokyakuId" readonly />
+            </td>
+          </tr>
+          <tr>
+            <th>下払先担当</th>
+            @{
+              var CustomerTantouCD = "";
+              var CustomerTantouID = "";
+              var CustomerTantouName = "";
+            }
+            <td style="width:120px;">
+              <input type="text" class="form-control" id="CustomerTantouCD" style="background-color: white" value="@CustomerTantouCD" readonly />
+            </td>
+            <td style="width:auto;">
+              <input type="text" class="form-control" id="CustomerTantouName" style="background-color: white" value="@CustomerTantouName" readonly />
+            </td>
+            <td style="width:100px;">
+              @if (!Model.IsUnderlingReadOnly)
+              {
+                <button class="btn btn-outline-primary btnKokyaku" id="btnKokyaku3" onclick="ShitabaraiTantouDialog(this)" data-index="@UnderPaymentIndex">変更</button>
+              }
+              <input type="hidden" class="form-control" id="CustomerTantouID" style="background-color: white" value="@CustomerTantouID" readonly />
+            </td>
+          </tr>
+        </table>
+
+        <table class="no-line">
+          <tr>
+            <th style="white-space: nowrap;">下払金額</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.ShiharaiPrice, "{0:N0}", new
+                {
+                  @class = "form-control under-payment-input",
+                  @id = "underPayment",
+                  type = "text",
+                  name = "underPayment",
+                  @style = "width:100px; text-align: right;",
+                  @oninput = "filterDigitsOnly(this);",
+                  @onblur = "kanmaChange(this);"
+
+                })
+            </td>
+            <th style="white-space: nowrap;">割増</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.WarimashiPrice, "{0:N0}", new
+                {
+                  @class = "form-control under-payment-input",
+                  @id = "surcharge",
+                  type = "text",
+                  name = "surcharge",
+                  @style = "width:100px; text-align: right;",
+                  @oninput = "filterDigitsOnly(this);",
+                  @onblur = "kanmaChange(this);"
+                })
+            </td>
+            <th style="white-space: nowrap;">立替金（税込）</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.Tatekaekin, "{0:N0}", new
+                {
+                  @class = "form-control under-payment-input",
+                  @id = "advance",
+                  type = "text",
+                  name = "advance",
+                  @style = "width:100px; text-align: right;",
+                  @oninput = "filterDigitsOnly(this);",
+                  @onblur = "kanmaChange(this);"
+                })
+            </td>
+            <td></td>
+          </tr>
+        </table>
+
+        <table class="no-line">
+          <tr>
+            <th>赤伝黒伝発生理由</th>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <textarea class="form-control inputtable" id="Remarks" name="Remarks" style="resize: none; overflow-y: auto; height: 100px; width: 100%; background-color: white;">@Html.Raw(uriageShitabarai.Remarks)</textarea>
+            </td>
+          </tr>
+        </table>
+      }
+      else
+      {
+
+        <table class="no-line">
+          <tr>
+            <th>支払日</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.Shiharai_Date, "{0:yyyy-MM-dd}", new
+                {
+                  @class = "form-control",
+                  @id = "endDateTime",
+                  type = "date",
+                  @style = "width:140px;background-color: white;",
+                  @onchange = "contentChanged=true; updateShimedayOption($(this));"
+                })
+            </td>
+            <th style="white-space: nowrap;">締日</th>
+            <td>
+              <select id="closingDay" class="form-control dropdown" style="width: 60px; background-color: white;">
+                @for (int i = 1; i <= 31; i++)
+                {
+                  if (i == selectedDay)
+                  {
+                    <option value="@i" selected>@i</option>
+                  }
+                  else
+                  {
+                    <option value="@i">@i</option>
+                  }
+                }
+              </select>
+            </td>
+            <th style="white-space: nowrap;">車番</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.Syaban, new { @class = "form-control", id = "Syaban", @style = "width: 100px; background-color: white;" })
+            </td>
+            <td style="text-align:right;">
+              @if (uriageShitabarai.Default_Kubun == 0 || Model.IsUnderlingReadOnly)
+              {
+              }
+              else
+              {
+                <button class="btn btn-outline-danger delete-row-under">削除</button>
+              }
+            </td>
+          </tr>
+        </table>
+
+        <table class="no-line">
+          <tr>
+            <th>下払先会社</th>
+            @{
+              if (Model.HaisyaData.Haisya_Kubun == 2 || Model.HaisyaData.Haisya_Kubun == 3)
+              {
+                kokyakuId = Model.Yosya.Yosya_Branch_ID;
+                kokyakuName = Model.Yosya.Customer_Branch_Name_Abbr;
+                kokyakuCode = Model.Yosya.Customer_Branch_Code;
+              }
+              else
+              {
+                kokyakuCode = matchedCustomer?.Code ?? "";
+                kokyakuId = matchedCustomer?.CustomerId ?? 0;
+                kokyakuName = matchedCustomer?.Name;
+              }
+
+            }
+            <td style="width:120px;">
+              <input type="text" class="form-control" id="KokyakuCode3" style="background-color: white" value="@kokyakuCode" readonly />
+            </td>
+            <td style="width:auto;">
+              <input type="text" class="form-control" id="KokyakuName3" style="background-color: white" value="@kokyakuName" readonly />
+            </td>
+            <td style="width:100px;">
+              @if (!Model.IsUnderlingReadOnly)
+              {
+                <button class="btn btn-outline-primary btnKokyaku" id="btnKokyaku3" data-index="@UnderPaymentIndex">変更</button>
+              }
+              <input type="hidden" class="form-control" id="KokyakuId3" style="background-color: white" value="@kokyakuId" readonly />
+            </td>
+          </tr>
+        </table>
+
+        <table class="no-line">
+          <tr>
+            <th>積</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.Tsumi, new { @class = "form-control", @id = "Tsumi", @style = "background-color: white;" })
+            </td>
+            <th>卸</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.Oroshi, new { @class = "form-control", @id = "Oroshi", @style = "background-color: white;" })
+            </td>
+            <th style="white-space: nowrap;">品名</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.Luggage, new { @class = "form-control", @id = "ItemName", @style = "background-color: white;" })
+            </td>
+          </tr>
+        </table>
+
+        <table class="no-line">
+          <tr>
+            <th style="white-space: nowrap;">数量</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.Qty, new
+                {
+                  @class = "form-control",
+                  @id = "quantity",
+                  type = "text",
+                  @style = "width:100px; text-align: right;",
+                  @oninput = "filterDigitsOnly(this);",
+                  @onblur = "kanmaChange(this);"
+                })
+            </td>
+            <th style="white-space: nowrap;">単位</th>
+            <td>
+              @Html.DropDownListFor(
+                    m => uriageShitabarai.Unit,
+                    new SelectList(Model.UnitDto, "Value", "Text"),
+                    new { @class = "form-control dropdown", @id = "SelectedUnit", @style = "width:140px; " }
+                    )
+            </td>
+            <th style="white-space: nowrap;">単価</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.UnitPrice, "{0:N0}", new
+                {
+                  @class = "form-control",
+                  @id = "unitPrice",
+                  type = "text",
+                  @style = "width:140px; text-align: right;",
+                  @oninput = "filterDigitsOnly(this);",
+                  @onblur = "kanmaChange(this);"
+                })
+            </td>
+            <th style="white-space: nowrap;">下払運賃</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.CalcPrice, "{0:N0}", new
+                {
+                  @class = "form-control",
+                  @id = "totalPrice",
+                  type = "text",
+                  @readonly = true,
+                  @style = "width:100px; text-align: right;"
+                })
+            </td>
+          </tr>
+        </table>
+
+        <table class="no-line">
+          <tr>
+            <th style="white-space: nowrap;">下払金額</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.ShiharaiPrice, "{0:N0}", new
+                {
+                  @class = "form-control under-payment-input",
+                  @id = "underPayment",
+                  type = "text",
+                  name = "underPayment",
+                  @style = "width:100px; text-align: right;",
+                  @oninput = "filterDigitsOnly(this);",
+                  @onblur = "kanmaChange(this);"
+
+                })
+            </td>
+            <th style="white-space: nowrap;">割増</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.WarimashiPrice, "{0:N0}", new
+                {
+                  @class = "form-control under-payment-input",
+                  @id = "surcharge",
+                  type = "text",
+                  name = "surcharge",
+                  @style = "width:100px; text-align: right;",
+                  @oninput = "filterDigitsOnly(this);",
+                  @onblur = "kanmaChange(this);"
+                })
+            </td>
+            <th style="white-space: nowrap;">立替金（税込）</th>
+            <td>
+              @Html.TextBoxFor(m => uriageShitabarai.Tatekaekin, "{0:N0}", new
+                {
+                  @class = "form-control under-payment-input",
+                  @id = "advance",
+                  type = "text",
+                  name = "advance",
+                  @style = "width:100px; text-align: right;",
+                  @oninput = "filterDigitsOnly(this);",
+                  @onblur = "kanmaChange(this);"
+                })
+            </td>
+            <th style="white-space: nowrap;">課税区分</th>
+            <td>
+              @Html.DropDownListFor(
+                  m => uriageShitabarai.Zei_Kubun,
+                  new SelectList(Model.KazeiKubunDto, "Value", "Text", 0),
+                  new { @class = "form-control list text-center dropdown", @id = "KazeiKubun", @style = "width:140px;" }
+                )
+            </td>
+          </tr>
+        </table>
+
+        <table class="no-line">
+          <tr>
+            <th>下払備考</th>
+            @if (uriageShitabarai.Uriage_Kubun == 1)
+            {
+              <td>赤伝黒伝発生理由</td>
+            }
+            else
+            {
+              <td>※割増を入力した場合は、記載必須となります</td>
+            }
+          </tr>
+          <tr>
+            <td colspan="2">
+              <textarea class="form-control inputtable" id="Remarks" name="Remarks" style="resize: none; overflow-y: auto; height: 100px; width: 100%; background-color: white;">@Html.Raw(uriageShitabarai.Remarks)</textarea>
+            </td>
+          </tr>
+        </table>
+
+      }
+    </div>
+  </div>
+  UnderPaymentIndex++;
+}
+
+<script>
+   var IsUnderlingReadOnly = @Html.Raw(Json.Serialize(Model.IsUnderlingReadOnly));
+  $(document).ready(function () {
+    // 活性・非活性を制御
+    if (IsUnderlingReadOnly) {
+      $(".under-payment-item").find("#ItemName, #Oroshi, #Tsumi, #KazeiKubun, #SelectedUnit, #endDateTime, #closingDay").prop("disabled", true);
+      $(".under-payment-item").find("input[type='text'], input[type='number'], textarea").prop("readonly", true);
+      $(".under-payment-item").find("select").prop("disabled", true);
+    }
+
+    // 締日のドロップダウンメニューをendDateTimeの月の日にちに合わせて動的に更新するメソッド
+    function updateClosingDayOptions() {
+      $(".under-payment-item").find('#endDateTime').each(function (index) {
+        updateShimedayOption($(this));
+      });
+    }
+
+    // 初期化時に実行
+    updateClosingDayOptions();
+
+    $(document).on('input', '.under-payment-row input', function () {
+      updateTotals();
+    });
+
+    $(document).on('input', '.under-payment-row .calc-input', function () {
+      updateUnderPaymentPrice($(this).closest('.under-payment-row'));
+    });
+
+    updateTotals();
+    updateAllUnderPaymentPrices();
+  });
+
+  // 数量または単価が変更されたときに実行(下払運賃)
+  $('.under-payment-item #quantity, .under-payment-item #unitPrice').on('input', function () {
+    var $container = $(this).closest('.under-payment-item');
+    var index = $container.data('index');
+    updateTotalPricePayment(index);
+  });
+
+  $('.under-payment-item #underPayment, .under-payment-item #surcharge, .under-payment-item #advance').on('input', function () {
+    updateTotals();
+  });
+  // 数量かける単価をして下払運賃を計算するメソッド(下払運賃)
+  function updateUnderPaymentPrice(row) {
+    const quantity = parseFloat($(row).find('[name="quantity"]').val()) || 0;
+    const unitPrice = parseFloat($(row).find('[name="unitPrice"]').val()) || 0;
+    const totalPrice = quantity * unitPrice;
+    $(row).find('.total-price').text(totalPrice.toFixed(0));
+  }
+
+  // 下払分updateUnderPaymentPriceを発火させるためのメソッド
+  function updateAllUnderPaymentPrices() {
+    $('.under-payment-row').each(function () {
+      updateUnderPaymentPrice(this);
+    });
+  }
+</script>

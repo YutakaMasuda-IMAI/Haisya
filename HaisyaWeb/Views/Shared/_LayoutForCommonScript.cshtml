@@ -1,0 +1,411 @@
+﻿
+
+<script>
+
+
+   /**
+   * 共通得意先選択ダイアログを開く
+   * @@param userID
+   * @@param SelectedId
+   */
+  function openCommonDialogForCustomerOya(companyID, userID = 0, SelectedId = 0, yosyaFlg = 0) {
+    event.preventDefault();
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "OpenDialogForSelectCustomerOya" })',
+      {
+        companyId: companyID,
+        selectedId: SelectedId,
+        yosyaFlg: yosyaFlg
+      })
+      .done(function (response) {
+
+        if (response.message != null) {
+            alertError(response.errorMessage, "【処理エラー】");
+            return false;
+        } else {
+            //alert(response.partialView);
+          $("#ModalCommonDialog").html("");
+          $("#ModalCommonDialog").html(response.partialView);
+          CommonDailogOpen("ModalCommonDialog", "親顧客選択", 1100, 700, "ModalCommonDialogClose()");
+          return;
+        }
+      })
+      .fail(function (xhr) {
+          alertError(xhr, "【ネットワークエラー】");
+          console.log(xhr);
+          return false;
+      })
+      .always(function (xhr, msg) {
+      });
+
+    return false;
+
+  };
+
+
+   /**
+   * 共通得意先選択ダイアログを開く
+   * @@param userID
+   * @@param SelectedId
+   */
+  function openCommonDialogForCustomer(companyID, userID = 0, SelectedId = 0, yosyaFlg = 0) {
+    event.preventDefault();
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "OpenDialogForSelectCustomer" })',
+      {
+        companyId: companyID,
+        selectedId: SelectedId,
+        yosyaFlg: yosyaFlg
+      })
+      .done(function (response) {
+
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+            //alert(response.partialView);
+          $("#ModalCommonDialog").html("");
+          $("#ModalCommonDialog").html(response.partialView);
+          CommonDailogOpen("ModalCommonDialog", "顧客選択", 1100, 700, "ModalCommonDialogClose()");
+          return;
+        }
+      })
+      .fail(function (xhr) {
+          alertError(xhr, "【ネットワークエラー】");
+          console.log(xhr);
+          return false;
+      })
+      .always(function (xhr, msg) {
+      });
+
+    return false;
+
+  };
+
+   /**
+   * 共通得意先担当選択ダイアログを開く
+   * @@param userID
+   * @@param SelectedId
+   */
+  function openCommonDialogForCustomerTantou(companyID, userID, customerID, SelectedId) {
+    event.preventDefault();
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "OpenDialogForSelectCustomerTantou" })',
+        {
+          companyId: companyID,
+          customerId: customerID,
+          selectedId: SelectedId,
+
+        })
+        .done(function (response) {
+            if (response.message != null) {
+                alertError(`【エラー】${response.message}`);
+                return false;
+            } else {
+                //alert(response.partialView);
+              $("#ModalCommonDialog").html("");
+              $("#ModalCommonDialog").html(response.partialView);
+              CommonDailogOpen("ModalCommonDialog", "顧客担当者選択", 1100, 700, "ModalCommonDialogClose()");
+              return;
+            }
+        })
+        .fail(function (xhr) {
+            alertError(xhr, "【ネットワークエラー】");
+            console.log(xhr);
+            return false;
+        })
+        .always(function (xhr, msg) {
+        });
+
+    return false;
+
+};
+
+   /**
+   * 共通車輌選択ダイアログを開く
+   * @@param userID
+   * @@param SelectedId
+   */
+  function openCommonDialogForSayryo(companyID, userID, SelectedId) {
+    event.preventDefault();
+    //alert("openCommonDialogForSayryo");
+
+      $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "OpenDialogForSelectSyaryoManagement" })',
+          {
+              companyId: companyID,
+              selectedId: SelectedId,
+
+          })
+          .done(function (response) {
+
+              if (response.message != null) {
+                  alertError(`【エラー】${response.message}`);
+                  return false;
+              } else {
+                  //alert(response.partialView);
+                $("#ModalCommonDialog").html("");
+                $("#ModalCommonDialog").html(response.partialView);
+                CommonDailogOpen("ModalCommonDialog", "車輌選択", 1000, 720, "ModalCommonDialogClose()");
+                return;
+              }
+          })
+          .fail(function (xhr) {
+              alertError(xhr, "【ネットワークエラー】");
+              console.log(xhr);
+              return false;
+          })
+          .always(function (xhr, msg) {
+          });
+
+      return false;
+
+  };
+
+   /**
+   * 共通業者選択ダイアログを開く
+   * @@param userID
+   * @@param SelectedId
+   */
+  function openCommonDialogForVender(companyID, userID, SelectedId) {
+    event.preventDefault();
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "OpenDialogForSelectVender" })',
+        {
+            companyId: companyID,
+            selectedId: SelectedId,
+
+        })
+        .done(function (response) {
+
+            if (response.message != null) {
+                alertError(response.message, "【処理エラー】");
+                return false;
+            } else {
+                //alert(response.partialView);
+              $("#ModalCommonDialog").html("");
+              $("#ModalCommonDialog").html(response.partialView);
+              CommonDailogOpen("ModalCommonDialog", "業者選択", 1200, 720, "ModalCommonDialogClose()");
+              return;
+            }
+        })
+        .fail(function (xhr) {
+            alertError(xhr, "【ネットワークエラー】");
+            console.log(xhr);
+            return false;
+        })
+        .always(function (xhr, msg) {
+        });
+
+    return false;
+
+  };
+
+   /**
+   * 共通乗務員選択ダイアログを開く
+   * @@param userID
+   * @@param SelectedId
+   */
+  function openCommonDialogForCompanyDriver(companyID, userID, SelectedId) {
+    event.preventDefault();
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "OpenDialogForSelectCompanyDriver" })',
+      {
+        companyId: companyID,
+        selectedId: SelectedId,
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+            //alert(response.partialView);
+          $("#ModalCommonDialog").html("");
+          $("#ModalCommonDialog").html(response.partialView);
+          CommonDailogOpen("ModalCommonDialog", "乗務員選択", 950, 720, "ModalCommonDialogClose()");
+          return;
+        }
+      })
+      .fail(function (xhr) {
+          alertError(xhr, "【ネットワークエラー】");
+          console.log(xhr);
+          return false;
+      })
+      .always(function (xhr, msg) {
+      });
+
+    return false;
+
+};
+
+   /**
+   * 共通傭車選択ダイアログを開く
+   * @@param userID
+   * @@param SelectedId
+   */
+  function openCommonDialogForCustomerDriver(companyID, userID, SelectedId, CustomerBranchID) {
+    event.preventDefault();
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "OpenDialogForSelectCustomerDriver" })',
+      {
+        companyId: companyID,
+        selectedId: SelectedId,
+        customerBranchID: CustomerBranchID,
+      })
+      .done(function (response) {
+          if (response.message != null) {
+              alertError(`【エラー】${response.message}`);
+              return false;
+        } else {
+            //alert(response.partialView);
+          $("#ModalCommonDialog").html("");
+          $("#ModalCommonDialog").html(response.partialView);
+            //$("#ModalCommonDialog").find('.modal').modal('show');
+          CommonDailogOpen("ModalCommonDialog", "傭車選択", 1150, 720, "ModalCommonDialogClose()");
+          return;
+        }
+      })
+      .fail(function (xhr) {
+          alertError(xhr, "【ネットワークエラー】");
+          console.log(xhr);
+          return false;
+      })
+      .always(function (xhr, msg) {
+      }
+    );
+
+    return false;
+
+};
+
+  /**
+   * 共通住所選択ダイアログを開く
+   * @@param userID
+   * @@param SelectedId
+   */
+  function openCommonDialogForAddress(companyID, userID, SelectedId, mapDisplayKubun) {
+    event.preventDefault();
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "OpenDialogForSelectAddress" })',
+      {
+        companyId: companyID,
+        selectedId: SelectedId,
+        mapDisplayKubun: mapDisplayKubun,
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+            //alert(response.partialView);
+          $("#ModalCommonDialog").html("");
+          $("#ModalCommonDialog").html(response.partialView);
+          CommonDailogOpen("ModalCommonDialog", "住所選択", 1300, 720, "ModalCommonDialogClose()");
+          return;
+        }
+      })
+      .fail(function (xhr) {
+          alertError(xhr, "【ネットワークエラー】");
+          console.log(xhr);
+          return false;
+      })
+      .always(function (xhr, msg) {
+      }
+    );
+
+    return false;
+
+  };
+
+  function CommonDailogOpen(id, title, width, height, closeFunction) {
+    event.preventDefault();
+    var thedialogCommon;
+
+    thedialogCommon = $("#" + id).dialog({
+      autoOpen: false,
+      modal: true,
+      width: width,
+      height: height,
+      title: title,
+      position: { my: "center", at: "center", of: window },
+      open: function () { //Xボタン非表示
+
+        //var aa = $(this).closest(".ui-dialog").find('.ui-dialog-titlebar-close');
+
+        $(".ui-dialog-titlebar-close", $(this).closest(".ui-dialog")).attr('id', 'btnCloseCommon');
+        $(".ui-dialog-titlebar-close", $(this).closest(".ui-dialog")).text("閉じる");
+        $(".ui-dialog-titlebar-close", $(this).closest(".ui-dialog")).attr('class', 'btn btn-secondary');
+        $(".ui-dialog-titlebar-close", $(this).closest(".ui-dialog")).addClass('btnCloseCommon');
+        $(".ui-dialog-title", $(this).closest(".ui-dialog")).addClass('fs-4');
+
+        $("#btnCloseCommon", $(this).closest(".ui-dialog")).on('click', function () {
+          //if (typeof closeFunction == 'function') { closeFunction(); }
+          if (closeFunction != null && closeFunction.length > 0) { eval(closeFunction + ';'); }
+        });
+      },
+      close: function () {
+        $(this).dialog("destroy");
+      }
+    });
+
+    thedialogCommon.dialog("open");
+  }
+
+
+
+  /**
+   * 案件照会画面(モーダル)を開く
+   * @@param url
+   * @@param ankenID
+   * @@param ankenDisplayID
+   * @@param driverID
+   * @@param driverSyaryoID
+   * @@param haisyaKubun
+   */
+  function AnkenRefenceModalEx(url, ankenID, ankenDisplayID, driverID, driverSyaryoID, haisyaKubun) {
+    event.preventDefault();
+    ///処理中ダイアログ
+    Swal.fire({
+      title: 'データ読込中'
+      , html: '表示されるまでそのままお待ちください。'
+      , allowOutsideClick: true     //枠外をクリックしても画面を閉じない
+      , showConfirmButton: false
+      , didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    $.post(url,
+      {
+        ankenId: ankenID,
+        ankenDisplayId: ankenDisplayID,
+        driverId: driverID,
+        driverSyaryoId: driverSyaryoID,
+        haisyaKubun: haisyaKubun,
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】" + response.partialView);
+          $("#ModalHere").html(response.partialView);
+          //$("#ModalHere").find('.modal').modal('show');
+
+          DailogOpen("ModalHere", "案件照会", 1020, 700, null, 'ClearHtml("ModalHere")');
+
+
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+        console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+        //console.log(xhr, msg);
+        //alert(msg);
+        //完了ダイアログ
+        Swal.fire({
+          title: '処理終了'
+          , html: '処理を終了しました。'
+          , type: 'info'
+          , timer: 1
+        });
+      });
+
+  };
+
+
+</script>

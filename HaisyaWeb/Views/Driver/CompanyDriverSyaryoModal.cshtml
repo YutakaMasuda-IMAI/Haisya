@@ -1,0 +1,432 @@
+﻿@model DriverModel.CompanyDriverSyaryoModalDto
+
+@{
+  Layout = "_LayoutForSettingModal";
+
+}
+
+<style>
+  /*  .float-left {
+    float: left;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }
+
+  .float-right {
+    float: right;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }*/
+
+  .readonly {
+    background-color: lightgray;
+  }
+
+  .table-DriveSyaryo{
+  }
+
+  .table-DriveSyaryo th {
+     /*font-size: 12px;*/
+  }
+    .table-DriveSyaryo td input {
+      font-size: 14px;
+      padding-left: 0.1rem;
+      padding-right: 0.1rem;
+    }
+    .table-DriveSyaryo td select {
+      font-size: 14px;
+      padding-left: 0.1rem;
+      padding-right: 0.1rem;
+    }
+</style>
+
+
+<div role="dialog" id="modal-option" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:1200px;">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: gainsboro;">
+        <h1 class="modal-title fs-3" id="exampleModalLabel">@(Model.Title)</h1>
+        <button type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
+        <button type="button" class="btn btn-success align-items-end" style="float: right; width: 150px;" onclick="insertRow(); return false;">行追加</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
+      </div>
+      <div class="model-body">
+        <form id="form1">
+          <div id="hidden" hidden>
+            @Html.HiddenFor(model => Model.CompanyID)
+            @Html.HiddenFor(model => Model.BtnCaption)
+            @Html.HiddenFor(model => Model.Title)
+            @Html.HiddenFor(model => Model.DriverID)
+          </div>
+          <div class="contents-wrap-middle" style="margin: 10px;">
+            <h4 class="">注意</h4>
+            <span>
+              ・一度データを登録すると物理削除は出来ません。「非表示フラグ」を立ててください。
+            </span>
+          </div>
+          <table class="table jbc-table table-hedder table-primary" style="border-collapse: collapse;" border="1">
+            <tbody style="padding: 0 0 0 5px !important;">
+              <tr>
+                <th width="100px" style="padding-left: 20px;">乗務員名</th>
+                <td>@(Model.CompanyDriver.Employee_Number)<span> : </span>@(Model.CompanyDriver.Display_Name)</td>
+                <th width="80px">所属</th>
+                <td>@(Model.CompanyBranch.Branch_Name_Abbr)</td>
+              </tr>
+            </tbody>
+          </table>
+          <table id="tableModal" width="100%" class="table table-setting table-bordered border-info table-striped table-DriveSyaryo" style="margin-top: 10px;">
+            <thead>
+              <tr align="center" style="background-color:aquamarine; vertical-align: middle;">
+                <th hidden>DriverSyaryo_ID</th>
+                <th hidden>Driver_ID</th>
+                <th hidden>Company_ID</th>
+                <th>車種型/車番</th>
+                <th>車種型/車番(後)</th>
+                <th>運用開始日</th>
+                <th>運用終了日</th>
+                <th>担当配車</th>
+                <th style="font-size: 14px;">車種区分<br />(目標統計用)</th>
+                <th>備考</th>
+                <th style="font-size: 11px;">非表示</th>
+                <th>@*行削除*@</th>
+              </tr>
+            </thead>
+            <tbody>
+              @{
+                var CompanyDriverSyaryoList = Model.CompanyDriverSyaryoList.OrderBy(m => m.Start_Date).ToList();
+                for (int i = 0; i < CompanyDriverSyaryoList.Count; i++)
+                {
+                  <tr id="row-@(i)" style="vertical-align: middle;">
+                    <td align="center" width="100px" hidden>@Html.TextBoxFor(model => CompanyDriverSyaryoList[i].DriverSyaryo_ID, "{0:N0}", new { @readonly = "readonly", @class = "form-control text-end", @style = "" })</td>
+                    <td align="center" width="100px" hidden>@Html.TextBoxFor(model => CompanyDriverSyaryoList[i].Driver_ID, "{0:N0}", new { @readonly = "readonly", @class = "form-control text-end", @style = "" })</td>
+                    <td align="center" width="100px" hidden>@Html.TextBoxFor(model => CompanyDriverSyaryoList[i].Company_ID, "{0:N0}", new { @readonly = "readonly", @class = "form-control text-end", @style = "" })</td>
+
+                    @if (Model.EditEnabled)
+                    {
+                      <td align="center" width="300px">@Html.DropDownListFor(model => CompanyDriverSyaryoList[i].SyaryoManagement_ID, new SelectList(Model.SyaryoSelectList, "Value", "Text", false), "車輌を選択", new { @class = "form-control", @style = "width: 100%", @onchange = "selectboxChange(this);" })</td>
+                      <td align="center" width="300px">@Html.DropDownListFor(model => CompanyDriverSyaryoList[i].SyaryoManagement_ID1, new SelectList(Model.SyaryoSelectList, "Value", "Text", false), "車輌を選択", new { @class = "form-control", @style = "width: 100%", @onchange = "selectboxChange(this);" })</td>
+                      <td align="center" width="65px">@Html.TextBoxFor(m => CompanyDriverSyaryoList[i].Start_Date, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", @style = "width: 90%;" })</td>
+                      <td align="center" width="65px">@Html.TextBoxFor(m => CompanyDriverSyaryoList[i].End_Date, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", @style = "width: 90%;" })</td>
+                      <td align="center" width="200px">@Html.DropDownListFor(model => CompanyDriverSyaryoList[i].Group_ID, new SelectList(Model.GrouSelectpList, "Value", "Text", false), "担当配車を選択", new { @class = "form-control", @style = "width: 100%" })</td>
+                      <td align="center" width="200px">@Html.DropDownListFor(model => CompanyDriverSyaryoList[i].SyasyuKubun_ID, new SelectList(Model.SyaryoKubunSelectList, "Value", "Text", false), "目標や統計用に車種区分を選択", new { @class = "form-control", @style = "width: 100%" })</td>
+                      <td align="center" width="200px">@Html.TextBoxFor(m => CompanyDriverSyaryoList[i].REMARKS, null, new { @class = "form-control", type = "" })</td>
+
+                      <td class="">@Html.CheckBoxFor(model => CompanyDriverSyaryoList[i].Del_Flg, new { @class = "form-control text-left form-check-input" })</td>
+                      @*<td style="vertical-align: middle;" align="center" width="70px"><input type="button" class="btn btn-warning" value="行削除" onclick="deleteRow(this)" /></td>*@
+                    }
+                    else
+                    {
+
+                    }
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </form>
+        <div hidden>
+          <table id="tableListSyaryo">
+            <tbody>
+              @{
+                foreach (var item in Model.SyaryoManagementList)
+                {
+                  var itemSyaryo = Model.SyaryoList.FirstOrDefault(m => m.Syaryo_ID == item.Syaryo_ID);
+
+                  if (itemSyaryo != null)
+                  {
+                    <tr>
+                      <td>@(item.SyaryoManagement_ID)</td>
+                      <td>@(item.Syaryo_ID)</td>
+                      <td>@(itemSyaryo.SIZE)</td>
+                      <td>@(itemSyaryo.Kata_ID)</td>
+                    </tr>
+                  }
+                }
+              }
+            </tbody>
+          </table>
+          <table id="tableListSyasyuKubun">
+            <tbody>
+              @{
+                var listSyasyuKubun = Model.SyasyuKubunList.OrderBy(m => m.SIZE).ThenBy(m => m.Kata_ID).ThenBy(m => m.SortOrder).ToList();
+                foreach (var item in listSyasyuKubun)
+                {
+                  <tr>
+                    <td>@(item.SyasyuKubun_ID)</td>
+                    <td>@(item.SIZE)</td>
+                    <td>@(item.Kata_ID)</td>
+                    <td>@(item.KUBUN)</td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+</div>
+
+
+<script>
+
+  $(function () {
+
+
+    SetSelectForLoad();
+
+  });
+
+  /**
+   * テーブルの行ごとに車種区分リストを変更する
+   * */
+  function SetSelectForLoad() {
+
+    // table要素を取得
+    var tableElem2 = document.getElementById('tableModal');
+
+    // 行（tr要素）を取得
+    var rowElems2 = tableElem2.rows;
+
+    // 取得した行（tr要素）を繰り返しHTMLを取得
+    var htmlStr = '';
+    for (var i = 1, len = rowElems2.length; i < len; i++) {
+      var selectItem = rowElems2[i].cells[3].firstChild;
+      selectboxChange(selectItem);
+    }
+  }
+
+  /**
+   * 車種区分リストの変更処理
+   * @@param Size
+   * @@param KataID
+   * @@param valID
+   */
+  function selectboxChange(val) {
+
+    var valData = val.value;
+    var valID = val.id;
+
+    // table要素を取得
+    var tableElem = document.getElementById('tableListSyaryo');
+
+    // 行（tr要素）を取得
+    var rowElems = tableElem.rows;
+
+    // 取得した行（tr要素）を繰り返しHTMLを取得
+    var htmlStr = '';
+    for (var i = 0, len = rowElems.length; i < len; i++) {
+      var ID2 = rowElems[i].cells[0].innerHTML;
+      var Syaryo_ID2 = rowElems[i].cells[1].innerHTML;
+      var SIZE2 = rowElems[i].cells[2].innerHTML;
+      var Kata_ID2 = rowElems[i].cells[3].innerHTML;
+
+      if (ID2 == valData) {
+        SetSelectList(SIZE2, Kata_ID2, valID);
+        return false;
+      }
+    }
+
+  };
+
+  /**
+   * 車種区分リストの変更処理
+   * @@param Size
+   * @@param KataID
+   * @@param valID
+   */
+  function SetSelectList(Size, KataID, valID) {
+
+    var ctlName = valID.replace('SyaryoManagement_ID','SyasyuKubun_ID');
+
+    //select要素を取得する
+    selectCtl = document.getElementById(ctlName);
+    var selectVal = selectCtl.value;
+    selectCtl.innerHTML = '';
+
+    // table要素を取得
+    var tableElem = document.getElementById('tableListSyasyuKubun');
+    // 行（tr要素）を取得
+    var rowElems = tableElem.rows;
+
+    var flgBool = false;
+
+    // 取得した行（tr要素）を繰り返しHTMLを取得
+    var htmlStr = '';
+    for (var i = 0, len = rowElems.length; i < len; i++) {
+      var SyasyuKubun_ID2 = rowElems[i].cells[0].innerHTML;
+      var SIZE2 = rowElems[i].cells[1].innerHTML;
+      var Kata_ID2 = rowElems[i].cells[2].innerHTML;
+      var KUBUN2 = rowElems[i].cells[3].innerHTML;
+
+      if (SIZE2 == Size && Kata_ID2 == KataID) {
+        //alert(SyasyuKubun_ID2 + ';;;' + KUBUN2);
+        var option1 = document.createElement('option');
+        //option要素にvalueと表示名を設定
+        option1.value = SyasyuKubun_ID2;
+        option1.textContent = KUBUN2;
+        //select要素にoption要素を追加する
+        selectCtl.appendChild(option1)
+        if (SyasyuKubun_ID2 == selectVal) { flgBool = true; }
+      }
+
+    }
+
+    //値を再設定
+    if (flgBool) {
+      selectCtl.value = selectVal;
+    } else {
+      selectCtl.value = 0;
+    }
+
+  };
+
+  /**
+   * 登録完了後に一覧の再描画
+   * */
+  function closeAndRefresh() {
+    location.reload();
+    alert("登録が完了しました。");
+  };
+
+  /**
+   * 登録処理
+   * */
+  function regExec() {
+
+    if (varidationCheck()) {
+      return false;
+    }
+
+    //Formの参照を取る
+    var $form = $('#form1');
+
+    //alert($form.serialize());
+
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "Driver", Action = "CompanyDriverSyaryoRegExec" })',
+      type: 'post',
+      data: $form.serialize(),
+    }).done(function (response) {
+        if (response.errorMessage != null && response.errorMessage !== '') {
+          alertError(`【エラー】${response.errorMessage}`);
+          return false;
+      } else {
+        closeAndRefresh();
+        return false;
+      }
+    }).fail(function (xhr) {
+      alert('【ネットワークエラー】:' + xhr);
+      console.log(xhr);
+      return false;
+    }).always(function (xhr, msg) {
+      console.log(xhr, msg);
+    });
+
+  }
+
+  /**
+   * 入力チェック
+   * */
+  function varidationCheck() {
+
+    var result = false;
+
+    var toBefore = '1900/01/01';
+
+    var idRowKeyName = "row-"
+
+    $("#tableModal").find("[id^=" + idRowKeyName + "]").each(function () {
+
+      var row = $("[id^=" + idRowKeyName + "]").attr('id');
+      var rowId = row.substring(idRowKeyName.length, 99);
+
+      var SyaryoManagement_ID = $('#CompanyDriverSyaryoList_' + (rowId) + '__SyaryoManagement_ID').val();
+      var Start_Date = $('#CompanyDriverSyaryoList_' + (rowId) + '__Start_Date').val();
+      var Group_ID = $('#CompanyDriverSyaryoList_' + (rowId) + '__Group_ID').val();
+      var SyasyuKubun_ID = $('#CompanyDriverSyaryoList_' + (rowId) + '__SyasyuKubun_ID').val();
+
+      //alert(SyaryoManagement_ID);
+      //alert(Start_Date);
+      //alert(Group_ID);
+
+      if (!(SyaryoManagement_ID != null && SyaryoManagement_ID.length > 0)) {
+        alert("車輌が未選択です。");
+        $('#CompanyDriverSyaryoList_' + (rowId) + '__SyaryoManagement_ID').css('background-color', 'lightcoral');
+        result = true;
+        return false;
+      } else {
+        $('#CompanyDriverSyaryoList_' + (rowId) + '__SyaryoManagement_ID').css('background-color', 'white');
+      }
+
+      if (!(Start_Date != null && Start_Date.length > 0)) {
+        alert("適用開始日は必須です。");
+        $('#CompanyDriverSyaryoList_' + (rowId) + '__Start_Date').css('background-color', 'lightcoral');
+        result = true;
+        return false;
+      } else {
+        $('#CompanyDriverSyaryoList_' + (rowId) + '__Start_Date').css('background-color', 'white');
+      }
+
+      if (!(Group_ID != null && Group_ID.length > 0)) {
+        alert("担当配車が未選択です。");
+        $('#CompanyDriverSyaryoList_' + (rowId) + '__Group_ID').css('background-color', 'lightcoral');
+        result = true;
+        return false;
+      } else {
+        $('#CompanyDriverSyaryoList_' + (rowId) + '__Group_ID').css('background-color', 'white');
+      }
+
+      if (!(SyasyuKubun_ID != null && SyasyuKubun_ID.length > 0)) {
+        alert("車種区分が未選択です。");
+        $('#CompanyDriverSyaryoList_' + (rowId) + '__SyasyuKubun_ID').css('background-color', 'lightcoral');
+        result = true;
+        return false;
+      } else {
+        $('#CompanyDriverSyaryoList_' + (rowId) + '__SyasyuKubun_ID').css('background-color', 'white');
+      }
+
+      toBefore = Start_Date;
+    });
+
+    return result;
+
+  };
+
+  /**
+   * 行追加
+   * */
+  function insertRow() {
+
+    var newNo = CommonTableInsertRow("row-", "CompanyDriverSyaryoList", "tableModal");
+
+    if (newNo > 0) {
+      $("#CompanyDriverSyaryoList_" + newNo + "__DriverSyaryo_ID").val(0);
+      $("#CompanyDriverSyaryoList_" + newNo + "__Company_ID").val($("#CompanyID").val());
+      $("#CompanyDriverSyaryoList_" + newNo + "__Driver_ID").val($("#DriverID").val());
+      $("#CompanyDriverSyaryoList_" + newNo + "__SyaryoManagement_ID").val('');
+      $("#CompanyDriverSyaryoList_" + newNo + "__SyaryoManagement_ID1").val('');
+      $("#CompanyDriverSyaryoList_" + newNo + "__Group_ID").val('');
+      $("#CompanyDriverSyaryoList_" + newNo + "__SyasyuKubun_ID").val('');
+      $("#CompanyDriverSyaryoList_" + newNo + "__Start_Date").val('');
+    }
+
+  };
+
+  /**
+   * 行削除
+   */
+  function deleteRow(obj) {
+    // 削除ボタンを押下された行を取得
+    tr = obj.parentNode.parentNode;
+    // trのインデックスを取得して行を削除する
+    tr.parentNode.deleteRow(tr.sectionRowIndex);
+  };
+</script>

@@ -1,0 +1,5 @@
+ALTER TABLE [T_Haisya_SyabanRenraku] ADD [Day] date;
+
+ALTER TABLE [T_Haisya_SyabanRenraku] ADD [Group_ID] int;
+
+ALTER TABLE [T_Nippou] ADD [Receipt_Date] date;

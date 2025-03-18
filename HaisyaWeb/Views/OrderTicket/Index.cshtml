@@ -1,0 +1,525 @@
+﻿@model HaisyaWeb.Models.OrderTicketModel.DataListModel
+@{
+  Layout = "_Layout";
+  ViewData["Title"] = "受注札選択一覧";
+
+  var selectSeikyuTantouList = Model.Search.SelectSeikyuTantouList.ToList();
+  // 請求担当初期値設定
+  var selectSeikyuTantou = "担当者を選択";
+  for (var i = 0; i < selectSeikyuTantouList.Count; i++)
+  {
+    if (selectSeikyuTantouList[i].Value == "ALL")
+    {
+      selectSeikyuTantouList.RemoveAt(i);
+    }
+    if (selectSeikyuTantouList[i].Text == User.Identity.Name)
+    {
+      selectSeikyuTantouList[i].Selected = true;
+      selectSeikyuTantou = selectSeikyuTantouList[i].Text;
+    }
+  }
+}
+
+<head>
+  <link href="~/css/List.css" rel="stylesheet" />
+  <style>
+    .dropdown-check-list {
+      display: inline-block;
+      width: 25%;
+      position: relative;
+    }
+
+      .dropdown-check-list .anchor {
+        position: relative;
+        cursor: pointer;
+        background-color: white;
+        display: block;
+      }
+
+      .dropdown-check-list ul.items {
+        padding: 2px;
+        display: none;
+        margin: 0;
+        border-top: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background-color: white;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+      }
+
+        .dropdown-check-list ul.items li {
+          list-style: none;
+        }
+
+      .dropdown-check-list.visible .anchor {
+        color: #0094ff;
+      }
+
+      .dropdown-check-list.visible .items {
+        display: block;
+      }
+  </style>
+</head>
+
+<body>
+  <div id="hiddenItem" hidden>
+    @Html.HiddenFor(model => Model.Search.SelectTab)
+    @Html.HiddenFor(model => Model.Search.SelectGroup)
+    @Html.HiddenFor(model => Model.Search.SelectFilter)
+    @Html.HiddenFor(model => Model.Search.SelectDay)
+    @Html.HiddenFor(model => Model.Search.BackMenuAction)
+    @Html.HiddenFor(model => Model.SortParam.SortItemParam)
+    @Html.HiddenFor(model => Model.SortParam.SortOrder)
+  </div>
+  <div class="container">
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "Form2" }))
+    {
+      <div id="hedder" class="row" style="margin-bottom: -20px;">
+        <h6 class="heading-pagetitle">受注札選択一覧</h6>
+        <div class="form-group" style="width: 100%">
+          <div class="row">
+            <table class="table jbc-table table-hedder" style="padding: 0; border-collapse: collapse; ">
+              <tbody>
+                <tr>
+                  <th width="320px">
+                    <div class="appeal-box box" style="vertical-align: middle; display: inline-block; padding: 0;">
+                      <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeDay(-1)" onselectstart="return false;" alt="<<" tooltip="前月">＜＜</span>
+                      <input id="TargetDayLavel" class="calender" type="text" readonly style="width: 210px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
+                      <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeDay(1)" onselectstart="return false;" alt=">>" tooltip="翌月">＞＞</span>
+                    </div>
+                  </th>
+                  <th width="320px">
+                    <button class="btn btn-primary btn-export btn-sm" style="width:120px; float:right;">
+                      印刷
+                    </button>
+                  </th>
+                </tr>
+              </tbody>
+            </table>
+
+            <button type="button" class="btn btn-secondary btn-sm" style="width: 100%; padding: 0;" data-bs-toggle="collapse" data-bs-target="#tblCollapseSearch" aria-expanded="false" aria-controls="tblCollapseSearch">▼詳細検索</button>
+
+            <table id="tblCollapseSearch" class="table jbc-table table-hedder collapse" style="padding: 0; border-collapse: collapse; ">
+              <tbody>
+                <tr>
+                  <th style="width: 30%; height: 50px;">
+                    <label class="control-label text-end search-label2" style="">担当請求</label>
+                    <div id="list" class="dropdown-check-list form-control search-text" tabindex="100">
+                      <span id="listAnchor" class="anchor search-span">@selectSeikyuTantou</span>
+                      <ul class="items">
+                        @for (var i = 0; i < selectSeikyuTantouList.Count; i++)
+                        {
+                          <li style="padding-left:5px;">
+                            <input type="checkbox" asp-for="@selectSeikyuTantouList[i].Selected" class="item-checkbox" />@selectSeikyuTantouList[i].Text
+                            <input type="hidden" asp-for="@selectSeikyuTantouList[i].Value" />
+                            <input type="hidden" asp-for="@selectSeikyuTantouList[i].Text" />
+                          </li>
+                        }
+                      </ul>
+                    </div>
+                  </th>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div id="DataList" class="data-list" style="">
+        </div>
+      </div>
+    }
+  </div>
+</body>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" integrity="sha512-GsLlZN/3F2ErC5ifS5QtgpiJtWd43JWSuIgh7mbzZ8zBps+dvLusV+eNQATqgA/HdeKFVgA5v3S/cIrLF7QnIg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+  let selectSeikyuTantouListValues = [];
+  let selectSeikyuTantouListNames = [];
+  let previousValue = $('#TargetDayLavel').val();
+  let selectedDatePDF = '';
+  const weeks = ['日', '月', '火', '水', '木', '金', '土'];
+
+  $(window).on('load', function () {
+    var disp = new Date($('#Search_SelectDay').val());
+
+    /** 日付を文字列にフォーマットする */
+    var formatted =
+      `${disp.getFullYear()}\年${(disp.getMonth() + 1).toString().padStart(2, '0')}\月${disp.getDate().toString().padStart(2, '0')}\日\(${weeks[disp.getDay().toString()]}\)`.replace(
+        /\n|\r/g,
+        '',
+      );
+    $('input#TargetDayLavel').val(formatted);
+    $('input#TargetDayLavel_To').val(formatted);
+    previousValue = formatted;
+
+    var radio = document.getElementsByName('num_of_inq');
+    for (let i = 0; i < radio.length; i++) {
+      if (radio.item(i).value == $('#Search_SelectGroup').val()) {
+        radio.item(i).checked = true;
+      }
+    }
+
+    radio = document.getElementsByName('num_of_filter');
+    for (let i = 0; i < radio.length; i++) {
+      if (radio.item(i).value == $('#Search_SelectFilter').val()) {
+        radio.item(i).checked = true;
+      }
+    }
+
+    tglSelectDayKubun(false);
+  });
+
+  $(function () {
+    var checkList = document.getElementById('list');
+    checkList.getElementsByClassName('anchor')[0].onclick = function (evt) {
+      if (checkList.classList.contains('visible')) checkList.classList.remove('visible');
+      else checkList.classList.add('visible');
+    };
+
+    var anchor = checkList.getElementsByClassName('anchor')[0];
+
+    anchor.onclick = function (evt) {
+      evt.stopPropagation(); // Prevent the click from propagating to the document
+      checkList.classList.toggle('visible');
+    };
+
+    // Add a click event listener to the document
+    document.addEventListener('click', function (event) {
+      if (!checkList.contains(event.target)) {
+        checkList.classList.remove('visible'); // Close the dropdown if the click is outside the dropdown list
+      }
+    });
+  });
+
+  $(document).ready(function () {
+    $('#list').on('change', '.item-checkbox', function () {
+      var selectedValues = [];
+      var selectedNames = [];
+
+      var currentCheckbox = $(this);
+      var currentValue = currentCheckbox.siblings('input[type="hidden"]').first().val();
+
+      // Check if the clicked checkbox has the value "ALL"
+      if (currentValue === 'ALL') {
+        // Uncheck all other checkboxes
+        $('#list .item-checkbox').not(currentCheckbox).prop('checked', false);
+      } else {
+        // Uncheck the "ALL" checkbox if any other checkbox is selected
+        $('#list .item-checkbox').each(function () {
+          var checkbox = $(this);
+          var value = checkbox.siblings('input[type="hidden"]').first().val();
+          if (value === 'ALL') {
+            checkbox.prop('checked', false);
+          }
+        });
+      }
+
+      $('#list .item-checkbox:checked').each(function () {
+        var value = $(this).siblings('input[type="hidden"]').first().val();
+        var name = $(this).siblings('input[type="hidden"]').eq(1).val();
+
+        selectedValues.push(value);
+        selectedNames.push(name);
+      });
+
+      var listAnchor = document.getElementById('listAnchor');
+      selectSeikyuTantouListValues = selectedValues;
+      selectSeikyuTantouListNames = selectedNames;
+
+      listAnchor.textContent =
+        selectSeikyuTantouListNames.length > 0 ? selectSeikyuTantouListNames.join(', ') : 'Select Items';
+
+      dataListDisplay();
+    });
+
+    $('#TargetDayLavel').on('change', function () {
+      var newValue = $(this).val();
+      var previousDate = parseJapaneseDate(previousValue);
+      var newDate = parseJapaneseDate(newValue);
+
+      var timeDifference = newDate - previousDate;
+      var dayDifference = timeDifference / (1000 * 3600 * 24);
+
+      selectedChangeDay(dayDifference);
+      ResetSelectdRecords();
+    });
+  });
+
+  function parseJapaneseDate(dateString) {
+    var regex = /(\d{4})年(\d{2})月(\d{2})日/;
+    var match = dateString.match(regex);
+    if (match) {
+      var year = parseInt(match[1], 10);
+      var month = parseInt(match[2], 10) - 1; // Months are 0-based in JavaScript Date
+      var day = parseInt(match[3], 10);
+      return new Date(year, month, day);
+    }
+    return null;
+  }
+
+  $(function () {
+    $('input[name="num_of_inq"]:radio').change(function () {
+      dataListDisplay();
+    });
+
+    $('#Search_SelectTantou').on('change', function () {
+      dataListDisplay();
+    });
+
+    $('#Search_SelectSyasyu').on('change', function () {
+      dataListDisplay();
+    });
+
+    $('#Search_SelectSeikyuTantou').on('change', function () {
+      dataListDisplay();
+    });
+
+    $('#Search_SelectKata').on('change', function () {
+      dataListDisplay();
+    });
+
+    $('.calender').datepicker({
+      buttonImage: '../img/calender.png', // カレンダーアイコン画像
+      buttonText: 'カレンダーから選択', // ツールチップ表示文言
+      buttonImageOnly: true, // 画像として表示
+      showOn: 'both', // カレンダー呼び出し元の定義
+    });
+
+    $('input[name="num_of_inq"]:radio').change(function () {
+      dataListDisplay();
+    });
+
+    $('#tglSelectDayKubun').on('change', function () {
+      tglSelectDayKubun($('#tglSelectDayKubun').prop('checked'));
+    });
+  });
+
+  function tglSelectDayKubun(checked) {
+    if (checked) {
+      $('#lblkara').show();
+      $('#divTargetDayLavelTo').show();
+    } else {
+      $('#lblkara').hide();
+      $('#divTargetDayLavelTo').hide();
+    }
+
+    dataListDisplay();
+  }
+
+  function selectedChangeDay(move) {
+    var dt = new Date($('#Search_SelectDay').val());
+    dt.setDate(dt.getDate() + move);
+    $('#Search_SelectDay').val(formatDate(dt));
+
+    /** 日付を文字列にフォーマットする */
+    var formatted =
+      `${dt.getFullYear()}\年${(dt.getMonth() + 1).toString().padStart(2, '0')}\月${dt.getDate().toString().padStart(2, '0')}\日\(${weeks[dt.getDay().toString()]}\)`.replace(
+        /\n|\r/g,
+        '',
+      );
+    $('input#TargetDayLavel').val(formatted);
+
+    previousValue = formatted;
+    selectedDatePDF = formatted;
+    dataListDisplay();
+    ResetSelectdRecords();
+  }
+
+  function formatDate(date) {
+    var yyyy = date.getFullYear();
+    var mm = ('00' + (date.getMonth() + 1)).slice(-2);
+    var dd = ('00' + date.getDate()).slice(-2);
+    const ymd = String(yyyy) + '/' + String(mm) + '/' + String(dd);
+    return ymd;
+  }
+
+  function dataListDisplay() {
+    $.post(
+      '@Url.RouteUrl("Default", new { controller = "OrderTicket", Action = "JsonGetDataList" })',
+      {
+        SelectDay: $('#Search_SelectDay').val(),
+        SelectTantou: $('#Search_SelectTantou').val(),
+        SelectSyasyu: $('#Search_SelectSyasyu').val(),
+        SelectKata: $('#Search_SelectKata').val(),
+        SelectSeikyuTantou: JSON.stringify(selectSeikyuTantouListValues),
+        sortItemParam: $('#SortParam_SortItemParam').val(),
+        sortOrder: $('#SortParam_SortOrder').val(),
+      },
+      function (data) {
+        $('#DataList').html(data.partialView);
+      },
+    );
+  }
+
+  function ankenListFirstSortChange(name) {
+    if (typeof name === 'undefined') {
+      return;
+    }
+  }
+
+  function ChangeALLCheckBoxChanged(flgChecked) {
+    $('input:checkbox[name="Target"]').each(function () {
+      if ($(this).parents('tr').children('td:nth-child(2)').first().text().trim() == 0) {
+        $(this).prop('checked', flgChecked);
+      }
+    });
+  }
+
+  function submitAddNew() {
+    var form = document.createElement('form');
+    form.action = '@Url.RouteUrl("Default", new { controller = "TestRegister", Action = "Index2" })';
+    form.method = 'POST';
+
+    // body に追加
+    document.body.appendChild(form);
+
+    var html = '';
+    html +=
+      '      <input type="hidden" id="SelectDay" name="SelectDay" value="' +
+      $('#Search_SelectDay').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectTantou" name="SelectTantou" value="' +
+      $('#Search_SelectTantou').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectSyasyu" name="SelectSyasyu" value="' +
+      $('#Search_SelectSyasyu').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectKata" name="SelectKata" value="' +
+      $('#Search_SelectKata').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectGroup" name="SelectGroup" value="' +
+      $('#Search_SelectGroup').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="BackMenuAction" name="BackMenuAction" value="' +
+      $('#Search_BackMenuAction').val() +
+      '" />';
+
+    form.innerHTML = html;
+    form.submit();
+  }
+
+  function submitAnkenEdit(ankenid) {
+    var form = document.createElement('form');
+    form.action = '@Url.RouteUrl("Default", new { controller = "TestRegister", Action = "Index3" })';
+    form.method = 'POST';
+
+    // body に追加
+    document.body.appendChild(form);
+
+    var html = '';
+    html += '      <input type="hidden" id="ankenId" name="ankenId" value="' + ankenid + '" />';
+    html +=
+      '      <input type="hidden" id="SelectDay" name="SelectDay" value="' +
+      $('#Search_SelectDay').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectTantou" name="SelectTantou" value="' +
+      $('#Search_SelectTantou').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectSyasyu" name="SelectSyasyu" value="' +
+      $('#Search_SelectSyasyu').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectKata" name="SelectKata" value="' +
+      $('#Search_SelectKata').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectGroup" name="SelectGroup" value="' +
+      $('#Search_SelectGroup').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="BackMenuAction" name="BackMenuAction" value="' +
+      $('#Search_BackMenuAction').val() +
+      '" />';
+
+    form.innerHTML = html;
+    form.submit();
+  }
+
+  function backMenuForDataList() {
+    var form = document.createElement('form');
+    form.action = '@Url.RouteUrl("Default", new { controller = "Test", Action = "Index2" })';
+    form.method = 'POST';
+
+    // body に追加
+    document.body.appendChild(form);
+
+    var html = '';
+    html +=
+      '      <input type="hidden" id="SelectDay" name="SelectDay" value="' +
+      $('#Search_SelectDay').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectTantou" name="SelectTantou" value="' +
+      $('#Search_SelectTantou').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectSyasyu" name="SelectSyasyu" value="' +
+      $('#Search_SelectSyasyu').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectKata" name="SelectKata" value="' +
+      $('#Search_SelectKata').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectGroup" name="SelectGroup" value="' +
+      $('#Search_SelectGroup').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="BackMenuAction" name="BackMenuAction" value="' +
+      $('#Search_BackMenuAction').val() +
+      '" />';
+
+    form.innerHTML = html;
+    form.submit();
+  }
+
+  $(".btn-export").click(function (e) {
+    e.preventDefault();
+    let selectedIds = localStorage.getItem('selectedIds');
+
+    let Company_ID = @Html.Raw(Json.Serialize(Model.Company_ID));
+
+    let params = {
+      ids: selectedIds,
+      TARGET_DATE: selectedDatePDF,
+      COMPANY_ID: Company_ID.toString()
+    };
+
+    const searchKubunId = 39;
+    const namePdf = "order-tag.pdf";
+
+    if (selectedIds) {
+      PDFReport(searchKubunId, namePdf, params, selectedIds);
+      dataListDisplay();
+    }
+  });
+
+  //PDFReport
+  async function PDFReport(searchKubunId, namePdf, params, selectedIds) {
+    const url = '@Url.RouteUrl(new { controller = "Report", action = "PreviewPDFReport", template = "__Template__" })'
+      .replace("__Template__", namePdf);
+
+    $("#form-pdf-export").remove();
+
+    const form = $('<form id="form-pdf-export" target="_blank" method="post" action="' + url + '"></form>');
+    form.append('<input type="hidden" name="SerchKubunID" value="' + searchKubunId + '" />');
+    form.append('<input type="hidden" name="searchJson" value="' + encodeURIComponent(JSON.stringify(params)) + '" />');
+    $('body').append(form);
+    form.submit();
+    ResetSelectdRecords();
+  }
+
+  function ResetSelectdRecords() {
+    localStorage.setItem('selectedIds', '');
+  }
+
+</script>

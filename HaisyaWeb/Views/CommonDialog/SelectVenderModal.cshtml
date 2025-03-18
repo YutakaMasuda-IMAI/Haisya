@@ -1,0 +1,302 @@
+﻿@model CommonDialogModel.SelectVenderModel
+
+
+
+<style>
+  .div-area-vender-dialog {
+    margin: auto;
+    flex-wrap: wrap;
+    display: flex;
+    padding: 0 5px 0 5px
+  }
+
+  .tab_class-vender-dialog {
+    width: calc(100%/2);
+    height: 50px;
+    background-color: aquamarine;
+    line-height: 50px;
+    font-size: 15px;
+    text-align: center;
+    display: block;
+    float: left;
+    order: -1;
+    border: double;
+  }
+
+  input[name="tab_name"] {
+    display: none;
+  }
+
+  input:checked + .tab_class-vender-dialog {
+    background-color: cadetblue;
+    color: aliceblue;
+  }
+
+  .content_class-vender-dialog {
+    display: none;
+    width: 100%;
+  }
+
+  input:checked + .tab_class-vender-dialog + .content_class-vender-dialog {
+    display: block;
+  }
+
+  .table-VenderListDataModal {
+    overflow: auto;
+    /*width: 100%;*/
+    max-height: 700px;
+  }
+
+    .table-VenderListDataModal table {
+      margin: 0;
+      border-spacing: 0;
+      /*width: 100%;*/
+      font-size: 12px;
+    }
+
+    .table-VenderListDataModal th {
+      white-space: nowrap;
+      position: sticky;
+      top: -1px;
+      left: 0;
+      border-right: 1px solid #999;
+      border-bottom: 1px solid #999;
+      background-color: lemonchiffon;
+      text-align: center;
+      padding: 0.2rem 0 0.2rem 0;
+    }
+
+    .table-VenderListDataModal td {
+      white-space: nowrap;
+      padding: 2px;
+      border-right: 1px solid #999;
+      border-bottom: 1px solid #999;
+    }
+
+    .table-VenderListDataModal tr:first-child th {
+      border-top: 1px solid #999;
+    }
+
+    .table-VenderListDataModal th:first-child {
+      border-left: 1px solid #999;
+    }
+
+    .table-VenderListDataModal tr:first-child th:first-child {
+      z-index: 1;
+    }
+</style>
+
+
+<div id="hiddenItem" hidden>
+  @Html.HiddenFor(Model => Model.CompanyID)
+  @Html.HiddenFor(Model => Model.SelectedID)
+  @Html.HiddenFor(Model => Model.UserID)
+
+</div>
+
+
+<div class="modal-dialog container" role="document" style="">
+  <div class="modal-content">
+    <div class="model-body">
+      <div class="div-area-vender-dialog">
+        <input type="radio" name="tab_name" id="tabCommonDialog1" checked>
+        <label class="tab_class-vender-dialog" for="tabCommonDialog1">使用履歴</label>
+        <div class="content_class-vender-dialog">
+          <div class="row content-sarch">
+            <div id="tableShiyoritsu" class="col-6 col-sm-6 table-CustomerListDataModal dataList" style="height:500px; margin: 0;">
+            </div>
+            <div id="tableShiyoRireki" class="col-6 col-sm-6 table-CustomerListDataModal dataList" style="border-left: groove; height: 500px; margin: 0; padding-left: 0; width: 49%;">
+            </div>
+          </div>
+        </div>
+        <input type="radio" name="tab_name" id="tabCommonDialog2">
+        <label class="tab_class-vender-dialog" for="tabCommonDialog2">検索</label>
+        <div class="content_class-vender-dialog">
+          <table class="table jbc-table table-borderless" style="padding: 0; background-color: whitesmoke;" border="1">
+            <tbody>
+              <tr>
+                <td width="20px"></td>
+                <td class="col-sm-3">
+                  <label class="control-label align-self-center align-middle text-end" style="padding:0;">顧客コード：</label>
+                  <input type="text" id="txtCode" style="width: 150px; display: inline-block;" class="form-control" />
+                </td>
+                <td class="col-sm-3">
+                  <label class="control-label align-self-center align-middle text-end" style="padding:0;">検索キー：</label>
+                  <input type="text" id="txtKey" style="width: 150px; display: inline-block;" class="form-control" />
+                </td>
+                <td class="col-sm-4">
+                  <label class="control-label align-self-center align-middle text-end" style="padding:0;">電話(Fax)番号：</label>
+                  <input type="text" id="txtPhone" style="width: 150px; display: inline-block;" class="form-control" />
+                </td>
+                <td>
+                  <button style="width: 100px;" class="btn btn-primary align-items-end" onclick="listDisplay();return false;">検索</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div id="alertTop" style="vertical-align: middle; margin-top: 1px;">
+            <label>※Top100件を抽出</label>
+          </div>
+
+          <div id="DataList" class="table-VenderListDataModal dataList" style="height:500px; margin: 0;">
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+  $(window).on('load', function () {
+  });
+
+
+  $(async function () {
+
+    const _sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    SetListUtilizationRate();
+    SetListForRirekiData();
+
+    ///得意先コードの条件変更時
+    $('#txtCode').on('change', function () {
+      listDisplay();
+      return false;
+    });
+
+    ///得意先名の条件変更時
+    $('#txtKey').on('change', function () {
+      listDisplay();
+      return false;
+    });
+
+    ///得意先電話番号の条件変更時
+    $('#txtPhone').on('change', function () {
+      listDisplay();
+      return false;
+    });
+
+    await _sleep(2000);
+
+    listDisplay();
+
+  });
+
+  /**
+   * 画面を閉じる
+   * selectVenderModalCloseCallBack
+   * */
+  function ModalCommonDialogClose() {
+    if (typeof selectVenderModalCloseCallBack == 'function') {
+      // 関数があった場合の処理内容
+      selectVenderModalCloseCallBack();
+    } else {
+      // 関数がない場合の処理内容
+      $('#ModalCommonDialog').dialog("close");
+    }
+    $('#ModalCommonDialog').html('');
+  };
+
+  /**
+   * 一覧データ選択時の処理
+   * selectVenderModalCloseCallBack
+   * @@param data
+   */
+  function selectOnClick(data) {
+
+    //コールバック関数チェック
+    if (typeof selectVenderModalCloseCallBack == 'function') {
+      // 関数があった場合の処理内容
+      selectVenderSelectedCallBack(data);
+    } else {
+      // 関数がない場合の処理内容
+    }
+    ///画面を閉じる
+    ModalCommonDialogClose();
+
+  };
+
+
+  /**
+   * 得意先検索一覧の表示
+   * */
+  function listDisplay() {
+
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "JsonGetVenderDataList" })',
+      {
+        code: $("#txtCode").val(),
+        key: $("#txtKey").val(),
+        phone: $("#txtPhone").val(),
+      },
+      function (data) {
+          if (data.message != null) {
+              alertError(`【エラー】${data.message}`);
+          }
+          else {
+              $('#alertTop').hide();
+              $('#DataList').html(data.partialView);
+          }
+      }
+    );
+
+  };
+
+  /**
+   * 使用率データを表示
+   * */
+  function SetListUtilizationRate() {
+
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "JsonGetVenderListForUtilizationRate" })',
+      {
+      })
+      .done(function (response) {
+          if (response.message != null) {
+              alertError(`【エラー】${response.message}`);
+              return false;
+          } else {
+              //alert("【done】" + response.partialView);
+              $('#tableShiyoritsu').html(response.partialView);
+              return false;
+          }
+      })
+      .fail(function (xhr) {
+        console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+        console.log(xhr, msg);
+      });
+  };
+
+  /**
+   * 使用履歴を表示
+   * */
+  function SetListForRirekiData() {
+
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "JsonGetVenderListForRireki" })',
+      {
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】" + response.partialView);
+          $('#tableShiyoRireki').html(response.partialView);
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+        console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+        console.log(xhr, msg);
+      });
+  };
+
+
+</script>
+<script src="~/js/EnterKeyCancel.js"></script>

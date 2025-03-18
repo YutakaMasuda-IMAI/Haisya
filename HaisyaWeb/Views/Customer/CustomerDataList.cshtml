@@ -1,0 +1,129 @@
+﻿@model HaisyaWeb.Models.CustomerListDataDto
+
+
+<style>
+</style>
+
+@if (Model.CustomerList.Count() == 0)
+{
+  <div style="width: 100%; background: #3366CC ">
+    <h4 style="text-align:left; margin-left: 20px;color: white;">データ無し</h4>
+  </div>
+}
+
+
+<table id="myTable" class="ex_table-tokuisaki table-bordered border-info" width="100%" border="1">
+  <thead style="background-color: chartreuse;  ">
+    <tr align="center">
+      <th class="ex-table-th" rowspan="2" style="vertical-align: middle;">選択</th>
+      <th class="ex-table-th" rowspan="2">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Customer_Code')" style="">顧客<br />コード</a>
+      </th>
+      <th class="ex-table-th" colspan="2">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Customer_Name')" style="">社名</a>
+      </th>
+      <th class="ex-table-th" colspan="1">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Customer_Name_Abbr')" style="">略称</a>
+      </th>
+      <th class="ex-table-th" colspan="1">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Customer_Name_Kana')" style="">検索カナ</a>
+      </th>
+      <th class="ex-table-th">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Phone1')" style="">電話番号1</a>
+      </th>
+      <th class="ex-table-th">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Fax1')" style="">FAX番号1</a>
+      </th>
+      <th class="ex-table-th" colspan="1">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Customer_Name_Abbr')" style="">親顧客コード</a>
+      </th>
+    </tr>
+    <tr align="center">
+      <th class="ex-table-th">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('PostCode')" style="">郵便番号</a>
+      </th>
+      <th class="ex-table-th">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Address1')" style="">住所１</a>
+      </th>
+      <th class="ex-table-th">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Address2')" style="">住所２</a>
+      </th>
+      <th class="ex-table-th">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Address3')" style="">住所３</a>
+      </th>
+      <th class="ex-table-th">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Phone2')" style="">電話番号2</a>
+      </th>
+      <th class="ex-table-th">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Fax2')" style="">FAX番号2</a>
+      </th>
+      <th class="ex-table-th" colspan="1">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Customer_Name_Abbr')" style="">親顧客名</a>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    @{
+      int i = 1;
+    }
+    @foreach (var item in Model.CustomerList.OrderBy(m => m.Customer_Code).ToList())
+    {
+      int rem;
+      int div = Math.DivRem(i, 2, out rem);
+      string color = rem == 0 ? "khaki" : "	whitesmoke";
+    <tr style="font-size: 12px; font-weight: bold; background-color: @(color); height: 20px;">
+      <td width="50px" rowspan="2" style="vertical-align: middle;">
+        <button class="btn btn-success" style="width: 100%; padding:0;" onclick="submitCustomerData('@(item.Customer_ID)'); return false;">選択</button>
+      </td>
+      <td width="20px" rowspan="2" style="vertical-align: middle;" align="center">
+        @Html.DisplayFor(modelItem => item.Customer_Code)
+      </td>
+      <td width="170px" colspan="2">
+        @Html.DisplayFor(modelItem => item.Customer_Name)
+      </td>
+      <td width="100px" colspan="1">
+        @Html.DisplayFor(modelItem => item.Customer_Name_Abbr)
+      </td>
+      <td width="80px" colspan="1">
+        @Html.DisplayFor(modelItem => item.Customer_Name_Kana)
+      </td>
+      <td width="50px">
+        @Html.DisplayFor(modelItem => item.Phone1)
+      </td>
+      <td width="50px">
+        @Html.DisplayFor(modelItem => item.Fax1)
+      </td>
+      <td width="80px" colspan="1" style="color: darkgray ">
+        @Html.DisplayFor(modelItem => item.Customer_Code_Oya)
+      </td>
+    </tr>
+    <tr style="font-size: 12px; font-weight: bold; background-color: @(color); height: 20px;">
+      <td width="40px">
+        @Html.DisplayFor(modelItem => item.PostCode)
+      </td>
+      <td width="130px">
+        @Html.DisplayFor(modelItem => item.Address1)
+      </td>
+      <td width="100px">
+        @Html.DisplayFor(modelItem => item.Address2)
+      </td>
+      <td width="80px">
+        @Html.DisplayFor(modelItem => item.Address3)
+      </td>
+      <td width="50px">
+        @Html.DisplayFor(modelItem => item.Phone2)
+      </td>
+      <td width="50px">
+        @Html.DisplayFor(modelItem => item.Fax2)
+      </td>
+      <td width="80px" colspan="1">
+        @*@Html.DisplayFor(modelItem => item.Customer_Code_Oya)*@
+      </td>
+    </tr>
+      i++;
+    }
+  </tbody>
+</table>
+
+
+

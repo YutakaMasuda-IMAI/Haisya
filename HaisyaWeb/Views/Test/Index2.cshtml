@@ -1,0 +1,387 @@
+﻿
+
+@{
+  Layout = "_Layout";
+  ViewData["Title"] = "テスト一覧";
+}
+
+<head>
+  <link href="~/css/Test.css" rel="stylesheet" />
+  <style>
+    .btn-test {
+      width: 200px !important;
+      height: 50px;
+      font-size: 20px;
+    }
+  </style>
+
+  @* 共通住所選択ダイアログを呼ぶ時は、呼ぶ元画面で下記スクリプトをロードすること（苦肉の策です。本当は共通ダイアログ画面で読み込みたい。失敗する・・・） *@
+  @* 下記3行を必ずControllersに追加すること *@
+  @*
+    ///////////// Controller ////////////////////
+    string url = _mapApiSettiong.WebUri.JavaScriptAPI + "/auth/jsapi/loader.htm";
+    url += GetMapApiUrlPram();
+    model.MapsApiForJSUrl = url;
+    ///////////// Model ////////////////////
+    /// <summary>マップAPIのURL（JS用）</summary>
+    public string MapsApiForJSUrl { get; set; }
+  *@
+  <!-- ローダーのURLをscriptでロードする -->
+  <!-- ログイン認証の場合 -->
+  @*<script src="@(Model.MapsApiForJSUrl)"></script>*@
+
+  @* このスタブでは、とりあえずベタで記載します。 *@
+  <script src="https://app.zip-site.com/auth/jsapi/loader.htm"></script>
+
+</head>
+
+<div hidden>
+  <input data-val="true" id="Company_ID" name="Company_ID" type="text" value="1">
+  <input data-val="true" id="User_ID" name="User_ID" type="text" value="1">
+</div>
+
+
+
+<div class="containe" style="text-align: center;">
+  <h1>ダイアログ　スタブ</h1>
+  <div class="row" style="border: groove; padding: 1rem; display: inline-table;">
+    <button class="btn-test" onclick="testCustomerOyaOnClick(); return false;">親得意先選択</button>
+    <div class="row" style="display: inline-block; margin-top: 1rem;">
+      <input id="CustomerOyaID" style="width: 100px;" />
+      <input id="CustomerOyaCD" style="width: 100px;" />
+      <input id="CustomerOyaName" style="width: 500px;" />
+    </div>
+  </div>
+  <br />
+  <div class="row" style="border: groove; padding: 1rem; display: inline-table;">
+    <button class="btn-test" onclick="testCustomerOnClick(); return false;">得意先選択</button>
+    <div class="row" style="display: inline-block; margin-top: 1rem;">
+      <input id="CustomerID" style="width: 100px;" />
+      <input id="CustomerCD" style="width: 100px;" />
+      <input id="CustomerName" style="width: 500px;" />
+    </div>
+  </div>
+  <br />
+  <div class="row" style="border: groove; padding: 1rem; display: inline-table;">
+    <button class="btn-test" onclick="testCustomerTantouOnClick(); return false;">得意先担当者選択</button>
+    <div class="row" style="display: inline-block; margin-top: 1rem;">
+      <input id="CustomerTantouID" style="width: 100px;" />
+      <input id="CustomerTantouCD" style="width: 100px;" />
+      <input id="CustomerTantouName" style="width: 500px;" />
+    </div>
+  </div>
+  <br />
+  <div class="row" style="border: groove; padding: 1rem; display: inline-table;">
+    <button class="btn-test" onclick="testSyaryoOnClick(); return false;">車輌選択</button>
+    <div class="row" style="display: inline-block; margin-top: 1rem;">
+      <input id="SyaryoManagementID" style="width: 100px;" />
+      <input id="Syasyu" style="width: 100px;" />
+      <input id="Kata" style="width: 100px;" />
+      <input id="Syaban_Number" style="width: 100px;" />
+    </div>
+  </div>
+  <br />
+  <div class="row" style="border: groove; padding: 1rem; display: inline-table;">
+    <button class="btn-test" onclick="testVenderOnClick(); return false;">業者選択</button>
+    <div class="row" style="display: inline-block; margin-top: 1rem;">
+      <input id="VenderID" style="width: 100px;" />
+      <input id="VenderCD" style="width: 100px;" />
+      <input id="VenderName" style="width: 500px;" />
+    </div>
+  </div>
+  <br />
+  <div class="row" style="border: groove; padding: 1rem; display: inline-table;">
+    <button class="btn-test" onclick="testCompanyDriverOnClick(); return false;">乗務員選択</button>
+    <div class="row" style="display: inline-block; margin-top: 1rem;">
+      <input id="DriverID" style="width: 100px;" />
+      <input id="Employee_Number" style="width: 100px;" />
+      <input id="Display_Name" style="width: 500px;" />
+    </div>
+  </div>
+  <br />
+  <div class="row" style="border: groove; padding: 1rem; display: inline-table;">
+    <button class="btn-test" onclick="testCustomerDriverOnClick(); return false;">傭車選択</button>
+    <div class="row" style="display: inline-block; margin-top: 1rem;">
+      <input id="Customer_ID" style="width: 100px;" />
+      <input id="Customer_Branch_ID" style="width: 100px;" />
+      <input id="Customer_Driver_ID" style="width: 100px;" />
+      <input id="Customer_Driver_Employee_Number" style="width: 100px;" />
+      <input id="Customer_Driver_Display_Name" style="width: 500px;" />
+    </div>
+  </div>
+  <br />
+  <div class="row" style="border: groove; padding: 1rem; display: inline-table;">
+    <button class="btn-test" onclick="testAddressOnClick(); return false;">住所選択</button>
+    <label>
+      苦肉の策！！何か良い方法は？？下記をmodal画面で読んでも使えない・・・なぜ？？？<br />
+      とりあえず、共通住所検索を呼ぶ元画面において、下記追加対応をお願いいたします。<br />
+      ///////////// Controller ////////////////////<br />
+      string url = _mapApiSettiong.WebUri.JavaScriptAPI + "/auth/jsapi/loader.htm";<br />
+      url += GetMapApiUrlPram();<br />
+      model.MapsApiForJSUrl = url;<br />
+      ///////////// Model ////////////////////<br />
+      /// &lt;summary&gt; マップAPIのURL（JS用）&lt;/summary&gt;<br />
+      public string MapsApiForJSUrl { get; set; }<br />
+      ///////////// chtml ///////////////////<br />
+      &lt;script src="&#64;(Model.MapsApiForJSUrl)"&gt;&lt;/script&gt;
+    </label>
+    <div style="margin-top: 1rem;">
+      <div>
+        <input id="Address" style="width: 500px;" />
+      </div>
+      <div class="row" style="">
+        <input id="Address_lat" style="width: 100px;" />
+        <input id="Address_lng" style="width: 100px;" />
+        <input id="Address_address_code" style="width: 200px;" />
+        <input id="Address_post_code" style="width: 100px;" />
+        <input id="Address_address_level" style="width: 100px;" />
+      </div>
+      <div class="row" style="">
+        <input id="Address_zid" style="width: 200px;" />
+        <input id="Address_zid_Attr" style="width: 200px;" />
+        <input id="Address_buildingName" style="width: 300px;" />
+      </div>
+      <div class="row" style="">
+        <input id="Address_address2" style="width: 100px;" />
+        <input id="Address_address3" style="width: 100px;" />
+        <input id="Address_address4" style="width: 200px;" />
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+
+
+
+<script>
+
+  /********************************************************
+   * 共通親得意先選択
+   ******************************************************* */
+  function testCustomerOyaOnClick() {
+    openCommonDialogForCustomerOya($('#Company_ID').val(), $('#User_ID').val(), $('#CustomerOyaID').val());
+  };
+
+  /**
+   * 共通得意先選択ダイアログで一覧選択されたときのCallBack関数
+   * */
+  function selectCustomerOyaSelectedCallBack(obj) {
+
+    $('#CustomerOyaID').val(obj["Customer_ID"]);
+    $('#CustomerOyaCD').val(obj["Customer_Code"]);
+    $('#CustomerOyaName').val(obj["Customer_Name_Abbr"]);
+  };
+
+  /**
+   * 共通得意先選択ダイアログの閉じるときのCallBack関数（任意）
+   * */
+  function selectCustomerOyaModalCloseCallBack() {
+
+    /*alert("selectCustomerModalCloseCallBack");*/
+  };
+
+
+  /********************************************************
+   * 共通得意先選択
+   ******************************************************* */
+  function testCustomerOnClick() {
+    openCommonDialogForCustomer($('#Company_ID').val(), $('#User_ID').val(), $('#CustomerID').val());
+  };
+
+  /**
+   * 共通得意先選択ダイアログで一覧選択されたときのCallBack関数
+   * */
+  function selectCustomerSelectedCallBack(obj) {
+
+    $('#CustomerID').val(obj["Customer_Branch_ID"]);
+    $('#CustomerCD').val(obj["Customer_Branch_Code"]);
+    $('#CustomerName').val(obj["Customer_Branch_Name_Abbr"]);
+  };
+
+  /**
+   * 共通得意先選択ダイアログの閉じるときのCallBack関数（任意）
+   * */
+  function selectCustomerModalCloseCallBack() {
+
+    /*alert("selectCustomerModalCloseCallBack");*/
+  };
+
+
+  /********************************************************
+   * 共通得意先担当選択
+   ******************************************************* */
+  function testCustomerTantouOnClick() {
+
+    let KokyakuId = $('#CustomerID').val();
+    if (KokyakuId == 0) {
+      alertInputError("まず顧客を選択してください。");
+      return false;
+    }
+
+    openCommonDialogForCustomerTantou($('#Company_ID').val(), $('#User_ID').val(), $('#CustomerID').val(), $('#CustomerTantouID').val());
+  };
+
+  /**
+   * 共通得意先担当選択ダイアログで一覧選択されたときのCallBack関数
+   * */
+  function selectCustomerTantouSelectedCallBack(obj) {
+
+    $('#CustomerTantouID').val(obj["Tantou_ID"]);
+    $('#CustomerTantouCD').val(obj["Tantou_Code"]);
+    $('#CustomerTantouName').val(obj["Tantou_Name_Abbr"]);
+  };
+
+  /**
+   * 共通得意先担当選択ダイアログの閉じるときのCallBack関数（任意）
+   * */
+  function selectCustomerTantouModalCloseCallBack() {
+
+    /*alert("selectCustomerTantouModalCloseCallBack");*/
+  };
+
+
+  /********************************************************
+   * 共車輌選択
+   ******************************************************* */
+  function testSyaryoOnClick() {
+    openCommonDialogForSayryo($('#Company_ID').val(), $('#User_ID').val(), $('#SyaryoManagementID').val());
+  };
+
+  /**
+ * 共通車輌選択ダイアログで一覧選択されたときのCallBack関数
+ * */
+  function selectSyaryoManagementSelectedCallBack(obj) {
+
+    $('#SyaryoManagementID').val(obj["SyaryoManagement_ID"]);
+    $('#Syasyu').val(obj["Syasyu"]);
+    $('#Kata').val(obj["Kata"]);
+    $('#Syaban_Number').val(obj["Syaban_Number"]);
+  };
+
+  /**
+   * 共通車輌選択ダイアログの閉じるときのCallBack関数（任意）
+   * */
+  function selectSyaryoManagementModalCloseCallBack() {
+
+    /*alert("selectSyaryoManagementModalCloseCallBack");*/
+  };
+
+
+
+  /********************************************************
+  * 共通業者選択
+  ******************************************************* */
+  function testVenderOnClick() {
+    openCommonDialogForVender($('#Company_ID').val(), $('#User_ID').val(), $('#VenderID').val());
+  };
+
+  /**
+   * 共通業者選択ダイアログで一覧選択されたときのCallBack関数
+   * */
+  function selectVenderSelectedCallBack(obj) {
+
+    $('#VenderID').val(obj["Vender_ID"]);
+    $('#VenderCD').val(obj["Vender_Code"]);
+    $('#VenderName').val(obj["Vender_Name_Abbr"]);
+  };
+
+  /**
+   * 共通業者選択ダイアログの閉じるときのCallBack関数（任意）
+   * */
+  function selectVenderModalCloseCallBack() {
+
+    /*alert("selectVenderModalCloseCallBack");*/
+  };
+
+  /********************************************************
+   * 共通乗務員選択
+   ******************************************************* */
+  function testCompanyDriverOnClick() {
+    openCommonDialogForCompanyDriver($('#Company_ID').val(), $('#User_ID').val(), $('#DriverID').val());
+  };
+
+  /**
+ * 共通乗務員選択ダイアログで一覧選択されたときのCallBack関数
+ * */
+  function selectCompanyDriverSelectedCallBack(obj) {
+
+    $('#DriverID').val(obj["Driver_ID"]);
+    $('#Employee_Number').val(obj["Employee_Number"]);
+    $('#Display_Name').val(obj["Display_Name"]);
+  };
+
+  /**
+   * 共通乗務員選択ダイアログの閉じるときのCallBack関数（任意）
+   * */
+  function selectCompanyDriverModalCloseCallBack() {
+
+    /*alert("selectCompanyDriverModalCloseCallBack");*/
+  };
+
+
+  /********************************************************
+   * 共通傭車選択
+   ******************************************************* */
+  function testCustomerDriverOnClick() {
+    openCommonDialogForCustomerDriver($('#Company_ID').val(), $('#User_ID').val(), $('#DriverID').val(), 0);
+  };
+
+  /**
+ * 共通乗務員選択ダイアログで一覧選択されたときのCallBack関数
+ * */
+  function selectCustomerDriverSelectedCallBack(obj) {
+
+    $('#Customer_ID').val(obj["Customer_ID"]);
+    $('#Customer_Branch_ID').val(obj["Customer_Branch_ID"]);
+    $('#Customer_Driver_ID').val(obj["Customer_Driver_ID"]);
+    $('#Customer_Driver_Employee_Number').val(obj["Employee_Number"]);
+    $('#Customer_Driver_Display_Name').val(obj["Display_Name"]);
+  };
+
+  /**
+   * 共通乗務員選択ダイアログの閉じるときのCallBack関数（任意）
+   * */
+  function selectCustomerDriverModalCloseCallBack() {
+
+    /*alert("selectCustomerDriverModalCloseCallBack");*/
+  };
+
+  /********************************************************
+   * 共通住所選択
+   ******************************************************* */
+  function testAddressOnClick() {
+    openCommonDialogForAddress($('#Company_ID').val(), $('#User_ID').val(), 0);
+  };
+
+  /**
+ * 共通乗務員選択ダイアログで一覧選択されたときのCallBack関数
+ * */
+  function selectAddressSelectedCallBack(obj) {
+
+    $('#Address').val(obj["Address"]);
+    $('#Address_lat').val(obj["Lat"]);
+    $('#Address_lng').val(obj["Lng"]);
+    
+    $('#Address_buildingName').val(obj["BuildingName"]);
+    $('#Address_zid').val(obj["BuildingZid"]);
+    $('#Address_zid_Attr').val(obj["BuildingZid_Attr"]);
+
+    $('#Address_address_code').val(obj["Address_Code"]);
+    $('#Address_address_level').val(obj["Address_Level"]);
+    $('#Address_post_code').val(obj["Post_code"]);
+    $('#Address_address2').val(obj["Address2"]);
+    $('#Address_address3').val(obj["Address3"]);
+    $('#Address_address4').val(obj["Address4"]);
+  };
+
+  /**
+   * 共通乗務員選択ダイアログの閉じるときのCallBack関数（任意）
+   * */
+  function selectAddressModalCloseCallBack() {
+
+    /*alert("selectAddressModalCloseCallBack");*/
+  };
+</script>
+

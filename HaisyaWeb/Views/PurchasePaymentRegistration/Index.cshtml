@@ -1,0 +1,799 @@
+﻿@model HaisyaWeb.Models.PurchasePaymentRegistrationModel_Local.DataListModel
+
+@{
+  Layout = "_Layout";
+  ViewData["Title"] = "仕入れ支払登録一覧";
+}
+
+<head>
+  <link href="~/css/Entry.css" rel="stylesheet" />
+</head>
+
+<body class="container">
+  <div id="hiddenItem" hidden>
+    @Html.HiddenFor(model => Model.Company_ID)
+    @Html.HiddenFor(model => Model.Search.Expense_category)
+    @Html.HiddenFor(model => Model.Search.Vehicle_number)
+    @Html.HiddenFor(model => Model.Search.Driver_code)
+    @Html.HiddenFor(model => Model.Search.Driver_name)
+    @Html.HiddenFor(model => Model.Search.Accident_year)
+    <input type="hidden" />
+  </div>
+
+  <div id="hedder" class="row">
+    <table class="head-button">
+      <tr>
+        @if (Model?.Expense?.Expense_Kubun == 1)
+        {
+          <td><h3 id="labelTitle" class="heading-40">乗務員経費</h3></td>
+        }
+        else if (Model?.Expense?.Expense_Kubun == 2)
+        {
+          <td><h3 id="labelTitle" class="heading-40">車輌経費</h3></td>
+        }
+        else if (Model?.Expense?.Expense_Kubun == 3)
+        {
+          <td><h3 id="labelTitle" class="heading-40">事故経費</h3></td>
+        }
+        <td style="width:400px;text-align:right;"><button class="btn btn-outline-success" style="width:200px;" onClick="registerExpenses(event); return false;">登録</button></td>
+        <td style="width:200px; text-align: right;"><button class="btn btn-outline-warning" style="width:100px;" onClick="cancelFunction(event); return false;">キャンセル</button></td>
+      </tr>
+    </table>
+
+    <div class="form-group" style="width: 100%;">
+      <div class="row">
+        @if (Model?.Expense?.Expense_Kubun == 1)
+        {
+          <div class="category-title">乗務員経費用</div>
+          <div class="table-div">
+            <table class="no-line">
+              <tr>
+                <th style="width:60px">乗務員</th>
+                <td width="80px" align="center">
+                  <button class="btn btn-primary btn-sm" onclick="openDriverDialog(); return false;" style="width: 75px;" @(Model.IsNewExpense ? "" : "disabled")>設定</button>
+                </td>
+                <td width="420px">
+                  <input class="form-control" type="text" style="width: 400px" id="companyDriverNameInput" value="@Model?.CompanyDriver?.Display_Name" readonly />
+                </td>
+                <td></td>
+              </tr>
+            </table>
+          </div>
+        }
+        else if (Model?.Expense?.Expense_Kubun == 2)
+        {
+          <div class="category-title">車輌経費用</div>
+          <div class="table-div">
+            <table class="no-line">
+              <tr>
+                <th style="width:60px">車輌</th>
+                <td width="80px" align="center">
+                  <button class="btn btn-primary btn-sm" onclick="openSyaryoDialog(); return false;" style="width: 75px;" @(Model.IsNewExpense ? "" : "disabled")>設定</button>
+                </td>
+                <td width="420px">
+                  <input style="width: 400px" id="syaryo" value="@Model?.Syaryo?.SyasyuDisplay" readonly />
+                </td>
+                <td></td>
+              </tr>
+            </table>
+          </div>
+        }
+        else if (Model?.Expense?.Expense_Kubun == 3)
+        {
+          <div class="category-title">事故経費用</div>
+          <div class="table-div">
+            <table class="no-line">
+              <tr>
+                <th style="width:80px;vertical-align:top;">事故情報</th>
+                <td style="width:80px;vertical-align:top;" align="center">
+                  <button class="btn btn-primary btn-sm" onclick="openAccidentListModal(); return false;" style="width: 75px;" @(Model.IsNewExpense ? "" : "disabled")>設定</button>
+                </td>
+                <td width="50px">&nbsp;</td>
+                <td>
+                  <table class="no-line">
+                  <tr>
+                    <th>事故No.</th>
+                    <td><input class="form-control" id="accidentNo" style="width:160px;" value="" readonly></td>
+                    <th>事故名</th>
+                    <td><input class="form-control" id="accidentName" style="width:300px;" value="" readonly></td>
+                  </tr>
+                  <tr>
+                    <th>事故発生日</th>
+                    <td><input class="form-control" id="accidentDate" style="width: 140px; text-align: center;" value="" readonly></td>
+                    <th>事故区分</th>
+                    <td><input class="form-control" id="accidentType" style="width: 150px" value="" readonly></td>
+                  </tr>
+                  <tr>
+                    <th>乗務員名</th>
+                    <td><input class="form-control" id="driverName" style="width:150px" value="" readonly></td>
+                    <th>車番</th>
+                    <td><input class="form-control" id="carNumber" style="width:80px" value="" readonly></td>
+                  </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="category-title">詳細情報</div>
+    <div class="table-div">
+      <table class="no-line">
+        <tr>
+          <td style="text-align:right;">
+            <button class="btn btn-outline-success" style="width: 100px;" onclick="addButtonFunction();">追加</button>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div id="container"></div>
+</body>
+
+<script>
+  let index = 0;
+
+  let isNotRegistered = false;
+
+  // モデルからJavaScript配列化
+  let expense = @Html.Raw(Json.Serialize(Model.Expense));
+
+  let expensePayments = @Html.Raw(Json.Serialize(Model.ExpensePayments));
+  let expenseItems = @Html.Raw(Json.Serialize(Model.ExpenseItems));
+  let venders = @Html.Raw(Json.Serialize(Model.Venders));
+  const possibleExpenseItems = @Html.Raw(Json.Serialize(Model.PossibleExpenseItems));
+
+  let jiko = @Html.Raw(Json.Serialize(Model.Jiko));
+
+  // AccidentListModalを使うときに使う
+  let accidentName = '';
+  let carNumber = '';
+  let driverName = '';
+  let accidentReason = 0;
+
+  // Remarksがあるかどうかによって「あり」か「なし」を表示する
+  function updateRemarksDiv(updatedRemarksD) {
+    const remarksDiv = document.getElementById('remarksDiv-' + index);
+
+    if (updatedRemarksD !== null && updatedRemarksD.trim() !== '') {
+      remarksDiv.innerHTML = 'あり';
+    } else {
+      remarksDiv.innerHTML = 'なし';
+    }
+  }
+
+  function setJikoValues(accidentNo, accidentName, accidentDate, accidentType, driverName, carNumber, jiko_ID) {
+    let aDate = accidentDate.split('T')[0];
+    let accDate = accidentDate.split(' ')[0];
+    document.getElementById('accidentNo').value = accidentNo;
+    document.getElementById('accidentName').value = accidentName;
+    if (document.getElementById('accidentDate')){
+        const date = new Date(aDate);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+
+        const formattedDate = `${year}/${month}/${day}`;
+        document.getElementById('accidentDate').value = formattedDate;
+    }
+    document.getElementById('accidentType').value = accidentType;
+    document.getElementById('driverName').value = driverName;
+    document.getElementById('carNumber').value = carNumber;
+
+    jiko.display_Name = driverName;
+    jiko.jiko_Display = accidentName;
+    jiko.syaban_Number = carNumber;
+    jiko.jiko_No = accidentNo;
+    jiko.jiko_Date = aDate;
+    jiko.code_Name = accidentType;
+    jiko.jiko_ID = jiko_ID;
+
+    expense.jiko_ID = jiko_ID;
+  }
+
+  window.onload = function () {
+    if (@Model.IsNewExpense.ToString().ToLower()) {
+      addTable();
+      loadKeihi()
+      index = 0;
+    } else {
+      renderTable();
+    }
+
+    isNotRegistered = false;
+
+    if (jiko && jiko.jiko_ID !== 0) {
+      setJikoValues(
+        jiko.jiko_No,
+        jiko.jiko_Display,
+        jiko.jiko_Date,
+        jiko.code_Name,
+        jiko.display_Name,
+        jiko.syaban_Number,
+      );
+    }
+  };
+
+  const renderTable = () => {
+    expensePayments.map(payment => {
+      addTable()
+      const kDate = new Date(payment.expense_Day);
+      const sMonth = new Date(payment.payment_Month);
+      const shimeKubun = payment.shime_Kubun;
+      document.getElementById(`kCalendar-${index}`).value = `${kDate.getFullYear()}-${('0' + (kDate.getMonth() + 1)).slice(-2)}-${('0' + kDate.getDate()).slice(-2)}`;
+      document.getElementById(`expenseMoney-${index}`).value = payment.expense_Money.toLocaleString('ja-JP');
+      document.getElementById(`paymentMoney-${index}`).value = payment.payment_Money.toLocaleString('ja-JP');
+      document.getElementById(`sCalendar-${index}`).value = `${sMonth.getFullYear()}-${('0' + (sMonth.getMonth() + 1)).slice(-2)}`;
+      document.getElementById(`remarksDiv-${index}`).innerHTML = payment.remarks ? 'あり' : 'なし';
+      document.getElementById(`shimeKubunP-${index}`).innerHTML = shimeKubun ? '締め' : '未';
+      document.getElementById('venderNameInput-' + index).value = venders[index]?.vender_Name ?? "";
+      loadKeihi()
+      document.getElementById('expense-select-' + index).value = payment.expense_Item_ID;
+      
+      // 締めと表示されてるデータは、変更が不可です。
+      if (shimeKubun === 1) {
+        document.getElementById(`kCalendar-${index}`).disabled = true;
+        document.getElementById(`expenseMoney-${index}`).disabled = true;
+        document.getElementById(`paymentMoney-${index}`).disabled = true;
+        document.getElementById(`sCalendar-${index}`).disabled = true;
+        document.getElementById(`remarksButton-${index}`).disabled = true;
+        document.getElementById(`venderButton-${index}`).disabled = true;
+        document.getElementById(`expense-select-${index}`).disabled = true;
+      }
+      index++
+    })
+  }
+
+  function loadKeihi() {
+    populateSelect();
+    if (expensePayments[index]) {
+      updateRemarksDiv(expensePayments[index].remarks);
+    }
+    isNotRegistered = false;
+  }
+
+  function handleKeihiCalendarChange(input) {
+    index = input;
+    expensePayments[index].expense_Day = document.getElementById(`kCalendar-${index}`).value;
+    isNotRegistered = true;
+  }
+
+  function format_number(i) {
+    var s = $(i).val();
+    if (s.length == 0)
+      return '';
+    var n = parseInt(s.replace(/\D/g, ''), 10);
+    if (isNaN(n) || n >= 100000000) {
+      alertError(`【エラー】8 桁以内で入力してください。`);
+      s = $(i).val();
+      s = s.substring(0, s.length - 1);
+      n = parseInt(s.replace(/\D/g, ''), 10);
+    }
+    return n.toLocaleString('ja-JP');
+  }
+
+  function handleExpenseMoneyChange(input) {
+    var i = '#expenseMoney-' + input;
+    $(i).val(format_number(i));
+
+    index = input;
+    expensePayments[index].expense_Money = $(i).val();
+    isNotRegistered = true;
+  }
+
+  function handlePaymentMoneyChange(input) {
+    var i = '#paymentMoney-' + input;
+    $(i).val(format_number(i));
+
+    index = input;
+    expensePayments[index].payment_Money = $(i).val();;
+    isNotRegistered = true;
+  }
+
+  function handleShibaraiCalendarChange(input) {
+    index = input;
+    expensePayments[index].payment_Month = document.getElementById(`sCalendar-${index}`).value;
+    isNotRegistered = true;
+  }
+
+  //①必須チェック：
+  //・経費項目の選択
+  //・仕入業者の選択
+  //・経費日、支払月の選択
+  //・経費額、支払額の入力
+  function checkList(event) {
+    event.preventDefault();
+
+    if (expensePayments.some((payment) => payment.expense_Day === null || payment.expense_Day === "0001-01-01T00:00:00")) {
+      alert('経費日を選択してください。');
+      return false;
+    }
+
+    if (expensePayments.some((payment) => payment.payment_Month === null ||  payment.payment_Month === "0001-01-01T00:00:00")) {
+      alert('支払月を選択してください。');
+      return false;
+    }
+
+
+    if (venders.some((vender) => vender.vender_ID === 0)) {
+      alert('仕入業者を選択してください。');
+      return false;
+    }
+
+    return true;
+  }
+
+  function addButtonFunction() {
+    index = expensePayments.length;
+    expensePayments[index] = {
+      expense_Payment_ID: 0,
+      expense_ID: expense?.expense_ID ?? 0,
+      vender_ID: 0,
+      expense_Item_ID: possibleExpenseItems?.[0]?.expense_Item_ID ?? 1,
+      expense_Day: null,
+      expense_Money: 0,
+      payment_Money: 0,
+      payment_Month: null,
+      remarks: '',
+      shime_Kubun: 0,
+      insert_Datetime: '0001-01-01T00:00:00',
+      insert_User: 0,
+      update_Datetime: '0001-01-01T00:00:00',
+      update_User: 0,
+    };
+
+    venders[index] = {
+      vender_ID: 0,
+      company_ID: 0,
+      vender_Code: null,
+      vender_Name: null,
+      vender_Name_Kana: null,
+      vender_Name_Abbr: null,
+      post_Code: null,
+      mail_Title: null,
+      mail_Address1: null,
+      mail_Address2: null,
+      address1: null,
+      address2: null,
+      phone1: null,
+      phone2: null,
+      fax1: null,
+      fax2: null,
+      shiharaiTantouID: 0,
+      closingDate1: null,
+      shime_Day: 0,
+      shiharaiRemarks: null,
+      shiharai_Vender_ID: 0,
+      del_Flg: false,
+      insert_Datetime: '0001-01-01T00:00:00',
+      insert_User: 0,
+      update_Datetime: '0001-01-01T00:00:00',
+      update_User: 0,
+    };
+    addTable();
+    loadKeihi();
+  }
+
+  function addTable() {
+    const tableHTML = `
+      <div style="border:#cccccc 1px solid;width:100%;padding:5px;margin-bottom:10px;">
+        <div class="table-div">
+        <table class="no-line">
+          <tr>
+          <th>経費項目</th>
+          <td width="250px">
+            <select id="expense-select-${index}" class="form-control list dropdown" style="width:140px;" onchange="handleSelectChange(this, ${index})"></select>
+          </td>
+          <th>仕入業者</th>
+          <td style="width:80px;text-align:center;">
+            <button id="venderButton-${index}" class="btn btn-primary btn-sm" onclick="openVenderDialog(${index}); return false;" style="width: 75px;">設定</button>
+          </td>
+          <td width="350px">
+            <input class="form-control" id="venderNameInput-${index}" style="width:300px;" readonly />
+          </td>
+          <td>&nbsp;</td>
+        </table>
+
+        <table class="list" style="margin-top:10px;">
+          <tr>
+          <th class="bgcolor" style="width:160px;">経費日</th>
+          <th class="bgcolor" style="width:100px;">経費額</th>
+          <th class="bgcolor" style="width:100px;">支払額</th>
+          <th class="bgcolor" style="width:160px;">支払月</th>
+          <th class="bgcolor" style="" colspan="2">備考</th>
+          <th class="bgcolor" style="width:100px;">締区分</th>
+          <td class="noborder">&nbsp;</td>
+          </tr>
+          <tr>
+          <td align="center">
+            <input class="table-data-cell-children" style="text-align:center;" type="date" id="kCalendar-${index}" name="keihiCalendar" oninput="handleKeihiCalendarChange(${index});" />
+          </td>
+          <td align="center">
+            <input type="text" id="expenseMoney-${index}" class="table-data-cell-children" style="text-align:right;" oninput="handleExpenseMoneyChange(${index});" />
+          </td>
+          <td align="center">
+            <input type="text" id="paymentMoney-${index}" class="table-data-cell-children" style="text-align:right;" oninput="handlePaymentMoneyChange(${index});" />
+          </td>
+          <td align="center">
+            <input class="table-data-cell-children" style="text-align:center;width:100px;" type="month" id="sCalendar-${index}" name="shibaraiCalendar" oninput="handleShibaraiCalendarChange(${index});" />
+          </td>
+          <td align="center" style="width:80px;border-right:#fff 1px solid;">
+            <button class="btn btn-primary btn-sm" id="remarksButton-${index}" onClick="openRemarksModal(${index}); return false;" style="">入力</button>
+          </td>
+          <td align="center" style="width:80px;">
+            <div id="remarksDiv-${index}" style="vertical-align:middle;"></div>
+          </td>
+          <td align="center">
+              <div id="shimeKubunP-${index}">未</div>
+          </td>
+          <td class="noborder">&nbsp;</td>
+          </tr>
+        </table>
+        </div>
+      </div>
+      `;
+
+    // Append the table to the container div
+    const container = document.getElementById('container');
+    container.insertAdjacentHTML('beforeend', tableHTML);
+  }
+
+  //①必須チェック：
+  //・経費項目の選択
+  //・仕入業者の選択
+  //・経費日、支払月の選択
+  //・経費額、支払額の入力
+  function checkInputs(event) {
+    if (expense.expense_Kubun === 1) {
+      const companyDriverNameInputElement = document.getElementById('companyDriverNameInput');
+      if (!companyDriverNameInputElement || !companyDriverNameInputElement.value) {
+        event.preventDefault();
+        alert('乗務員を選択してください。');
+        return false;
+      }
+    } else if (expense.expense_Kubun === 2) {
+      const syaryoElement = document.getElementById('syaryo');
+      if (!syaryoElement || !syaryoElement.value) {
+        event.preventDefault();
+        alert('車輌を選択してください。');
+        return false;
+      }
+    } else if (expense.expense_Kubun === 3) {
+      var accidentNo = document.getElementById('accidentNo').value;
+      var accidentName = document.getElementById('accidentName').value;
+      var accidentDate = document.getElementById('accidentDate').value;
+      var accidentType = document.getElementById('accidentType').value;
+      var driverNumber = document.getElementById('driverName').value;
+      var carNumber = document.getElementById('carNumber').value;
+      if (!accidentNo) {
+        event.preventDefault();
+        alert('事故を選択してください。');
+        return;
+      }
+    }
+
+    return true;
+  }
+
+  function handleSelectChange(select, value) {
+    index = value;
+    expensePayments[index].expense_Item_ID = select.value;
+  }
+
+  function selectHighestValueOption() {
+    const selectElement = document.getElementById('expense-select-' + index);
+    const options = selectElement.getElementsByTagName('option');
+    let highestValueOption = options[0];
+
+    for (let i = 1; i < options.length; i++) {
+      if (parseInt(options[i].value, 10) > parseInt(highestValueOption.value, 10)) {
+        highestValueOption = options[i];
+      }
+    }
+
+    // Set the highest value option as selected
+    selectElement.value = highestValueOption.value;
+
+    // Optionally, trigger the onchange event if needed
+    const event = new Event('change');
+    selectElement.dispatchEvent(event);
+  }
+
+  // 経費項目を変わるとExpensePaymentsリストのインデックスを更新
+  function changeIndexValue(i) {
+    index = i.value;
+  }
+
+  function populateSelect() {
+    const selectElement = document.getElementById('expense-select-' + index);
+    selectElement.innerHTML = ''; // Clear existing options
+    for (let i = 0; i < possibleExpenseItems.length; i++) {
+      const option = document.createElement('option');
+      option.value = possibleExpenseItems[i].expense_Item_ID;
+      option.textContent = possibleExpenseItems[i].item_Display;
+      selectElement.appendChild(option);
+    }
+  }
+
+  function ModalClose() {
+    $('#ModalHere').find('.modal').modal('hide');
+  }
+
+  function openRemarksModal(input) {
+    index = input;
+
+    $.post('@Url.RouteUrl("Default", new { controller = "PurchasePaymentRegistration", Action = "BikouModal" })', {
+      remarks: expensePayments[index].remarks,
+      index: index,
+      shimeKubun: expensePayments[index].shime_Kubun,
+    })
+      .done(function (response) {
+        if (response.errorMessage != null) {
+          alertError(`【エラー】${response.errorMessage}`);
+          return false;
+        } else {
+          $('#ModalHere').html(response.partialView);
+          $('#ModalHere').find('.modal').modal('show');
+          return;
+        }
+      })
+      .fail(function (xhr) {
+        alertError(xhr, '【ネットワークエラー】');
+        console.log(xhr);
+        return false;
+      })
+      .always(function (xhr, msg) {});
+
+    return false;
+  }
+
+  function addPayment(event) {
+    if (!checkInputs(event)) return;
+    $.post(
+      '@Url.RouteUrl("Default", new { controller = "PurchasePaymentRegistration", Action = "AddExpenseItemModal" })',
+      {
+        possibleExpenseItems: possibleExpenseItems,
+      },
+    )
+      .done(function (response) {
+        if (response.errorMessage != null) {
+          alertError(`【エラー】${response.errorMessage}`);
+          return false;
+        } else {
+          $('#ModalHere').html(response.partialView);
+          $('#ModalHere').find('.modal').modal('show');
+          return;
+        }
+      })
+      .fail(function (xhr) {
+        alertError(xhr, '【ネットワークエラー】');
+        console.log(xhr);
+        return false;
+      })
+      .always(function (xhr, msg) {});
+
+    return false;
+  }
+
+  /**
+   * 仕入れ業者選択ダイアログ
+   */
+  function openVenderDialog(input) {
+    index = input;
+    openCommonDialogForVender($('#Company_ID').val(), "", index);
+    return false;
+  }
+
+  /**
+   * 共通業者選択ダイアログで一覧選択されたときのCallBack関数
+   * */
+  function selectVenderSelectedCallBack(obj) {
+    document.getElementById('venderNameInput-' + index).value = obj.Vender_Name;
+    if (venders[index]) {
+      venders[index].vender_ID = obj.Vender_ID;
+      venders[index].vender_Name = obj.Vender_Name;
+    }
+    expensePayments[index].vender_ID = obj.Vender_ID;
+    isNotRegistered = true;
+  }
+
+  function selectVenderModalCloseCallBack() {
+    $('#ModalCommonDialog').find('.modal').modal('hide');
+  };
+
+  /**
+   * 乗務員選択ダイアログ
+   */
+  function openDriverDialog() {
+    openCommonDialogForCompanyDriver($('#Company_ID').val(), "", "");
+
+    return false;
+  }
+
+  /**
+   * 共通乗務員選択ダイアログで一覧選択されたときのCallBack関数
+   * */
+  function selectCompanyDriverSelectedCallBack(obj) {
+    $.get(
+      '@Url.RouteUrl("Default", new { controller = "PurchasePaymentRegistration", action = "TExpenseByDriverID" })',
+      {
+        driverId: obj.Driver_ID,
+      },
+    )
+    .done(function (response) {
+      if (response === undefined) {
+        alert('既に登録された情報が存在します。');
+      } else if (response.message != null) {
+        return false;
+      } else {
+        document.getElementById('companyDriverNameInput').value = obj.Display_Name;
+        expense.driver_ID = obj.Driver_ID;
+        isNotRegistered = true;
+        return;
+      }
+    })
+    .fail(function (xhr) {
+      alertError(xhr, '【ネットワークエラー】');
+      console.log(xhr);
+      return false;
+    })
+    .always(function (xhr, msg) {});
+  }
+
+  /**
+   * 車輌選択ダイアログ
+   */
+  function openSyaryoDialog() {
+    openCommonDialogForSayryo($('#Company_ID').val(), "", "");
+
+    return false;
+  }
+
+  /**
+   * 共通車輌選択ダイアログで一覧選択されたときのCallBack関数
+   * */
+  function selectSyaryoManagementSelectedCallBack(obj) {
+    $.get(
+      '@Url.RouteUrl("Default", new { controller = "PurchasePaymentRegistration", action = "SyaryoBySyaryoManagementId" })',
+      {
+        syaryoManagementId: obj.SyaryoManagement_ID,
+      },
+    )
+      .done(function (response) {
+        if (response === undefined) {
+          alert('既に登録された情報が存在します。');
+        } else if (response.message != null) {
+          return false;
+        } else {
+          document.getElementById('syaryo').value = response.syasyuDisplay;
+          expense.syaryoManagement_ID = obj.SyaryoManagement_ID;
+          expense.driver_ID = obj.Driver_ID;
+          isNotRegistered = true;
+          return;
+        }
+      })
+      .fail(function (xhr) {
+        alertError(xhr, '【ネットワークエラー】');
+        console.log(xhr);
+        return false;
+      })
+      .always(function (xhr, msg) {});
+  }
+
+  /**
+   * 共通車輌選択ダイアログの閉じるときのCallBack関数（任意）
+   * */
+  function selectSyaryoManagementModalCloseCallBack() {
+    $('#ModalCommonDialog').dialog("close");
+  }
+
+  function registerExpenses(event) {
+    if (!checkInputs(event)) return;
+    if (!checkList(event)) return;
+    $.post(
+      '@Url.RouteUrl("Default", new { controller = "PurchasePaymentRegistration", Action = "RegisterExpenses" })',
+      {
+        expense: expense,
+        expensePayments: expensePayments,
+        jiko: jiko,
+      },
+    )
+      .done(function (response) {
+        if (response.errorMessage != null) {
+          alertError(`【エラー】${response.errorMessage}`);
+          return false;
+        } else {
+          returnToMainView();
+          return;
+        }
+      })
+      .fail(function (xhr) {
+        alertError(xhr, '【ネットワークエラー】');
+        console.log(xhr);
+        return false;
+      })
+      .always(function (xhr, msg) {});
+
+    return false;
+  }
+
+  function returnToMainView() {
+    var form = document.createElement('form');
+    form.action = '@Url.RouteUrl("Default", new { controller = "Expense", Action = "Index" })';
+    form.method = 'POST';
+    form.innerHTML += $('#hiddenItem').html();
+    document.body.appendChild(form);
+    form.submit();
+  }
+
+    async function cancelFunction(event) {
+    // 保存されていない情報があるチェック
+    if (isNotRegistered) {
+      let result = await alertYesNoMsg("確認", "データが変更されていますが、遷移しますか？", "question", "はい", "いいえ")
+      if (result == false)
+        return;
+      returnToMainView();
+    } else {
+      returnToMainView();
+    }
+  }
+
+  function openAccidentListModal() {
+    $.post('@Url.RouteUrl("Default", new { controller = "AccidentList", Action = "OpenAccidentListModal" })', {})
+      .done(function (response) {
+        if (response.errorMessage != null) {
+          alertError(`【エラー】${response.errorMessage}`);
+          return false;
+        } else {
+          $('#ModalHere').html(response.partialView);
+          $('#ModalHere').find('.modal').modal('show');
+          return;
+        }
+      })
+      .fail(function (xhr) {
+        alertError(xhr, '【ネットワークエラー】');
+        console.log(xhr);
+        return false;
+      })
+      .always(function (xhr, msg) {});
+
+    return false;
+  }
+
+  function accidentListModalCloseCallBack(
+    accidentNo,
+    accidentName,
+    accidentDate,
+    accidentType,
+    driverName,
+    carNumber,
+    jiko_ID,
+  ) {
+    $.get(
+      '@Url.RouteUrl("Default", new { controller = "PurchasePaymentRegistration", action = "GetTExpenseByJikoId" })',
+      {
+        jikoId: jiko_ID,
+      },
+    )
+      .done(function (response) {
+        if (response === undefined) {
+          alert('既に登録された情報が存在します。');
+        } else if (response.message != null) {
+          return false;
+        } else {
+          $('#ModalHere').find('.modal').modal('hide');
+          setJikoValues(accidentNo, accidentName, accidentDate, accidentType, driverName, carNumber, jiko_ID);
+          isNotRegistered = true;
+          return;
+        }
+      })
+      .fail(function (xhr) {
+        alertError(xhr, '【ネットワークエラー】');
+        console.log(xhr);
+        return false;
+      })
+      .always(function (xhr, msg) {});
+  }
+</script>

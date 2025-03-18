@@ -1,0 +1,428 @@
+@model HaisyaWeb.Dto.SenzokuModel
+@*
+For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+  Layout = "_Layout";
+  ViewData["Title"] = "専属月清算";
+}
+
+<head>
+  <link href="~/css/Entry.css" rel="stylesheet" />
+  <style>
+    .senzoku-list{
+      background-color:#CCCCCC !important;
+    }
+    .uriage-id-background {
+      background-color: #a6e1ff !important;
+    }
+    .status-2-background {
+      background-color: #e7ffbf !important;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="hiddenItem" hidden>
+    @Html.HiddenFor(model => Model.Search.RangeSearch)
+    @Html.HiddenFor(model => Model.Search.SelectDay)
+    @Html.HiddenFor(model => Model.Search.SelectEndDay)
+    @Html.HiddenFor(model => Model.Search.ExpandSearch)
+    @Html.HiddenFor(model => Model.Search.SelectFilter)
+    @Html.HiddenFor(model => Model.Search.SelectGroup)
+    @Html.HiddenFor(model => Model.Search.SelectTokuisakiID)
+    @Html.HiddenFor(model => Model.Search.SelectTokuisakiName)
+    @Html.HiddenFor(model => Model.Search.SelectTantou)
+    @Html.HiddenFor(model => Model.Search.SelectSeikyuTantou)
+    @Html.HiddenFor(model => Model.Search.JyoumuinID)
+    @Html.HiddenFor(model => Model.Search.JyoumuinName)
+
+    @if (Model.Search?.SelectStatus != null)
+    {
+      @for (var i = 0; i < Model.Search.SelectStatus.Length; i++)
+      {
+        <input type="hidden" id="Search_SelectStatus[@i]" name="Search.SelectStatus[@i]" value="@Model.Search.SelectStatus[i]" />
+      }
+    }
+    @Html.HiddenFor(model => Model.Search.BackMenuAction)
+  </div>
+  <div>
+    <div id="hedder" class="row">
+      <div class="table-div">
+        <table class="head-button">
+          <tr>
+            <td><h3 id="labelTitle" class="heading-40">専属月清算</h3></td>
+            <td style="text-align:right;"><button class="btn btn-outline-warning" style="width:100px;" onClick="CancelButton();">キャンセル</button></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="top-side">
+      <table class="no-line">
+        <tr>
+          <th width="80px">専属名</th>
+          <td width="300px">@Html.DisplayFor(model => model.Senzoku.Senzoku_Name)</td>
+          <th width="80px">専属荷主</th>
+          <td width="200px">
+            @Model.Customer?.Customer_Branch_Code @Model.Customer?.Customer_Branch_Name_Abbr
+          </td>
+          <th width="80px"></th>
+          <td width="300px"></td>
+          <td></td>
+        </tr>
+        <tr>
+          <th>主専属車輌</th>
+          <td>@Html.DisplayFor(model => model.MasterSenzokuSyaryo)</td>
+          <th>主専属乗務員</th>
+          <td>@Html.DisplayFor(model => model.MasterSenzokuDriver)</td>
+          <th>主専属傭車先会社</th>
+          <td>@Html.DisplayFor(model => model.MasterSenzokuYosya)</td>
+          <td></td>
+        </tr>
+        <tr>
+          <th>請求計算</th>
+          <td>
+            @if (Model.Senzoku.Calc_Kubun == 0)
+            {
+              <span>月額計算</span>
+            }
+            else
+            {
+              <span>日額計算</span>
+            }
+          </td>
+          <td colspan="2">
+            @if (Model.Senzoku.Calc_Kubun == 0)
+            {
+              <span>月額</span> @Model.Senzoku.Monthly_Fee.ToString("#,0")<span>円</span>
+            }
+            else
+            {
+              <span>日額</span> @Model.Senzoku.Daily_Fee.ToString("#,0")<span>円</span>
+            }
+          </td>
+          <th>締日</th>
+          <td>@Html.DisplayFor(model => model.Customer.Shime_Day)</td>
+          <td></td>
+        </tr>
+        <tr>
+          <th>請求年月</th>
+          <td>
+            @Html.TextBoxFor(model => model.SeikyuDate, "{0:yyyy-MM}", new
+              {
+                @class = "form-control inputtable",
+                type = "month",
+                style = "width:140px;",
+              })
+          </td>
+          <td colspan="5"></td>
+        </tr>
+      </table>
+
+      <div id="DataList" class="dataList" style="margin-top: 25px;"></div>
+    </div>
+  </div>
+</body>
+
+<script>
+  $(document).ready(function() {
+    updatePageData()
+
+    $('#SeikyuDate').change(function() {
+      updatePageData();
+    });
+
+    function calculateDailyFee() {
+      var calcKubun = @Model.Senzoku.Calc_Kubun;
+      var fee = calcKubun == 0 ? parseFloat(kanmaChangeRevert($('#monthlyFee').val())) : parseFloat(kanmaChangeRevert($('#dailyFee').val()));
+      var operationDays = parseInt($('#operationDateCount').val());
+      if (!isNaN(fee) && !isNaN(operationDays) && operationDays !== 0) {
+        var calculatedFee = calcKubun == 0 ? fee / operationDays : fee;
+        $('#calculatedDailyFee').val(Math.floor(calculatedFee));
+      } else {
+        $('#calculatedDailyFee').val('0');
+      }
+    }
+
+    // 計算日額の計算
+    $('#monthlyFee, #dailyFee, #operationDateCount').on('input', calculateDailyFee);
+      calculateDailyFee();
+    });
+
+
+    // 一括確定登録ボタン押下時の処理
+    async function kakuteiRegistrationButton() {
+      var checkedCount = $('.rowCheckbox:checked').length;
+      // チェックされたチェックボックスが0個の場合、エラーアラートを表示して処理を中断
+      if (checkedCount === 0) {
+        alertError('処理対象を選択してください');
+        return false;
+      }
+
+      var resultMsg = await alertYesNoMsg("確認", "☑の入った行に対して一括確定登録処理を行います", "question", "はい", "いいえ");
+      if (resultMsg == false) {
+        return false;
+      }
+
+      var uriageIds = [];
+      var checkedRows = $('.rowCheckbox:checked').closest('tr');
+
+      checkedRows.each(function() {
+        var row = $(this);
+        var uriageId = parseInt(row.find('.uriageIdHidden').val());
+        uriageIds.push(uriageId);
+      });
+
+      // 重複を除去
+      var distinctUriageIds = [...new Set(uriageIds)];
+
+      $.ajax({
+        url: '@Url.RouteUrl("Default", new { controller = "Sales", action = "PostKakuteiUriageData" })',
+        type: 'POST',
+        data: { uriageIds: distinctUriageIds },
+        success: function (response) {
+          if (response.errorMessage != null) {
+            alertError(`【エラー】${response.errorMessage}`);
+          }
+          else {
+            updatePageData();
+          }
+        },
+        error: function(error) {
+        }
+      });
+    }
+
+    // 一括設定ボタンを押下時の処理
+    async function RegistrationButton() {
+      var checkedCount = $('.rowCheckbox:checked').length;
+      // チェックされたチェックボックスが0個の場合、エラーアラートを表示して処理を中断
+      if (checkedCount === 0) {
+        alertError('処理対象を選択してください');
+        return false;
+      }
+
+      var resultMsg = await alertYesNoMsg("確認", "☑の入った行に対して一括設定処理を行います", "question", "はい", "いいえ");
+      if (resultMsg == false) { return false; }
+
+      var seikyuDateVal = $('#SeikyuDate').val();
+      var shimeDay = '@Model.Customer.Shime_Day';
+
+      // 日付ごとのレコード数を記録するオブジェクト
+      var dateCounts = {};
+      var totalRecords = 0;
+
+      // テーブル内の全ての行を取得
+      var allRows = $('.seikyu-list tbody tr');
+
+      // 最初のループで日付ごとのレコード数をカウント
+      allRows.each(function() {
+        var row = $(this);
+        var haisyaDate = row.find('.haisyaDateHidden').val().split(' ')[0]?.replace(/\//g, "-");
+        if (haisyaDate) {
+          dateCounts[haisyaDate] = (dateCounts[haisyaDate] || 0) + 1;
+          totalRecords++;
+        }
+      });
+
+      var calculatedDailyFee = parseFloat(kanmaChangeRevert($('#calculatedDailyFee').val())) || 0;
+      var checkedRows = $('.rowCheckbox:checked').closest('tr');
+
+      var postData = {
+        UriageList: [],
+        UriageUnchinList: []
+      };
+
+      checkedRows.each(function() {
+        var row = $(this);
+        var uriageId = parseInt(row.find('.uriageIdHidden').val());
+        var haisyaDate = row.find('.haisyaDateHidden').val()?.replace(/\//g, "-")?.split(' ')[0];
+
+        // T_Uriage データの作成
+        var uriage = {
+          Uriage_ID: uriageId || 0,
+          Company_ID: @Model.Company_ID,
+          Reg_Status: 3,
+          Reg_Status_Shitabarai: 0,
+          Anken_ID: parseInt(row.find('.ankenIdHidden').val()) || 0,
+          AnkenDisplay_ID: 0,
+          Reg_Kubun: 0,
+          Haisya_Date: haisyaDate,
+          Nippou_ID: parseInt(row.find('.nippouIdHidden').val()) || parseInt(row.find('.nippouIdHidden2').val()),
+          SeikyuDate_Kubun: 0,
+          Seikyu_Kubun: 0,
+          SenzokuID: @Model.Senzoku.SenzokuID,
+          Tatekae_Over_Kubun: 0,
+          Shiharai_Over_Kubun: 0,
+          Tatekae_Over_Approval: 0,
+          Shiharai_Over_Approval: 0,
+          Insert_Datetime: new Date().toISOString(),
+          Insert_User: @Model.User_ID,
+          Update_Datetime: new Date().toISOString(),
+          Update_User: @Model.User_ID,
+          Direct_Customer_Branch_ID: 0,
+          Direct_Customer_Tantou_ID: 0,
+          Direct_Uriage_Kubun: 0,
+          Direct_Uriage_Bumon: 0,
+          Direct_Seikyu_Group_ID: 0,
+          Del_Flg: false,
+        };
+
+        // SeikyuUnchinの計算
+        var seikyuUnchin = 0;
+        if (haisyaDate && dateCounts[haisyaDate]) {
+          seikyuUnchin = Math.floor(calculatedDailyFee / dateCounts[haisyaDate]);
+        }
+
+        // SeikyuTotalの計算
+        var seikyuTotal = seikyuUnchin; // デフォルト値
+
+        if (uriageUnchinId > 0) {
+          // 既存のUriage_Unchinレコードの場合、表示されている値を合計する
+          seikyuTotal = [
+            parseFloat(row.find('td:eq(7)').text()) || 0,  // SeikyuUnchin
+            parseFloat(row.find('td:eq(8)').text()) || 0,  // Tatekaekin
+            parseFloat(row.find('td:eq(11)').text()) || 0, // Warimashi1
+            parseFloat(row.find('td:eq(12)').text()) || 0, // Warimashi2
+            parseFloat(row.find('td:eq(13)').text()) || 0, // Warimashi3
+            parseFloat(row.find('td:eq(14)').text()) || 0, // Warimashi4
+            parseFloat(row.find('td:eq(15)').text()) || 0  // Warimashi5
+          ].reduce((sum, value) => sum + value, 0);
+        }
+
+        const [year, month] = seikyuDateVal.split('-').map(Number);
+
+        const date = new Date(year, month - 1, shimeDay);
+
+        if (date.getMonth() !== month - 1) {
+          date.setDate(0);
+        }
+
+        var seikyuDate = date.toISOString().split('T')[0];
+
+        // T_Uriage_Unchin データの作成
+        var uriageUnchin = {
+          Uriage_Unchin_ID:parseInt(row.find('.uriageUnchinIdHidden').val()) || 0,
+          Uriage_ID: uriageId || 0,
+          Sort: 1,
+          Uriage_Kubun: 0,
+          Default_Kubun: 1,
+          Zei_Kubun: 0,
+          Seikyu_Date: seikyuDate,
+          Shime_Day: @Model.Customer.Shime_Day,
+          Customer_Branch_ID: @Model.Customer.Seikyu_Customer_Branch_ID || @Model.Customer.Customer_ID,
+          Tsumi: row.find('td:eq(5)').text().trim(), // StartAddressDisplay3
+          Oroshi: row.find('td:eq(6)').text().trim(), // EndAddressDisplay3
+          Luggage: null,
+          Qty: 0,
+          Unit: 0,
+          UnitPrice: 0,
+          CalcPrice: 0,
+          Luggage: row.find('.luggageHidden').val() || "",
+          SeikyuUnchin: seikyuUnchin,
+          Tatekaekin: 0,
+          Warimashi1: 0,
+          Warimashi2: 0,
+          Warimashi3: 0,
+          Warimashi4: 0,
+          Warimashi5: 0,
+          SeikyuTotal: seikyuTotal,
+          Del_Flg: false,
+          Insert_Datetime: new Date().toISOString(),
+          Insert_User: @Model.User_ID,
+          Update_Datetime: new Date().toISOString(),
+          Update_User: @Model.User_ID,
+          AkaKuro_Remarks: null
+        };
+
+        if (uriage.Uriage_ID > 0) {
+          postData.UriageList.push(uriage);
+          postData.UriageUnchinList.push(uriageUnchin);
+        }
+    });
+
+      console.log(JSON.stringify(postData));
+      $.ajax({
+        url: '@Url.RouteUrl("Default", new { controller = "Sales", action = "PostUriageData" })',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(postData),
+        success: function (response) {
+          if (response.errorMessage != null) {
+            alertError(`【エラー】${response.errorMessage}`);
+          }
+          else {
+            updatePageData()
+          }
+        },
+        error: function() {
+        }
+      });
+    }
+
+  function updatePageData() {
+    var seikyuDate = $('#SeikyuDate').val();
+    var senzokuId = @Model.Senzoku.SenzokuID;
+
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "Sales", action = "GetMonthlySettlementData" })',
+      type: 'GET',
+      data: {
+        date: seikyuDate,
+        Senzoku_ID: senzokuId
+      },
+      success: function(response) {
+          $('#DataList').html(response.partialView);
+      },
+      error: function() {
+      }
+    });
+  }
+
+  // キャンセルボタン押下時、前のページに戻る
+  function CancelButton() {
+    event.preventDefault();
+
+    var form = document.createElement('form');
+
+    form.action = '@Url.RouteUrl("Default", new { controller = "SalesPayment", action = "Index" })';
+    form.method = 'POST';
+    form.innerHTML = $('#hiddenItem').html();
+    document.body.appendChild(form);
+
+    form.submit();
+  }
+
+  function sendInputIndexForm(ankenId, kubun) {
+    event.preventDefault(); // Prevent the default form submission
+    var processingCategory = kubun;
+    var form = document.createElement('form');
+    form.id = 'customForm'; // Assign a unique ID to the form
+    form.action = '@Url.RouteUrl("Default", new { controller = "Sales", Action = "GetSales" })';
+    form.method = 'POST';
+
+    var hiddenAnkenId = document.createElement('input');
+    hiddenAnkenId.type = 'hidden';
+    hiddenAnkenId.name = 'Anken_ID';
+    hiddenAnkenId.value = ankenId;
+    form.appendChild(hiddenAnkenId);
+
+    // Create the hidden inputs
+    var hiddenNumOfInq = document.createElement('input');
+    hiddenNumOfInq.type = 'hidden';
+    hiddenNumOfInq.name = 'kubun';
+    hiddenNumOfInq.value = 3;
+    form.appendChild(hiddenNumOfInq);
+
+    var hiddenNumOfFilter = document.createElement('input');
+    hiddenNumOfFilter.type = 'hidden';
+    hiddenNumOfFilter.name = 'processingCategory';
+    hiddenNumOfFilter.value = processingCategory;
+    form.appendChild(hiddenNumOfFilter);
+
+    // Add the form to the body and submit it
+    document.body.appendChild(form);
+    form.submit();
+  }
+</script>

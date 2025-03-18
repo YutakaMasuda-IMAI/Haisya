@@ -1,0 +1,156 @@
+﻿<Window x:Class="HaisyaDesktop.View.Tool.SelectKakoAnken"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HaisyaDesktop.View.Tool"
+        mc:Ignorable="d"
+        WindowStyle="ThreeDBorderWindow"
+        Title="過去案件検索" MinHeight="450" MinWidth="800">
+  
+  <Window.Resources>
+    <Style x:Key="TaitleKomoku" TargetType="Label">
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="Padding" Value="0" />
+      <Setter Property="FontSize" Value="16"/>
+    </Style>
+    <Style x:Key="borderStyle" TargetType="Border">
+      <Setter Property="BorderBrush" Value="Black"/>
+      <Setter Property="BorderThickness" Value="1"/>
+    </Style>
+  </Window.Resources>
+
+  <Grid Margin="5">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="50" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <Grid Grid.Row="0">
+      <DockPanel >
+        <Button x:Name="Close" Width="200" Content="閉じる" FontSize="20" DockPanel.Dock="Left" Click="Close_Click"></Button>
+        <Button x:Name="Close2" Width="200" Content="閉じる" FontSize="20" DockPanel.Dock="Right" Click="Close_Click"></Button>
+
+        <Grid DockPanel.Dock="Bottom" Background="Yellow" Opacity="0.4">
+          <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+          </Grid.RowDefinitions>
+          <Grid Grid.Row="1" Background="Transparent" Opacity="0.4">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="{Binding SelectKen.Value}" FontSize="20" Background="Transparent" HorizontalAlignment="Center" />
+            <TextBlock Grid.Column="1" Text="{Binding SelectShiku.Value}" FontSize="20" Background="Transparent" HorizontalAlignment="Center"  />
+            <TextBlock Grid.Column="2" Text="{Binding SelectChyo.Value}" FontSize="20" Background="Transparent" HorizontalAlignment="Center"  />
+          </Grid>
+          <Label Content="過去案件" Grid.Row="0" HorizontalContentAlignment="Center" FontSize="20" VerticalContentAlignment="Center" Background="Transparent" Opacity="0.4" Padding="0"  />
+        </Grid>
+      </DockPanel>
+    </Grid>
+
+
+    <Grid Grid.Row="1">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="200"/>
+        <ColumnDefinition Width="*" />
+      </Grid.ColumnDefinitions>
+
+      <Grid Grid.Column="0">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="50" />
+          <RowDefinition Height="*" />
+          <RowDefinition Height="*" />
+          <RowDefinition Height="*" />
+          <RowDefinition Height="*" />
+          <RowDefinition Height="*" />
+          <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Style="{StaticResource borderStyle}" >
+          <Label Content="検索項目" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="26" Background="AliceBlue"/>
+        </Border>
+        
+        <Border Grid.Row="1" Style="{StaticResource borderStyle}" >
+          <DockPanel >
+            <DockPanel DockPanel.Dock="Top" Height="30">
+              <Button Name="btnKokyakuSearch" Content="検索" Width="70" DockPanel.Dock="Right" />
+              <Label DockPanel.Dock="Left" Content="顧客" Style="{StaticResource TaitleKomoku}" />
+            </DockPanel>
+            <TextBox Name="txtKokyaku" Text="{Binding aa}" DockPanel.Dock="Top" />
+          </DockPanel>
+        </Border>
+        <Border Grid.Row="2" Style="{StaticResource borderStyle}" >
+          <DockPanel >
+            <DockPanel DockPanel.Dock="Top" Height="30">
+              <Button Name="btnSyasyuSearch" Content="検索" Width="70" DockPanel.Dock="Right" />
+              <Label DockPanel.Dock="Left" Content="車種" Style="{StaticResource TaitleKomoku}" />
+            </DockPanel>
+            <TextBox Name="txtSyasyu" Text="{Binding aa}" DockPanel.Dock="Top" />
+          </DockPanel>
+        </Border>
+        <Border Grid.Row="3" Style="{StaticResource borderStyle}" >
+          <DockPanel >
+            <DockPanel DockPanel.Dock="Top" Height="30">
+              <Button Name="btnAddressSearchT" Content="検索" Width="70" DockPanel.Dock="Right" />
+              <Label DockPanel.Dock="Left" Content="積地" Style="{StaticResource TaitleKomoku}" />
+            </DockPanel>
+            <TextBox Name="txtTsumi" Text="{Binding aa}" DockPanel.Dock="Top" />
+          </DockPanel>
+        </Border>
+        <Border Grid.Row="4" Style="{StaticResource borderStyle}" >
+          <DockPanel >
+            <DockPanel DockPanel.Dock="Top" Height="30">
+              <Button Name="btnAddressSearchO" Content="検索" Width="70" DockPanel.Dock="Right" />
+              <Label DockPanel.Dock="Left" Content="卸地" Style="{StaticResource TaitleKomoku}" />
+            </DockPanel>
+            <TextBox Name="txtOroshi" Text="{Binding aa}" DockPanel.Dock="Top" />
+          </DockPanel>
+        </Border>
+        <Border Grid.Row="5" Style="{StaticResource borderStyle}" >
+          <DockPanel >
+            <DockPanel DockPanel.Dock="Top" Height="30">
+              <Button Name="btnNimotsu" Content="検索" Width="70" DockPanel.Dock="Right" />
+              <Label DockPanel.Dock="Left" Content="荷物" Style="{StaticResource TaitleKomoku}" />
+            </DockPanel>
+            <TextBox Name="txtNimotsu" Text="{Binding aa}" DockPanel.Dock="Top" />
+          </DockPanel>
+        </Border>
+        <Border Grid.Row="6" Style="{StaticResource borderStyle}" >
+          <DockPanel >
+            
+          </DockPanel>
+        </Border>
+      </Grid>
+      <Border Grid.Column="1" Style="{StaticResource borderStyle}" >
+        <Grid >
+          <DataGrid>
+            <DataGrid.RowStyle>
+              <Style TargetType="DataGridRow">
+                <Setter Property="Height" Value="100"/>
+              </Style>
+            </DataGrid.RowStyle>
+            <DataGrid.ColumnHeaderStyle>
+              <Style TargetType="{x:Type DataGridColumnHeader}">
+                <Setter Property="Height" Value="50" />
+              </Style>
+            </DataGrid.ColumnHeaderStyle>
+            
+            <DataGrid.Columns>
+              
+            </DataGrid.Columns>
+            
+          </DataGrid>
+
+
+
+        </Grid>
+      </Border>
+      
+      
+    </Grid>
+    
+  </Grid>
+</Window>

@@ -1,0 +1,35 @@
+﻿@model HaisyaWeb.Models.DriverModel.CompanyDriverSyaryoMenuDto
+
+@{
+    Layout = "_Layout";
+}
+
+<link href="~/css/Setting.css" rel="stylesheet" />
+
+<div id="content" style="font-size: 14px;">
+  <h2>
+    <span class="glyphicon glyphicon-chevron-right"></span>乗務員車輌設定
+  </h2>
+
+  <div id="">
+    <div hidden>
+      @Html.HiddenFor(model => Model.CompanyID)
+      @Html.HiddenFor(model => Model.EditEnabled)
+    </div>
+    <div id="menu_01" class="clearfix">
+      @await Html.PartialAsync("CompanyDriverSyaryo", Model);
+    </div>
+  </div>
+
+</div>
+
+
+<script>
+
+  $(function () {
+
+
+  });
+
+
+</script>

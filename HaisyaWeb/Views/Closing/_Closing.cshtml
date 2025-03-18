@@ -1,0 +1,53 @@
+﻿@model HaisyaWeb.Models.InvoiceModel.InvoiceSummModel
+
+@{
+    var sd = Model.Sale_date;
+    if (!string.IsNullOrWhiteSpace(sd))
+        sd = sd[0..(Model.Sale_date.LastIndexOf("("))] + "まで";
+}
+<div style="width: 100%; height: 100%">
+    <table>
+        <tbody>
+            <tr>
+                <td colspan="2">@Html.DisplayFor(m => m.Confirm_message)</td>
+            </tr>
+            <tr>
+                <td colspan="2">@Html.DisplayFor(m => m.Description)</td>
+            </tr>
+            <tr>
+                <td style="width: 120px;">@Html.LabelFor(m => m.Year_month, htmlAttributes: new { @style = "font-weight: initial;" })</td>
+                <td>@(Html.DisplayFor(m => m.Year_month))分</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.Publish_date, htmlAttributes: new { @style = "font-weight: initial;" })</td>
+                <td>@(Model.Publish_date[0..(Model.Publish_date.LastIndexOf("("))])</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.Sale_date, htmlAttributes: new { @style = "font-weight: initial;" })</td>
+                <td>@sd</td>
+            </tr>
+            <tr>
+                <td>@Html.LabelFor(m => m.Invoice, htmlAttributes: new { @style = "font-weight: initial;" })</td>
+                <td>@Html.DisplayFor(m => m.Invoice.Customer_Name)</td>
+            </tr>
+            @for (var i = 1; i < Model.Invoice_list.Count; i++)
+            {
+                <tr>
+                    <td></td>
+                    <td>@Model.Invoice_list[i].Customer_Name</td>
+                </tr>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.Selected_layout))
+            {
+                <tr>
+                    <td>
+                        @Html.LabelFor(m => m.Selected_layout, htmlAttributes: new { @style = "font-weight: initial;" })
+                    </td>
+                    <td>
+                        @Html.DropDownListFor(m => m.Selected_layout, new SelectList(Model.Layouts, "Value", "Text"), new { @style = "width: 175px;display: inline-block;" })
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,580 @@
+﻿@model HaisyaWeb.Models.CompletedPaymentsModel.DataListModel
+
+@{
+  Layout = "_Layout";
+}
+
+<head>
+  <link href="~/css/List.css" rel="stylesheet" />
+  <style>
+    .nyukin_list {
+      background-color: #DDEBF7;
+    }
+
+    .seikyu_info {
+      background-color: #FFD580;
+    }
+
+    .seikyu_list {
+      background-color: #FCE4D6;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="hiddenItem" hidden>
+    @Html.HiddenFor(model => Model.Company_ID)
+    @Html.HiddenFor(model => Model.Search.SelectMonth)
+    @Html.HiddenFor(model => Model.Search.SelectShimebi)
+    @Html.HiddenFor(model => Model.Search.SelectTantou)
+    @Html.HiddenFor(model => Model.Search.SelectZeiKubun)
+    @Html.HiddenFor(model => Model.Search.SelectHakkouKubun)
+    @Html.HiddenFor(model => Model.Search.SelectKingakuHenkou)
+    @Html.HiddenFor(model => Model.Search.RangeSearch)
+    @Html.HiddenFor(model => Model.Search.BackMenuAction)
+    @Html.HiddenFor(model => Model.SortParam.SortOrder)
+    @Html.HiddenFor(model => Model.SortParam.SortItemParam)
+  </div>
+  <div>
+  @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "Form2" }))
+  {
+    <div id="hedder" class="row" style="margin-bottom: -20px;">
+      <h6 class="heading-pagetitle">入金一覧</h6>
+      <div class="form-group" style="width: 110%">
+        <div class="row">
+          <table class="table jbc-table table-hedder" style="padding: 0; border-collapse: collapse; width: 100%; margin-left: 12px;">
+            <tbody>
+              <tr>
+                <th style="width:400px;">
+                  <div style="vertical-align: middle; display: inline-block;">
+                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer;" onclick="ChangeMonth(-1); return false;" onselectstart="return false;" alt="<<" tooltip="前月">&lt;&lt;</span>
+                    <input id="TargetMonthLavel" type="text" readonly style="width: 150px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
+                    <input id="TargetMonthInput" class="calender" type="text" readonly style="width: 0px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
+                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer;" onclick="ChangeMonth(1); return false;" onselectstart="return false;" alt=">>" tooltip="翌月">&gt;&gt;</span>
+                    <button class="btn btn-outline-info" style="width: 70px; vertical-align: text-bottom; margin: 0; padding: 0; font-size: 16px; " onclick="LocationReload(); return false;">再描画</button>
+                  </div>
+                </th>
+                <th style="width:400px;">
+                  <div style="padding: 0; margin: 0 15px 0 0; border-radius: 0px;">
+                    @Html.LabelFor(model => model.Search.SelectShimebi, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "width: 70px;" })
+                    @Html.TextBoxFor(model => Model.Search.SelectShimebi, null, new { @class = "form-control search-text", @style = "width: 50px; display: inline-block;text-align:right", @maxlength = "2", @id = "selectShimebiInput" })
+                  </div>
+                </th>
+                <th colspan="2">
+                  @Html.LabelFor(model => model.Search.TokuisakiName, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "width: 150px;" })
+                  @Html.TextBoxFor(model => model.Search.TokuisakiName, null, new { @class = "form-control search-text", @style = "width: 70%; display: inline-block", })
+                </th>
+              </tr>
+              <tr>
+                <td colspan="3">
+                  <table>
+                    <tr>
+                      <th>
+                        <label class="toggle-button-customer">
+                          <input id="tglSelectTokuisaki" type="checkbox" @(Model.Search.RangeSearch ? "checked" : "") />
+                        </label>
+                      </th>
+                      <th>
+                        @Html.LabelFor(model => model.Search.SelectTokuisakiID, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "width: 100px;" })
+                        <button id="btnTokuisakiFrom" class="btn btn-info btn-sm btn-select" style="width:80px;" onclick="return false;">選択</button>
+                        @Html.TextBoxFor(model => model.Search.SelectTokuisakiID, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 100px; display: inline-block;" })
+                        @Html.TextBoxFor(model => model.Search.SelectTokuisakiName, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 300px; display: inline-block;" })
+                      </th>
+                      <th>
+                        <div id="tokuisakiTo" style="display: inline-block; _display: inline; padding: 0; ">
+              　            〜
+                        @Html.LabelFor(model => model.Search.SelectTokuisakiID, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "" })
+                        <button id="btnTokuisakiTo" class="btn btn-info btn-sm btn-select" style="width:80px;" onclick="return false;">選択</button>
+                        @Html.TextBoxFor(model => model.Search.SelectTokuisakiIDTo, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 100px; display: inline-block;" })
+                        @Html.TextBoxFor(model => model.Search.SelectTokuisakiNameTo, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 300px; display: inline-block;" })
+                        </div>
+                      </th>
+                      <td>&nbsp;</td>
+                    </tr>
+                  </table>
+                </td>
+                <th style="width:140px;">
+                  <button class="btn btn-info btn-sm" onclick="openFileDialog(); return false;">CSV一括取込み</button>
+                </th>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    }
+
+    <div id="CompletedPaymentsDataList" class="data-list" style="margin-top: 25px;"></div>
+  </div>
+</body>
+
+@* 
+検索条件
+年月
+締日
+請求担当
+税区分  num_of_taxkubun
+発行区分  num_of_hakkoukubun
+金額変更  num_of_kingaku
+得意先
+ *@
+<script>
+  var btnTokuisaki = '';
+  const weeks = ['日', '月', '火', '水', '木', '金', '土'];
+
+  $(window).on('load', function () {
+    var disp = new Date($('#Search_SelectMonth').val());
+
+    var selectMonth = new Date($("#Search_SelectMonth").val());
+    var disp = MonthToString(selectMonth);
+    $("#TargetMonthLavel").val(disp);
+
+    $("#TargetMonthInput").val($("#Search_SelectMonth").val());
+
+
+    var radio = document.getElementsByName('num_of_zeikubun');
+    for (let i = 0; i < radio.length; i++) {
+      if (radio.item(i).value == $('#Search_SelectZeiKubun').val()) {
+        radio.item(i).checked = true;
+      }
+    }
+
+    radio = document.getElementsByName('num_of_hakkoukubun');
+    for (let i = 0; i < radio.length; i++) {
+      if (radio.item(i).value == $('#Search_SelectHakkouKubun').val()) {
+        radio.item(i).checked = true;
+      }
+    }
+
+    tglSelectTokuisaki($('#tglSelectTokuisaki').prop("checked"));
+  });
+
+  $(function () {
+    $('input[name="num_of_zeikubun"]:radio').change(function () {
+      dataListDisplay();
+    });
+
+    $('input[name="num_of_hakkoukubun"]:radio').change(function () {
+      dataListDisplay();
+    });
+
+    $('#Search_SelectTantou').on('change', function () {
+      dataListDisplay();
+    });
+
+    $('#Search_TokuisakiName').change(function () {
+      dataListDisplay();
+    });
+
+    $("input#TargetMonthInput").on('change', function () {
+      var val = $(this).val();
+      $("#Search_SelectMonth").val($("#Search_SelectMonth").val());
+      dataListDisplay();
+    });
+
+    $("#TargetMonthInput").ympicker({
+      changeYear: true,
+      altField: '#Search_SelectMonth',  // 入力結果の表示箇所
+      altFormat: "yy/mm/01",  // 入力結果の表示方法 Dは曜日の省略形、DDは省略なし
+    });
+
+    $('#tglSelectTokuisaki').on('change', function () {
+      tglSelectTokuisaki($('#tglSelectTokuisaki').prop('checked'));
+    });
+  });
+
+  let shimebiValue = '';
+
+  $(document).ready(function () {
+    $(document).on('input', '#selectShimebiInput', function () {
+      console.log('Input event triggered');
+      shimebiValue = $(this).val();
+      dataListDisplay();
+    });
+  });
+
+  $(document).ready(function () {
+    $(document).on('show.bs.modal', '.modal', (e) => {
+      const $currentModal = $(e.currentTarget);
+      var zIndex = 1040 + 10 * ($('.modal:visible').length || 2);
+      $currentModal.css('z-index', zIndex);
+      setTimeout(function () {
+        $('.modal-backdrop')
+          .not('.modal-stack')
+          .css('z-index', zIndex - 1)
+          .addClass('modal-stack');
+      }, 0);
+    });
+
+    $('#btnTokuisakiFrom').on('click', function (event) {
+      var id = $('#Company_ID').val();
+      btnTokuisaki = 'from';
+      openCommonDialogForCustomer(id, '', '');
+      return false;
+    });
+  });
+
+  function selectCustomerSelectedCallBack(obj) {
+    console.log(obj);
+    if (btnTokuisaki === 'from') {
+      $('#Search_SelectTokuisakiID').val(obj['Customer_Branch_Code']);
+      $('#Search_SelectTokuisakiName').val(obj['Customer_Branch_Name_Abbr']);
+    } else if (btnTokuisaki === 'to') {
+      $('#Search_SelectTokuisakiIDTo').val(obj['Customer_Branch_Code']);
+      $('#Search_SelectTokuisakiNameTo').val(obj['Customer_Branch_Name_Abbr']);
+    }
+    dataListDisplay();
+  }
+
+  $(document).ready(function () {
+    $(document).on('show.bs.modal', '.modal', (e) => {
+      const $currentModal = $(e.currentTarget);
+      var zIndex = 1040 + 10 * ($('.modal:visible').length || 2);
+      $currentModal.css('z-index', zIndex);
+      setTimeout(function () {
+        $('.modal-backdrop')
+          .not('.modal-stack')
+          .css('z-index', zIndex - 1)
+          .addClass('modal-stack');
+      }, 0);
+    });
+    $('#btnTokuisakiTo').on('click', function (event) {
+      var id = $('#Company_ID').val();
+      btnTokuisaki = 'to';
+      openCommonDialogForCustomer(id, '', '');
+      return false;
+    });
+  });
+
+  function ModalClose() {
+    $('#ModalHere').find('.modal').modal('hide');
+    $('#ModalHere').html('');
+  }
+
+  function closeModel() {
+    $('#ModalHere').find('.modal').modal('hide');
+    $('#ModalHere').html('');
+    $('#ModalStatusHaisya').find('.modal').modal('hide');
+    $('#ModalStatusHaisya').html('');
+  }
+
+  function tglSelectTokuisaki(checked) {
+    if (checked) {
+      $('#lblkara').show();
+      $('#tokuisakiTo').show();
+    } else {
+      $('#lblkara').hide();
+      $('#tokuisakiTo').hide();
+      $('#Search_SelectTokuisakiIDTo').val('');
+      $('#Search_SelectTokuisakiNameTo').val('')
+    }
+    $('#Search_RangeSearch').val(checked);
+    dataListDisplay();
+  }
+
+
+  /**
+  * 指定年月変更処理
+  * @@param move
+  */
+  function ChangeMonth(move) {
+
+    var selectMonth = new Date($("#Search_SelectMonth").val());
+
+    var changeMonth = new Date(selectMonth.setMonth(selectMonth.getMonth() + move));
+
+    $("#Search_SelectMonth").val(formatMonth(changeMonth, "/"));
+    $("#TargetMonthInput").val($("#Search_SelectMonth").val());
+
+    ChangeTargetMonth();
+
+  };
+
+  /**
+    * 指定年月変更後処理
+    * */
+  function ChangeTargetMonth() {
+
+    var val = $("#Search_SelectMonth").val();
+    var dateVal = new Date(val);
+    var disp = MonthToString(dateVal);
+    $("#TargetMonthLavel").val(disp);
+
+    dataListDisplay();
+  };
+
+  function submitCustomerData(Customer_ID, Customer_Name, Customer_Code) {
+    $('#Search_SelectTokuisakiID').val(Customer_Code);
+    $('#Search_SelectTokuisakiName').val(Customer_Name);
+    closeModel();
+    dataListDisplay();
+  }
+
+  function submitCustomerDataTo(Customer_ID, Customer_Name, Customer_Code) {
+    $('#Search_SelectTokuisakiIDTo').val(Customer_Code);
+    $('#Search_SelectTokuisakiNameTo').val(Customer_Name);
+    closeModel();
+    dataListDisplay();
+  }
+
+  function dataListDisplay() {
+    var selectZeiKubun = $('input[name="num_of_zeikubun"]:checked').val();
+    $('#Search_SelectZeiKubun').val(selectZeiKubun);
+
+    var selectHakkouKubun = $('input[name="num_of_hakkoukubun"]:checked').val();
+    $('#Search_SelectHakkouKubun').val(selectHakkouKubun);
+
+    $.post(
+      '@Url.RouteUrl("Default", new { controller = "CompletedPayments", Action = "JsonGetDataListForCompletedPayments" })',
+      {
+        SelectMonth: $('#Search_SelectMonth').val(),
+        SelectShimebi: $('#selectShimebiInput').val(),
+        TokuisakiName: $('#Search_TokuisakiName').val(),
+        SelectTokuisakiID: $('#Search_SelectTokuisakiID').val(),
+        SelectTokuisakiName: $('#Search_SelectTokuisakiName').val(),
+        SelectTokuisakiIDTo: $('#Search_SelectTokuisakiIDTo').val(),
+        SelectTokuisakiNameTo: $('#Search_SelectTokuisakiNameTo').val(),
+        sortItemParam: $('#SortParam_SortItemParam').val(),
+        sortOrder: $('#SortParam_SortOrder').val(),
+      },
+      function (data) {
+        $('#CompletedPaymentsDataList').html(data.partialView);
+      },
+    );
+  }
+
+  function submitAddNew() {
+    var form = document.createElement('form');
+    form.action = '@Url.RouteUrl("Default", new { controller = "Sales", Action = "Index2" })';
+    form.method = 'POST';
+
+    // body に追加
+    document.body.appendChild(form);
+
+    var html = '';
+    html +=
+      '      <input type="hidden" id="SelectMonth" name="SelectMonth" value="' +
+      $('#Search_SelectMonth').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectTantou" name="SelectTantou" value="' +
+      $('#Search_SelectTantou').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectShimebi" name="SelectShimebi" value="' +
+      $('#Search_SelectShimebi').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="TokuisakiName" name="TokuisakiName" value="' +
+      $('#Search_TokuisakiName').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectZeiKubun" name="SelectZeiKubun" value="' +
+      $('#Search_SelectZeiKubun').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectHakkouKubun" name="SelectHakkouKubun" value="' +
+      $('#Search_SelectHakkouKubun').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectTokuisakiID" name="SelectTokuisakiID" value="' +
+      $('#Search_SelectTokuisakiID').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectTokuisakiIDTo" name="SelectTokuisakiIDTo" value="' +
+      $('#Search_SelectTokuisakiIDTo').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="BackMenuAction" name="BackMenuAction" value="' +
+      $('#Search_BackMenuAction').val() +
+      '" />';
+
+    form.innerHTML = html;
+    form.submit();
+  }
+
+  function submitEdit(seikyuId) {
+    var form = document.createElement('form');
+
+    form.action = '@Url.RouteUrl("Default", new { controller = "CompletedPayments", Action = "PaymentInputIndex" })';
+    form.method = 'POST';
+
+    // body に追加
+    document.body.appendChild(form);
+
+    var html = '';
+    html += '      <input type="hidden" id="seikyuId" name="seikyuId" value="' + seikyuId + '" />';
+    html +=
+      '      <input type="hidden" id="SelectMonth" name="SelectMonth" value="' + $('#Search_SelectMonth').val() + '" />';
+    html +=
+      '      <input type="hidden" id="SelectTantou" name="SelectTantou" value="' +
+      $('#Search_SelectTantou').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectShimebi" name="SelectShimebi" value="' +
+      $('#selectShimebiInput').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="TokuisakiName" name="TokuisakiName" value="' +
+      $('#Search_TokuisakiName').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectZeiKubun" name="SelectZeiKubun" value="' +
+      $('#Search_SelectZeiKubun').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectHakkouKubun" name="SelectHakkouKubun" value="' +
+      $('#Search_SelectHakkouKubun').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectTokuisakiID" name="SelectTokuisakiID" value="' +
+      $('#Search_SelectTokuisakiID').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectTokuisakiIDTo" name="SelectTokuisakiIDTo" value="' +
+      $('#Search_SelectTokuisakiIDTo').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="BackMenuAction" name="BackMenuAction" value="' +
+      $('#Search_BackMenuAction').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectTokuisakiName" name="SelectTokuisakiName" value="' +
+      $('#Search_SelectTokuisakiName').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectTokuisakiNameTo" name="SelectTokuisakiNameTo" value="' +
+      $('#Search_SelectTokuisakiNameTo').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="RangeSearch" name="RangeSearch" value="' +
+      $('#Search_RangeSearch').val().toLowerCase() +
+      '" />';
+
+    form.innerHTML = html;
+    form.submit();
+  }
+
+  async function openFileDialog() {
+    try {
+      // Request the user to select multiple files
+      const fileHandles = await window.showOpenFilePicker({
+        multiple: true,
+        types: [
+          {
+            description: 'CSV files',
+            accept: { 'text/csv': ['.csv'] },
+          },
+        ],
+      });
+
+      // Process each selected file
+      const filePromises = fileHandles.map(async (fileHandle) => {
+        const file = await fileHandle.getFile();
+        const arrayBuffer = await file.arrayBuffer();
+        const text = new TextDecoder('shift-jis').decode(arrayBuffer);
+        return parseCSV(text);
+      });
+
+      const results = await Promise.all(filePromises);
+
+            sendDataToBackend(results[0]);
+        } catch (error) {
+            console.error('Error opening files:', error);
+        }
+    }
+
+  function parseCSV(text) {
+    const rows = text
+      .trim()
+      .split('\n')
+      .map((row) => row.split(','));
+
+        let obj = {};
+        let nyukin = [];
+        let count = 0;
+        // CSVファイルの全部の行をループして、オブジェクト化
+        for (let i = 1; i < rows.length; i++) {
+            obj = {};
+            for (let j = 0; j < rows[i].length; j++) {
+                @* CSVフォーマット
+                2		Seikyu_ID	int	Yes	9
+                3	０：入金、１：返金	Process_Kubun	int	Yes	1
+                4		Process_Date	datetime	Yes	2024-08-06 15:30:00
+                5		Cash_Amount	money	Yes	2.2
+                6		Transfer_Amount	money	Yes	2.2
+                7		Draft_Amount	money	Yes	2.2
+                8		Check_Amount	money	Yes	2.2
+                9		Service_Charge_Amount	money	Yes	2.2
+                10		Unchin_Offset	money	Yes	2.2
+                11		General_Offset	money	Yes	2.2
+                12		Adjustment_Amount	money	Yes	2.2
+                13		Total_Amount	money	Yes	2.2
+                *@
+                @* 名前（Seikyu_ID、Process_Kubunなど）の取得 *@
+                let key = rows[0][j];
+                let value = rows[i][j];
+                if (key === 'Seikyu_ID' || key === 'Process_Kubun' || key === 'Nyukin_ID') {
+                    obj[key] = Number(value);
+                } else if (key === 'Process_Date') {
+                    obj[key] = formatDate(value);
+                } else if (
+                    key === 'Cash_Amount' ||
+                    key === 'Transfer_Amount' ||
+                    key === 'Draft_Amount' ||
+                    key === 'Check_Amount' ||
+                    key === 'Service_Charge_Amount' ||
+                    key === 'Unchin_Offset' ||
+                    key === 'General_Offset' ||
+                    key === 'Adjustment_Amount' ||
+                    key === 'Total_Amount'
+                ) {
+                    obj[key] = parseFloat(value);
+                } else if (key === 'Remarks') {
+                    obj[key] = value;
+                } else if (key === 'Del_Flg'){
+                    obj[key] = value != '0'
+                }
+            }
+            nyukin.push(obj);
+        }
+        return nyukin;
+    }
+
+  function sendDataToBackend(nyukinLists) {
+    const payload = {
+      SeikyuDataLists: seikyuDataLists,
+      NyukinLists: nyukinLists,
+    };
+    const json = JSON.stringify(payload);
+
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "CompletedPayments", action = "InsertTNyukin2" })',
+      type: 'POST',
+      contentType: 'application/json',
+      data: json,
+      success: function (response) {
+        if (response.message != null) {
+          alertError(`【エラー】${response.message}`);
+        }
+        dataListDisplay();
+      },
+      error: function (jqXHR, textStatus, errorThrown) {
+        alertError('CSV取込み失敗しました');
+        console.error('Error sending data to backend:', textStatus, errorThrown);
+      },
+    });
+  }
+
+    function selectCustomerDriverSelectedCallBack(result) {
+        $('#Search_SelectTokuisakiID' + btnTokuisaki).val(result['Employee_Number']);
+        $('#Search_SelectTokuisakiName' + btnTokuisaki).val(result['Display_Name']);
+    }
+    function formatDate(value) {
+        const date = new Date(value);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+</script>

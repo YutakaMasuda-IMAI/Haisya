@@ -1,0 +1,539 @@
+﻿<Window x:Class="HaisyaDesktop.View.Tool.SelectKokyaku"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HaisyaDesktop.View.Tool"
+        xmlns:behavior="clr-namespace:HaisyaDesktop.Behavior" 
+        xmlns:tool="clr-namespace:HaisyaDesktop.ViewModel.Tool" 
+        d:DataContext="{d:DesignInstance Type=tool:SelectKokyakuViewModel}"
+        mc:Ignorable="d"
+        Title="住所検索" MinHeight="450" MinWidth="800"
+        WindowStyle="ThreeDBorderWindow"
+        AllowsTransparency="False"
+        Background="DarkSlateGray" Loaded="Window_Loaded">
+
+  <Window.Resources>
+    <!-- Resource -->
+    <Style x:Key="ListViewItemStyle1" TargetType="ListViewItem">
+      <Setter Property="BorderBrush" Value="Gray"/>
+      <Setter Property="BorderThickness" Value="0,0,0,1"/>
+      <Setter Property="Background" Value="Black"/>
+      <Setter Property="Margin" Value="3"/>
+      <!-- 他のプロパティは省略 -->
+    </Style>
+    <Style x:Key="ListViewItemStyle2" TargetType="ListViewItem">
+      <Setter Property="BorderBrush" Value="Gray"/>
+      <Setter Property="BorderThickness" Value="0,0,0,1"/>
+      <Setter Property="Background" Value="Black"/>
+      <Setter Property="Margin" Value="3"/>
+      <!-- 他のプロパティは省略 -->
+    </Style>
+
+    <Style x:Key="KanaButtonStyle" TargetType="Button">
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="FontWeight" Value="Heavy"/>
+      <Setter Property="FontSize" Value="30"/>
+      <Setter Property="Margin" Value="5" />
+      <Setter Property="Template">
+        <Setter.Value>
+          <ControlTemplate TargetType="Button">
+            <Border CornerRadius="3" BorderThickness="2" >
+              <Border.Background>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                  <GradientStop Color="{DynamicResource ControlLightColor}" Offset="0" />
+                  <GradientStop Color="{DynamicResource ControlMediumColor}" Offset="1" />
+                </LinearGradientBrush>
+              </Border.Background>
+              <Border.BorderBrush>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                  <LinearGradientBrush.GradientStops>
+                    <GradientStopCollection>
+                      <GradientStop Color="{DynamicResource BorderLightColor}" Offset="0.0" />
+                      <GradientStop Color="{DynamicResource ControlLightColor}" Offset="1.0" />
+                    </GradientStopCollection>
+                  </LinearGradientBrush.GradientStops>
+                </LinearGradientBrush>
+              </Border.BorderBrush>
+              <ContentPresenter Margin="2" HorizontalAlignment="Center" VerticalAlignment="Center" RecognizesAccessKey="True" />
+            </Border>
+          </ControlTemplate>
+        </Setter.Value>
+      </Setter>
+    </Style>
+
+  </Window.Resources>
+
+  <Grid Margin="5">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="50" />
+      <RowDefinition Height="5" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <Grid Grid.Row="0">
+      <DockPanel >
+        <Button x:Name="Close" Width="200" Content="閉じる" FontSize="20" DockPanel.Dock="Left" Click="Close_Click" Margin="2"></Button>
+        <Button x:Name="Close2" Width="200" Content="閉じる" FontSize="20" DockPanel.Dock="Right" Click="Close_Click" Margin="2"></Button>
+
+        <Grid DockPanel.Dock="Bottom" Background="Yellow" Opacity="0.9">
+          <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition />
+          </Grid.RowDefinitions>
+          <Grid Grid.Row="1" Background="Transparent" Opacity="0.4" Margin="5,0,5,0">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition />
+              <ColumnDefinition />
+              <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <TextBlock Grid.Column="0" Text="{Binding SelectKen.Value}" FontSize="20" Background="Transparent" HorizontalAlignment="Center" />
+            <TextBlock Grid.Column="1" Text="{Binding SelectShiku.Value}" FontSize="20" Background="Transparent" HorizontalAlignment="Center"  />
+            <TextBlock Grid.Column="2" Text="{Binding SelectChyo.Value}" FontSize="20" Background="Transparent" HorizontalAlignment="Center"  />
+          </Grid>
+          <Label Content="住所選択" Grid.Row="0" HorizontalContentAlignment="Center" FontSize="20" VerticalContentAlignment="Center" Background="Transparent" Opacity="1" Padding="0"  />
+        </Grid>
+
+      </DockPanel>
+    </Grid>
+
+    <Grid Grid.Row="2" >
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="3*" />
+        <ColumnDefinition Width="5" />
+        <ColumnDefinition Width="3*" />
+        <ColumnDefinition Width="5" />
+        <ColumnDefinition Width="3*" />
+      </Grid.ColumnDefinitions>
+
+      <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" Background="DarkGray" />
+      <GridSplitter Grid.Column="3" HorizontalAlignment="Stretch" Background="DarkGray" />
+      
+      <Grid Grid.Column="0" >
+        <Grid.RowDefinitions>
+          <RowDefinition Height="30" />
+          <RowDefinition />
+          <RowDefinition />
+          <RowDefinition />
+          <RowDefinition />
+          <RowDefinition />
+          <RowDefinition />
+          <RowDefinition />
+          <RowDefinition />
+          <RowDefinition />
+          <RowDefinition />
+        </Grid.RowDefinitions>
+        <Label Content="絞り込み" Grid.Row="0" FontSize="20" Padding="0" Foreground="White" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" />
+        <Grid Grid.Row="1">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
+          <Button Grid.Column="0" Content="あ" Tag="ｱ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="1" Content="い" Tag="ｲ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="2" Content="う" Tag="ｳ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="3" Content="え" Tag="ｴ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="4" Content="お" Tag="ｵ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+        </Grid>
+        <Grid Grid.Row="2">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
+          <Button Grid.Column="0" Content="か" Tag="ｶ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="1" Content="き" Tag="ｷ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="2" Content="く" Tag="ｸ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="3" Content="け" Tag="ｹ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="4" Content="こ" Tag="ｺ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+        </Grid>
+        <Grid Grid.Row="3">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
+          <Button Grid.Column="0" Content="さ" Tag="ｻ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="1" Content="し" Tag="ｼ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="2" Content="す" Tag="ｽ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="3" Content="せ" Tag="ｾ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="4" Content="そ" Tag="ｿ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+        </Grid>
+        <Grid Grid.Row="4">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
+          <Button Grid.Column="0" Content="た" Tag="ﾀ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="1" Content="ち" Tag="ﾁ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="2" Content="つ" Tag="ﾂ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="3" Content="て" Tag="ﾃ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="4" Content="と" Tag="ﾄ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+        </Grid>
+        <Grid Grid.Row="5">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
+          <Button Grid.Column="0" Content="な" Tag="ﾅ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="1" Content="に" Tag="ﾆ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="2" Content="ぬ" Tag="ﾇ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="3" Content="ね" Tag="ﾈ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="4" Content="の" Tag="ﾉ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+        </Grid>
+        <Grid Grid.Row="6">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
+          <Button Grid.Column="0" Content="は" Tag="ﾊ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="1" Content="ひ" Tag="ﾋ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="2" Content="ふ" Tag="ﾌ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="3" Content="へ" Tag="ﾍ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="4" Content="ほ" Tag="ﾎ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+        </Grid>
+        <Grid Grid.Row="7">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
+          <Button Grid.Column="0" Content="ま" Tag="ﾏ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="1" Content="み" Tag="ﾐ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="2" Content="む" Tag="ﾑ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="3" Content="め" Tag="ﾒ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="4" Content="も" Tag="ﾓ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+        </Grid>
+        <Grid Grid.Row="8">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
+          <Button Grid.Column="0" Content="や" Tag="ﾔ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <!--<Button Grid.Column="1" Content="" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />-->
+          <Button Grid.Column="2" Content="ゆ" Tag="ﾕ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <!--<Button Grid.Column="3" Content="" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />-->
+          <Button Grid.Column="4" Content="よ" Tag="ﾖ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+        </Grid>
+        <Grid Grid.Row="9">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
+          <Button Grid.Column="0" Content="ら" Tag="ﾗ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="1" Content="り" Tag="ﾘ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="2" Content="る" Tag="ﾙ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="3" Content="れ" Tag="ﾚ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <Button Grid.Column="4" Content="ろ" Tag="ﾛ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+        </Grid>
+        <Grid Grid.Row="10">
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+            <ColumnDefinition />
+          </Grid.ColumnDefinitions>
+          <Button Grid.Column="0" Content="わ" Tag="ﾜ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <!--<Button Grid.Column="1" Content="" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />-->
+          <Button Grid.Column="2" Content="を" Tag="ｦ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+          <!--<Button Grid.Column="3" Content="" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />-->
+          <Button Grid.Column="4" Content="ん" Tag="ﾝ" Style="{StaticResource KanaButtonStyle}" Click="btnKey_ClickAsync" />
+        </Grid>
+      </Grid>
+      <Grid Grid.Column="2">
+        <Grid.Background>
+          <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="Turquoise"/>
+            <GradientStop Color="White" Offset="1"/>
+          </LinearGradientBrush>
+        </Grid.Background>
+        <DockPanel>
+          <TextBlock DockPanel.Dock="Top" Text="顧客一覧" TextAlignment="Center" FontSize="30" Background="Transparent" />
+          <DockPanel DockPanel.Dock="Top">
+            <TextBlock DockPanel.Dock="Left" Text="顧客名検索" VerticalAlignment="Center" Width="80" Margin="5,0,0,0" />
+            <TextBox  Background="White" Text="{Binding SearchKey}" InputMethod.PreferredImeState="On" InputMethod.PreferredImeConversionMode="FullShape,Katakana" PreviewKeyUp="TextBox_PreviewKeyUp" Margin="0,0,20,0"></TextBox>
+          </DockPanel>
+          <DockPanel DockPanel.Dock="Top">
+            <TextBlock DockPanel.Dock="Left" Text="顧客CD検索" VerticalAlignment="Center" Width="80" Margin="5,0,0,0" />
+            <TextBox x:Name="txtKokyakuCD"  Background="White" Text="{Binding SearchKey}" InputMethod.PreferredImeState="Off" PreviewKeyUp="txtKokyakuCD_PreviewKeyUp" Margin="0,0,20,0"></TextBox>
+          </DockPanel>
+          
+          <ScrollViewer DockPanel.Dock="Top"  VerticalScrollBarVisibility="Visible">
+            <ListBox x:Name="lstKokyakuList" ItemsSource="{Binding KokyakuList}"  Background="Transparent" SelectionChanged="lstKokyakuList_SelectionChanged" >
+
+              <ListBox.Template>
+                <ControlTemplate TargetType="ItemsControl">
+                  <Border BorderThickness="0" BorderBrush="Transparent" Background="Transparent" CornerRadius="10" >
+                    <ItemsPresenter Margin="5,5,18,5">
+                    </ItemsPresenter>
+                  </Border>
+                </ControlTemplate>
+              </ListBox.Template>
+
+              <ListBox.ItemTemplate>
+                <DataTemplate>
+                  <Grid>
+                    <StackPanel Orientation="Vertical" Margin="5,0,0,0">
+                      <DockPanel>
+                        <Label Content="顧客コード：" DockPanel.Dock="Left" HorizontalAlignment="Left" VerticalAlignment="Center"  />
+                        <TextBlock Text="{Binding Path=Customer_Code}" DockPanel.Dock="Left" VerticalAlignment="Center" />
+                      </DockPanel>
+                      <DockPanel>
+                        <Label Content="顧客名カナ：" DockPanel.Dock="Left" HorizontalAlignment="Left" VerticalAlignment="Center" FontSize="9" />
+                        <TextBlock Text="{Binding Path=Customer_Name_Kana}" DockPanel.Dock="Left" VerticalAlignment="Center" FontSize="9" />
+                      </DockPanel>
+                      <DockPanel>
+                        <Label Content="顧客名：" DockPanel.Dock="Left" HorizontalAlignment="Left" VerticalAlignment="Center"  />
+                        <TextBlock Text="{Binding Path=Customer_Name_Abbr}" DockPanel.Dock="Left" VerticalAlignment="Center" />
+                      </DockPanel>
+                      <StackPanel Height="5" Background="Green" Margin="3,0,5,0" />
+                    </StackPanel>
+                  </Grid>
+                </DataTemplate>
+              </ListBox.ItemTemplate>
+
+              <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <StackPanel Orientation="Vertical">
+                  </StackPanel>
+                </ItemsPanelTemplate>
+              </ListBox.ItemsPanel>
+
+              <!-- ListBox.ItemContainerStyleを設定 -->
+              <!--項目にマウスが乗ったときに色を変える、項目が選択されたときに色を変える、といった動作を決定する-->
+              <ListBox.ItemContainerStyle>
+                <Style TargetType="ListBoxItem">
+                  <Setter Property="Foreground" Value="Black" />
+                  <Setter Property="FontSize" Value="15" />
+                  <Setter Property="Background">
+                    <Setter.Value>
+                      <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="{DynamicResource ControlLightColor}" Offset="0" />
+                        <GradientStop Color="{DynamicResource ControlMediumGrayColor}" Offset="1" />
+                      </LinearGradientBrush>
+                    </Setter.Value>
+                  </Setter>
+                  <Setter Property="Margin" Value="0,0,0,5"/>
+                  <Setter Property="Template">
+                    <Setter.Value>
+                      <ControlTemplate TargetType="{x:Type ContentControl}">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="10" BorderThickness="2" BorderBrush="Black"  >
+                          <ContentPresenter >
+                          </ContentPresenter>
+                        </Border>
+                      </ControlTemplate>
+                    </Setter.Value>
+                  </Setter>
+                  <Style.Triggers>
+                    <!--<Trigger Property="IsSelected" Value="True">
+                      <Setter Property="Background" Value="LightPink" />
+                    </Trigger>-->
+                    <Trigger Property="IsMouseOver" Value="True">
+                      <Setter Property="Background" Value="Pink" />
+                    </Trigger>
+                  </Style.Triggers>
+                </Style>
+              </ListBox.ItemContainerStyle>
+            </ListBox>
+          </ScrollViewer>
+        </DockPanel>
+      </Grid>
+      <Grid Grid.Column="4">
+        <Grid.RowDefinitions>
+          <RowDefinition />
+          <RowDefinition Height="5" />
+          <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <GridSplitter Grid.Row="1" />
+
+        <Grid Grid.Row="0" >
+          <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+              <GradientStop Color="LightSkyBlue"/>
+              <GradientStop Color="LightBlue" Offset="1"/>
+            </LinearGradientBrush>
+          </Grid.Background>
+          <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Text="{Binding TitleForTop30}" TextAlignment="Center" FontSize="30" Background="Transparent" />
+            <ScrollViewer DockPanel.Dock="Top"  VerticalScrollBarVisibility="Visible">
+              <ListBox x:Name="lstMostPastPointList" ItemsSource="{Binding MostPastPointList}"  Background="Transparent" SelectionChanged="lstMostPastPointList_SelectionChanged" >
+
+                <ListBox.Template>
+                  <ControlTemplate TargetType="ItemsControl">
+                    <Border BorderThickness="0" BorderBrush="Transparent" Background="Transparent" CornerRadius="10" >
+                      <ItemsPresenter Margin="5,5,18,5">
+                      </ItemsPresenter>
+                    </Border>
+                  </ControlTemplate>
+                </ListBox.Template>
+
+                <ListBox.ItemTemplate>
+                  <DataTemplate>
+                    <Grid>
+                      <StackPanel Orientation="Vertical" Margin="5,0,5,0" Height="25">
+                        <DockPanel>
+                          <!--<Label Content="荷主名：" DockPanel.Dock="Left" HorizontalAlignment="Left" VerticalAlignment="Center"  />-->
+                          <TextBlock Text="{Binding Customer_Code}" DockPanel.Dock="Left" FontSize="9" VerticalAlignment="Center" />
+                          <Label>：</Label>
+                          <TextBlock Text="{Binding Customer_Name_Abbr}" DockPanel.Dock="Left" FontSize="16" VerticalAlignment="Center" />
+                        </DockPanel>
+                        <StackPanel Height="2" Background="Blue" Margin="1,0,2,0"/>
+                      </StackPanel>
+                    </Grid>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+
+                <ListBox.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <StackPanel Orientation="Vertical">
+                    </StackPanel>
+                  </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+
+                <!-- ListBox.ItemContainerStyleを設定 -->
+                <!--項目にマウスが乗ったときに色を変える、項目が選択されたときに色を変える、といった動作を決定する-->
+                <ListBox.ItemContainerStyle>
+                  <Style TargetType="ListBoxItem">
+                    <Setter Property="Foreground" Value="Black" />
+                    <Setter Property="FontSize" Value="15" />
+                    <Setter Property="Background">
+                      <Setter.Value>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                          <GradientStop Color="{DynamicResource ControlLightColor}" Offset="0" />
+                          <GradientStop Color="{DynamicResource ControlMediumGrayColor}" Offset="1" />
+                        </LinearGradientBrush>
+                      </Setter.Value>
+                    </Setter>
+                    <Setter Property="Margin" Value="0,0,0,5"/>
+                    <Setter Property="Template">
+                      <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ContentControl}">
+                          <Border Background="{TemplateBinding Background}" CornerRadius="10" BorderThickness="2" BorderBrush="Black"  >
+                            <ContentPresenter >
+                            </ContentPresenter>
+                          </Border>
+                        </ControlTemplate>
+                      </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                      <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="LightCyan" />
+                      </Trigger>
+                    </Style.Triggers>
+                  </Style>
+                </ListBox.ItemContainerStyle>
+              </ListBox>
+            </ScrollViewer>
+          </DockPanel>
+        </Grid>
+        <Grid Grid.Row="2" >
+          <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+              <GradientStop Color="LightGoldenRodYellow"/>
+              <GradientStop Color="Ivory" Offset="1"/>
+            </LinearGradientBrush>
+          </Grid.Background>
+          <DockPanel>
+            <TextBlock DockPanel.Dock="Top" Text="直近使用" TextAlignment="Center" FontSize="30" Background="Transparent" />
+            <ScrollViewer DockPanel.Dock="Top"  VerticalScrollBarVisibility="Visible">
+              <ListBox x:Name="lstMostRecentList" ItemsSource="{Binding MostRecentList}"  Background="Transparent" SelectionChanged="lstMostRecentList_SelectionChanged" >
+
+                <ListBox.Template>
+                  <ControlTemplate TargetType="ItemsControl">
+                    <Border BorderThickness="0" BorderBrush="Transparent" Background="Transparent" CornerRadius="10" >
+                      <ItemsPresenter Margin="5,5,18,5">
+                      </ItemsPresenter>
+                    </Border>
+                  </ControlTemplate>
+                </ListBox.Template>
+
+                <ListBox.ItemTemplate>
+                  <DataTemplate>
+                    <Grid>
+                      <StackPanel Orientation="Vertical" Margin="5,0,5,0">
+                        <DockPanel>
+                          <!--<Label Content="荷主名：" DockPanel.Dock="Left" HorizontalAlignment="Left" VerticalAlignment="Center"  />-->
+                          <TextBlock Text="{Binding Customer_Code}" DockPanel.Dock="Left" FontSize="9" VerticalAlignment="Center" />
+                          <Label>：</Label>
+                          <TextBlock Text="{Binding Customer_Name_Abbr}" DockPanel.Dock="Left" FontSize="16" VerticalAlignment="Center" />
+                        </DockPanel>
+                        <StackPanel Height="2" Background="Yellow" Margin="1,0,2,0"/>
+                      </StackPanel>
+                    </Grid>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+
+                <ListBox.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <StackPanel Orientation="Vertical">
+                    </StackPanel>
+                  </ItemsPanelTemplate>
+                </ListBox.ItemsPanel>
+
+                <!-- ListBox.ItemContainerStyleを設定 -->
+                <!--項目にマウスが乗ったときに色を変える、項目が選択されたときに色を変える、といった動作を決定する-->
+                <ListBox.ItemContainerStyle>
+                  <Style TargetType="ListBoxItem">
+                    <Setter Property="Foreground" Value="Black" />
+                    <Setter Property="FontSize" Value="15" />
+                    <Setter Property="Background">
+                      <Setter.Value>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                          <GradientStop Color="{DynamicResource ControlLightColor}" Offset="0" />
+                          <GradientStop Color="{DynamicResource ControlMediumGrayColor}" Offset="1" />
+                        </LinearGradientBrush>
+                      </Setter.Value>
+                    </Setter>
+                    <Setter Property="Margin" Value="0,0,0,5"/>
+                    <Setter Property="Template">
+                      <Setter.Value>
+                        <ControlTemplate TargetType="{x:Type ContentControl}">
+                          <Border Background="{TemplateBinding Background}" CornerRadius="10" BorderThickness="2" BorderBrush="Black"  >
+                            <ContentPresenter >
+                            </ContentPresenter>
+                          </Border>
+                        </ControlTemplate>
+                      </Setter.Value>
+                    </Setter>
+                    <Style.Triggers>
+                      <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Background" Value="LightYellow" />
+                      </Trigger>
+                    </Style.Triggers>
+                  </Style>
+                </ListBox.ItemContainerStyle>
+              </ListBox>
+            </ScrollViewer>
+          </DockPanel>
+        </Grid>
+      </Grid>
+    </Grid>
+
+  </Grid>
+</Window>

@@ -1,0 +1,502 @@
+@model HaisyaWeb.Models.ShitabaraiApprovalModel.DataListModel
+
+<div class="category-title">支払情報</div>
+<div class="table-div" style="margin-top:5px;">
+  <table id="PaymentDataListTable" class="list" style="width: 400px;">
+    <thead>
+      <tr align="center">
+        <th class="detail-list" width="100px">日付</th>
+        <th class="detail-list" width="200px">支払項目</th>
+        <th class="detail-list" width="100px">支払額</th>
+      </tr>
+    </thead>
+    <tbody>
+      @foreach (var item in Model.YosyaShiharaiList)
+      {
+        <tr>
+          <td align="center">
+            @item.Process_Date.ToString("M月d日")
+          </td>
+          <td align="center">
+            @if (item.Transfer_Amount > 0)
+            {
+              <strong>振込:</strong> @Convert.ToInt32(item.Transfer_Amount).ToString("#,0")<br />
+            }
+            @if (item.Cash_Amount > 0)
+            {
+              <strong>現金:</strong> @Convert.ToInt32(item.Cash_Amount).ToString("#,0")<br />
+            }
+            @if (item.Draft_Amount > 0)
+            {
+              <strong>手形:</strong> @Convert.ToInt32(item.Draft_Amount).ToString("#,0")<br />
+            }
+            @if (item.Unchin_Offset > 0)
+            {
+              <strong>運賃相殺:</strong> @Convert.ToInt32(item.Unchin_Offset).ToString("#,0")<br />
+            }
+            @if (item.General_Offset > 0)
+            {
+              <strong>一般相殺:</strong> @Convert.ToInt32(item.General_Offset).ToString("#,0")<br />
+            }
+            @if (item.Adjustment_Amount > 0)
+            {
+              <strong>調整金:</strong> @Convert.ToInt32(item.Adjustment_Amount).ToString("#,0")<br />
+            }
+          </td>
+          <td align="right">
+            @Convert.ToInt32(item.Total_Amount).ToString("#,0")
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<div class="category-title">下払明細</div>
+<div class="table-div" style="text-align:left;margin-top:5px;">
+@if (Model.CheckShitabarai.Check_Kubun != 1 || (Model.CheckShitabarai.Check_Kubun == 1 && Model.CheckShitabarai.Check_Status != 1))
+{
+  <button id="bulkApprovalBtn" type="button" class="btn btn-primary btn-sm" style="width: 80px;margin-bottom:5px;">一括確定</button>
+}
+else
+{
+  <button type="button" class="btn btn-primary btn-sm" style="width: 80px; margin-bottom: 5px;" disabled>一括確定</button>
+}
+</div>
+
+@if (Model.SeikyuMeisaiList == null || Model.SeikyuMeisaiList.Count == 0)
+{
+  <div class="no-data-row">
+    <h4 class="no-data-row-text">データ無し</h4>
+  </div>
+}
+else
+{
+  <div class="table-div" style="margin-top:5px;">
+    <table id="ClaimDataListTable" class="ClaimDataListTable list" style="width: 100%;" border="1">
+      <thead>
+        <tr align="center">
+          <th class="detail-list" width="30px">
+            @Html.CheckBox("checkbox", false, new { @class = "", id = "selectAllCheckbox" })
+          </th>
+          <th class="detail-list" width="80px">日付</th>
+          <th class="detail-list" width="50px">車番</th>
+          <th class="detail-list" width="80px">車種</th>
+          <th class="detail-list" width="100px">発地</th>
+          <th class="detail-list" width="100px">着地</th>
+          <th class="detail-list" width="100px">案件情報</th>
+          <th class="detail-list">品名</th>
+          <th class="detail-list" width="50px">数量</th>
+          <th class="detail-list" width="50px">単位</th>
+          <th class="detail-list" width="70px">単価</th>
+          <th class="detail-list" width="70px">下払額</th>
+          <th class="detail-list" width="70px">割増</th>
+          <th class="detail-list" width="70px">通行料</th>
+          <th class="detail-list" width="70px">下払合計</th>
+          <th class="detail-list" width="60px">摘要</th>
+        </tr>
+      </thead>
+      <tbody>
+        @foreach (var item in Model.SeikyuMeisaiList)
+        {
+          bool isUnapproved = @item.CheckShitabaraiDetail.Approval_Datetime == null && @item.CheckShitabaraiDetail.Approval_User == 0;
+          <tr>
+            <td rowspan="2" style="vertical-align: middle;text-align: center;">
+              @if(isUnapproved)
+              {
+                @Html.CheckBox("checkbox", false, new { @class = "rowCheckbox" })
+              }
+              @Html.Hidden("Check_Shitabarai_ID", item.CheckShitabaraiDetail?.Check_Shitabarai_ID)
+              @Html.Hidden("Uriage_Shitabarai_ID", item.CheckShitabaraiDetail?.Uriage_Shiharai_ID)
+            </td>
+            <td align="center">
+              @(item.Up.Display_Date.HasValue ? item.Up.Display_Date.Value.ToString("M月d日") : "")
+            </td>
+            <td align="center">
+              @Html.DisplayFor(modelItem => item.Up.Syaban)
+            </td>
+            <td>
+              @Html.DisplayFor(modelItem => item.Up.SyasyuKataName)
+            </td>
+            <td>
+              @Html.DisplayFor(modelItem => item.Up.Tsumi)
+            </td>
+            <td>
+              @Html.DisplayFor(modelItem => item.Up.Oroshi)
+            </td>
+            <td>
+              @Html.DisplayFor(modelItem => item.Up.Work_Name)
+            </td>
+            <td>
+              @Html.DisplayFor(modelItem => item.Up.Luggage)
+            </td>
+            <td align="right">
+              @Convert.ToInt32(item.Up.Qty).ToString("#,0")
+            </td>
+            <td align="center">
+              @Html.DisplayFor(modelItem => item.Up.UnitData)
+            </td>
+            <td align="right">
+              @Convert.ToInt32(item.Up.UnitPrice).ToString("#,0")
+            </td>
+            <td align="right">
+              @Convert.ToInt32(item.Up.ShiharaiUnchin).ToString("#,0")
+            </td>
+            <td align="right">
+              @Convert.ToInt32(item.Up.Warimashi1).ToString("#,0")
+            </td>
+            <td align="right">
+              @Convert.ToInt32(item.Up.Tatekaekin).ToString("#,0")
+            </td>
+            <td align="right">
+              @Convert.ToInt32(item.Up.ShiharaiTotal).ToString("#,0")
+            </td>
+            <td>
+              <div style="width:60px;overflow:auto;">
+                @Html.DisplayFor(modelItem => item.Up.Remaks)
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="7">
+              <div>
+                @if (Model.CheckShitabarai.Check_Kubun != 1 || (Model.CheckShitabarai.Check_Kubun == 1 && Model.CheckShitabarai.Check_Status != 1))
+                {
+                  <label style="padding-left:20px;">
+                    @Html.RadioButton($"approvalStatus_{item.Down?.Check_Shitabarai_ID}_{item.Up?.Uriage_Shiharai_ID}", 0, isUnapproved, new { id = $"approvalUnapproved_{item.Down?.Check_Shitabarai_ID}_{item.Down?.Uriage_Shiharai_ID}" }) 暫定
+                  </label>
+                  <label style="padding-left:20px;">
+                    @Html.RadioButton($"approvalStatus_{item.Down?.Check_Shitabarai_ID}_{item.Up?.Uriage_Shiharai_ID}", 1, !isUnapproved, new { id = $"approvalConfirmed_{item.Down?.Check_Shitabarai_ID}_{item.Down?.Uriage_Shiharai_ID}" }) 確定
+                  </label>
+                }
+                else
+                {
+                  <label style="padding-left:20px;">
+                    @Html.RadioButton($"approvalStatus_{item.Down?.Check_Shitabarai_ID}_{item.Up?.Uriage_Shiharai_ID}", 0, isUnapproved, new { id = $"approvalUnapproved_{item.Down?.Check_Shitabarai_ID}_{item.Down?.Uriage_Shiharai_ID}", @disabled = "disabled" }) 暫定
+                  </label>
+                  <label style="padding-left:20px;">
+                    @Html.RadioButton($"approvalStatus_{item.Down?.Check_Shitabarai_ID}_{item.Up?.Uriage_Shiharai_ID}", 1, !isUnapproved, new { id = $"approvalConfirmed_{item.Down?.Check_Shitabarai_ID}_{item.Down?.Uriage_Shiharai_ID}", @disabled = "disabled" }) 確定
+                  </label>
+                }
+              </div>
+            </td>
+            <td align="right" style="@(item.Down.Qty.HasValue ? "background-color: rgba(249, 219, 120, 1)" : "")">
+              @(item.Down.Qty.HasValue ? item.Down.Qty.Value.ToString() : "")
+            </td>
+            <td style="@(!string.IsNullOrEmpty(item.Down.UnitData) ? "background-color: rgba(249, 219, 120, 1)" : "")" data-unit="@item.Down.Unit">
+              @Html.DisplayFor(modelItem => item.Down.UnitData)
+            </td>
+            <td align="right" style="@(item.Down.UnitPrice.HasValue ? "background-color: rgba(249, 219, 120, 1)" : "")">
+              @(item.Down.UnitPrice.HasValue ? Convert.ToInt32(item.Down.UnitPrice.Value).ToString("#,0") : "")
+            </td>
+            <td align="right" style="@(item.Down.ShiharaiUnchin.HasValue ? "background-color: rgba(249, 219, 120, 1)" : "")">
+              @(item.Down.ShiharaiUnchin.HasValue ? Convert.ToInt32(item.Down.ShiharaiUnchin.Value).ToString("#,0") : "")
+            </td>
+            <td align="right" style="@(item.Down.Warimashi1.HasValue ? "background-color: rgba(249, 219, 120, 1)" : "")">
+              @(item.Down.Warimashi1.HasValue ? Convert.ToInt32(item.Down.Warimashi1.Value).ToString("#,0") : "")
+            </td>
+            <td align="right" style="@(item.Down.Tatekaekin.HasValue ? "background-color: rgba(249, 219, 120, 1)" : "")">
+              @(item.Down.Tatekaekin.HasValue ? Convert.ToInt32(item.Down.Tatekaekin.Value).ToString("#,0") : "")
+            </td>
+            <td align="right" style="@(item.Down.ShiharaiTotal.HasValue ? "background-color: rgba(249, 219, 120, 1)" : "")">
+              @(item.Down.ShiharaiTotal.HasValue ? Convert.ToInt32(item.Down.ShiharaiTotal.Value).ToString("#,0") : "")
+            </td>
+            <td align="center">
+              @if (Model.CheckShitabarai.Check_Kubun != 1 || (Model.CheckShitabarai.Check_Kubun == 1 && Model.CheckShitabarai.Check_Status != 1))
+              {
+                @if (item.Down.Check_Shitabarai_ID != 0 || item.Down.Uriage_Shiharai_ID != 0)
+                {
+                  <button id="btnTokuisakiFrom" class="btn btn-info btn-sm" onclick="openIndexModal(@item.Down.Check_Shitabarai_ID, @item.Down.Uriage_Shiharai_ID); return false;" style="padding:0;">
+                    @(isUnapproved ? "未承認" : "承認済み")
+                  </button>
+                }
+              }
+              else
+              {
+                <button class="btn btn-info btn-sm" style="padding:0;" onclick="return false;" disabled>
+                  @(isUnapproved ? "未承認" : "承認済み")
+                </button>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+
+
+<script>
+  // 全選択チェックボックスの処理
+  $('#selectAllCheckbox').change(function () {
+    $('.rowCheckbox').prop('checked', this.checked);
+  });
+
+  $('input[type="radio"][id^="approvalUnapproved"]').click(function () {
+    postCancelOrRegistration(
+      '@Url.RouteUrl("Default", new { controller = "ShitabaraiApproval", action = "ShitabaraiBatchCancel" })',
+      this,
+    );
+  });
+   
+  $('input[type="radio"][id^="approvalConfirmed"]').click(function () {
+    postCancelOrRegistration(
+      '@Url.RouteUrl("Default", new { controller = "ShitabaraiApproval", action = "ShitabaraiBatchRegistration" })',
+      this,
+    );
+  });
+
+  function postCancelOrRegistration(url, context) {
+    var updateCheckSeikyuChangeList = [];
+    var updateUriageUnchinList = [];
+    var row = $(context).closest('tr');
+    var nextRow = row;
+    var prevRow = row.prev('tr');
+    var uriageShiharaiID = parseInt(prevRow.find('input[name="Uriage_Shitabarai_ID"]').val());
+    var checkShitabaraiID = parseInt(prevRow.find('input[name="Check_Shitabarai_ID"]').val());
+    var warimashi1 =
+      parseFloat(
+        nextRow
+          .find('td:eq(5)')
+          .text()
+          .trim()
+          .replace(/[^0-9.-]+/g, ''),
+      ) || 0;
+    var warimashi2 = 0;
+    var warimashi3 = 0;
+    var warimashi4 = 0;
+    var warimashi5 = 0;
+    var warimashiPrice = warimashi1 + warimashi2 + warimashi3 + warimashi4 + warimashi5;
+
+    var Qty = nextRow.find('td:eq(1)').text().trim() != ""
+      ? parseFloat(nextRow.find('td:eq(1)').text().trim().replace(/[^0-9.-]+/g, ''))
+      : prevRow.find('td:eq(7)').text().trim() != ""
+        ? parseFloat(prevRow.find('td:eq(7)').text().trim().replace(/[^0-9.-]+/g, '')) : null;
+
+    var UnitPrice = nextRow.find('td:eq(3)').text().trim() != ""
+      ? parseFloat(nextRow.find('td:eq(3)').text().trim().replace(/[^0-9.-]+/g, ''))
+      : prevRow.find('td:eq(9)').text().trim() != ""
+        ? parseFloat(prevRow.find('td:eq(9)').text().trim().replace(/[^0-9.-]+/g, '')) : null;
+
+    var Tatekaekin = nextRow.find('td:eq(6)').text().trim() != ""
+      ? parseFloat(nextRow.find('td:eq(6)').text().trim().replace(/[^0-9.-]+/g, ''))
+      : prevRow.find('td:eq(13)').text().trim() != ""
+        ? parseFloat(prevRow.find('td:eq(13)').text().trim().replace(/[^0-9.-]+/g, '')) : null;
+
+    var ShiharaiTotal = nextRow.find('td:eq(7)').text().trim() != ""
+      ? parseFloat(nextRow.find('td:eq(7)').text().trim().replace(/[^0-9.-]+/g, ''))
+      : prevRow.find('td:eq(14)').text().trim() != ""
+        ? parseFloat(prevRow.find('td:eq(14)').text().trim().replace(/[^0-9.-]+/g, '')) : null;
+
+    var ShiharaiUnchin = nextRow.find('td:eq(4)').text().trim() != ""
+      ? parseFloat(nextRow.find('td:eq(4)').text().trim().replace(/[^0-9.-]+/g, ''))
+      : prevRow.find('td:eq(11)').text().trim() != ""
+        ? parseFloat(prevRow.find('td:eq(11)').text().trim().replace(/[^0-9.-]+/g, '')) : null;
+
+
+
+    var commonData = {
+      Uriage_Shiharai_ID: uriageShiharaiID,
+      Qty: parseFloat(nextRow.find('td:eq(1)').text().trim()) || 0,
+      Unit: parseInt(nextRow.find('td:eq(2)').attr('data-unit')) || null,
+      UnitPrice: UnitPrice,
+      Tatekaekin: Tatekaekin,
+      Warimashi3: 0,
+      Warimashi4: 0,
+      ShiharaiTotal: ShiharaiTotal,
+      Insert_Datetime: "1990-01-01",
+      Insert_User: 0,
+      Update_Datetime: "1990-01-01",
+      Update_User: 0,
+    };
+
+    updateCheckSeikyuChangeList.push({
+      ...commonData,
+      Check_Shitabarai_ID: checkShitabaraiID,
+      Warimashi1: warimashi1,
+      Warimashi2: warimashi2,
+      Warimashi3: warimashi3,
+      Warimashi4: warimashi4,
+      Warimashi5: warimashi5,
+      ShiharaiUnchin: ShiharaiUnchin,    });
+
+    updateUriageUnchinList.push({
+      ...commonData,
+      WarimashiPrice: warimashiPrice,
+      ShiharaiPrice:
+        parseFloat(
+          nextRow
+            .find('td:eq(4)')
+            .text()
+            .trim()
+            .replace(/[^0-9.-]+/g, ''),
+        ) || 0,
+    });
+
+    var batchRegistrationModel = {
+      UpdateCheckShitabaraiChangeList: updateCheckSeikyuChangeList,
+      UpdateUriageShitabaraiList: null, //updateUriageUnchinList,
+      Check_Kubun: @Model.CheckShitabarai.Check_Kubun,
+      Check_Shitabarai_ID: @Model.Check_Shitabarai_ID,
+      User_ID: 0
+    };
+
+    $.ajax({
+      url: url,
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(batchRegistrationModel),
+      success: function (response) {
+        if (response.errorMessage != null) {
+          alertError(`【エラー】${response.errorMessage}`);
+        }
+        else {
+          alert('完了しました。');
+        }
+        dataListDisplay();
+      },
+      error: function (xhr, status, error) {
+        alert('エラーが発生しました。');
+        console.error(error);
+      },
+    });
+  }
+
+  // 請求明細モーダルの表示
+  function openIndexModal(Check_Shitabarai_ID, Check_Uriage_ID) {
+    $.post('@Url.RouteUrl("Default", new { controller = "ShitabaraiApproval", Action = "IndexModal" })', {
+      checkShitabaraiID: Check_Shitabarai_ID,
+      uriageShiharaiID: Check_Uriage_ID,
+    })
+      .done(function (response) {
+        if (response.message != null) {
+          alertError(`【エラー】${response.message}`);
+          return false;
+        } else {
+          $('#ModalHere').html(response.partialView);
+          $('#ModalHere').find('.modal').modal('show');
+          return;
+        }
+      })
+      .fail(function (xhr) {
+        alertError('fail:' + xhr);
+        console.log(xhr);
+        return false;
+      })
+      .always(function (xhr, msg) {});
+  }
+
+  $('#bulkApprovalBtn').click(function () {
+    var checkedCount = $('.rowCheckbox:checked').length;
+
+    // チェックされたチェックボックスが0個の場合、エラーアラートを表示して処理を中断
+    if (checkedCount === 0) {
+      alertError('処理対象を選択してください');
+      return;
+    }
+
+    var updateCheckSeikyuChangeList = [];
+    var updateUriageUnchinList = [];
+
+    $('.rowCheckbox:checked').each(function () {
+      @* debugger; *@
+      var row = $(this).closest('tr');
+      var nextRow = row.next('tr');
+      var warimashi1 =
+        parseFloat(
+          nextRow
+            .find('td:eq(5)')
+            .text()
+            .trim()
+            .replace(/[^0-9.-]+/g, ''),
+        ) || 0;
+      var warimashi2 = 0;
+      var warimashi3 = 0;
+      var warimashi4 = 0;
+      var warimashi5 = 0;
+      var warimashiPrice = warimashi1 + warimashi2 + warimashi3 + warimashi4 + warimashi5;
+
+      var Qty = nextRow.find('td:eq(1)').text().trim() != ""
+        ? parseFloat(nextRow.find('td:eq(1)').text().trim().replace(/[^0-9.-]+/g, ''))
+        : row.find('td:eq(7)').text().trim() != ""
+          ? parseFloat(row.find('td:eq(7)').text().trim().replace(/[^0-9.-]+/g, '')) : null;
+
+      var UnitPrice = nextRow.find('td:eq(3)').text().trim() != ""
+        ? parseFloat(nextRow.find('td:eq(3)').text().trim().replace(/[^0-9.-]+/g, ''))
+        : row.find('td:eq(9)').text().trim() != ""
+          ? parseFloat(row.find('td:eq(9)').text().trim().replace(/[^0-9.-]+/g, '')) : null;
+
+      var Tatekaekin = nextRow.find('td:eq(6)').text().trim() != ""
+        ? parseFloat(nextRow.find('td:eq(6)').text().trim().replace(/[^0-9.-]+/g, ''))
+        : row.find('td:eq(13)').text().trim() != ""
+          ? parseFloat(row.find('td:eq(13)').text().trim().replace(/[^0-9.-]+/g, '')) : null;
+
+      var ShiharaiTotal = nextRow.find('td:eq(7)').text().trim() != ""
+        ? parseFloat(nextRow.find('td:eq(7)').text().trim().replace(/[^0-9.-]+/g, ''))
+        : row.find('td:eq(14)').text().trim() != ""
+          ? parseFloat(row.find('td:eq(14)').text().trim().replace(/[^0-9.-]+/g, '')) : null;
+
+      var ShiharaiUnchin = nextRow.find('td:eq(4)').text().trim() != ""
+        ? parseFloat(nextRow.find('td:eq(4)').text().trim().replace(/[^0-9.-]+/g, ''))
+        : row.find('td:eq(11)').text().trim() != ""
+          ? parseFloat(row.find('td:eq(11)').text().trim().replace(/[^0-9.-]+/g, '')) : null;
+
+      var commonData = {
+        Uriage_Shiharai_ID: parseInt(row.find('input[name="Uriage_Shitabarai_ID"]').val()),
+        Qty: Qty,
+        Unit: parseInt(nextRow.find('td:eq(2)').attr('data-unit')) || null,
+        UnitPrice: UnitPrice,
+        Tatekaekin: Tatekaekin,
+        ShiharaiTotal: ShiharaiTotal,
+      };
+
+      updateCheckSeikyuChangeList.push({
+        ...commonData,
+        Check_Shitabarai_ID: parseInt(row.find('input[name="Check_Shitabarai_ID"]').val()),
+        Warimashi1: warimashi1,
+        Warimashi2: warimashi2,
+        Warimashi3: warimashi3,
+        Warimashi4: warimashi4,
+        Warimashi5: warimashi5,
+        ShiharaiUnchin: ShiharaiUnchin,
+      });
+
+      updateUriageUnchinList.push({
+        ...commonData,
+        WarimashiPrice: warimashiPrice,
+        ShiharaiPrice:
+          parseFloat(
+            nextRow
+              .find('td:eq(4)')
+              .text()
+              .trim()
+              .replace(/[^0-9.-]+/g, ''),
+          ) || 0,
+      });
+    });
+
+    var batchRegistrationModel = {
+      UpdateCheckShitabaraiChangeList: updateCheckSeikyuChangeList,
+      UpdateUriageShitabaraiList: null,
+      Check_Kubun: @Model.CheckShitabarai.Check_Kubun,
+      Check_Shitabarai_ID: @Model.Check_Shitabarai_ID,
+      User_ID: 0
+    };
+
+    @* debugger; *@
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "ShitabaraiApproval", action = "ShitabaraiBatchRegistration" })',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify(batchRegistrationModel),
+      success: function(response) {
+        alert('一括確定が完了しました。');
+        dataListDisplay();
+      },
+      error: function(xhr, status, error) {
+        alert('一括確定中にエラーが発生しました。');
+        console.error(error);
+      }
+    });
+  });
+    </script>

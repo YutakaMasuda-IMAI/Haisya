@@ -1,0 +1,270 @@
+﻿@model AnkenModel.SenzokuRegsterListModel
+
+
+
+<div hidden>
+  @*@Html.HiddenFor(model => model.Company_ID)
+  @Html.HiddenFor(model => Model.SelectMonth)
+  @Html.HiddenFor(model => Model.SenzokuID)
+  @Html.HiddenFor(model => Model.SenzokuDriverID)*@
+</div>
+
+<style>
+
+  .table-senzokuAnkenList {
+    width: 100%;
+    /*border-collapse: collapse;*/
+    border-collapse: separate;
+    border-spacing: 5px;
+  }
+    .table-senzokuAnkenList th {
+      background-color: aquamarine;
+      text-align: center;
+    }
+
+    .table-senzokuAnkenList tbody tr {
+      border-bottom: solid 2px white;
+    }
+
+      .table-senzokuAnkenList tbody tr:last-child {
+        border-bottom: none;
+      }
+
+    .table-senzokuAnkenList tbody th {
+      position: relative;
+      text-align: center;
+      width: 80px;
+      background-color: #52c2d0;
+      color: white;
+      text-align: center;
+      padding: 10px 0;
+      vertical-align: middle;
+    }
+
+      .table-senzokuAnkenList tbody th:after {
+        display: block;
+        content: "";
+        width: 0px;
+        height: 0px;
+        position: absolute;
+        top: calc(50% - 10px);
+        right: -10px;
+        border-left: 10px solid #52c2d0;
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid transparent;
+      }
+
+    .table-senzokuAnkenList tbody td {
+      text-align: center;
+      background-color: #eee;
+      padding: 1px 0;
+    }
+
+      .table-senzokuAnkenList tbody td button {
+        margin: 0 !important;
+        width: 100% !important;
+        padding: 0 !important;
+        font-size: 18px !important;
+        height: 100% !important;
+      }
+
+/*    .table-senzokuAnkenList tbody tr:nth-child(odd) td {
+      background-color: #dddddd !important;
+    }*/
+</style>
+
+<table id="DataList" name="DataList" class="table table-senzokuAnkenList">
+  <thead>
+    <tr style="vertical-align: middle;">
+      <th style="width:50px;">
+        選択
+      </th>
+      <th>
+        日付
+      </th>
+      <th style="width: 90px; padding: 0; vertical-align: middle; ">
+        専属者勤務
+      </th>
+      @*<th>
+        貼り付け
+      </th>*@
+      <th style="width:90px;">
+        案件登録
+      </th>
+      <th style="width:90px;">
+        案件コピー
+      </th>
+      <th>
+        案件修正
+      </th>
+      <th style="width: 90px; padding: 0; vertical-align: middle; ">
+        乗務員変更
+      </th>
+      <th style="width: 180px;">
+        乗務員
+      </th>
+      <th>
+        積み場所
+      </th>
+      <th style="width: 50px; padding: 0">
+        積み<br />時間
+      </th>
+      <th>
+        卸し場所
+      </th>
+      <th style="width: 50px; padding: 0">
+        卸し<br />日時
+      </th>
+      <th>
+        荷物
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    @{
+      DateTime targetMonth = Model.SelectMonth;
+      DateTime date = targetMonth;
+
+      for (int i = 0; i < 31; i++)
+      {
+        date = targetMonth.AddDays(i);
+
+        if (!date.Month.Equals(targetMonth.Month)) { continue; }
+
+        List<HaisyaWeb.Dto.V_AnkenDataList_Local> ankenData = Model.AnkenDataList.Where(m => m.START_PointDate == date).OrderBy(m => m.START_PointTime).ToList();
+
+        int ankenCount = ankenData.Count + 1;
+
+        if (ankenData.Count == 0)
+        {
+        <tr align="center" style="vertical-align:middle;">
+
+          <td align="center" style="width: 30px;" rowspan="@(ankenCount)">
+            <input name="Target" type="checkbox" value="@(date.ToString("yyyy/MM/dd"))" />
+          </td>
+          <th align="center" rowspan="@(ankenCount)">
+            @(date.ToString("dd日(ddd)"))
+          </th>
+          <td align="center" rowspan="@(ankenCount)">
+          </td>
+          @*<td align="center" style="width: 90px;" rowspan="@(ankenCount)">
+      <button class="btn btn-outline-primary" style="" onclick="showDetailOnClick(@(date.ToString("yyyy/MM/dd")),@(Model.SenzokuID),@(Model.SenzokuDriverID))">貼付け</button>
+    </td>*@
+          <td align="center">
+            <button class="btn btn-outline-primary" style="" onclick="SelectedAnkenRegister('@(date.ToString("yyyy/MM/dd"))',@(Model.SenzokuID),@(Model.SenzokuDriverID),@(Model.AnkenId))">@(Model.AnkenId > 0 ? "案件修正" : "案件登録")</button>
+          </td>
+          @*<td align="center"></td>*@
+          <td align="center"></td>
+          <td align="center"></td>
+          <td align="center"></td>
+          <td align="center"></td>
+          <td align="center"></td>
+          <td align="center"></td>
+          <td align="center"></td>
+          <td align="center"></td>
+          <td align="center"></td>
+        </tr>
+
+        }
+        else
+        {
+          int m = 0;
+          ankenCount--;
+          foreach (var item in ankenData)
+          {
+  <tr align="center" style="vertical-align:middle;">
+    @if (m == 0)
+    {
+      <td align="center" style="width: 30px;" rowspan="@(ankenCount)">
+        <input name="Target" type="checkbox" value="@(date.ToString("yyyy/MM/dd"))" />
+      </td>
+      <th align="center" rowspan="@(ankenCount)">
+        @(date.ToString("dd日(ddd)"))
+      </th>
+      <td align="center" rowspan="@(ankenCount)">
+      </td>
+
+      @*<td align="center" style="width: 90px;" rowspan="@(ankenCount)">
+        <button class="btn btn-outline-primary" style="" onclick="showDetailOnClick(@(date.ToString("yyyy/MM/dd")),@(Model.SenzokuID),@(Model.SenzokuDriverID))">貼付け</button>
+      </td>*@
+      <td align="center" style="width: 90px;" rowspan="@(ankenCount)">
+        <button class="btn btn-outline-info" style="" onclick="SelectedAnkenRegister('@(date.ToString("yyyy/MM/dd"))',@(Model.SenzokuID),@(Model.SenzokuDriverID),0)">案件追加</button>
+      </td>
+    }
+
+    <td align="center" style="width: 90px;">
+      <button class="btn btn-outline-primary" style="" onclick="CopyAnkenOnClick(@(date.ToString("yyyy/MM/dd")),@(Model.SenzokuID),@(Model.SenzokuDriverID))">コピー</button>
+    </td>
+    <td align="center" style="width: 100px;">
+      <button class="btn btn-outline-danger" style="" onclick="SelectedAnkenRegister('@(date.ToString("yyyy/MM/dd"))',@(Model.SenzokuID),@(Model.SenzokuDriverID),@(item.Anken_ID))">案件修正</button>
+    </td>
+    <td align="center" style="width: 100px;">
+      <button class="btn btn-outline-danger" style="" onclick="SelectedDriverChange('@(date.ToString("yyyy/MM/dd"))',@(Model.SenzokuID),@(Model.SenzokuDriverID),@(item.Anken_ID))">乗務員変更</button>
+    </td>
+      @{ 
+          var haisya = Model.haisyaList.FirstOrDefault(m => m.Anken_ID == item.Anken_ID);
+
+      }
+
+    <td align="center">@(haisya != null ? haisya.SYABAN + " " + haisya.Driver_Name : "")</td>
+    <td align="center">
+      @Html.DisplayFor(modelItem => item.StartAddressDisplay3)
+    </td>
+    <td align="center" style="font-size: 13px;">
+      @Convert.ToDateTime(item.StartDatetime).ToString("HH:mm")
+    </td>
+    <td align="center">
+      @Html.DisplayFor(modelItem => item.EndAddressDisplay3)
+    </td>
+    <td align="center" style="font-size: 13px;">
+      @Convert.ToDateTime(item.EndDatetime).ToString("MM/dd")<br />@Convert.ToDateTime(item.EndDatetime).ToString("HH:mm")
+    </td>
+    <td align="center">
+      @Html.DisplayFor(modelItem => item.Luggage)
+    </td>
+  </tr>
+              
+            m++;
+              
+        }
+
+
+
+
+      }
+
+
+
+
+
+    }
+
+  }
+
+
+  </tbody>
+  </table>
+
+<script>
+  $(function () {
+
+  });
+
+  function showDetailOnClick(paramSenzokuID, paramSenzokuDriverID) {
+    SelectedDriverOnClick(paramSenzokuID, paramSenzokuDriverID);
+  }
+
+  function CopyAnkenOnClick(paramDay, paramSenzokuID, paramSenzokuDriverID, paramAnkenId) {
+
+    ///最後に作成予定
+
+  }
+
+
+  function SelectedDriverChange(paramDay, paramSenzokuID, paramSenzokuDriverID, paramAnkenId) {
+
+    ///最後に作成予定
+
+  }
+
+</script>

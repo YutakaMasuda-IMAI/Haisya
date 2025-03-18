@@ -1,0 +1,131 @@
+﻿@model CommonDialogModel.SelectCustomerTantouModel
+
+
+<style>
+
+  .table-CustomerTantoulist-input {
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    font-size: initial;
+    overflow: hidden;
+  }
+
+
+</style>
+
+@if (Model.CustomerTantouList.Count() == 0)
+{
+  <div style="width: 100%; background: #3366CC ">
+    <h4 style="text-align:left; margin-left: 20px;color: white;">データ無し</h4>
+  </div>
+}
+
+
+<table id="myTable" class="ex_table-CustomerTantou table-bordered border-info" width="100%" border="1">
+  <thead style="background-color: chartreuse;  ">
+    <tr align="center">
+      <th class="ex-table-th" style="vertical-align: middle; width: 60px;">選択</th>
+      <th class="ex-table-th" style="width: 50px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Tantou_Code')" style="">担当<br />コード</a>
+      </th>
+      <th class="ex-table-th" style="width: 170px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Tantou_Name')" style="">担当者名</a>
+      </th>
+      <th class="ex-table-th" style="width: 100px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Tantou_Name_Abbr')" style="">表示名</a>
+      </th>
+      <th class="ex-table-th" style="width: 80px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Tantou_Name_Kana')" style="">検索カナ</a>
+      </th>
+      <th class="ex-table-th" style="width: 130px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Mail_Address1')" style="">メールアドレス1</a>
+      </th>
+      <th class="ex-table-th" style="width: 50px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Phone1')" style="">電話番号1</a>
+      </th>
+      <th class="ex-table-th" style="width: 50px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Fax1')" style="">FAX番号1</a>
+      </th>
+      <th class="ex-table-th" hidden style="width: 50px;">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Cell_Phone')" style="">携帯電話</a>
+      </th>
+      
+    </tr>
+  </thead>
+  <tbody>
+    @{
+      int i = 1;
+    }
+    @foreach (var item in Model.CustomerTantouList.OrderBy(m => m.Tantou_Code).ToList())
+    {
+      int rem;
+      int div = Math.DivRem(i, 2, out rem);
+      string color = rem == 0 ? "khaki" : "	whitesmoke";
+
+    <tr style="font-size: 12px; font-weight: bold; background-color: @(color); height: 20px;">
+      <td style="vertical-align: middle;">
+        <button name="btnSelectData" class="btn btn-success" style="width: 100%; padding:0;">選択</button>
+      </td>
+
+      <td hidden style="vertical-align: middle;" align="center">
+        @(item.Tantou_ID)
+      </td>
+      <td style="vertical-align: middle;" align="center">
+        @(item.Tantou_Code)
+      </td>
+      <td>
+        @(item.Tantou_Name)
+      </td>
+      <td>
+        @(item.Tantou_Name_Abbr)
+      </td>
+      <td>
+        @(item.Tantou_Name_Kana)
+      </td>
+      <td>
+        @(item.Mail_Address1)
+      </td>
+      <td align="center">
+        @(item.Phone1)
+      </td>
+      <td align="center">
+        @(item.Fax1)
+      </td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Tantou_ID, null, new { @readonly = "readonly", })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Tantou_Code, null, new { @readonly = "readonly", @class = "table-CustomerTantoulist-input", @style = "" })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Tantou_Name, null, new { @readonly = "readonly", @class = "table-CustomerTantoulist-input", @style = "" })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Tantou_Name_Abbr, null, new { @readonly = "readonly", @class = "table-CustomerTantoulist-input", @style = "" })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Tantou_Name_Kana, null, new { @readonly = "readonly", @class = "table-CustomerTantoulist-input", @style = "" })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Mail_Address1, null, new { @readonly = "readonly", @class = "table-CustomerTantoulist-input", @style = "" })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Phone1, null, new { @readonly = "readonly", @class = "table-CustomerTantoulist-input", @style = "" })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Fax1, null, new { @readonly = "readonly", @class = "table-CustomerTantoulist-input", @style = "" })</td>
+      <td hidden>@Html.TextBoxFor(modelItem => item.Cell_Phone, null, new { @readonly = "readonly", @class = "table-CustomerTantoulist-input", @style = "" })</td>
+    </tr>
+      i++;
+    }
+  </tbody>
+</table>
+
+
+
+<script>
+
+  $(function () {
+
+
+    $('button[name="btnSelectData"]').on('click', function () {
+
+      let result = SelectCommonDialog($(this));
+
+      //alert(data);
+
+      selectOnClick(result);
+
+    });
+
+
+  });
+
+</script>

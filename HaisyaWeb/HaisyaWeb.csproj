@@ -1,0 +1,141 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <UserSecretsId>aspnet-HaisyaWeb-2574B8E5-DDB1-404E-80E4-46FB4DFCE48C</UserSecretsId>
+    <ApplicationIcon>favicon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Bootstrap.Datepicker" Version="1.8.0.1" />
+    <PackageReference Include="DinkToPdf" Version="1.0.8" />
+    <PackageReference Include="DinkToPdfIncludesDependencies" Version="1.0.8" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.8" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.17" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.17" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.17" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.17" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
+    <PackageReference Include="Select.HtmlToPdf.NetCore" Version="24.1.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WebApplication\WebApplication.csproj">
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Update="C:\Users\masuda_y\.nuget\packages\bootstrap\5.2.3\contentFiles\any\any\wwwroot\css\bootstrap.css">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Content>
+    <Content Update="Views\Report\PDFReportBill03.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Update="wwwroot\favicon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Update="wwwroot\img\transport-instructions-sheet-logo.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views/ShitabaraiInquiry/" />
+    <Folder Include="Views\Common\" />
+  </ItemGroup>
+
+  <ItemGroup>
+        <!-- extends watching group to include *.cshtml and *.razor files -->
+        <Watch Include="**\*.cshtml;*.razor;*.js;*.css" Exclude="**\obj\**\*;bin\**\*" />
+</ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="FakesAssemblies\**" />
+    <Content Remove="FakesAssemblies\**" />
+    <EmbeddedResource Remove="FakesAssemblies\**" />
+    <None Remove="FakesAssemblies\**" />
+    <Watch Remove="FakesAssemblies\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Remove="Views\AnkenReference\Index.cshtml" />
+    <Content Remove="Views\AnkenReference\YosyaRegModal.cshtml" />
+    <Content Remove="Views\AnkenRegister\AnkenReferenceModal.cshtml" />
+    <Content Remove="Views\Haisya\ModalStatusHaisya.cshtml" />
+    <Content Remove="Views\Report\PDFReportList.cshtml" />
+    <Content Remove="Views\Setting\SenzokuDriverRegModal.cshtml" />
+    <Content Remove="Views\Setting\SenzokuIndex.cshtml" />
+    <Content Remove="Views\Setting\SenzokuRegModal.cshtml" />
+    <Content Remove="Views\Total\Index.cshtml" />
+    <Content Remove="Views\Yosya\DataListForNone.cshtml" />
+    <Content Remove="Views\Yosya\Index.cshtml" />
+    <Content Remove="Views\Yosya\Register.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Watch Remove="Views\AnkenReference\AnkenReferenceModal.cshtml" />
+    <Watch Remove="Views\AnkenReference\AnkenReferenceModal_old.cshtml" />
+    <Watch Remove="Views\AnkenReference\Index.cshtml" />
+    <Watch Remove="Views\AnkenReference\YosyaRegModal.cshtml" />
+    <Watch Remove="Views\AnkenRegister\AnkenReferenceModal.cshtml" />
+    <Watch Remove="Views\CommonDialog\SelectCustomerModal.cshtml" />
+    <Watch Remove="Views\CommonDialog\SelectCustomerOyaModal.cshtml" />
+    <Watch Remove="Views\Customer\CustomerBranchDataList.cshtml" />
+    <Watch Remove="Views\Customer\CustomerBranchIndex.cshtml" />
+    <Watch Remove="Views\Customer\CustomerBranchModal.cshtml" />
+    <Watch Remove="Views\DailyReport\DailyReportRegistrationDetail_Anken.cshtml" />
+    <Watch Remove="Views\DailyReport\DailyReportRegistrationDetail_Nippou.cshtml" />
+    <Watch Remove="Views\Haisya\ModalStatusHaisya.cshtml" />
+    <Watch Remove="Views\Home\AdminInfo.cshtml" />
+    <Watch Remove="Views\Home\SystemInfo.cshtml" />
+    <Watch Remove="Views\Report\PDFReportBill02.cshtml" />
+    <Watch Remove="Views\Report\PDFReportBill03.cshtml" />
+    <Watch Remove="Views\Report\PDFReportBill04.cshtml" />
+    <Watch Remove="Views\Report\PDFReportCarNumberContactSheet.cshtml" />
+    <Watch Remove="Views\Report\PDFReportBill01.cshtml" />
+    <Watch Remove="Views\Report\PDFReportInvoiceList.cshtml" />
+    <Watch Remove="Views\Report\PDFReportList.cshtml" />
+    <Watch Remove="Views\Setting\AnkenEquipmentGroup.cshtml" />
+    <Watch Remove="Views\Setting\AnkenEquipmentGroupModal.cshtml" />
+    <Watch Remove="Views\Setting\AnkenLuggageGroup.cshtml" />
+    <Watch Remove="Views\Setting\AnkenLuggageGroupModal.cshtml" />
+    <Watch Remove="Views\Report\PDFReportTransportInstructionsSheet.cshtml" />
+    <Watch Remove="Views\Report\PDFReportTransportOrderSheet.cshtml" />
+    <Watch Remove="Views\Setting\SenzokuDriverRegModal.cshtml" />
+    <Watch Remove="Views\Setting\SenzokuIndex.cshtml" />
+    <Watch Remove="Views\Setting\SenzokuRegModal.cshtml" />
+    <Watch Remove="Views\Total\Index.cshtml" />
+    <Watch Remove="Views\Yosya\DataListForNone.cshtml" />
+    <Watch Remove="Views\Yosya\Index.cshtml" />
+    <Watch Remove="Views\Yosya\Register.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="Views\AnkenReference\Index.cshtml" />
+    <None Include="Views\AnkenReference\AnkenReferenceModal_old.cshtml" />
+    <None Include="Views\AnkenReference\YosyaRegModal.cshtml" />
+    <None Include="Views\Haisya\ModalStatusHaisya.cshtml" />
+    <None Include="Views\Report\PDFReportList.cshtml" />
+    <None Include="Views\Setting\SenzokuDriverRegModal.cshtml" />
+    <None Include="Views\Setting\SenzokuIndex.cshtml" />
+    <None Include="Views\Setting\SenzokuRegModal.cshtml" />
+    <None Include="Views\Total\Index.cshtml" />
+    <None Include="Views\Yosya\DataListForNone.cshtml" />
+    <None Include="Views\Yosya\Index.cshtml" />
+    <None Include="Views\Yosya\Register.cshtml" />
+  </ItemGroup>
+	
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\css\Reset.css" />
+  </ItemGroup>
+	
+  <ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+	
+  <ItemGroup>
+    <AdditionalDesignTimeBuildInput Remove="FakesAssemblies\**" />
+  </ItemGroup>
+
+</Project>

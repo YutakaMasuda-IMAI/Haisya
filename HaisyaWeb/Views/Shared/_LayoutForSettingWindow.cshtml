@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@ViewData["Title"] - 運送業務システム</title>
+
+  <link href="~/lib/jquery-ui/dist/themes/base/jquery-ui.css" rel="stylesheet" />
+  <link href="~/lib/jquery-ui/dist/themes/base/theme.css" rel="stylesheet" />
+  <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
+  <link href="~/lib/glyphicons/css/bootstrap.css" rel="stylesheet" />
+  <link href="~/lib/sweetalert2/dist/sweetalert2.css" rel="stylesheet" />
+
+  <script src="~/lib/jquery/dist/jquery.js" charset="utf-8"></script>
+  <script src="~/lib/jquery-ui/dist/jquery-ui.js" charset="utf-8"></script>
+  <script src="~/lib/bootstrap/dist/js/bootstrap.js" charset="utf-8"></script>
+  <script src="~/lib/sweetalert2/dist/sweetalert2.js"></script>
+
+  <script src="~/js/ympicker.js" charset="utf-8"></script>
+
+  <script src="~/js/site.js" asp-append-version="true"></script>
+
+  <link rel="stylesheet" href="~/css/site.css" />
+  <link href="~/css/Setting.css" rel="stylesheet" />
+  <link href="~/css/Master.css" rel="stylesheet" />
+  <style>
+  </style>
+</head>
+
+<body data-spy="scroll" data-target="#navbar" style="margin-left:10px; margin-right: 10px;">
+  <div id="ALL">
+    <div id="sub">
+      <div class="subInner clearfix" style="height: 60px;">
+        <button class="btn btn-warning" style="width: 200px; margin-top: 10px; margin-left: 10px;" onclick="WindowsClose(); return false;">閉じる</button>
+      </div>
+    </div>
+    <div id="wrap">
+      <div id="wrap-inside">
+        <div role="main">
+          @RenderBody()
+        </div>
+        <div>
+          @*//モダール表示用のスペースを追加*@
+          <div id="ModalHere"></div>
+          <div id="ModalHere2"></div>
+          <div id="ModalHere3" data-keyboard="false" data-backdrop="static"></div>
+          <div id="ModalCommonDialog" data-keyboard="false" data-backdrop="static"></div>
+          <div id="SortHere" hidden></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @await RenderSectionAsync("Scripts", required: false)
+
+  @await Html.PartialAsync("_LayoutForCommonScript")
+</body>
+</html>
+
+<script>
+  $(function () {
+    //$('#navbar').scrollspy({ offset: $(window).height() / 2 });
+    //$('#navbar').scrollspy({ offset: 60 });
+
+
+    $('.nav-btn').on('click', function () {
+      $('.nav-btn').removeClass('active');
+      $(this).addClass('active');
+    });
+
+    $('.sub-btn').on('click', function () {
+      $('.sub-btn').removeClass('active');
+      $(this).addClass('active');
+    });
+
+
+  });
+
+  function WindowsClose() {
+
+    window.close();
+
+  }
+
+
+  function CloseModel() {
+    $('#ModalHere').find('.modal').modal('hide');
+    $("#ModalHere").html('');
+  };
+
+</script>

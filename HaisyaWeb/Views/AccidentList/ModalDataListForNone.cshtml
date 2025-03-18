@@ -1,0 +1,84 @@
+﻿@model HaisyaWeb.Models.AccidentListModel.DataListModel
+
+<style>
+  .jikoCheckDataListTable td {
+    border: 1px solid black;
+  }
+
+  .jikoCheckDataListTable th {
+    border: 1px solid black;
+  }
+</style>
+
+@if ((Model.JikoDataLists == null || Model.JikoDataLists.Count() == 0))
+{
+<div class="no-data-row">
+  <h4 class="no-data-row-text">データ無し</h4>
+</div>
+}
+else
+{
+<table id="jikoCheckDataListTable" class="table ex_DataList search-list" width="100%" border="1">
+  <thead>
+    <tr>
+      <th width="80px"></th>
+      <th width="120px">
+        <a style="">事故No.</a>
+      </th>
+      <th width="140px">
+        <a style="">事故発生日</a>
+      </th>
+      <th width="120px">
+        <a style="">事故区分</a>
+      </th>
+      <th>
+        <a style="">事故名</a>
+      </th>
+      <th width="250px">
+        <a style="">乗務員名</a>
+      </th>
+      <th width="140px">
+        <a style="">車番</a>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var item in Model.JikoDataLists.ToList())
+    {
+      <tr style="font-size: 12px; ">
+      <td width="70px">
+        <button class="btn btn-info" style="width: 100%; padding: 0;" onclick="accidentListModalCloseCallBack(
+          '@(item.Jiko_No)',
+          '@(item.Jiko_Display)',
+          '@(item.Jiko_Date)',
+          '@(item.Code_Name)',
+          '@(item.Display_Name)',
+          '@(item.Syaban_Number)',
+          '@(item.Jiko_ID)'
+        )">
+        選択
+        </button>
+      </td>
+      <td align="center">
+        @Html.DisplayFor(modelItem => item.Jiko_No)
+      </td>
+      <td align="center">
+        @Convert.ToDateTime(item.Jiko_Date).ToString("yyyy/MM/dd")
+      </td>
+      <td align="center">
+        @Html.DisplayFor(modelItem => item.Code_Name)
+      </td>
+      <td>
+        @Html.DisplayFor(modelItem => item.Jiko_Display)
+      </td>
+      <td width="80px">
+        @Html.DisplayFor(modelItem => item.Display_Name)
+      </td>
+      <td width="80px">
+        @Html.DisplayFor(modelItem => item.Syaban_Number)
+      </td>
+      </tr>
+    }
+  </tbody>
+</table>
+}

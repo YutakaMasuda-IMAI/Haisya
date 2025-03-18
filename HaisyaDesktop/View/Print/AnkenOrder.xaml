@@ -1,0 +1,195 @@
+﻿<Window x:Class="HaisyaDesktop.View.Print.AnkenOrder"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HaisyaDesktop.View.Print"
+        xmlns:UserControls="clr-namespace:HaisyaDesktop.View.UserControls" 
+        xmlns:print="clr-namespace:HaisyaDesktop.ViewModel.Print" 
+        xmlns:utils="clr-namespace:HaisyaDesktop.Utils"
+        d:DataContext="{d:DesignInstance Type=print:AnkenOrderViewModel}"
+        mc:Ignorable="d"
+        Title="発注書印刷" Height="780" Width="800">
+
+  <Window.Resources>
+    <Style x:Key="KoumokuTitle" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="16" />
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="0,0,0,0" />
+    </Style>
+    <Style x:Key="KoumokuTitleToTextBox" TargetType="TextBox">
+      <Setter Property="FontSize" Value="16" />
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="HorizontalAlignment" Value="Stretch"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center" />
+      <Setter Property="Margin" Value="3,0,3,0" />
+    </Style>
+    <Style x:Key="KoumokuBordrLeft" TargetType="Border">
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="BorderBrush" Value="Black" />
+      <Setter Property="Margin" Value="0,0,0,0"/>
+      <Setter Property="Width" Value="100"/>
+      <Setter Property="Height" Value="35" />
+    </Style>
+    <Style x:Key="KoumokuBordrRight" TargetType="Border">
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="BorderBrush" Value="Black" />
+      <Setter Property="Margin" Value="0,0,0,0"/>
+      <!--<Setter Property="Width" Value="400"/>-->
+      <Setter Property="Height" Value="35" />
+    </Style>
+
+    <Style x:Key="InputTextBoxStyle" TargetType="TextBox">
+      <Setter Property="FontSize" Value="16" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="VerticalContentAlignment" Value="Center" />
+      <Setter Property="InputMethod.PreferredImeState" Value="On" />
+      <Setter Property="InputMethod.PreferredImeConversionMode" Value="FullShape,Native" />
+    </Style>
+
+    <Style x:Key="InputRichTextBoxStyle" TargetType="RichTextBox">
+      <Setter Property="FontSize" Value="16" />
+      <Setter Property="Block.LineHeight" Value="2" />
+      <Setter Property="InputMethod.PreferredImeState" Value="On" />
+      <Setter Property="InputMethod.PreferredImeConversionMode" Value="FullShape,Native" />
+    </Style>
+  </Window.Resources>
+
+  <Grid Background="Papayawhip">
+    <StackPanel Orientation="Vertical">
+      <Border BorderThickness="3" BorderBrush="Black" >
+        <DockPanel Margin="10,0,10,0">
+          <Button Name="btnClose" Content="閉じる" DockPanel.Dock="Right" Width="150" Click="btnClose_Click"/>
+          <TextBlock Text="                     輸送発注書印刷画面" FontSize="26" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" Background="Transparent" />
+        </DockPanel>
+      </Border>
+      <Border BorderThickness="0" BorderBrush="Gray" Margin="0,10,0,0">
+        <DockPanel Height="50">
+          <Button Name="btnPrint" Content="印   刷" FontSize="26" FontWeight="Bold" DockPanel.Dock="Left" Width="300" Click="BtnPrint_Click"/>
+        </DockPanel>
+      </Border>
+
+      <Grid Margin="30,10,0,0" >
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*" />
+          <ColumnDefinition Width="80" />
+        </Grid.ColumnDefinitions>
+
+        <Border BorderThickness="1" BorderBrush="Black" Grid.Column="0" >
+          <DockPanel >
+            <DockPanel DockPanel.Dock="Top">
+              <Border Style="{StaticResource KoumokuBordrLeft}" DockPanel.Dock="Left">
+                <TextBlock Text="宛先" Style="{StaticResource KoumokuTitle}" />
+              </Border>
+              <Border Style="{StaticResource KoumokuBordrRight}" DockPanel.Dock="Left">
+                <TextBox Text="{Binding AtesakiDisplay.Value}" Style="{StaticResource InputTextBoxStyle}" Padding="2,0,0,0" />
+              </Border>
+            </DockPanel>
+            <DockPanel DockPanel.Dock="Top">
+              <Border Style="{StaticResource KoumokuBordrLeft}" DockPanel.Dock="Left">
+                <TextBlock Text="送り主担当者" Style="{StaticResource KoumokuTitle}" />
+              </Border>
+              <Border Style="{StaticResource KoumokuBordrRight}" DockPanel.Dock="Left">
+                <TextBox Text="{Binding SendNameDisplay.Value}" Style="{StaticResource InputTextBoxStyle}" Padding="2,0,0,0" />
+              </Border>
+            </DockPanel>
+            <DockPanel DockPanel.Dock="Top">
+              <Border Style="{StaticResource KoumokuBordrLeft}" DockPanel.Dock="Left">
+                <TextBlock Text="車種・台数" Style="{StaticResource KoumokuTitle}"  />
+              </Border>
+              <Border Style="{StaticResource KoumokuBordrRight}" DockPanel.Dock="Left">
+                <TextBox Text="{Binding SyasyuSyabanDaisuuDisplay.Value}" Style="{StaticResource InputTextBoxStyle}" />
+              </Border>
+            </DockPanel>
+            <DockPanel DockPanel.Dock="Top" >
+              <Border Style="{StaticResource KoumokuBordrLeft}" DockPanel.Dock="Left" Height="50">
+                <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                  <TextBlock Text="貨物　荷姿" Style="{StaticResource KoumokuTitle}" />
+                  <TextBlock Text="重量　個数" Style="{StaticResource KoumokuTitle}" />
+                </StackPanel>
+              </Border>
+              <Border Style="{StaticResource KoumokuBordrRight}" DockPanel.Dock="Left" Height="50">
+                <RichTextBox x:Name="Nimotsu"  AcceptsTab="True" DockPanel.Dock="Top" utils:RichTextBoxHelper.Document="{Binding TruckLoadDocument.Value}" Style="{StaticResource InputRichTextBoxStyle}" ></RichTextBox>
+              </Border>
+            </DockPanel>
+            <DockPanel DockPanel.Dock="Top">
+              <Border Style="{StaticResource KoumokuBordrLeft}" DockPanel.Dock="Left">
+                <TextBlock Text="装備品" Style="{StaticResource KoumokuTitle}" />
+              </Border>
+              <Border Style="{StaticResource KoumokuBordrRight}" DockPanel.Dock="Left">
+                <TextBox Text="{Binding EquipmentDisplay.Value}" Style="{StaticResource InputTextBoxStyle}" Padding="2,0,0,0" />
+              </Border>
+            </DockPanel>
+            <DockPanel DockPanel.Dock="Top" >
+              <Border Style="{StaticResource KoumokuBordrLeft}" DockPanel.Dock="Left" Height="120">
+                <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                  <TextBox Text="{Binding TsumiTitle1Display.Value}" Style="{StaticResource KoumokuTitleToTextBox}" />
+                  <TextBox Text="{Binding TsumiTitle2Display.Value}" Style="{StaticResource KoumokuTitleToTextBox}" />
+                  <Label Content="※1" HorizontalContentAlignment="Left" Margin="10,0,0,0" />
+                </StackPanel>
+              </Border>
+              <Border Style="{StaticResource KoumokuBordrRight}" DockPanel.Dock="Left" Height="120">
+                <RichTextBox x:Name="Tsumi"  AcceptsTab="True" DockPanel.Dock="Top" utils:RichTextBoxHelper.Document="{Binding TsumiDocument.Value}" Style="{StaticResource InputRichTextBoxStyle}" ></RichTextBox>
+              </Border>
+            </DockPanel>
+            <DockPanel DockPanel.Dock="Top" >
+              <Border Style="{StaticResource KoumokuBordrLeft}" DockPanel.Dock="Left" Height="120">
+                <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                  <TextBox Text="{Binding OroshiTitle1Display.Value}" Style="{StaticResource KoumokuTitleToTextBox}" />
+                  <TextBox Text="{Binding OroshiTitle2Display.Value}" Style="{StaticResource KoumokuTitleToTextBox}" />
+                  <Label Content="※1" HorizontalContentAlignment="Left" Margin="10,0,0,0" />
+                </StackPanel>
+              </Border>
+              <Border Style="{StaticResource KoumokuBordrRight}" DockPanel.Dock="Left" Height="120">
+                <RichTextBox x:Name="Oroshi"  AcceptsTab="True" DockPanel.Dock="Top" utils:RichTextBoxHelper.Document="{Binding OroshiDocument.Value}" Style="{StaticResource InputRichTextBoxStyle}" ></RichTextBox>
+              </Border>
+            </DockPanel>
+            <DockPanel DockPanel.Dock="Top" >
+              <Border Style="{StaticResource KoumokuBordrLeft}" DockPanel.Dock="Left" Height="120">
+                <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+                  <TextBox Text="{Binding SpecialNotesTitle1Display.Value}" Style="{StaticResource KoumokuTitleToTextBox}" />
+                  <TextBox Text="{Binding SpecialNotesTitle2Display.Value}" Style="{StaticResource KoumokuTitleToTextBox}" />
+                </StackPanel>
+              </Border>
+              <Border Style="{StaticResource KoumokuBordrRight}" DockPanel.Dock="Left" Height="120">
+                <RichTextBox x:Name="SpecialNotes"  AcceptsTab="True" DockPanel.Dock="Top" utils:RichTextBoxHelper.Document="{Binding SpecialNotesDocument.Value}" Style="{StaticResource InputRichTextBoxStyle}" ></RichTextBox>
+              </Border>
+            </DockPanel>
+
+          </DockPanel>
+          
+        </Border>
+        
+      </Grid>
+      <StackPanel Orientation="Horizontal" >
+        <Label Content="※1" HorizontalContentAlignment="Left" Margin="40,0,0,0" />
+        <Label Content="１行目のみ太文字で印刷されます" HorizontalContentAlignment="Left" Margin="10,0,0,0" Foreground="Red" />
+      </StackPanel>
+
+    </StackPanel>
+  </Grid>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <!--<StackPanel Orientation="Vertical">
+      
+    
+      <Button x:Name="btnPrint" Content="印刷" HorizontalAlignment="Center" VerticalAlignment="center" Width="75" Click="BtnPrint_Click"/>
+
+      <DockPanel >
+        <UserControls:RichTextBoxToolbar DockPanel.Dock="Top"></UserControls:RichTextBoxToolbar>
+        <RichTextBox Name="mainRTB" AcceptsTab="True" Height="300" DockPanel.Dock="Top"></RichTextBox>
+
+      </DockPanel>
+    </StackPanel>-->
+
+</Window>

@@ -1,0 +1,74 @@
+﻿@model AnkenModel.AnkenRegisterModel
+
+
+
+
+
+<div id="divBodyBody" class="border">
+  <div class="heading-21" style="background-color: lightgoldenrodyellow; display: flex; ">
+    <h4 style="margin: 0; padding-top: 0.3rem;">ルート指定</h4>
+    <button id="btnSerchRoot2" class="btn btn-outline-primary" style="margin: 0px 0 0px 10rem; width: 30%; --bs-btn-bg: lightgray; " onclick="btnSerchRootOnclick(); return false;">ルート検索</button>
+    @*<button id="btnSerchAnken" class="btn btn-outline-dark" style="margin: 0px 0 0px 10rem; width: 30%;" onclick="btnSerchAnkenOnclick(); return false;">過去案件検索</button>*@
+  </div>
+  <div>
+    <div class="row" style="min-height: 750px;">
+      
+      <div class="col-5" style="background: #6699FF">
+        <div class="mb-4" style="margin-top: 2px; display: flex; font-size: large;">
+          @Html.CheckBoxFor(model => model.EigyoshoModori, new { @class = "col-sm-1", @Style = "" })
+          <label class="label-Title control-label align-self-center align-middle text-left" style="padding: 0; color: #FFFFFF;" for="EigyoshoModori">宵済み案件</label>
+          @Html.CheckBoxFor(model => model.CheckOroshiSpace, new { @class = "col-sm-1", @Style = "" })
+          <label class="label-Title control-label align-self-center align-middle text-left" style="padding: 0; color: #FFFFFF;" for="CheckOroshiSpace">卸し場所の詳細は積地で確認</label>
+          @Html.CheckBoxFor(model => model.EdnGoBackEigyosyo, new { @class = "col-sm-1", @Style = "margin-left: 20px;" })
+          <label class="label-Title control-label align-self-center align-middle text-left" style="padding: 0; color: #FFFFFF;" for="EdnGoBackEigyosyo">業務後に営業所戻り</label>
+        </div>
+        @await Html.PartialAsync("RegisterPoint", Model)
+      </div>
+
+      <div id="maptd" class="" style="padding: 0;">
+        @if (Model.WebViewFlg == 0)
+        {
+          <div id="mapHead">
+            <!-- ログイン認証の場合 -->
+            <button onclick="logout(); return false;" style="width: 100px;height:30px;font-size:12px;">logout</button>
+            <button onclick="aaaTest(); return false;" style="width: 100px; height: 30px; font-size: 12px; ">aaaa</button>
+          </div>
+        }
+        <table width="100%">
+          <tr>
+            <th width="40px" class="text-end">
+              <label class="label-Title-Required control-label align-self-center align-middle" style="">住所<br />検索</label>
+            </th>
+            <td width="100px">
+              <button id="btnSelectAddress" class="btn btn-anken" style="border-radius: 10%; width: 100px; font-size: 20px; padding: 0; " onclick="return false;">住所検索</button>
+            </td>
+            <td>
+              <input type="text" id="txtAddress" class="form-control" />
+            </td>
+          </tr>
+        </table>
+        <div id="MapContainer" class="map-container2" style="margin: 0; padding: 0; height: calc(100% - 70px);">
+          <div id="ZMap" style="background:#00ffff;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+<script>
+
+  let tag = document.getElementById("maptd")
+
+  tag.classList.add("col-7")
+
+
+
+
+
+
+
+
+</script>

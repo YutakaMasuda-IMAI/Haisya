@@ -1,0 +1,50 @@
+{
+  "name": "japanpost-zipcode",
+  "description": "Japan Post Zipcode",
+  "version": "0.2.5",
+  "author": "@kawanet",
+  "bugs": {
+    "url": "https://github.com/kawanet/japanpost-zipcode/issues"
+  },
+  "dependencies": {
+    "iconv-cp932": "^1.1.0",
+    "jszip": "^3.10.1",
+    "node-fetch": "^2.6.9"
+  },
+  "devDependencies": {
+    "@types/jszip": "^3.4.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "^18.14.0",
+    "@types/node-fetch": "^2.6.2",
+    "mocha": "^10.2.0",
+    "typescript": "^4.9.5"
+  },
+  "files": [
+    "LICENSE",
+    "README.md",
+    "lib/*.js",
+    "types/*.d.ts"
+  ],
+  "homepage": "https://github.com/kawanet/japanpost-zipcode#readme",
+  "keywords": [
+    "ajaxzip",
+    "japan",
+    "post",
+    "zip"
+  ],
+  "license": "MIT",
+  "main": "lib/ken_all.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kawanet/japanpost-zipcode.git"
+  },
+  "scripts": {
+    "build": "./node_modules/.bin/tsc",
+    "fixpack": "fixpack",
+    "prepack": "npm run build && npm test",
+    "test": "./node_modules/.bin/mocha test",
+    "tsc-watch": "./node_modules/.bin/tsc --watch",
+    "update": "/bin/rm -f tmp/ken_all.* && node -e \"require('./').KenAll.readAll({logger:console})\""
+  },
+  "typings": "types/ken_all.d.ts"
+}

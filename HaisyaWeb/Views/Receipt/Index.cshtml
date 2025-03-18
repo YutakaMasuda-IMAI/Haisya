@@ -1,0 +1,454 @@
+﻿@model HaisyaWeb.Models.DailyReportModel.DataListModel
+@{
+  Layout = "_Layout";
+  ViewData["Title"] = "受領書処理一覧";
+}
+
+<head>
+  <link href="~/css/List.css" rel="stylesheet" />
+</head>
+
+<body>
+  <div id="hiddenItem" hidden>
+    @Html.HiddenFor(model => Model.Company_ID)
+    @Html.HiddenFor(model => Model.Search.SelectTab)
+    @Html.HiddenFor(model => Model.Search.SelectGroup)
+    @Html.HiddenFor(model => Model.Search.SelectFilter)
+    @Html.HiddenFor(model => Model.Search.SelectDay)
+    @Html.HiddenFor(model => Model.Search.SelectEndDay)
+    @Html.HiddenFor(model => Model.Search.BackMenuAction)
+    @Html.HiddenFor(model => Model.SortParam.SortItemParam)
+    @Html.HiddenFor(model => Model.SortParam.SortOrder)
+  </div>
+  <div>
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "Form2" }))
+    {
+    <div id="hedder" class="row" style="margin-bottom: -20px;">
+      <h6 class="heading-pagetitle">受領書処理一覧</h6>
+      <div class="form-group" style="width: 110%">
+        <div class="row">
+          <table class="table jbc-table table-hedder" style="padding: 0; border-collapse: collapse; ">
+          <tbody>
+            <tr>
+              <th style="width: 130px; padding: 1px 5px;">
+                <label class="toggle-button-002">
+                  <input id="tglSelectDayKubun" type="checkbox" />
+                </label>
+              </th>
+              <th width="320px">
+                <div class="appeal-box box" style="vertical-align: middle; display: inline-block; padding: 0;">
+                  <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeDay(-1)" onselectstart="return false;" alt="<<" tooltip="前月">＜＜</span>
+                  <input id="TargetDayLavel" class="calender" type="text" readonly style="width: 200px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
+                  <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeDay(1)" onselectstart="return false;" alt=">>" tooltip="翌月">＞＞</span>
+                </div>
+              </th>
+              <th style="width: 35px; text-align: center;"><div id="lblkara">～</div></th>
+              <th width="400px">
+                <div id="divTargetDayLavelTo" class="appeal-box box" style="vertical-align: middle; display: inline-block; padding: 0;">
+                  <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeEndDay(-1)" onselectstart="return false;" alt="<<" tooltip="前月">＜＜</span>
+                  <input id="TargetDayLavel_To" class="calender" type="text" readonly style="width: 200px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
+                  <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeEndDay(1)" onselectstart="return false;" alt=">>" tooltip="翌月">＞＞</span>
+                </div>
+              </th>
+              <th style="width: 125px;">
+                <div class="" style="display: inline-block; padding: 0; ">
+                  @Html.LabelFor(model => model.Search.SelectTokuisakiID, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "" })
+                  <button id="btnKokyaku" class="btn btn-info btn-sm search-select" style="display: inline-block; " onclick="return false;">選択</button>
+                </div>
+              </th>
+              <th>
+                @Html.HiddenFor(model => Model.Search.SelectTokuisakiID)
+                <input type="text" value="" readonly class="form-control search-text" style="width: 100px;" id="KokyakuID" />
+                @Html.TextBoxFor(model => model.Search.SelectTokuisakiName, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 400px;", @id = "KokyakuName" })
+              </th>
+            </tr>
+          </tbody>
+          </table>
+
+          <button type="button" class="btn btn-secondary btn-sm" style="width: 100%; padding: 0;" data-bs-toggle="collapse" data-bs-target="#tblCollapseSearch" aria-expanded="false" aria-controls="tblCollapseSearch">▼詳細検索</button>
+
+          <table id="tblCollapseSearch" class="table jbc-table table-hedder collapse" style="padding: 0; border-collapse: collapse; ">
+          <tbody>
+            <tr>
+              <th style="width: 30%;">
+                @Html.LabelFor(model => model.Search.SelectTantou, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "" })
+                <div class="" style="display: inline-block; _display: inline; padding: 0; width: 70%;">
+                @Html.DropDownListFor(model => model.Search.SelectTantou, new SelectList(Model.Search.TantouSelectList, "Value", "Text", "Selected"), "担当者を選択", new { @class = "form-control search-select", @style = "width:250px;" })
+                @Html.ValidationMessageFor(model => model.Search.SelectTantou, "", new { id = "SelectTantou", @class = "text-danger align-middle" })
+                </div>
+              </th>
+              <th style="width: 30%;">
+                @Html.LabelFor(model => model.Search.SelectSeikyuTantou, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "" })
+                <div class="" style="display: inline-block; _display: inline; padding: 0; width: 70%;">
+                @Html.DropDownListFor(model => model.Search.SelectSeikyuTantou, new SelectList(Model.Search.SelectSeikyuTantouList, "Value", "Text", "Selected"), "担当者を選択", new { @class = "form-control search-select", @style = "width:250px;" })
+                @Html.ValidationMessageFor(model => model.Search.SelectSeikyuTantou, "", new { id = "SelectSeikyuTantou", @class = "text-danger align-middle" })
+                </div>
+              </th>
+              <th style="width: 30%;">
+                <div class="search-div" style=" width: 380px;">
+                <label class="search-label">絞り込み</label>
+                <label class="radio-label"><input type="radio" name="num_of_filter" value="0">全て</label>
+                <label class="radio-label"><input type="radio" name="num_of_filter" value="1">未受領</label>
+                <label class="radio-label"><input type="radio" name="num_of_filter" value="2">受領済</label>
+                </div>
+              </th>
+            </tr>
+          </tbody>
+          </table>
+        </div>
+      </div>
+      <div id="ReceiptDataList" class="data-list" style="">
+      </div>
+    </div>
+    }
+  </div>
+</body>
+
+<script>
+  const weeks = ['日', '月', '火', '水', '木', '金', '土'];
+
+  $(window).on('load', function () {
+    var disp = new Date($('#Search_SelectDay').val());
+    var disp2 = new Date($('#Search_SelectEndDay').val());
+
+    /** 日付を文字列にフォーマットする */
+    var formatted =
+      `${disp.getFullYear()}\年${(disp.getMonth() + 1).toString().padStart(2, '0')}\月${disp.getDate().toString().padStart(2, '0')}\日\(${weeks[disp.getDay().toString()]}\)`.replace(
+        /\n|\r/g,
+        '',
+      );
+    var formatted2 =
+      `${disp2.getFullYear()}\年${(disp2.getMonth() + 1).toString().padStart(2, '0')}\月${disp2.getDate().toString().padStart(2, '0')}\日\(${weeks[disp2.getDay().toString()]}\)`.replace(
+        /\n|\r/g,
+        '',
+      );
+    $('input#TargetDayLavel').val(formatted);
+    $('input#TargetDayLavel_To').val(formatted2);
+
+    var radio = document.getElementsByName('num_of_inq');
+    for (let i = 0; i < radio.length; i++) {
+      if (radio.item(i).value == $('#Search_SelectGroup').val()) {
+        radio.item(i).checked = true;
+      }
+    }
+
+    radio = document.getElementsByName('num_of_filter');
+    for (let i = 0; i < radio.length; i++) {
+      if (radio.item(i).value == 0) {
+        radio.item(i).checked = true;
+        $('#Search_SelectFilter').val(0);
+      }
+    }
+
+    tglSelectDayKubun(false);
+  });
+
+  $(function () {
+    $('input[name="num_of_filter"]').change(function () {
+      $('#Search_SelectFilter').val($(this).val());
+      dataListDisplay();
+    });
+
+    $('input[name="num_of_inq"]:radio').change(function () {
+      dataListDisplay();
+    });
+
+    $('#Search_SelectTantou').on('change', function () {
+      dataListDisplay();
+    });
+
+    $('#Search_SelectSeikyuTantou').change(function () {
+      console.log($(this).val());
+      dataListDisplay();
+    });
+    $('#Search_SelectSyasyu').on('change', function () {
+      dataListDisplay();
+    });
+
+    $('#Search_SelectKata').on('change', function () {
+      dataListDisplay();
+    });
+
+    $('#TargetDayLavel').datepicker({
+      buttonImage: '../img/calender.png', // カレンダーアイコン画像
+      buttonText: 'カレンダーから選択', // ツールチップ表示文言
+      buttonImageOnly: true, // 画像として表示
+      showOn: 'both', // カレンダー呼び出し元の定義
+      onSelect: function (dateText, inst) {
+        console.log('選択した日付: ' + dateText);
+        var selectedDate = $(this).datepicker('getDate');
+        var formattedDate = $.datepicker.formatDate('yy-mm-dd', selectedDate);
+        var dt = new Date(formattedDate);
+        $('#Search_SelectDay').val(formatDate(dt));
+        dataListDisplay();
+      },
+    });
+
+    $('#TargetDayLavel_To').datepicker({
+      buttonImage: '../img/calender.png', // カレンダーアイコン画像
+      buttonText: 'カレンダーから選択', // ツールチップ表示文言
+      buttonImageOnly: true, // 画像として表示
+      showOn: 'both', // カレンダー呼び出し元の定義
+      onSelect: function (dateText, inst) {
+        console.log('選択した日付: ' + dateText);
+        var selectedDateTo = $(this).datepicker('getDate');
+        var formattedDate = $.datepicker.formatDate('yy-mm-dd', selectedDateTo);
+        var dt = new Date(formattedDate);
+        $('#Search_SelectEndDay').val(formatDate(dt));
+        dataListDisplay();
+      },
+    });
+
+    $('input[name="num_of_inq"]:radio').change(function () {
+      dataListDisplay();
+    });
+
+    $('#tglSelectDayKubun').on('change', function () {
+      tglSelectDayKubun($('#tglSelectDayKubun').prop('checked'));
+    });
+  });
+
+  $(document).ready(function () {
+    $(document).on('show.bs.modal', '.modal', (e) => {
+      const $currentModal = $(e.currentTarget);
+      var zIndex = 1040 + 10 * ($('.modal:visible').length || 2);
+      $currentModal.css('z-index', zIndex);
+      setTimeout(function () {
+        $('.modal-backdrop')
+          .not('.modal-stack')
+          .css('z-index', zIndex - 1)
+          .addClass('modal-stack');
+      }, 0);
+    });
+
+    $('#btnKokyaku').on('click', function (event) {
+      let selectedId = $('#KokyakuId').val();
+      let id = $('#Company_ID').val();
+
+      openCommonDialogForCustomer(id,'',selectedId);
+
+      return false;
+    });
+  });
+
+  function selectCustomerSelectedCallBack(obj) {
+    $('#Search_SelectTokuisakiID').val(obj['Customer_Branch_ID']);
+    $('#KokyakuID').val(obj['Customer_Branch_Code']);
+    $('#KokyakuName').val(obj['Customer_Branch_Name_Abbr']);
+    dataListDisplay();
+  }
+
+  function ModalClose() {
+    $('#ModalHere').find('.modal').modal('hide');
+  }
+
+  function tglSelectDayKubun(checked) {
+    if (checked) {
+      $('#lblkara').show();
+      $('#divTargetDayLavelTo').show();
+    } else {
+      $('#lblkara').hide();
+      $('#divTargetDayLavelTo').hide();
+    }
+    dataListDisplay();
+  }
+
+  function selectedChangeDay(move) {
+    var dt = new Date($('#Search_SelectDay').val());
+    dt.setDate(dt.getDate() + move);
+    $('#Search_SelectDay').val(formatDate(dt));
+
+    /** 日付を文字列にフォーマットする */
+    var formatted =
+      `${dt.getFullYear()}\年${(dt.getMonth() + 1).toString().padStart(2, '0')}\月${dt.getDate().toString().padStart(2, '0')}\日\(${weeks[dt.getDay().toString()]}\)`.replace(
+        /\n|\r/g,
+        '',
+      );
+    $('input#TargetDayLavel').val(formatted);
+    dataListDisplay();
+  }
+
+  function selectedChangeEndDay(move) {
+    var dt = new Date($('#Search_SelectEndDay').val());
+    dt.setDate(dt.getDate() + move);
+    $('#Search_SelectEndDay').val(formatDate(dt));
+
+    /** 日付を文字列にフォーマットする */
+    var formatted =
+      `${dt.getFullYear()}\年${(dt.getMonth() + 1).toString().padStart(2, '0')}\月${dt.getDate().toString().padStart(2, '0')}\日\(${weeks[dt.getDay().toString()]}\)`.replace(
+        /\n|\r/g,
+        '',
+      );
+    $('input#TargetDayLavel_To').val(formatted);
+    dataListDisplay();
+  }
+
+  function formatDate(date) {
+    var yyyy = date.getFullYear();
+    var mm = ('00' + (date.getMonth() + 1)).slice(-2);
+    var dd = ('00' + date.getDate()).slice(-2);
+    const ymd = String(yyyy) + '/' + String(mm) + '/' + String(dd);
+    return ymd;
+  }
+
+  function clearKokyaku() {
+    $('#Search_SelectTokuisakiID').val('');
+    $('#KokyakuID').val('');
+    $('#KokyakuName').val('');
+    dataListDisplay();
+  }
+
+  function dataListDisplay() {
+    var selectTab = $('input[name="num_of_inq"]:checked').val();
+    $('#Search_SelectGroup').val(selectTab);
+
+    let SelectEndDay;
+    if ($('#tglSelectDayKubun').is(':checked')) {
+      SelectEndDay = $('#Search_SelectEndDay').val();
+    }
+    $.post(
+      '@Url.RouteUrl("Default", new { controller = "Receipt", Action = "JsonGetDataList" })',
+      {
+        SelectDay: $('#Search_SelectDay').val(),
+        SelectEndDay,
+        SelectTantou: $('#Search_SelectTantou').val(),
+        SelectSeikyuTantou: $('#Search_SelectSeikyuTantou').val(),
+        SelectSyasyu: $('#Search_SelectSyasyu').val(),
+        SelectKata: $('#Search_SelectKata').val(),
+        SelectGroup: $('#Search_SelectGroup').val(),
+        SelectTokuisakiID: $('#Search_SelectTokuisakiID').val(),
+        SelectFilter: $('#Search_SelectFilter').val(),
+        sortItemParam: $('#SortParam_SortItemParam').val(),
+        sortOrder: $('#SortParam_SortOrder').val(),
+      },
+      function (data) {
+        $('#ReceiptDataList').html(data.partialView);
+      },
+    );
+  }
+
+  function ChangeALLCheckBoxChanged(flgChecked) {
+    $('input:checkbox[name="Target"]').each(function () {
+      if ($(this).parents('tr').children('td:nth-child(2)').first().text().trim() == 0) {
+        $(this).prop('checked', flgChecked);
+      }
+    });
+  }
+
+  function submitAddNew() {
+    var form = document.createElement('form');
+    form.action = '@Url.RouteUrl("Default", new { controller = "TestRegister", Action = "Index2" })';
+    form.method = 'POST';
+
+    // body に追加
+    document.body.appendChild(form);
+
+    var html = '';
+    html +=
+      '      <input type="hidden" id="SelectDay" name="SelectDay" value="' +
+      $('#Search_SelectDay').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectTantou" name="SelectTantou" value="' +
+      $('#Search_SelectTantou').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectSyasyu" name="SelectSyasyu" value="' +
+      $('#Search_SelectSyasyu').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectKata" name="SelectKata" value="' +
+      $('#Search_SelectKata').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectGroup" name="SelectGroup" value="' +
+      $('#Search_SelectGroup').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="BackMenuAction" name="BackMenuAction" value="' +
+      $('#Search_BackMenuAction').val() +
+      '" />';
+
+    form.innerHTML = html;
+    form.submit();
+  }
+
+  function submitAnkenEdit(ankenid) {
+    var form = document.createElement('form');
+    form.action = '@Url.RouteUrl("Default", new { controller = "TestRegister", Action = "Index3" })';
+    form.method = 'POST';
+
+    // body に追加
+    document.body.appendChild(form);
+
+    var html = '';
+    html += '      <input type="hidden" id="ankenId" name="ankenId" value="' + ankenid + '" />';
+    html +=
+      '      <input type="hidden" id="SelectDay" name="SelectDay" value="' +
+      $('#Search_SelectDay').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectTantou" name="SelectTantou" value="' +
+      $('#Search_SelectTantou').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectSyasyu" name="SelectSyasyu" value="' +
+      $('#Search_SelectSyasyu').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectKata" name="SelectKata" value="' +
+      $('#Search_SelectKata').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectGroup" name="SelectGroup" value="' +
+      $('#Search_SelectGroup').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="BackMenuAction" name="BackMenuAction" value="' +
+      $('#Search_BackMenuAction').val() +
+      '" />';
+
+    form.innerHTML = html;
+    form.submit();
+  }
+
+  function submitPrintOrder(id) {}
+
+  function backMenuForDataList() {
+    var form = document.createElement('form');
+    form.action = '@Url.RouteUrl("Default", new { controller = "Test", Action = "Index2" })';
+    form.method = 'POST';
+
+    // body に追加
+    document.body.appendChild(form);
+
+    var html = '';
+    html +=
+      '      <input type="hidden" id="SelectDay" name="SelectDay" value="' +
+      $('#Search_SelectDay').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectTantou" name="SelectTantou" value="' +
+      $('#Search_SelectTantou').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectSyasyu" name="SelectSyasyu" value="' +
+      $('#Search_SelectSyasyu').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectKata" name="SelectKata" value="' +
+      $('#Search_SelectKata').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="SelectGroup" name="SelectGroup" value="' +
+      $('#Search_SelectGroup').val() +
+      '" />';
+    html +=
+      '      <input type="hidden" id="BackMenuAction" name="BackMenuAction" value="' +
+      $('#Search_BackMenuAction').val() +
+      '" />';
+
+    form.innerHTML = html;
+    form.submit();
+  }
+</script>

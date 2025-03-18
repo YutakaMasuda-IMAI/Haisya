@@ -1,0 +1,55 @@
+﻿@model HaisyaWeb.Models.PurchasePaymentRegistrationModel_Local.BikouModel
+
+@{
+  Layout = "_ModalLayout";
+}
+
+<div role="dialog" id="modal-option" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog container" role="document" style="width: 600px;">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class="d-flex flex-column align-items-center">
+          <div class="mb-3 w-100 text-center">
+            <textarea id="remarksTextArea" @(Model?.ExpensePayment?.Shime_Kubun == 1 ? "disabled" : "") class="form-control mx-auto" style="width: 500px; height: 100px; font-size: 1.2rem;" rows="4"></textarea>
+          </div>
+          <div class="d-flex justify-content-end w-100">
+            <button class="btn btn-outline-success" style="width:200px;" @(Model?.ExpensePayment?.Shime_Kubun == 1 ? "disabled" : "") onclick="registerRemarks(document.getElementById('remarksTextArea').value); return false;">登録</button>
+            　
+            <button class="btn btn-outline-warning" style="width:100px;" onclick="closeModalAffirm(document.getElementById('remarksTextArea').value); return false;">キャンセル</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Remarksのイニシャルステートを保存
+  var initialRemarks = '@Html.Raw(Model.ExpensePayment.Remarks)';
+
+  // 初期表示バリューでRemarksを使って
+  document.getElementById('remarksTextArea').value = '@Html.Raw(Model.ExpensePayment.Remarks)';
+
+  // モーダルの登録ボタンを押すとupdatedRemarksを更新して、モーダルを閉じる
+  function registerRemarks(text) {
+    expensePayments['@Model.Index'].remarks = text.trim();
+    updateRemarksDiv(expensePayments[index].remarks);
+    ModalClose();
+  }
+
+  function closeModalAffirm(text) {
+    updateRemarksDiv(expensePayments[index].remarks);
+    // ・画面初期表示から変更が発生した場合
+    //  →確認メッセージ表示
+    if (initialRemarks !== text.trim()) {
+      if (window.confirm('未保存の変更があります。閉じてもよろしいですか。')) {
+        ModalClose();
+      }
+    }
+    //・画面初期表示から変更が発生してない場合
+    //   →ポップアップを閉じる
+    else if (initialRemarks === text.trim()) {
+      ModalClose();
+    }
+  }
+</script>

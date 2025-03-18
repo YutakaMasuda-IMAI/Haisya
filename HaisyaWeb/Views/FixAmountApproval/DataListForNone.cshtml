@@ -1,0 +1,146 @@
+﻿@model HaisyaWeb.Models.FixAmountApprovalModel.DataListModel
+
+@if (Model.SeikyuCheckDataLists.Count() == 0)
+{
+<div class="no-data-row">
+  <h4 class="no-data-row-text">データ無し</h4>
+</div>
+}
+else
+{
+<table id="seikyuCheckDataListTable" class="table ex_DataList search-list" style="width: 100%" border="1">
+  <thead>
+    <tr>
+      <th width="60px">詳細</th>
+      <th width="80px">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Inquiry_Status')" style="">確認方法</a>
+      </th>
+      <th width="80px">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Check_Status')" style="">ステータス</a>
+      </th>
+      <th width="60px">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Seikyu_Changed')" style="">金額変更</a>
+      </th>
+      <th width="120px">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Seikyu_Tantou')" style="">請求担当</a>
+      </th>
+      <th width="180px">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Customer_Name')" style="">請求先</a>
+      </th>
+      <th>
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Mail_Address1')" style="">送信アドレス</a>
+      </th>
+      <th width="80px">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Meisai_Count')" style="">明細件数</a>
+      </th>
+      <th width="80px">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('SeikyuUnchin')" style="">運賃計</a>
+      </th>
+      <th width="80px">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Tatekaekin')" style="">立替計</a>
+      </th>
+      <th width="80px">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Anken_Count')" style="">案件件数</a>
+      </th>
+      <th width="90px">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Kakutei_Count')" style="">請求確定件数</a>
+      </th>
+      <th width="80px">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Zantei_Count')" style="">暫定件数</a>
+      </th>
+      <th width="80px">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Kari_Count')" style="">仮件数</a>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+  @{
+    var i = 0;
+    var listData = Model.SeikyuCheckDataLists;
+    if (!string.IsNullOrEmpty(Model.SortParam.SortItemParam) && !string.IsNullOrEmpty(Model.SortParam.SortOrder))
+    {
+        if ("asc".Equals(Model.SortParam.SortOrder))
+        {
+            listData = listData.OrderBy(s => s.GetType().GetProperty(Model.SortParam.SortItemParam).GetValue(s, null)).ToList();
+        }
+        else
+        {
+            listData = listData.OrderByDescending(s => s.GetType().GetProperty(Model.SortParam.SortItemParam).GetValue(s, null)).ToList();
+        }
+    }
+  }
+  @foreach (var item in listData)
+  {
+    i++;
+    var color = i % 2 == 1 ? "row-even" : "row-odd";
+    <tr>
+      <td class="@(color)">
+        <button class="btn btn-outline-success" style="width: 100%; padding:0;" onclick="submitEdit('@(item.Check_Seikyu_ID)', @(i-1))">選択</button>
+      </td>
+      <td class="@(color)" align="center">
+        @{
+          string Inquiry_Status = "";
+          Inquiry_Status = item.Inquiry_Status == 1 ? "WEB" :
+                    item.Inquiry_Status == 2 ? "帳票" :
+                    "";
+        }
+        @Inquiry_Status
+      </td>
+      <td class="@(color)" align="center">
+        @{
+          string Check_Status = "";
+          Check_Status = item.Check_Status == 0 ? "発行済み" :
+                    item.Check_Status == 1 ? "確認中" :
+                    item.Check_Status == 2 ? "確認済" :
+                    item.Check_Status == 4 ? "承認済" :
+                    "";
+        }
+        @Check_Status
+      </td>
+      <td class="@(color)" align="center">
+        @{
+          string Seikyu_Changed = "";
+          Seikyu_Changed = item.Seikyu_Changed == 0 ? "なし" :
+                    item.Seikyu_Changed == 1 ? "あり" :
+                    "";
+        }
+        @Seikyu_Changed
+      </td>
+      <td class="@(color)">
+        @Html.DisplayFor(modelItem => item.Seikyu_Tantou)
+      </td>
+      <td class="@(color)">
+        @Html.DisplayFor(modelItem => item.Customer_Name)
+      </td>
+      <td class="@(color)">
+        @Html.DisplayFor(modelItem => item.Mail_Address1)
+      </td>
+      <td class="@(color)" align="right">
+        @Convert.ToInt32(item.Meisai_Count)
+      </td>
+      <td class="@(color)" align="right">
+        @Convert.ToInt32(item.SeikyuUnchin).ToString("#,0")
+      </td>
+      <td class="@(color)" align="right">
+        @Convert.ToInt32(item.Tatekaekin).ToString("#,0")
+      </td>
+      <td class="@(color)" align="right">
+        @Html.DisplayFor(modelItem => item.Anken_Count)
+      </td>
+      <td class="@(color)" align="right">
+        @Html.DisplayFor(modelItem => item.Kakutei_Count)
+      </td>
+      <td class="@(color)" align="right">
+        @Html.DisplayFor(modelItem => item.Zantei_Count)
+      </td>
+      <td class="@(color)" align="right">
+        @Html.DisplayFor(modelItem => item.Kari_Count)
+      </td>
+    </tr>
+  }
+  </tbody>
+</table>
+<script type="text/javascript">
+  var data_list = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.SeikyuCheckDataLists));
+</script>
+}

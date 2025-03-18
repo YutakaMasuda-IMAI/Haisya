@@ -1,0 +1,225 @@
+﻿body {
+}
+
+
+/*.map-page-container {
+    height: calc(100vh - 20px);
+    display: flex;
+    margin: 0;
+    padding: 0;
+}*/
+
+.map-page-top {
+    margin: 3px;
+    /*height: 100px;*/
+    width : calc(100vh);
+    border : groove;
+    border-width: 1px;
+    border-color: gray;
+}
+
+.map-container {
+    height: calc(100vh);
+    width: calc(100vh - 354px);
+    /*left: 354px;*/
+    flex-grow: 1;
+    position: relative;
+}
+
+.map-container2 {
+    height: calc(100vh - 20px);
+    width: calc(100vh - 354px);
+    top: 20px;
+    /*left: 354px;*/
+    flex-grow: 1;
+    position: relative;
+}
+
+/*-webkit-font-smoothing: antialiased;
+text-rendering: optimizeLegibility;
+text-size-adjust: 100%;
+font-family: "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "メイリオ", Meiryo, "ＭＳ Ｐゴシック", system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, sans-serif;
+color: #0a0a0a;
+font-size: 1em;
+font-weight: 400;
+line-height: 1.5;
+box-sizing: inherit;*/
+
+.map-page-container {
+    display: flex;
+    /*height: calc(100vh - 60px);*/
+    width: calc(100%);
+    box-sizing: border-box;
+}
+
+.title.is-5 {
+    /*font-size: 1.14rem;*/
+}
+
+.left-side-area {
+    width: 354px;
+    min-width: 354px;
+    flex-basis: 354px;
+}
+
+    .left-side-area {
+        display: flex;
+        flex-direction: column;
+        z-index: 5;
+        box-shadow: 0 3px 6px rgb(0 0 0 / 16%);
+        position: relative;
+    }
+
+    .left-side-area.fade-in {
+        visibility: visible;
+    }
+
+.is-show {
+    visibility: visible;
+}
+
+
+.map-route-page-result {
+    padding: 16px;
+}
+
+.map-route-page-result-inner {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-bottom: 48px;
+}
+
+
+.go-back {
+    position: relative;
+    display: inline-block;
+    color: #7a7a7a;
+    font-size: .85rem;
+    padding-left: 12px;
+}
+
+.map-route-page-result-content {
+    padding-top: 12px;
+}
+
+.map-route-result-detail-car-header {
+
+}
+
+
+.marker {
+    margin: auto;
+    width: 14px;
+    height: 14px;
+    background: #4685d9 0 0 no-repeat padding-box;
+    box-shadow: 0 2px 3px rgba(0,0,0,.16078);
+    border: 2px solid #fff;
+    border-radius: 50%;
+}
+
+.content-wrapper {
+
+}
+
+    .content-wrapper .items {
+        display: flex;
+        align-items: center;
+    }
+
+
+        .content-wrapper .items .left-item {
+            width: 18px;
+        }
+
+        .content-wrapper .items .right-item:last-child {
+            flex-grow: 1;
+        }
+
+.road {
+    display: flex;
+    align-items: center;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+    .road .dots {
+        display: flex;
+        flex-direction: column;
+        margin: auto;
+    }
+
+    .road .dots .dot {
+        position: relative;
+        padding-bottom: 12px;
+    }
+
+        .road .dots .dot:before {
+            position: absolute;
+            content: "";
+            left: -2px;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background-color: #479ff7;
+        }
+
+
+.road-info {
+    margin-top: 4px;
+    margin-bottom: 8px;
+    margin-left: 16px;
+}
+
+    .road-info p {
+        display: block;
+        margin-block-start: 0em;
+        margin-block-end: 0em;
+        margin-inline-start: 0px;
+        margin-inline-end: 0px;
+    }
+
+.road-name {
+    color: #0a0a0a;
+}
+
+.road-info .toll {
+    font-size: .85rem;
+    color: #ffa200;
+}
+
+.map-container {
+    flex-grow: 1;
+    position: relative;
+}
+
+    .map-container img {
+        width: 100%;
+    }
+
+.point-icon {
+    margin: auto;
+    text-align: center;
+    width: 10px;
+}
+
+
+.point {
+    padding-left: 10px;
+}
+
+
+.table-heder {
+
+}
+
+    .table-heder th {
+        width: 130px;
+        padding: 0 0 0 1px;
+        margin: 0;
+        text-align: right;
+    }
+
+    .table-heder td {
+        width: 50px;
+    }

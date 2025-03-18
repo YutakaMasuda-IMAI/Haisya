@@ -1,0 +1,188 @@
+﻿<Window x:Class="HaisyaDesktop.View.Anken.SetDriveRouteDetail"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf" 
+        xmlns:behavior="clr-namespace:HaisyaDesktop.Behavior"
+        xmlns:local="clr-namespace:HaisyaDesktop.View.Anken"
+        xmlns:vm="clr-namespace:HaisyaDesktop.ViewModel.Anken"
+        d:DataContext="{d:DesignInstance Type=vm:SetDriveRouteDetailViewModel}"
+        mc:Ignorable="d"
+        Title="ドライブルートの詳細設定" Height="450" Width="800"
+        Loaded="Window_Loaded" Closing="Window_Closing">
+
+  <Window.Resources>
+    <Style x:Key="LabelTitleStyle" TargetType="Label">
+      <Setter Property="Margin" Value="15,0,0,0"/>
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="Foreground" Value="Gray" />
+      <Setter Property="Padding" Value="0" />
+    </Style>
+    <Style x:Key="TextBlockStyle" TargetType="TextBlock">
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="FontSize" Value="24" />
+      <Setter Property="Padding" Value="0" />
+    </Style>
+    
+    <Style x:Key="KomokuTitle" TargetType="Label">
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Padding" Value="0" />
+    </Style>
+    <Style x:Key="SelectButton" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+      <Setter Property="Margin" Value="3,2" />
+      <Setter Property="FontSize" Value="16"/>
+    </Style>
+    <Style x:Key="SelectToggleButton" TargetType="ToggleButton">
+      <Setter Property="Margin" Value="5,5,0,2" />
+    </Style>
+    <Style x:Key="SelectTextBlock" TargetType="TextBlock">
+      <Setter Property="Margin" Value="5,2" />
+      <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+    <Style x:Key="SelectTextBox" TargetType="TextBox">
+      <Setter Property="Margin" Value="5,3" />
+      <Setter Property="TextAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="FontSize" Value="18"/>
+    </Style>
+    <Style x:Key="SelectDatePicker" TargetType="DatePicker">
+      <Setter Property="Margin" Value="5,3" />
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    </Style>
+
+    <Style x:Key="ComboboxStyle" TargetType="ComboBox">
+      <Setter Property="Background" Value="White"/>
+    </Style>
+
+  </Window.Resources>
+
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition x:Name="Head" Height="50" />
+      <RowDefinition />
+    </Grid.RowDefinitions>
+    <Grid Grid.Row="0">
+      <Grid.Background>
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+          <GradientStop Color="DarkBlue"/>
+          <GradientStop Color="LightBlue" Offset="1"/>
+        </LinearGradientBrush>
+      </Grid.Background>
+
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition />
+        <ColumnDefinition />
+        <ColumnDefinition />
+        <ColumnDefinition />
+        <ColumnDefinition />
+        <ColumnDefinition />
+      </Grid.ColumnDefinitions>
+
+      <Button Name="btnMenu" Grid.Column="0" Content="閉じる" Style="{StaticResource MenuButtonCommonStyle}" Click="btnMenu_Click" />
+      <Button Name="btnMenu1" Grid.Column="1" Content="" Style="{StaticResource MenuButtonCommonStyle}" />
+      <Button Name="btnMenu2" Grid.Column="2" Content="" Style="{StaticResource MenuButtonCommonStyle}" />
+      <Button Name="btnMenu3" Grid.Column="3" Content="" Style="{StaticResource MenuButtonCommonStyle}" />
+      <Button Name="btnMenu4" Grid.Column="4" Content="" Style="{StaticResource MenuButtonCommonStyle}" />
+      <Button Name="btnMenu5" Grid.Column="5" Content="" Style="{StaticResource MenuButtonCommonStyle}" />
+    </Grid>
+    <Grid Grid.Row="1">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="70"/>
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+
+      <Grid Grid.Row="0">
+        
+      </Grid>
+
+      <Grid Grid.Row="1">
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="4*"/>
+          <ColumnDefinition Width="10" />
+          <ColumnDefinition Width="6*"/>
+        </Grid.ColumnDefinitions>
+        <Border Grid.Column="0" BorderThickness="1" BorderBrush="Black" Background="DeepSkyBlue" >
+          <DockPanel>
+            <DockPanel DockPanel.Dock="Top">
+              <Button Width="100" DockPanel.Dock="Right" Style="{StaticResource DefaultButtonStyle}" Content="追加" Click="PointListAdd_Click" Margin="0,0,20,0" />
+              <Label  Height="20" Background="Transparent" Content="ルート詳細を設定"/>
+            </DockPanel>
+            <Border DockPanel.Dock="Top" BorderThickness="1" BorderBrush="Black"  Padding="0" >
+              <ListBox x:Name="PointListBox"  Background="Blue" ItemsSource="{Binding PointList}" Padding="0" >
+                <ListBox.ItemTemplate>
+                  <DataTemplate>
+                    <DockPanel Margin="0,0,10,0" Background="Blue">
+
+                      <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Margin="5,0,0,5">
+                        <Label Content="日&#10;時" Width="15" Style="{StaticResource KomokuTitle}" Foreground="White"  />
+                        <TextBox Name="TsumiTime" IsReadOnly="True" Width="80" Style="{StaticResource SelectTextBox}" Text="{Binding PointTime, NotifyOnSourceUpdated=True}"  />
+                        <Button Width="30" Style="{StaticResource SelectButton}" Content="⏱" Click="TimePiker_Click" Tag="TsumiTime" />
+                        <ComboBox SelectedValue="{Binding PointTimeKubun}" ItemsSource="{Binding PointComboBoxItemsTimeKubun}" SelectedValuePath="Id" DisplayMemberPath="Name" Margin="5,3,0,3" Width="65" Style="{StaticResource ComboboxStyle}" FontSize="18" ></ComboBox>
+                        <ComboBox SelectedValue="{Binding PointStatusKubun}" ItemsSource="{Binding PointComboBoxItemsStatusKubun}" SelectedValuePath="Id" DisplayMemberPath="Name" Margin="10,3,0,3" Width="65" Style="{StaticResource ComboboxStyle}" FontSize="18" ></ComboBox>
+                        <ComboBox SelectedValue="{Binding PointRoadTypeKubun}" ItemsSource="{Binding PointComboBoxItemsRoadType}" SelectedValuePath="Id" DisplayMemberPath="Name" Margin="10,3,0,3" Width="135" Style="{StaticResource ComboboxStyle}" FontSize="18" ></ComboBox>
+                        <ComboBox SelectedValue="{Binding PointPointTypeKubun}" ItemsSource="{Binding PointComboBoxItemsPointKubun}" SelectedValuePath="Id" DisplayMemberPath="Name" Margin="10,3,0,3" Width="65" Style="{StaticResource ComboboxStyle}" FontSize="18" ></ComboBox>
+                        
+                      </StackPanel>
+                      
+                      <DockPanel DockPanel.Dock="Top" Margin="0,3,0,0">
+                        <Button x:Name="btnPointReg" Tag="Simple" Content="地点登録" IsEnabled="{Binding PointAddNewBtnEnable}" DockPanel.Dock="Right" Width="100" FontSize="9"  Margin="5,0,5,0"  Style="{StaticResource DefaultButtonStyle}" Click="btnPointReg_Click" Foreground="Red" FontWeight="Bold" />
+                        <Button x:Name="btnPointDel" Tag="Simple" Content="行削除" IsEnabled="{Binding PointDelBtnEnable}" DockPanel.Dock="Right" Width="80" FontSize="9"  Margin="5,0,5,0"  Style="{StaticResource DefaultButtonStyle}" Click="btnPointDel_Click" Foreground="Red" FontWeight="Bold" />
+                        <StackPanel Orientation="Horizontal" DockPanel.Dock="Left"  Margin="30,0,0,0">
+                          <TextBlock Text="{Binding Lng}" Foreground="White" FontSize="14" />
+                          <TextBlock Text="{Binding Lat}" Margin="20,0,0,0" Foreground="White" FontSize="14" />
+                        </StackPanel>
+                      </DockPanel>
+
+                      <Button x:Name="btnTsumiSetPoint" Tag="Simple" Content="設定" DockPanel.Dock="Right" Width="100" Margin="5" FontSize="16" Click="SetPoint_ClickAsync" Style="{StaticResource DefaultButtonStyle}" IsEnabled="{Binding btnTsumiPointReg}"></Button>
+                      <Border Height="45" Margin="5" CornerRadius="5" Background="White" >
+                        <DockPanel>
+                          <TextBlock DockPanel.Dock="Left" Text="{Binding PointId}" TextWrapping="Wrap" Width="20" TextAlignment="Center" VerticalAlignment="Center" FontSize="14" Foreground="DarkBlue"  />
+                          <Button DockPanel.Dock="Right" Content="×" Background="Transparent" Width="20" Style="{Binding aa}" BorderBrush="Transparent" />
+                          <Border DockPanel.Dock="Bottom"  BorderThickness="1" BorderBrush="Black" CornerRadius="5">
+                            <StackPanel Orientation="Vertical" >
+                              <TextBlock FontSize="14" DockPanel.Dock="Top" Text="{Binding BuildingName, NotifyOnSourceUpdated=True}" VerticalAlignment="Center" Padding="5,2,0,0" Margin="0" />
+                              <TextBlock FontSize="14" DockPanel.Dock="Top" Text="{Binding Address, NotifyOnSourceUpdated=True}" VerticalAlignment="Center" Padding="5,3,0,0" Margin="0" />
+                            </StackPanel>
+                          </Border>
+                        </DockPanel>
+                      </Border>
+                      
+                    </DockPanel>
+                  </DataTemplate>
+                </ListBox.ItemTemplate>
+              </ListBox>
+            </Border>
+          </DockPanel>
+        </Border>
+        <GridSplitter Grid.Column="1" Background="Black" HorizontalAlignment="Stretch" />
+        <Border Grid.Column="2" BorderThickness="1" BorderBrush="Black" >
+          <Grid Background="AliceBlue" >
+            <Grid.RowDefinitions>
+              <RowDefinition Height="40" />
+              <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+
+              <Button x:Name="SeachAddress" Grid.Column="0" Margin="5,2" Content="地点検索" FontSize="18" Click="SeachAddress_Click" Style="{StaticResource DefaultButtonStyle}" />
+              <TextBox x:Name="InputAddress" Grid.Column="1" Grid.ColumnSpan="3" Margin="2,3" FontSize="16"  VerticalContentAlignment="Center" 
+                     KeyDown="InputAddress_KeyDown" Text="{Binding Address.Value, UpdateSourceTrigger=PropertyChanged}" behavior:PlaceHolderBehavior.PlaceHolderText="住所を貼り付け（県から）"
+                       InputMethod.PreferredImeState="On" InputMethod.PreferredImeConversionMode="FullShape,Native" />
+            </Grid>
+            <Wpf:WebView2 x:Name="webView" Grid.Row="1"  Source="{Binding MapsApiForJSUrl.Value}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="0,0,0,0"  />
+          </Grid>
+        </Border>
+      </Grid>
+      
+    </Grid>
+  </Grid>
+</Window>

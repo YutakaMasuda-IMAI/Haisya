@@ -1,0 +1,849 @@
+﻿<Window x:Class="HaisyaDesktop.View.Anken.Register"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf" 
+        xmlns:local="clr-namespace:HaisyaDesktop"
+        xmlns:vm="clr-namespace:HaisyaDesktop.ViewModel.Anken"
+        xmlns:behavior="clr-namespace:HaisyaDesktop.Behavior"
+        d:DataContext="{d:DesignInstance Type=vm:AnkenViewModel}"
+        WindowStyle="ThreeDBorderWindow"
+        mc:Ignorable="d"
+        Title="案件登録" MinHeight="755" MinWidth="1100" 
+        Closing="Window_Closing" Loaded="Window_Loaded" SizeChanged="Window_SizeChanged">
+
+  <Window.Resources>
+    <Style x:Key="KomokuTitle" TargetType="Label">
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+      <Setter Property="Padding" Value="0" />
+    </Style>
+    <Style x:Key="SelectButton" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+      <Setter Property="Margin" Value="3,2" />
+      <Setter Property="FontSize" Value="16"/>
+    </Style>
+    <Style x:Key="SelectToggleButton" TargetType="ToggleButton">
+      <Setter Property="Margin" Value="5,5,0,2" />
+    </Style>
+    <Style x:Key="SelectTextBlock" TargetType="TextBlock">
+      <Setter Property="Margin" Value="5,2" />
+      <Setter Property="VerticalAlignment" Value="Center"/>
+    </Style>
+    <Style x:Key="SelectTextBox" TargetType="TextBox">
+      <Setter Property="Margin" Value="5,3" />
+      <Setter Property="TextAlignment" Value="Center" />
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="FontSize" Value="18"/>
+    </Style>
+    <Style x:Key="SelectDatePicker" TargetType="DatePicker">
+      <Setter Property="Margin" Value="5,3" />
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    </Style>
+
+    <Style x:Key="SelectRadioButton" TargetType="RadioButton" BasedOn="{StaticResource {x:Type ToggleButton}}" >
+      <Setter Property="Margin" Value="5,6,5,1" />
+      <Setter Property="FontSize" Value="14" />
+      <Setter Property="VerticalAlignment" Value="Stretch" />
+      <Style.Triggers>
+        <Trigger Property="IsChecked" Value="False">
+          <Setter Property="Background" Value="LightCyan" />
+          <Setter Property="Template">
+            <Setter.Value>
+              <ControlTemplate TargetType="ToggleButton">
+                <Border BorderThickness="1" BorderBrush="DimGray" Background="LightCyan">
+                  <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0"/>
+                </Border>
+              </ControlTemplate>
+            </Setter.Value>
+          </Setter>
+        </Trigger>
+        <Trigger Property="IsChecked" Value="True">
+          <Setter Property="Background" Value="White" />
+          <Setter Property="Template">
+            <Setter.Value>
+              <ControlTemplate TargetType="ToggleButton">
+                <Border BorderThickness="2" BorderBrush="Blue" Background="LightBlue">
+                  <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0"/>
+                </Border>
+              </ControlTemplate>
+            </Setter.Value>
+          </Setter>
+        </Trigger>
+      </Style.Triggers>
+    </Style>
+
+    <Style x:Key="SelectGroupBox" TargetType="GroupBox">
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="BorderBrush" Value="Red" />
+    </Style>
+
+    <Style x:Key="SelectBorder" TargetType="Border">
+      <Setter Property="BorderThickness" Value="2" />
+      <Setter Property="BorderBrush" Value="Red" />
+      <Setter Property="Margin" Value="1,2,1,2" />
+      <Setter Property="CornerRadius" Value="4" />
+    </Style>
+
+    <Style x:Key="TableTextBox" TargetType="TextBox">
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="FontWeight" Value="ExtraBold" />
+    </Style>
+    <Style x:Key="TableTextblox" TargetType="TextBox">
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    </Style>
+    <Style x:Key="TableTextblox2" TargetType="TextBox">
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+      <Setter Property="FontSize" Value="18" />
+    </Style>
+
+    <Style x:Key="ComboboxStyle" TargetType="ComboBox">
+      <Setter Property="Background" Value="White"/>
+    </Style>
+
+    <Style x:Key="dgRowStyle" TargetType="DataGridRow" >
+      <Style.Triggers>
+        <Trigger Property="IsSelected" Value="True">
+          <Setter Property="Foreground" Value="Black"/>
+          <Setter Property="Background" Value="Gold"/>
+        </Trigger>
+      </Style.Triggers>
+    </Style>
+  </Window.Resources>
+
+
+  <Grid x:Name="MainGrid">
+
+    <Grid>
+      <Grid.RowDefinitions>
+        <RowDefinition x:Name="Head" Height="50" />
+        <RowDefinition Height="*" />
+        <RowDefinition x:Name="Tail" Height="50" />
+      </Grid.RowDefinitions>
+
+      <Grid Grid.Row="0">
+        <Grid.Background>
+          <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="Black"/>
+            <GradientStop Color="LightGray" Offset="1"/>
+          </LinearGradientBrush>
+        </Grid.Background>
+
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition />
+          <ColumnDefinition />
+          <ColumnDefinition />
+          <ColumnDefinition />
+          <ColumnDefinition />
+          <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Button Name="btnTopMenu" Grid.Column="0" Content="メニュー" Style="{StaticResource MenuButtonCommonStyle}" Click="btnMenu_Click" />
+        <Button Name="btnTopMenu1" Grid.Column="1" Content="過去案件検索" Style="{StaticResource MenuButtonCommonStyle}" Click="btnKakoAnken_Click" />
+        <!--<Button Name="btnMenu3" Grid.Column="3" Content="" Style="{StaticResource MenuButtonCommonStyle}" />-->
+        <Button x:Name="OptionMenuMin" Grid.Column="2" Content="追加情報非表示" Click="OptionMenuMin_Click" Visibility="Hidden" Style="{StaticResource MenuButtonCommonStyle}" ></Button>
+        <Button x:Name="OptionMenuMax" Grid.Column="2" Content="追加情報表示" Click="OptionMenuMax_Click" Style="{StaticResource MenuButtonCommonStyle}" ></Button>
+        <Button Name="btnTopMenu2" Grid.Column="3" Content="" Style="{StaticResource MenuButtonCommonStyle}" Click="btnTopMenu2_Click" />
+        <Button Name="btnTopMenu4" Grid.Column="4" Content="(仮)発注書印刷" Style="{StaticResource MenuButtonCommonStyle}" Click="btnOrderPrint_Click" />
+        <Button Name="btnTopMenu5" Grid.Column="5" Content="" Style="{StaticResource MenuButtonCommonStyle}" Click="btnShijiPrint_Click" />
+      </Grid>
+
+      <Grid Grid.Row="2">
+        <Grid.Background>
+          <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="Black" Offset="1"/>
+            <GradientStop Color="LightGray" Offset="0"/>
+          </LinearGradientBrush>
+        </Grid.Background>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition />
+          <ColumnDefinition />
+          <ColumnDefinition />
+          <ColumnDefinition />
+          <ColumnDefinition />
+          <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <Button x:Name="btnUnder0" Grid.Column="0" Content="ルート検索" Style="{StaticResource MenuButtonCommonStyle}" Click="SearchRoute_Click" />
+        <Button x:Name="btnUnder1" Grid.Column="1" Content="傭車元設定" Style="{StaticResource MenuButtonCommonStyle}" Click="OyaYosya_Click"/>
+        <Button x:Name="btnUnder2" Grid.Column="3" Content="{Binding BtnRegContent.Value}" Style="{StaticResource MenuButtonCommonStyle}" Click="Reg_Click" />
+        <Button x:Name="btnUnder3" Grid.Column="2" Content="クリップボード" Style="{StaticResource MenuButtonCommonStyle}" Click="TempReg_Click" />
+        <Button x:Name="btnUnder4" Grid.Column="4" Content="{Binding BtnRegUpdateContent.Value}" Style="{StaticResource MenuButtonCommonStyle}" Click="RegUpdate_Click" />
+        <Button x:Name="btnUnder5" Grid.Column="5" Content="" Style="{StaticResource MenuButtonCommonStyle}" Click="MapLogOff_ClickAsync"  />
+      </Grid>
+
+      <Grid Grid.Row="1" Margin="5" >
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="5*" x:Name="AnkenMain" MinWidth="450" MaxWidth="600" />
+          <ColumnDefinition Width="0*" x:Name="AnkenOption" MaxWidth="500" />
+          <ColumnDefinition Width="17" x:Name="MapSplitter" />
+          <ColumnDefinition Width="5*" x:Name="RouteMap" />
+        </Grid.ColumnDefinitions>
+
+        <Grid x:Name="root" Grid.Column="0">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="1.0*" />
+            <RowDefinition Height="0.9*" />
+            <RowDefinition Height="0.9*" />
+            <RowDefinition Height="1.2*" />
+            <RowDefinition Height="0.8*" />
+            <RowDefinition Height="0.9*" />
+            <RowDefinition Height="1.0*" />
+            <RowDefinition Height="1.0*" />
+            <RowDefinition Height="1.0*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="0.9*" />
+            <RowDefinition Height="0.8*" />
+            <RowDefinition Height="0.7*" />
+            <RowDefinition Height="0.6*" />
+            <RowDefinition Height="1.3*" />
+          </Grid.RowDefinitions>
+
+          <Grid Grid.Row="1">
+            <StackPanel Orientation="Horizontal" Margin="0,0,0,0">
+              <Label Content="担当" Width="35" Style="{StaticResource KomokuTitle}"  />
+              <Border BorderBrush="Gray" BorderThickness="1" Padding="2,0,2,0" >
+                <StackPanel Orientation="Horizontal" >
+                  <Label Content="担当&#10;配車" Width="30" Style="{StaticResource KomokuTitle}" FontSize="10" />
+                  <TextBlock Text="{Binding TantouID.Value}" Width="0" VerticalAlignment="Center" FontSize="18" />
+                  <TextBlock Text="{Binding TantouName.Value}" Width="120" VerticalAlignment="Center" FontSize="18" />
+                  <Button Name="btnSelectTantou" Content="選択" Style="{StaticResource SelectButton}" Width="70" Click="btnSelectTantou_Click" />
+                </StackPanel>
+              </Border>
+              <Border BorderBrush="Gray" BorderThickness="1" Padding="2,0,2,0" Margin="10,0,0,0" >
+                <StackPanel Orientation="Horizontal" >
+                  <Label Content="営業&#10;担当" Width="30" Style="{StaticResource KomokuTitle}" FontSize="10" />
+                  <TextBlock Text="{Binding EigyoID.Value}" Width="0" VerticalAlignment="Center" FontSize="18" />
+                  <TextBlock Text="{Binding EigyoName.Value}" Width="120" VerticalAlignment="Center" FontSize="18" />
+                  <Button Name="btnSelectEigyo" Content="選択" Style="{StaticResource SelectButton}" Width="70" Click="btnSelectEigyo_Click" />
+                </StackPanel>
+              </Border>
+            </StackPanel>
+          </Grid>
+
+          <DockPanel Grid.Row="0" Margin="0,0,2,0">
+            <Label Content="案件&#10;状況" Width="33" Style="{StaticResource KomokuTitle}" DockPanel.Dock="Left"  />
+            <Border Style="{StaticResource SelectBorder}" DockPanel.Dock="Left">
+              <Grid >
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition />
+                  <ColumnDefinition />
+                  <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <RadioButton x:Name="AnkenStatus_0" GroupName="AnkenStatus" Grid.Column="0" Style="{StaticResource SelectRadioButton}" Content="確定" Margin="2" HorizontalAlignment="Stretch" FontSize="18" Checked="AnkenStatusRadioButton_Checked" Tag="0" />
+                <RadioButton x:Name="AnkenStatus_1" GroupName="AnkenStatus" Grid.Column="1" Style="{StaticResource SelectRadioButton}" Content="暫定(配車必要)" Margin="2" HorizontalAlignment="Stretch" FontSize="18" Checked="AnkenStatusRadioButton_Checked" Tag="1" />
+                <RadioButton x:Name="AnkenStatus_2" GroupName="AnkenStatus" Grid.Column="2" Style="{StaticResource SelectRadioButton}" Content="暫定(配車不要)" Margin="2" HorizontalAlignment="Stretch" FontSize="18" Checked="AnkenStatusRadioButton_Checked" Tag="2" />
+                <TextBlock x:Name="AnkenStatusSelected" Visibility="Hidden" Text="{Binding AnkenStatus.Value, UpdateSourceTrigger=PropertyChanged}" Width="0" />
+              </Grid>
+            </Border>
+          </DockPanel>
+
+          <DockPanel Grid.Row="3" LastChildFill="True">
+            <Label Content="荷主" Width="30" Style="{StaticResource KomokuTitle}" DockPanel.Dock="Left" />
+
+            <Label Content="{Binding OyaKokyakuLabel.Value}" Width="70" DockPanel.Dock="Right" Margin="5,0,0,0"  VerticalContentAlignment="Center" Foreground="Red" FontSize="14" />
+            <!--<Button Name="btnKokyakuSyosai" Content="詳細" Width="80" DockPanel.Dock="Right" Style="{StaticResource SelectButton}" Click="btnKokyaku_Click" />-->
+            <Button Name="btnKokyaku" Content="選択" Width="80" DockPanel.Dock="Right" Style="{StaticResource SelectButton}" Click="btnKokyaku_Click" />
+            <Border BorderThickness="1" BorderBrush="Gray" Margin="5,1,2,0" DockPanel.Dock="Bottom" >
+              <DockPanel>
+                <DockPanel DockPanel.Dock="Bottom" Margin="0" >
+                  <Label Content="担当者：" DockPanel.Dock="Left" Width="80" VerticalContentAlignment="Center" Padding="0" Foreground="Gray" FontSize="12" />
+                  <TextBlock Text="{Binding KokyakuTantouName.Value}" Style="{StaticResource SelectTextBlock}" Padding="2,0,0,0"  FontSize="12" Margin="0"/>
+                </DockPanel>
+                <DockPanel DockPanel.Dock="Top" Margin="0" VerticalAlignment="Center" >
+                  <StackPanel Orientation="Vertical">
+                    <StackPanel Orientation="Horizontal">
+                      <TextBlock Text="{Binding KokyakuData.Value.Customer_Code}" Style="{StaticResource SelectTextBlock}" HorizontalAlignment="Left" Margin="0" Padding="2,0,0,0" FontSize="9"  />
+                      <TextBlock Text="{Binding KokyakuData.Value.Customer_Name_Kana}" Style="{StaticResource SelectTextBlock}" HorizontalAlignment="Left" Margin="20,0,0,0" Padding="2,0,0,0" FontSize="9"  />
+                    </StackPanel>
+                    <TextBlock Text="{Binding KokyakuData.Value.Customer_Name_Abbr}" Style="{StaticResource SelectTextBlock}" HorizontalAlignment="Left" Margin="0,-3,0,0" Padding="2,0,0,0" FontSize="16"  />
+                  </StackPanel>
+                </DockPanel>
+              </DockPanel>
+            </Border>
+            <!--<TextBox IsReadOnly="True" Text="{Binding KokyakuId.Value}" Visibility="Hidden" Width="0" Background="Gray" DockPanel.Dock="Left" Style="{StaticResource SelectTextBox}" />-->
+          </DockPanel>
+
+          <DockPanel Grid.Row="2" LastChildFill="True">
+            <Label Content="車種" Width="30" Style="{StaticResource KomokuTitle}" DockPanel.Dock="Left" />
+            <Button Name="btnDaisu" Content="選択" Width="60" DockPanel.Dock="Right" Style="{StaticResource SelectButton}" Click="btnDaisu_Click" />
+            <Border BorderBrush="Gray" BorderThickness="1" Padding="2,0,2,0" Margin="5,3,3,3" DockPanel.Dock="Right" Width="50" >
+              <TextBlock Style="{StaticResource SelectTextBlock}" Text="{Binding Daisuu.Value}" FontSize="18" HorizontalAlignment="Center" />
+            </Border>
+            <Label Content="台数" Width="50" Style="{StaticResource KomokuTitle}" DockPanel.Dock="Right" HorizontalContentAlignment="Right" />
+            <Button Name="btnSyasyu" Content="選択" Width="80" DockPanel.Dock="Right" Style="{StaticResource SelectButton}" Click="btnSyasyu_Click" />
+            <Border BorderBrush="Gray" BorderThickness="1" Padding="2,0,2,0" Margin="5,3,3,3" >
+              <TextBlock DockPanel.Dock="Left" Style="{StaticResource SelectTextBlock}" FontSize="18" Text="{Binding SyasyuDisplay.Value}" Padding="2,0,0,0" HorizontalAlignment="Left" />
+            </Border>
+
+            <!--<TextBox IsReadOnly="True" Visibility="Hidden" Width="0" Background="Gray" DockPanel.Dock="Left" Text="{Binding Syasyu.Value}" Style="{StaticResource SelectTextBox}" />
+            <TextBox IsReadOnly="True" Visibility="Hidden" Width="0" Background="Gray" DockPanel.Dock="Left" Text="{Binding Kata.Value}" Style="{StaticResource SelectTextBox}" />-->
+
+          </DockPanel>
+
+
+
+          <TabControl Grid.Row="4" Grid.RowSpan="8" Margin="0,5,0,0" >
+            <TabItem Header="単純設定" Width="200" FontSize="16">
+              <StackPanel Orientation="Vertical" Background="Blue">
+                <DockPanel Margin="0,5,0,0">
+                  <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom">
+                    <CheckBox IsChecked="{Binding EigyoshoModori.Value}" Margin="20,0,0,0" >
+                      <TextBlock Text="宵済み" Foreground="White" FontSize="16" />
+                    </CheckBox>
+                  </StackPanel>
+                  <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Margin="20,0,0,0">
+                    <Label Content="積み日時" Width="55" Style="{StaticResource KomokuTitle}" Foreground="White"  />
+                    <DatePicker Focusable="False" SelectedDate="{Binding TsumiPointList[0].PointDate}" Style="{StaticResource SelectDatePicker}"  FontSize="18">
+                      <DatePicker.Resources>
+                        <Style TargetType="DatePickerTextBox">
+                          <EventSetter Event="MouseLeftButtonUp" Handler="OnMouseLeftButtonUp" />
+                        </Style>
+                      </DatePicker.Resources>
+                    </DatePicker>
+                    <TextBox Name="TsumiTime" IsReadOnly="True" Width="80" Style="{StaticResource SelectTextBox}" Text="{Binding TsumiPointList[0].PointTime, NotifyOnSourceUpdated=True}"  />
+                    <Button Width="30" Style="{StaticResource SelectButton}" Content="⏱" Click="TimePiker_Click" Tag="TsumiTime" />
+                    <ComboBox SelectedValue="{Binding TsumiPointList[0].PointTimeKubun}" ItemsSource="{Binding PointComboBoxItemsTimeKubun}" SelectedValuePath="Id" DisplayMemberPath="Name" Margin="10,3,0,3" Width="70" Style="{StaticResource ComboboxStyle}" FontSize="18" ></ComboBox>
+                    <ComboBox SelectedValue="{Binding TsumiPointList[0].PointStatusKubun}" ItemsSource="{Binding PointComboBoxItemsStatusKubun}" SelectedValuePath="Id" DisplayMemberPath="Name" Margin="10,3,0,3" Width="70" Style="{StaticResource ComboboxStyle}" FontSize="18" ></ComboBox>
+
+                    <!--<CheckBox Content="宵積み" IsChecked="{Binding YoizumiFlg}" Margin="5,0,0,0" VerticalAlignment="Center" FontSize="16" VerticalContentAlignment="Center" />-->
+                  </StackPanel>
+                  <DockPanel DockPanel.Dock="Top">
+                    <Button x:Name="btnTsumiPointReg" Tag="Simple" Content="地点登録" IsEnabled="{Binding TsumiPointList[0].PointAddNewBtnEnable}" DockPanel.Dock="Right" Width="100" FontSize="9"  Margin="5,0,5,0"  Style="{StaticResource DefaultButtonStyle}" Click="btnPointReg_Click" Foreground="Red" FontWeight="Bold" />
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Left"  Margin="30,0,0,0">
+                      <TextBlock Text="{Binding TsumiPointList[0].Lng}" Foreground="White" FontSize="14" />
+                      <TextBlock Text="{Binding TsumiPointList[0].Lat}" Margin="20,0,0,0" Foreground="White" FontSize="14" />
+                    </StackPanel>
+                  </DockPanel>
+
+                  <Button x:Name="btnTsumiSetPoint" Tag="Simple" Content="設定" DockPanel.Dock="Right" Width="100" Margin="5" FontSize="16" Click="TsumiSetPoint_ClickAsync" Style="{StaticResource DefaultButtonStyle}"></Button>
+                  <Border Height="45" Margin="5" CornerRadius="5" Background="White" >
+                    <DockPanel>
+                      <TextBlock DockPanel.Dock="Left" Text="積&#10;み" TextWrapping="Wrap" Width="20" TextAlignment="Center" VerticalAlignment="Center" FontSize="14" Foreground="DarkBlue"  />
+                      <Button DockPanel.Dock="Right" Content="×" Background="Transparent" Width="20" />
+                      <Border DockPanel.Dock="Bottom"  BorderThickness="1" BorderBrush="Black" CornerRadius="5">
+                        <StackPanel Orientation="Vertical" >
+                          <TextBlock FontSize="14" DockPanel.Dock="Top" Text="{Binding TsumiPointList[0].BuildingName, NotifyOnSourceUpdated=True}" VerticalAlignment="Center" Padding="5,2,0,0" Margin="0" />
+                          <TextBlock FontSize="14" DockPanel.Dock="Top" Text="{Binding TsumiPointList[0].Address, NotifyOnSourceUpdated=True}" VerticalAlignment="Center" Padding="5,3,0,0" Margin="0" />
+                        </StackPanel>
+                      </Border>
+                    </DockPanel>
+                  </Border>
+                </DockPanel>
+
+                <DockPanel Margin="0,0,0,0">
+                  <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom">
+                    <CheckBox IsChecked="{Binding CheckOroshiSpace.Value}" Margin="20,0,0,0" >
+                      <TextBlock Text="卸し場所の詳細は積地で確認" Foreground="White" FontSize="16" />
+                    </CheckBox>
+                    <CheckBox IsChecked="{Binding EdnGoBackEigyosyo.Value}" Margin="50,0,0,0" >
+                      <TextBlock Text="業務後に営業所戻り" Foreground="White" FontSize="16" />
+                    </CheckBox>
+                  </StackPanel>
+                  <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" Margin="20,0,0,0">
+                    <Label Content="卸し日時" Width="55" Style="{StaticResource KomokuTitle}" Foreground="White" />
+                    <DatePicker Focusable="False" SelectedDate="{Binding OroshiPointList[0].PointDate}" Style="{StaticResource SelectDatePicker}"  FontSize="18">
+                      <DatePicker.Resources>
+                        <Style TargetType="DatePickerTextBox">
+                          <EventSetter Event="MouseLeftButtonUp" Handler="OnMouseLeftButtonUp" />
+                        </Style>
+                      </DatePicker.Resources>
+                    </DatePicker>
+                    <TextBox Name="OroshiTime" IsReadOnly="True" Width="80" Style="{StaticResource SelectTextBox}" Text="{Binding OroshiPointList[0].PointTime, NotifyOnSourceUpdated=True}"  />
+                    <Button Width="30" Style="{StaticResource SelectButton}" Content="⏱" Click="TimePiker_Click" Tag="OroshiTime" />
+                    <ComboBox SelectedValue="{Binding OroshiPointList[0].PointTimeKubun}" ItemsSource="{Binding PointComboBoxItemsTimeKubun}" SelectedValuePath="Id" DisplayMemberPath="Name" Margin="10,3,0,3" Width="70" Style="{StaticResource ComboboxStyle}" FontSize="18" ></ComboBox>
+                    <ComboBox SelectedValue="{Binding OroshiPointList[0].PointStatusKubun}" ItemsSource="{Binding PointComboBoxItemsStatusKubun}" SelectedValuePath="Id" DisplayMemberPath="Name" Margin="10,3,0,3" Width="70" Style="{StaticResource ComboboxStyle}" FontSize="18" ></ComboBox>
+                  </StackPanel>
+                  <DockPanel DockPanel.Dock="Top" >
+                    <Button x:Name="btnOroshiPointReg" Content="地点登録" IsEnabled="{Binding OroshiPointList[0].PointAddNewBtnEnable}" DockPanel.Dock="Right" Width="100" FontSize="9"  Margin="5,0,5,0"  Style="{StaticResource DefaultButtonStyle}"  Click="btnPointReg_Click" Tag="Oroshi" Foreground="Red" FontWeight="Bold"  />
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Left"  Margin="30,0,0,0">
+                      <TextBlock Text="{Binding OroshiPointList[0].Lng}" Foreground="White" FontSize="14" />
+                      <TextBlock Text="{Binding OroshiPointList[0].Lat}" Margin="20,0,0,0" Foreground="White" FontSize="14" />
+                    </StackPanel>
+                  </DockPanel>
+
+                  <Button x:Name="btnOroshiSetPoint" Tag="Simple" Content="設定" DockPanel.Dock="Right" Width="100" Margin="5" FontSize="16" Click="OroshiSetPoint_ClickAsync" Style="{StaticResource DefaultButtonStyle}"></Button>
+                  <Border Height="45" Margin="5" CornerRadius="5" Background="White">
+                    <DockPanel>
+                      <TextBlock DockPanel.Dock="Left" Text="卸&#10;し" TextWrapping="Wrap" Width="20" TextAlignment="Center" FontSize="14" Foreground="Red" VerticalAlignment="Center" />
+                      <Button DockPanel.Dock="Right" Content="×" Background="Transparent" Width="20" />
+                      <!--<TextBox DockPanel.Dock="Bottom" FontSize="16" Text="{Binding OroshiPointList[0].Address, NotifyOnSourceUpdated=True}" VerticalContentAlignment="Center" />-->
+                      <Border DockPanel.Dock="Bottom"  BorderThickness="1" BorderBrush="Black" CornerRadius="5">
+                        <StackPanel Orientation="Vertical" >
+                          <TextBlock FontSize="14" DockPanel.Dock="Top" Text="{Binding OroshiPointList[0].BuildingName, NotifyOnSourceUpdated=True}" VerticalAlignment="Center" Padding="5,2,0,0" Margin="0" />
+                          <TextBlock FontSize="14" DockPanel.Dock="Top" Text="{Binding OroshiPointList[0].Address, NotifyOnSourceUpdated=True}" VerticalAlignment="Center" Padding="5,3,0,0" Margin="0" />
+                        </StackPanel>
+                      </Border>
+                    </DockPanel>
+                  </Border>
+                </DockPanel>
+              </StackPanel>
+            </TabItem>
+            <TabItem Header="詳細設定" Width="200" FontSize="16">
+              <DockPanel>
+                <Button DockPanel.Dock="Top" Content="設定" Height="30" Width="auto" Margin="5" />
+                <ListBox DockPanel.Dock="Top">
+                  
+                </ListBox>
+              </DockPanel>
+
+            </TabItem>
+          </TabControl>
+          <Border  Grid.Row="12" Margin="0,0"  BorderBrush="DarkGray" BorderThickness="0,0,0,1" >
+            <DockPanel Margin="0,0,0,2">
+              <Label Content="車番&#10;連絡" Width="40" Style="{StaticResource KomokuTitle}" DockPanel.Dock="Left" />
+              <Grid DockPanel.Dock="Left" Margin="0,0">
+                <StackPanel Orientation="Horizontal">
+                  <GroupBox HorizontalAlignment="Left" Style="{StaticResource SelectGroupBox}" >
+                    <StackPanel Orientation="Horizontal">
+                      <RadioButton x:Name="NumberComm_1" Style="{StaticResource SelectRadioButton}" Content="要" Width="90" Checked="NumberCommRadioButton_Checked" Tag="1" />
+                      <RadioButton x:Name="NumberComm_0" Style="{StaticResource SelectRadioButton}" Content="不要" Width="90" Checked="NumberCommRadioButton_Checked" Tag="0" />
+                      <TextBlock x:Name="NumberCommSelected" Visibility="Hidden" Text="{Binding NumberCommLimitKubun.Value, UpdateSourceTrigger=PropertyChanged}" Width="0" />
+                    </StackPanel>
+                  </GroupBox>
+                  <StackPanel x:Name="NumberCommLimit" Orientation="Horizontal" Margin="15,0,0,0"  >
+                    <Label Content="希望&#10;期日" Width="30" Style="{StaticResource KomokuTitle}" />
+                    <!--<Label Content="希望期日" Width="60" Style="{StaticResource KomokuTitle}" />-->
+                    <DatePicker Focusable="False" SelectedDate="{Binding NumberCommLimitDate.Value, NotifyOnSourceUpdated=True}"
+                                Style="{StaticResource SelectDatePicker}" DockPanel.Dock="Left" FontSize="18">
+                      <DatePicker.Resources>
+                        <Style TargetType="DatePickerTextBox">
+                          <EventSetter Event="MouseLeftButtonUp" Handler="OnMouseLeftButtonUp" />
+                        </Style>
+                      </DatePicker.Resources>
+                    </DatePicker>
+                    <TextBox x:Name="NumberCommLimitTime" IsReadOnly="True" Width="55" Style="{StaticResource SelectTextBox}" Text="{Binding NumberCommLimitTime.Value}" />
+                    <Button Width="40" Style="{StaticResource SelectButton}" Content="⏱" Click="TimePiker_Click" Tag="NumberCommLimitTime" Margin="0,3,0,5" />
+                  </StackPanel>
+                </StackPanel>
+              </Grid>
+            </DockPanel>
+          </Border>
+          <Grid Grid.Row="13" Margin="0,2,0,0" >
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition />
+              <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <StackPanel Orientation="Horizontal" Grid.Column="0" >
+              <Label Content="積み&#10;時間" Width="35" Style="{StaticResource KomokuTitle}" DockPanel.Dock="Left" />
+              <TextBox IsReadOnly="True" Style="{StaticResource SelectTextBox}" Text="{Binding TsumiTaskTime.Value}" Width="80" FontSize="18" Margin="2" DockPanel.Dock="Left" />
+              <Button Content="＋" Width="60" DockPanel.Dock="Left" Style="{StaticResource DefaultPlusMinusButton}" FontSize="20" Margin="3,1" Tag="Tsumi" Click="TsumiOroshiTime_Click" />
+              <Button Content="－" Width="60" DockPanel.Dock="Left" Style="{StaticResource DefaultPlusMinusButton}" FontSize="20" Margin="3,1" Tag="Tsumi" Click="TsumiOroshiTime_Click" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Grid.Column="1" Margin="20,0,0,0" >
+              <Label Content="卸し&#10;時間" Width="35" Style="{StaticResource KomokuTitle}" DockPanel.Dock="Left" />
+              <TextBox IsReadOnly="True" Style="{StaticResource SelectTextBox}" Text="{Binding OroshiTaskTime.Value}" Width="80" FontSize="18" Margin="2"  />
+              <Button Content="＋" Width="60" DockPanel.Dock="Right" Style="{StaticResource DefaultPlusMinusButton}" FontSize="20" Margin="3,1" Tag="Oroshi" Click="TsumiOroshiTime_Click" />
+              <Button Content="－" Width="60" DockPanel.Dock="Right" Style="{StaticResource DefaultPlusMinusButton}" FontSize="20" Margin="3,1" Tag="Oroshi" Click="TsumiOroshiTime_Click" />
+            </StackPanel>
+          </Grid>
+
+          <!--<DockPanel Grid.Row="15" Visibility="Hidden">
+            <Label Content="運賃計算" Width="60" Style="{StaticResource KomokuTitle}" DockPanel.Dock="Left" />
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" >
+              <ToggleButton Content="トン数計算" Width="70" Style="{StaticResource SelectToggleButton}"  />
+              <ToggleButton Content="距離計算" Width="70" Style="{StaticResource SelectToggleButton}"  />
+              <ToggleButton Content="時間計算" Width="70" Style="{StaticResource SelectToggleButton}"  />
+              <ToggleButton Content="金額指定" Width="70" Style="{StaticResource SelectToggleButton}"  />
+            </StackPanel>
+          </DockPanel>-->
+
+          <DockPanel Grid.Row="14" Grid.RowSpan="2">
+            <Label Content="ルート" Width="35" Style="{StaticResource KomokuTitle}" DockPanel.Dock="Left" />
+            <Grid DockPanel.Dock="Left" Margin="0,5">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="0.7*" />
+              </Grid.RowDefinitions>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="75" />
+                <ColumnDefinition Width="75" />
+                <ColumnDefinition Width="70" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <TextBox Grid.Column="0" IsReadOnly="True" Text="ルート" Background="Aqua" Style="{StaticResource TableTextblox}" />
+              <TextBox Grid.Column="1" IsReadOnly="True" Text="所要時間" Background="Aqua" Style="{StaticResource TableTextblox}" />
+              <TextBox Grid.Column="2" IsReadOnly="True" Text="距離" Background="Aqua" Style="{StaticResource TableTextblox}" />
+              <TextBox Grid.Column="3" IsReadOnly="True" Text="有料&#10;道路"  Background="Aqua" FontSize="10" Style="{StaticResource TableTextblox}" />
+              <!--<TextBox Grid.Column="4" IsReadOnly="True" Text="追加費用" Background="Aqua" Style="{StaticResource TableTextblox}" />-->
+              <Grid Grid.Column="4" Grid.ColumnSpan="3">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition/>
+                  <ColumnDefinition/>
+                  <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="*" />
+                  <RowDefinition Height="0.8*" />
+                </Grid.RowDefinitions>
+                <TextBox Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" IsReadOnly="True" Text="標準運賃" FontSize="11" Background="Aqua" Style="{StaticResource TableTextblox}" />
+                <TextBox Grid.Column="0" Grid.Row="1" IsReadOnly="True" Text="有料別" FontSize="9" Background="Aqua" Style="{StaticResource TableTextblox}" />
+                <TextBox Grid.Column="1" Grid.Row="1" IsReadOnly="True" Text="有料込" FontSize="9" Background="Aqua" Style="{StaticResource TableTextblox}" />
+                <TextBox Grid.Column="2" Grid.Row="1" IsReadOnly="True" Text="(追加料金)" FontSize="9" Background="Aqua" Style="{StaticResource TableTextblox}" />
+              </Grid>
+              <Grid Grid.Column="7" Grid.ColumnSpan="3">
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition/>
+                  <ColumnDefinition/>
+                  <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="*" />
+                  <RowDefinition Height="0.8*" />
+                </Grid.RowDefinitions>
+                <TextBox Grid.Column="0" Grid.ColumnSpan="3" Grid.Row="0" IsReadOnly="True" Text="見積原価" FontSize="11" Background="Aqua" Style="{StaticResource TableTextblox}" />
+                <TextBox Grid.Column="0" Grid.Row="1" IsReadOnly="True" Text="有料別" FontSize="9" Background="Aqua" Style="{StaticResource TableTextblox}" />
+                <TextBox Grid.Column="1" Grid.Row="1" IsReadOnly="True" Text="有料込" FontSize="9" Background="Aqua" Style="{StaticResource TableTextblox}" />
+                <TextBox Grid.Column="2" Grid.Row="1" IsReadOnly="True" Text="(追加料金)" FontSize="9" Background="Aqua" Style="{StaticResource TableTextblox}" />
+              </Grid>
+
+
+              <TextBox Grid.Column="0" Grid.Row="1" IsReadOnly="True" Text="{Binding SelectedDriveRouteDisplay.RouteTypeDisplay}" Style="{StaticResource TableTextBox}" />
+              <TextBox Grid.Column="1" Grid.Row="1" IsReadOnly="True" Text="{Binding SelectedDriveRouteDisplay.TotalTime}" Style="{StaticResource TableTextBox}" />
+              <TextBox Grid.Column="2" Grid.Row="1" IsReadOnly="True" Text="{Binding SelectedDriveRouteDisplay.TotalDistance, StringFormat={}{0:N2}km}" Style="{StaticResource TableTextBox}" HorizontalContentAlignment="Right" />
+              <TextBox Grid.Column="3" Grid.Row="1" IsReadOnly="True" Text="{Binding SelectedDriveRouteDisplay.Totaltoll, StringFormat={}{0:N0}, ConverterCulture=ja-JP}" Style="{StaticResource TableTextBox}" HorizontalContentAlignment="Right" />
+              <!--<TextBox Grid.Column="4" Grid.Row="1" IsReadOnly="True" Text="{Binding SelectedDriveRouteDisplay.ExtraCharge, StringFormat={}{0:N0}, ConverterCulture=ja-JP}" Style="{StaticResource TableTextBox}" HorizontalContentAlignment="Right" />-->
+              <TextBox Grid.Column="7" Grid.Row="1" IsReadOnly="True" Text="{Binding SelectedDriveRouteDisplay.GrossAmount, StringFormat={}{0:N0}, ConverterCulture=ja-JP}" Style="{StaticResource TableTextBox}" HorizontalContentAlignment="Right" />
+              <TextBox Grid.Column="4" Grid.Row="1" IsReadOnly="True" Text="{Binding SelectedDriveRouteDisplay.StdALLFreight, StringFormat={}{0:N0}, ConverterCulture=ja-JP}" Style="{StaticResource TableTextBox}" HorizontalContentAlignment="Right" />
+              <TextBox Grid.Column="5" Grid.Row="1" IsReadOnly="True" Text="{Binding SelectedDriveRouteDisplay.StdTotalFreight, StringFormat={}{0:N0}, ConverterCulture=ja-JP}" Style="{StaticResource TableTextBox}" HorizontalContentAlignment="Right" />
+              <TextBox Grid.Column="6" Grid.Row="1" IsReadOnly="True" Text="{Binding SelectedDriveRouteDisplay.StdExcharge, StringFormat={}{0:N0}, ConverterCulture=ja-JP}" Style="{StaticResource TableTextBox}" HorizontalContentAlignment="Right" />
+              <TextBox Grid.Column="8" Grid.Row="1" IsReadOnly="True" Text="{Binding SelectedDriveRouteDisplay.GrossAmountTotal, StringFormat={}{0:N0}, ConverterCulture=ja-JP}" Style="{StaticResource TableTextBox}" HorizontalContentAlignment="Right" />
+              <TextBox Grid.Column="9" Grid.Row="1" IsReadOnly="True" Text="{Binding SelectedDriveRouteDisplay.GrossAmountForExcharge, StringFormat={}{0:N0}, ConverterCulture=ja-JP}" Style="{StaticResource TableTextBox}" HorizontalContentAlignment="Right" />
+            </Grid>
+          </DockPanel>
+
+          <DockPanel Grid.Row="16" Grid.RowSpan="2">
+
+            <Label Content="金額&#10;入力" Width="40" Style="{StaticResource KomokuTitle}" DockPanel.Dock="left" HorizontalAlignment="Left" />
+
+            <Grid DockPanel.Dock="top">
+              <Grid.RowDefinitions>
+                <RowDefinition Height="3*" />
+                <RowDefinition Height="6*" />
+              </Grid.RowDefinitions>
+
+              <DockPanel Grid.Row="0" >
+                <Border DockPanel.Dock="Left" BorderBrush="Red" BorderThickness="2" CornerRadius="4" Padding="0" Margin="15,0,15,0" >
+                  <StackPanel Orientation="Horizontal" Margin="0" HorizontalAlignment="Center" >
+                    <RadioButton x:Name="SeikyuKubun_0" Style="{StaticResource SelectRadioButton}" Padding="0" Content="確定運賃" Width="200"  Checked="SeikyuKubunButton_Checked" Tag="0" VerticalAlignment="Stretch" Margin="5,1,5,1" />
+                    <RadioButton x:Name="SeikyuKubun_1" Style="{StaticResource SelectRadioButton}" Padding="0" Content="暫定運賃" Width="200" Checked="SeikyuKubunButton_Checked" Tag="1" VerticalAlignment="Stretch" Margin="30,1,5,1" />
+                    <TextBlock x:Name="SeikyuKubunSelected" Visibility="Hidden" Text="{Binding SeikyuKubun.Value, UpdateSourceTrigger=PropertyChanged}" Width="0" Height="0" />
+                  </StackPanel>
+                </Border>
+              </DockPanel>
+
+              <DockPanel Grid.Row="1" Margin="0,2">
+                <Grid DockPanel.Dock="Left" >
+                  <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                  </Grid.RowDefinitions>
+                  <Grid Grid.Row="0" Background="LimeGreen" >
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition />
+                      <ColumnDefinition />
+                      <ColumnDefinition />
+                      <ColumnDefinition />
+                      <ColumnDefinition />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" IsReadOnly="True" Text="標準運賃" Background="LimeGreen" Style="{StaticResource TableTextblox2}" />
+                    <TextBox Grid.Column="2" IsReadOnly="True" Text="追加費用" Background="LimeGreen" Style="{StaticResource TableTextblox2}" />
+                    <TextBox Grid.Column="1" IsReadOnly="True" Text="有料道路" Background="LimeGreen" Style="{StaticResource TableTextblox2}" />
+                    <TextBox Grid.Column="3" IsReadOnly="True" Text="値引額" Background="LimeGreen" Style="{StaticResource TableTextblox2}" />
+                    <TextBox Grid.Column="4" IsReadOnly="True" Text="請求運賃" Background="LimeGreen" Style="{StaticResource TableTextblox2}" />
+                  </Grid>
+                  <Grid Grid.Row="1"  Background="Beige">
+                    <Grid.ColumnDefinitions>
+                      <ColumnDefinition Width="*" />
+                      <ColumnDefinition Width="*" />
+                      <ColumnDefinition Width="*"/>
+                      <ColumnDefinition Width="*" />
+                      <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" IsReadOnly="True" Text="{Binding BaseFee.Value, StringFormat={}{0:N0}}" Style="{StaticResource TableTextBox}" FontSize="18" Background="White" InputMethod.PreferredImeState="Off" />
+                    <TextBox Grid.Column="2" IsReadOnly="False" Name="ExtraCharge" Text="{Binding ExtraCharge.Value, StringFormat={}{0:N0}}" Style="{StaticResource TableTextBox}" FontSize="18" Background="Transparent" InputMethod.PreferredImeState="Off" PreviewKeyUp="ExtraCharge_PreviewKeyUp" />
+                    <TextBox Grid.Column="1" IsReadOnly="False" Name="Toll" Text="{Binding Toll.Value, StringFormat={}{0:N0}}" Style="{StaticResource TableTextBox}" FontSize="18" Background="Transparent" InputMethod.PreferredImeState="Off" PreviewKeyUp="Toll_PreviewKeyUp" />
+                    <TextBox Grid.Column="3" IsReadOnly="False" Name="Discount" Text="{Binding Discount.Value, StringFormat={}{0:N0}}" Style="{StaticResource TableTextBox}" FontSize="18" Background="Transparent" InputMethod.PreferredImeState="Off" PreviewKeyUp="Discount_PreviewKeyUp" />
+                    <TextBox Grid.Column="4" IsReadOnly="False" Name="GrossAmount" Text="{Binding GrossAmount.Value, StringFormat={}{0:N0}}" Style="{StaticResource TableTextBox}" FontSize="18" Background="Transparent" InputMethod.PreferredImeState="Off" PreviewKeyUp="GrossAmount_PreviewKeyUp" />
+                  </Grid>
+                </Grid>
+              </DockPanel>
+            </Grid>
+          </DockPanel>
+        </Grid>
+
+        <Border Grid.Column="1" Margin="3,0,1,0" BorderThickness="1" BorderBrush="LightGray" CornerRadius="5"  >
+          <Border.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+              <GradientStop Color="Papayawhip" Offset="0"/>
+              <GradientStop Color="BlanchedAlmond"  Offset="0.5"/>
+              <GradientStop Color="Papayawhip" Offset="1"/>
+            </LinearGradientBrush>
+          </Border.Background>
+
+          <Grid Margin="5,0,1,0" >
+            <Grid.RowDefinitions>
+              <RowDefinition Height="*" />
+              <RowDefinition Height="*" />
+              <RowDefinition Height="*" />
+              <RowDefinition Height="*" />
+              <RowDefinition Height="*" />
+              <RowDefinition Height="*" />
+              <RowDefinition Height="*" />
+              <RowDefinition Height="*" />
+              <RowDefinition Height="*" />
+              <RowDefinition Height="*" />
+              <RowDefinition Height="*" />
+              <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Grid.RowSpan="2" >
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="40"/>
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+
+              <Label Content="走行&#10;条件" Grid.Column="0" Style="{StaticResource KomokuTitle}" HorizontalAlignment="Left" />
+              <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                  <RowDefinition Height="*" />
+                  <RowDefinition Height="*" />
+                  <RowDefinition Height="*" />
+                </Grid.RowDefinitions>
+
+                <DockPanel Grid.Row="0">
+                  <Label Content="規制考慮" Width="55" Style="{StaticResource KomokuTitle}" DockPanel.Dock="Left"  />
+                  <Border Style="{StaticResource SelectBorder}" DockPanel.Dock="Left">
+                    <Grid >
+                      <Grid.RowDefinitions>
+                        <RowDefinition Height="4*"/>
+                        <RowDefinition Height="*" />
+                      </Grid.RowDefinitions>
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                        <ColumnDefinition Width="1.3*" />
+                      </Grid.ColumnDefinitions>
+                      <RadioButton x:Name="Regulation_none" Grid.Column="0" GroupName="Regulation" Style="{StaticResource SelectRadioButton}" Content="なし" Margin="2,2,2,2" HorizontalAlignment="Stretch" Checked="RegulationRadioButton_Checked" Tag="none" Grid.RowSpan="2" />
+                      <RadioButton x:Name="Regulation_season" Grid.Column="1" GroupName="Regulation" Style="{StaticResource SelectRadioButton}" Content="季節" Margin="2,2,2,2" HorizontalAlignment="Stretch" Checked="RegulationRadioButton_Checked" Tag="season" Grid.RowSpan="2" />
+                      <RadioButton x:Name="Regulation_time" Grid.Column="2" GroupName="Regulation" Style="{StaticResource SelectRadioButton}" Content="時間" Margin="2,2,2,2" HorizontalAlignment="Stretch" Checked="RegulationRadioButton_Checked" Tag="time" Grid.RowSpan="2" />
+                      <RadioButton x:Name="Regulation_season_time" Grid.Column="3" GroupName="Regulation" Style="{StaticResource SelectRadioButton}" Content="季節・時間" Margin="2,2,2,2" HorizontalAlignment="Stretch" Checked="RegulationRadioButton_Checked" Tag="season,time" Grid.RowSpan="2" />
+                      <TextBlock x:Name="RegulationSelected" Visibility="Hidden" Text="{Binding Regulation.Value, UpdateSourceTrigger=PropertyChanged}" Width="0" Margin="14,0,14,0" Grid.RowSpan="2" />
+                    </Grid>
+                  </Border>
+                </DockPanel>
+
+                <DockPanel Grid.Row="1">
+                  <Label Content="2段階Uﾀｰﾝ&#10;回避指定" Width="55" FontSize="10" Style="{StaticResource KomokuTitle}" DockPanel.Dock="Left"  />
+                  <Border Style="{StaticResource SelectBorder}" DockPanel.Dock="Left">
+                    <Grid>
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                      </Grid.ColumnDefinitions>
+                      <RadioButton x:Name="Twouturn_T" GroupName="Twouturn" Grid.Column="0" Style="{StaticResource SelectRadioButton}" Content="する"  Margin="2" HorizontalAlignment="Stretch" Checked="TwouturnRadioButton_Checked" Tag="T" />
+                      <RadioButton x:Name="Twouturn_F" GroupName="Twouturn" Grid.Column="1" Style="{StaticResource SelectRadioButton}" Content="しない"  Margin="2" HorizontalAlignment="Stretch" Checked="TwouturnRadioButton_Checked" Tag="F" />
+                      <TextBlock x:Name="TwouturnSelected" Visibility="Hidden" Text="{Binding Twouturn.Value, UpdateSourceTrigger=PropertyChanged}" Width="0" />
+                    </Grid>
+                  </Border>
+                </DockPanel>
+
+                <DockPanel Grid.Row="2">
+                  <Label Content="フェリー" Width="55" Style="{StaticResource KomokuTitle}" DockPanel.Dock="Left" />
+                  <Border Style="{StaticResource SelectBorder}" DockPanel.Dock="Left">
+                    <Grid>
+                      <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
+                      </Grid.ColumnDefinitions>
+                      <RadioButton x:Name="Ferry_F" GroupName="Ferry" Grid.Column="0" Style="{StaticResource SelectRadioButton}" Content="利用しない" Margin="2" HorizontalAlignment="Stretch" Checked="FerryRadioButton_Checked" Tag="F" />
+                      <RadioButton x:Name="Ferry_T" GroupName="Ferry" Grid.Column="1" Style="{StaticResource SelectRadioButton}" Content="利用する" Margin="2" HorizontalAlignment="Stretch" Checked="FerryRadioButton_Checked" Tag="T" />
+                      <TextBlock x:Name="FerrySelected" Visibility="Hidden" Text="{Binding Ferry.Value, UpdateSourceTrigger=PropertyChanged}" Width="0" />
+                    </Grid>
+                  </Border>
+                </DockPanel>
+              </Grid>
+            </Grid>
+
+            <Grid Grid.Row="2" Grid.RowSpan="4" Background="LightCyan">
+              <Border BorderBrush="Black" BorderThickness="1"></Border>
+              <StackPanel Orientation="Vertical" Margin="3">
+                <DockPanel>
+                  <Label DockPanel.Dock="Left" Content="追加料金" FontWeight="Bold" Margin="5,0,0,0" />
+                  <Button x:Name="btnExchargeAdd" DockPanel.Dock="Right" Width="100" Style="{StaticResource DefaultButtonStyle}" Foreground="Red" FontWeight="Bold" Click="btnExchargeAdd_Click" >追加</Button>
+                  <Button x:Name="btnExchargeUpDate" DockPanel.Dock="Right" Width="100" Style="{StaticResource DefaultButtonStyle}" Click="btnExchargeUpDate_Click" >更新</Button>
+                </DockPanel>
+                <StackPanel Orientation="Vertical" Margin="5,0,0,0">
+                  <Label Foreground="Red" FontWeight="Bold" FontSize="9" Padding="0" >・「追加」ボタンで追加料金項目を選択してください。</Label>
+                  <Label Foreground="Red" FontWeight="Bold" FontSize="9" Padding="0" >・データ登録後に、車種サイズを変更した場合は、「更新」ボタンで車種サイズと金額を更新してください。</Label>
+                </StackPanel>
+                <DataGrid x:Name="dgExtraChargeListEx"
+                            ItemsSource="{Binding ExtraChargeListEx, NotifyOnSourceUpdated=True}" 
+                           AutoGenerateColumns="False" CanUserAddRows="false" >
+                  <DataGrid.RowStyle>
+                    <Style TargetType="DataGridRow">
+                      <Setter Property="Height" Value="30" />
+                      <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                          <Setter Property="Foreground" Value="Black"/>
+                          <Setter Property="Background" Value="GoldenRod"/>
+                        </Trigger>
+                      </Style.Triggers>
+                    </Style>
+                  </DataGrid.RowStyle>
+                  <DataGrid.Columns>
+                    <DataGridTextColumn Header="車種サイズ" IsReadOnly="True" Binding="{Binding SIZE}" Width="0.6*">
+                      <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                          <Setter Property="VerticalAlignment" Value="Center"/>
+                          <Setter Property="HorizontalAlignment" Value="Center"/>
+                        </Style>
+                      </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="キー" IsReadOnly="True" Binding="{Binding Komoku_Key}" Width="25">
+                      <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                          <Setter Property="VerticalAlignment" Value="Center"/>
+                          <Setter Property="HorizontalAlignment" Value="Center"/>
+                        </Style>
+                      </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="項目名" IsReadOnly="True" Binding="{Binding Komoku_Name}" Width="1.2*">
+                      <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                          <Setter Property="VerticalAlignment" Value="Center"/>
+                          <Setter Property="HorizontalAlignment" Value="Left"/>
+                          <Setter Property="Margin" Value="3,0,0,0"/>
+                        </Style>
+                      </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="標準金額" IsReadOnly="True" Binding="{Binding StdExcharge, StringFormat={}{0:N0}, ConverterCulture=ja-JP}" Width="0.8*">
+                      <DataGridTextColumn.HeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                          <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                          <Setter Property="Background" Value="Transparent"/>
+                          <Setter Property="Foreground" Value="White" />
+                        </Style>
+                      </DataGridTextColumn.HeaderStyle>
+                      <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                          <Setter Property="VerticalAlignment" Value="Center"/>
+                          <Setter Property="HorizontalAlignment" Value="Right"/>
+                          <Setter Property="Padding" Value="2,0" />
+                        </Style>
+                      </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+
+                    <DataGridTextColumn Header="見積原価" IsReadOnly="True" Binding="{Binding GrossExcharge, StringFormat={}{0:N0}, ConverterCulture=ja-JP}" Width="0.8*">
+                      <DataGridTextColumn.HeaderStyle>
+                        <Style TargetType="DataGridColumnHeader">
+                          <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                          <Setter Property="Background" Value="Transparent"/>
+                          <Setter Property="Foreground" Value="White" />
+                        </Style>
+                      </DataGridTextColumn.HeaderStyle>
+                      <DataGridTextColumn.ElementStyle>
+                        <Style TargetType="TextBlock">
+                          <Setter Property="VerticalAlignment" Value="Center"/>
+                          <Setter Property="HorizontalAlignment" Value="Right"/>
+                          <Setter Property="Padding" Value="2,0" />
+                        </Style>
+                      </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTemplateColumn IsReadOnly="True" Width="15">
+                      <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                          <Button x:Name="btnExchargeDel" Content="×" Style="{StaticResource DefaultButtonStyle}" Click="btnExchargeDel_Click" >
+                          </Button>
+                        </DataTemplate>
+                      </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                  </DataGrid.Columns>
+                </DataGrid>
+              </StackPanel>
+            </Grid>
+
+            <Grid Grid.Row="7" Grid.RowSpan="3">
+              <Border BorderBrush="Black" BorderThickness="1"></Border>
+              <DockPanel>
+                <Label DockPanel.Dock="Top">備考</Label>
+                <TextBox Text="{Binding Remarks.Value}" Background="White" AcceptsReturn="True" TextWrapping="Wrap" VerticalContentAlignment="Top" InputMethod.PreferredImeState="On" InputMethod.PreferredImeConversionMode="FullShape,Native" ></TextBox>
+              </DockPanel>
+            </Grid>
+
+            <Grid Grid.Row="10" Grid.RowSpan="1">
+              <Border BorderBrush="Black" BorderThickness="1"></Border>
+              <DockPanel>
+                <Label DockPanel.Dock="Top">搭載荷物</Label>
+                <TextBox Text="{Binding Luggage.Value}" Background="White" AcceptsReturn="True" TextWrapping="Wrap" VerticalContentAlignment="Top" InputMethod.PreferredImeState="On" InputMethod.PreferredImeConversionMode="FullShape,Native" ></TextBox>
+              </DockPanel>
+            </Grid>
+
+            <!--<DockPanel Grid.Row="6" Grid.RowSpan="2" LastChildFill="True">
+              <Label Content="荷物" Width="40" Style="{StaticResource KomokuTitle}" DockPanel.Dock="Left" />
+              <Button Content="選択" Width="80" DockPanel.Dock="Right" Style="{StaticResource SelectButton}" Margin="5" IsEnabled="False" />
+              <TextBox IsReadOnly="True" DockPanel.Dock="Bottom" Style="{StaticResource SelectTextBox}" Margin="5" Background="WhiteSmoke" />
+            </DockPanel>
+
+            <DockPanel Grid.Row="8" Grid.RowSpan="2" >
+              <Label Content="装備" Width="40" Style="{StaticResource KomokuTitle}" DockPanel.Dock="Left" />
+              <Button Content="選択" Width="80" DockPanel.Dock="Right" Style="{StaticResource SelectButton}" Margin="5" IsEnabled="False" />
+              <TextBox IsReadOnly="True" DockPanel.Dock="Bottom" Style="{StaticResource SelectTextBox}" Margin="5" Background="WhiteSmoke" />
+            </DockPanel>
+
+            <DockPanel Grid.Row="10" Grid.RowSpan="1" LastChildFill="True" >
+              <Label Content="条件" Width="40" Style="{StaticResource KomokuTitle}" DockPanel.Dock="Left" />
+              <Button Content="選択" Width="80" DockPanel.Dock="Right" Style="{StaticResource SelectButton}" Margin="5" IsEnabled="False" />
+              <TextBox IsReadOnly="True" DockPanel.Dock="Bottom" Style="{StaticResource SelectTextBox}" Margin="5" Background="WhiteSmoke" />
+            </DockPanel>
+
+            <DockPanel Grid.Row="11" Grid.RowSpan="1" LastChildFill="True" >
+              <Label Content="特車" Width="40" Style="{StaticResource KomokuTitle}" DockPanel.Dock="Left" />
+              <Button Content="選択" Width="80" DockPanel.Dock="Right" Style="{StaticResource SelectButton}" Margin="5" IsEnabled="False" />
+              <TextBox IsReadOnly="True" DockPanel.Dock="Bottom" Style="{StaticResource SelectTextBox}" Margin="5" Background="WhiteSmoke" />
+            </DockPanel>-->
+
+          </Grid>
+        </Border>
+        <GridSplitter Grid.Column="2" Background="LightGray" HorizontalAlignment="Stretch" Margin="5,0,0,0" />
+
+        <Grid Grid.Column="3" Background="AliceBlue" >
+          <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+          <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="*" />
+              <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+
+            <Button x:Name="SeachAddress" Grid.Column="0" Margin="5,2" Content="地点検索" FontSize="18" Click="SeachAddress_Click" Style="{StaticResource DefaultButtonStyle}" />
+            <TextBox x:Name="InputAddress" Grid.Column="1" Grid.ColumnSpan="3" Margin="2,3" FontSize="16"  VerticalContentAlignment="Center" 
+                     KeyDown="InputAddress_KeyDown" Text="{Binding Address.Value, UpdateSourceTrigger=PropertyChanged}" InputMethod.PreferredImeState="On" InputMethod.PreferredImeConversionMode="FullShape,Native" />
+          </Grid>
+          <Wpf:WebView2 x:Name="webView" Grid.Row="1"   Source="{Binding MapsApiForJSUrl.Value}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  />
+        </Grid>
+      </Grid>
+    </Grid>
+  </Grid>
+</Window>
+

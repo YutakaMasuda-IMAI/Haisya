@@ -1,0 +1,229 @@
+﻿<Window x:Class="HaisyaDesktop.View.Tool.SelectAddressDetail"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HaisyaDesktop.View.Tool"
+        xmlns:tool="clr-namespace:HaisyaDesktop.ViewModel.Tool"
+d:DataContext="{d:DesignInstance Type=tool:SelectAddressDetailViewModel}"
+        mc:Ignorable="d"
+        Title="住所選択" Height="650" Width="800" Loaded="Window_Loaded">
+
+  <Window.Resources>
+    <Style x:Key="LabelTitleStyle" TargetType="Label">
+      <Setter Property="FontSize" Value="18"/>
+      <Setter Property="VerticalContentAlignment" Value="Center"/>
+      <Setter Property="HorizontalContentAlignment" Value="Center"/>
+    </Style>
+  </Window.Resources>
+
+  <Grid >
+    <Grid.Background>
+      <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+        <LinearGradientBrush.GradientStops>
+          <GradientStop Offset="0.0" Color="LightGray" />
+          <GradientStop Offset="0.3" Color="WhiteSmoke" />
+          <GradientStop Offset="0.4" Color="WhiteSmoke" />
+          <GradientStop Offset="1.0" Color="WhiteSmoke" />
+        </LinearGradientBrush.GradientStops>
+      </LinearGradientBrush>
+    </Grid.Background>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="50" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <DockPanel Grid.Row="0" >
+      <Button Name="btnClose" Content="閉じる" Background="Khaki" DockPanel.Dock="Right" Width="150" Click="btnClose_Click"/>
+      <StackPanel Orientation="Vertical">
+        <Label Content="住所選択" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0" />
+        <Label Content="表示する住所建物を以下から選択してください。" DockPanel.Dock="Bottom"  HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0" />
+      </StackPanel>
+    </DockPanel>
+
+    <Border Grid.Row="0" BorderBrush="DarkGray" BorderThickness="2" />
+    <Border Grid.Row="1" BorderBrush="DarkGray" BorderThickness="2" />
+    <Grid Grid.Row="1" >
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*"/>
+        <ColumnDefinition Width="*"/>
+      </Grid.ColumnDefinitions>
+      <Grid.RowDefinitions>
+        <RowDefinition Height="30" />
+        <RowDefinition Height="*" />
+      </Grid.RowDefinitions>
+
+      <Label Grid.Row="0" Grid.Column="0" Content="住所表示のみ" Style="{StaticResource LabelTitleStyle}" />
+      <Label Grid.Row="0" Grid.Column="1" Content="住所建物表示" Style="{StaticResource LabelTitleStyle}" />
+
+      <Border BorderThickness="1" BorderBrush="Black"  Grid.Column ="1" Grid.Row="1">
+        <ListBox Name="ListBox" ItemsSource="{Binding ItemList}" SelectionChanged="ListBox_SelectionChanged">
+          <ListBox.Template>
+            <ControlTemplate TargetType="ItemsControl">
+              <Border BorderThickness="0" BorderBrush="Transparent" Background="Transparent" CornerRadius="10" >
+                <ItemsPresenter Margin="5">
+                </ItemsPresenter>
+              </Border>
+            </ControlTemplate>
+          </ListBox.Template>
+          <ListBox.ItemTemplate>
+            <DataTemplate>
+              <Grid Height="50">
+                <DockPanel >
+                  <StackPanel Orientation="Vertical" DockPanel.Dock="Left" Margin="10,2,0,2">
+                    <TextBlock Text="{Binding building_name}" FontSize="18"  />
+                    <DockPanel>
+                      <TextBlock Text="{Binding post_code}" DockPanel.Dock="Left" />
+                      <TextBlock Text="{Binding address}" DockPanel.Dock="Left" Margin="10,0,0,0" />
+                    </DockPanel>
+                  </StackPanel>
+                </DockPanel>
+              </Grid>
+            </DataTemplate>
+          </ListBox.ItemTemplate>
+          <ListBox.ItemsPanel>
+            <ItemsPanelTemplate>
+              <StackPanel Orientation="Vertical">
+              </StackPanel>
+            </ItemsPanelTemplate>
+          </ListBox.ItemsPanel>
+
+          <ListBox.ItemContainerStyle>
+            <Style TargetType="ListBoxItem">
+              <Setter Property="Foreground" Value="Red" />
+              <Setter Property="FontSize" Value="15" />
+              <Setter Property="Background" >
+                <Setter.Value>
+                  <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                    <LinearGradientBrush.GradientStops>
+                      <GradientStop Offset="0.0" Color="Aquamarine" />
+                      <GradientStop Offset="1.0" Color="LightYellow" />
+                    </LinearGradientBrush.GradientStops>
+                  </LinearGradientBrush>
+                </Setter.Value>
+              </Setter>
+              <Setter Property="Margin" Value="0,0,0,5"/>
+              <Setter Property="Template">
+                <Setter.Value>
+                  <ControlTemplate TargetType="{x:Type ContentControl}">
+                    <Border Background="{TemplateBinding Background}" CornerRadius="10" BorderThickness="2" BorderBrush="Black"  >
+                      <Border.Effect>
+                        <DropShadowEffect
+                          BlurRadius="10"
+                          RenderingBias="Quality"
+                          ShadowDepth="2.5"
+                          Color="Gray" />
+                      </Border.Effect>
+                      <ContentPresenter >
+                      </ContentPresenter>
+                    </Border>
+                  </ControlTemplate>
+                </Setter.Value>
+              </Setter>
+              <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                  <Setter Property="Background" Value="Plum" />
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="True">
+                  <Setter Property="Background" Value="LightGray" />
+                </Trigger>
+              </Style.Triggers>
+
+            </Style>
+
+          </ListBox.ItemContainerStyle>
+
+        </ListBox>
+      </Border>
+
+      <Border BorderThickness="1" BorderBrush="Black"  Grid.Column ="0" Grid.Row="1">
+        <DockPanel>
+          <Grid DockPanel.Dock="Bottom" Height="50">
+            <DockPanel >
+              <Label Content="建物手入力：" DockPanel.Dock="Left" VerticalContentAlignment="Center" Margin="10,0,0,0" />
+              <TextBox x:Name="InputbuildName" DockPanel.Dock="Left" Margin="5" VerticalContentAlignment="Center" Background="White"
+                       InputMethod.PreferredImeState="On" InputMethod.PreferredImeConversionMode="FullShape,Native" />
+            </DockPanel>
+          </Grid>
+          <ListBox Name="ListBox2" ItemsSource="{Binding Addresslist}" SelectionChanged="ListBox2_SelectionChanged">
+            <ListBox.Template>
+              <ControlTemplate TargetType="ItemsControl">
+                <Border BorderThickness="0" BorderBrush="Transparent" Background="Transparent" CornerRadius="10" >
+                  <ItemsPresenter Margin="5">
+                  </ItemsPresenter>
+                </Border>
+              </ControlTemplate>
+            </ListBox.Template>
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Grid Height="50">
+                  <DockPanel >
+                    <!--<Button  Content="選択" Width="150" Click="Select_Click" ></Button>-->
+                    <!--<TextBlock Visibility="Hidden" Text="{Binding zid}" DockPanel.Dock="Left" Margin="10,0,0,0"  />-->
+                    <StackPanel Orientation="Vertical" DockPanel.Dock="Left" Margin="10,2,0,2">
+                      <DockPanel>
+                        <TextBlock Text="{Binding post_code}" DockPanel.Dock="Left" />
+                        <TextBlock Text="{Binding address}" DockPanel.Dock="Left" Margin="10,0,0,0" />
+                      </DockPanel>
+
+                    </StackPanel>
+
+                  </DockPanel>
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+            <ListBox.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Orientation="Vertical">
+                </StackPanel>
+              </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+
+            <ListBox.ItemContainerStyle>
+              <Style TargetType="ListBoxItem">
+                <Setter Property="Foreground" Value="Red" />
+                <Setter Property="FontSize" Value="15" />
+                <Setter Property="Background" >
+                  <Setter.Value>
+                    <LinearGradientBrush StartPoint="0.5,0" EndPoint="0.5,1">
+                      <LinearGradientBrush.GradientStops>
+                        <GradientStop Offset="0.0" Color="Khaki" />
+                        <GradientStop Offset="1.0" Color="LightYellow" />
+                      </LinearGradientBrush.GradientStops>
+                    </LinearGradientBrush>
+                  </Setter.Value>
+                </Setter>
+                <Setter Property="Margin" Value="0,0,0,5"/>
+                <Setter Property="Template">
+                  <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ContentControl}">
+                      <Border Background="{TemplateBinding Background}" CornerRadius="10" BorderThickness="2" BorderBrush="Black"  >
+                        <Border.Effect>
+                          <DropShadowEffect
+                            BlurRadius="10"
+                            RenderingBias="Quality"
+                            ShadowDepth="2.5"
+                            Color="Gray" />
+                        </Border.Effect>
+                        <ContentPresenter >
+                        </ContentPresenter>
+                      </Border>
+                    </ControlTemplate>
+                  </Setter.Value>
+                </Setter>
+                <Style.Triggers>
+                  <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="Plum" />
+                  </Trigger>
+                  <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="LightGray" />
+                  </Trigger>
+                </Style.Triggers>
+              </Style>
+            </ListBox.ItemContainerStyle>
+          </ListBox>
+        </DockPanel>
+      </Border>
+    </Grid>
+  </Grid>
+</Window>

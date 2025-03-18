@@ -1,0 +1,298 @@
+﻿@using HaisyaWeb.Dto
+@model HaisyaWeb.Models.ReportModel.PDFReportModel
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>受注札</title>
+  <link href="~/lib/jquery-ui/dist/themes/base/jquery-ui.css" rel="stylesheet" />
+  <link href="~/lib/jquery-ui/dist/themes/base/theme.css" rel="stylesheet" />
+
+  <script src="~/lib/jquery/dist/jquery.js" charset="utf-8"></script>
+  <script src="~/lib/jquery-ui/dist/jquery-ui.js" charset="utf-8"></script>
+
+  <style>
+  @@media print {
+    body,html {
+        width: 1122px; /* A4 landscape */
+        height: 793px; /* A4 landscape */
+    }
+
+  }
+  *:where(:not(html, iframe, canvas, img, svg, video, audio):not(svg *, symbol *)) {
+    all: unset;
+    display: revert;
+  }
+  /* Preferred box-sizing value */
+  *, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  /* Reapply the pointer cursor for anchor tags */
+  a, button {
+    cursor: revert;
+  }
+  /* Remove list styles (bullets/numbers) */
+  ol, ul, menu {
+    list-style: none;
+  }
+  /* For images to not be able to exceed their container */
+  img {
+    max-width: 100%;
+  }
+  /* removes spacing between cells in tables */
+  table {
+    border-collapse: collapse;
+  }
+  /* Safari - solving issue when using user-select:none on the body text input doesn't working */
+  input, textarea {
+    -webkit-user-select: auto;
+  }
+  /* revert the 'white-space' property for textarea elements on Safari */
+  textarea {
+    white-space: revert;
+  }
+  /* minimum style to allow to style meter element */
+  meter {
+    -webkit-appearance: revert;
+    appearance: revert;
+  }
+    /* reset default text opacity of input placeholder */
+    meter::placeholder {
+    color: unset;
+    }
+    /* fix the feature of 'hidden' attribute.
+                           display:revert; revert to element instead of attribute */
+    meter:where([hidden]) {
+    display: none;
+    }
+    /* revert for bug in Chromium browsers
+                           - fix for the content editable attribute will work properly.
+                           - webkit-user-select: auto; added for Safari in case of using user-select:none on wrapper element*/
+    meter:where([contenteditable]:not([contenteditable="false"])) {
+    -moz-user-modify: read-write;
+    -webkit-user-modify: read-write;
+    overflow-wrap: break-word;
+    -webkit-line-break: after-white-space;
+    -webkit-user-select: auto;
+    }
+    /* apply back the draggable feature - exist only in Chromium and Safari */
+    meter:where([draggable="true"]) {
+    -webkit-user-drag: element;
+    }
+
+    @@charset "UTF-8";
+/* 受注札のCSS */
+@@page {
+  size: A4 landscape;
+  margin: 5mm;
+}
+.order-tag {
+  /* width: 297mm; */
+  font-family: "ＭＳ Ｐゴシック";
+  font-size: 13px;
+  letter-spacing: 1px;
+  /* backgound-colorの有効化 */
+  -webkit-print-color-adjust: exact;
+  /* 最後のページで改ページが入らないように制御 */
+}
+
+  .order-tag:last-child {
+    page-break-after: auto;
+  }
+
+  .order-tag .container {
+    margin: 0 auto;
+    overflow: hidden; /* Ensure the container clears floated children */
+  }
+
+    .order-tag .container .content {
+      width: 23%;
+      border: 1px solid #000;
+      white-space: nowrap;
+      overflow: hidden;
+      float: left; /* Float the content to enable wrapping */
+      margin-right: 25px; /* Add gap between items */
+      margin-bottom: 25px; /* Add gap between rows */
+    }
+
+      .order-tag .container .content .name {
+        font-size: 13px;
+        border-bottom: 1px solid #000;
+        font-weight: bold;
+        height: 50px;
+        display: block; /* Use block display for CSS2 compatibility */
+        line-height: 50px; /* Center text vertically */
+        white-space: normal;
+        overflow: hidden;
+      }
+
+      .order-tag .container .content .item {
+        display: block; /* Use block display for CSS2 compatibility */
+        font-size: 13px;
+        text-align: center;
+        border-bottom: 1px solid #000;
+        line-height: 40px; /* Center text vertically */
+            overflow: hidden;
+      }
+
+        .order-tag .container .content .item .title {
+          width: 28%;
+          float: left; /* Float title to the left */
+        }
+
+        .order-tag .container .content .item .text {
+          width: 72%;
+          height: 40px;
+          float: left;
+          border-left: 1px solid #000;
+          overflow: hidden;
+          line-height: 40px;
+          white-space: normal;
+        }
+
+      .order-tag .container .content .textarea {
+        width: 100%;
+        padding: 5px 5px 10px 5px;
+        box-sizing: border-box;
+        clear: both; /* Clear floats */
+      }
+
+        .order-tag .container .content .textarea .text {
+          font-size: 13px;
+          margin-bottom: 20px;
+        }
+
+        .order-tag .container .content .textarea .title {
+          font-size: 13px;
+          text-align: center;
+        }
+
+  .opacity {
+    opacity: 0;
+  }
+
+  .page-break {
+    page-break-after: always;
+  }
+
+  .clear{
+    clear: both;
+  }
+  </style>
+</head>
+<body class="order-tag">
+  <div class="opacity">
+  <div class="container">
+    @{
+      int i = 0;
+      int itemCount = Model.OrderTag.HaisyaDataList.Count;
+    }
+      @for (int j = 0; j < itemCount; j += 8)
+      {
+        <div class="page-break-container">
+          @for (int k = j; k < j + 8 && k < itemCount; k++)
+          {
+            var item = Model.OrderTag.HaisyaDataList[k];
+            i++;
+            <div class="content">
+              <div class="fixed-size-head">
+                <h2 class="name fixed-size">得意先 @(item.Customer_Name_Abbr) 御中</h2>
+              </div>
+              <div class="item">
+                <p class="title">積込月日</p>
+                <p class="text">@item.StartDatetime.ToString("MM月dd日")</p>
+              </div>
+              <div class="item fixed-size-start">
+                <p class="title">発地</p>
+                <p class="text fixed-size">@item.StartAddressDisplay3</p>
+              </div>
+              <div class="item fixed-size-end">
+                <p class="title">着地</p>
+                <p class="text fixed-size">@item.EndAddressDisplay3</p>
+              </div>
+              <div class="item">
+                <p class="title">車番</p>
+                <p class="text">@item.SYABAN</p>
+              </div>
+              <div class="item">
+                <p class="title">運転手</p>
+                <p class="text">@item.Driver_Name</p>
+              </div>
+              <div class="item">
+                <p class="title">高速代</p>
+                <p class="text"></p>
+              </div>
+              <div class="textarea">
+                <p class="text">(備考)</p>
+                <p class="title">今井運送株式会社</p>
+              </div>
+            </div>
+          }
+        </div>
+        @if (j + 8 < itemCount)
+        {
+          <div class="page-break clear"></div>
+        }
+      }
+  </div>
+  </div>
+  <script>
+    $(document).ready(function() {
+      $('.fixed-size').each(function() {
+        let $element=$(this);
+        let originalLineHeight=parseFloat($element.css('line-height'));
+        let maxHeight=$element.height();
+
+        while($element[0].scrollHeight>$element.outerHeight()&&originalLineHeight>1) {
+          originalLineHeight-=0.5;
+          $element.css('line-height',originalLineHeight+'px');
+        }
+      });
+
+      let html=$("html").html();
+      html=html.replace(/\.opacity/g,"._temp");
+      
+      const url='@Url.RouteUrl("Default", new { controller = "Report", Action = "CreatePdfOrderTag" })';
+
+      const blob = new Blob([html],{type: 'text/plain'});
+      const formData=new FormData();
+      formData.append('fileHtml',blob,'largeData.txt');
+      $.ajax({
+        url,
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        xhrFields: {
+          responseType: 'blob'
+        },
+        success: function(blob) {
+          const url=URL.createObjectURL(blob);
+
+          $("body").css("width","100%")
+          $("body").css("overflow","hidden");
+
+          const iframe=document.createElement("iframe");
+          iframe.src=url;
+          iframe.type="application/pdf";
+          iframe.style.width="100%";
+          iframe.style.height="100vh";
+          iframe.style.border="none";
+          document.body.appendChild(iframe);
+
+          $(".page").remove();
+          $("div").remove();
+
+          const endTime=new Date().getTime();
+          const totalTime=(endTime-startTime)/1000;
+          console.log(`Total time: ${totalTime}s`)
+        }
+      });
+    });
+
+  </script>
+</body>
+</html>

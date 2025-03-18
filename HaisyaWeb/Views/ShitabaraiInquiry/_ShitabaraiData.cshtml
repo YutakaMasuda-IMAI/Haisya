@@ -1,0 +1,24 @@
+﻿@model HaisyaWeb.Models.ShitabaraiCheckDataModel.ShitabaraiSummModel
+
+@Html.HiddenFor(m => m.View)
+@Html.HiddenFor(m => m.Confirm_message)
+@Html.HiddenFor(m => m.Description)
+@Html.HiddenFor(m => m.Select_day)
+@Html.HiddenFor(m => m.Select_shimebi)
+@Html.HiddenFor(m => m.Publish_day)
+@Html.HiddenFor(m => m.Shitabarai_day_to)
+@Html.HiddenFor(m => m.Selected_layout)
+
+<div id="shitabarai" style="visibility: hidden;">
+  @Html.HiddenFor(m => m.Shitabarai.Shime_Day)
+  @Html.HiddenFor(m => m.Shitabarai.Yosya_Name)
+  @Html.HiddenFor(m => m.Shitabarai.Mail_Address1)
+  @Html.HiddenFor(m => m.Shitabarai.Mail_Address2)
+  @Html.HiddenFor(m => m.Shitabarai.Yosya_Branch_ID)
+  @Html.HiddenFor(m => m.Shitabarai.Uriage_Shiharai_ID)
+  @Html.HiddenFor(m => m.Shitabarai.Uriage_Shiharai_ID_LIST)
+  @Html.HiddenFor(m => m.Shitabarai.Check_Shitabarai_ID)
+  @Html.HiddenFor(m => m.Shitabarai.Zei_Kubun)
+</div>
+
+<div id="shitabarai-list" style="visibility: hidden;"></div>

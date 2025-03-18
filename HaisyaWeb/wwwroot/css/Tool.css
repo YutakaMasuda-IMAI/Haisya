@@ -1,0 +1,31 @@
+﻿body {
+}
+
+
+table.ex_CodeDataList {
+    /*table-layout: fixed;*/
+}
+
+    table.ex_CodeDataList th {
+        /*font-size: 14px;*/
+        padding: 0.2rem 0.1rem 0.2rem 0.1rem;
+        vertical-align: middle;
+    }
+
+    table.ex_CodeDataList tr {
+    }
+
+    table.ex_CodeDataList td {
+        /*font-size: 14px;*/
+        padding: 0.2rem 0.2rem 0.2rem 0.3rem;
+        overflow: hidden;
+        color: black;
+    }
+
+    table.ex_CodeDataList tr:nth-child(odd) td {
+        background: #e7fbb5;
+    }
+
+
+
+

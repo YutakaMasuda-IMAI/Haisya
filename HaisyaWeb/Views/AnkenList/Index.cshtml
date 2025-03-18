@@ -1,0 +1,360 @@
+﻿@model HaisyaWeb.Models.AnkenModel.AnkenListModel
+@*
+  For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    Layout = "_Layout";
+    ViewData["Title"] = "案件一覧";
+}
+
+<head>
+  <link href="~/css/Anken.css" rel="stylesheet" />
+
+  <style>
+  </style>
+</head>
+
+<body class="container">
+  
+  <div id="hiddenItem" hidden>
+    @Html.HiddenFor(model => Model.Search.SelectTab)
+    @Html.HiddenFor(model => Model.Search.SelectGroup)
+    @Html.HiddenFor(model => Model.Search.SelectDay)
+    @Html.HiddenFor(model => Model.Search.BackMenuAction)
+    @Html.HiddenFor(model => model.SortParam.SortItemParam)
+    @Html.HiddenFor(model => model.SortParam.SortOrder)
+  </div>
+  <div>
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "Form2" }))
+    {
+    <div id="hedder" class="row" style="margin-bottom: -20px;">
+      <h6 class="heading-pagetitle">売上一覧</h6>
+      <div class="form-group" style="width: 100%">
+        <div class="row">
+          <table class="table jbc-table table-hedder" style="padding: 0; border-collapse: collapse; ">
+            <tbody>
+              <tr>
+                <th width="320px">
+                  <div class="appeal-box box" style="vertical-align: middle; display: inline-block; padding: 0;">
+                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="ChangeDay(-1)" onselectstart="return false;" alt="<<" tooltip="前日">＜＜</span>
+                    <input id="TargetDayLavel" type="text" readonly style="width: 200px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
+                    <input id="TargetDayInput" type="text" readonly style="width: 0px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
+                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="ChangeDay(1)" onselectstart="return false;" alt=">>" tooltip="翌日">＞＞</span>
+                  </div>
+                </th>
+                <th></th>
+                <th style="padding: 0;" width="450px">
+                  <div style="border: .1em solid #bbb; padding: 0; margin: 0 5px 0 5px; border-radius: 10px; ">
+                    <label style="color: #ff00dc; margin-left: 5px; ">グループ化　</label>
+                    <input type="radio" name="num_of_inq" value="0">なし　
+                    <input type="radio" name="num_of_inq" value="1">ｽﾃｰﾀｽ　
+                    <input type="radio" name="num_of_inq" value="2">進捗　
+                    <input type="radio" name="num_of_inq" value="3">車種　
+                    <input type="radio" name="num_of_inq" value="4">担当　
+                  </div>
+                </th>
+
+              </tr>
+            </tbody>
+          </table>
+          <button type="button" class="btn btn-secondary btn-sm" style="width: 100%; padding: 0;" data-bs-toggle="collapse" data-bs-target="#tblCollapseSearch" aria-expanded="false" aria-controls="tblCollapseSearch">▼詳細検索</button>
+          <table id="tblCollapseSearch" class="table jbc-table table-hedder collapse" style="padding: 0; border-collapse: collapse; ">
+            <tbody>
+              <tr>
+                <th style="width: 25%;">
+                  @Html.LabelFor(model => model.Search.SelectTantou, htmlAttributes: new { @class = "control-label align-self-center align-middle text-end", @style = "padding: 0;" })
+                  <div class="" style="display: inline-block; _display: inline; padding: 0; width: 70%;">
+                    @Html.DropDownListFor(model => model.Search.SelectTantou, new SelectList(Model.Search.TantouSelectList, "Value", "Text", "Selected"), "担当者を選択", new { @class = "form-control", @style = "padding: 0;" })
+                    @Html.ValidationMessageFor(model => model.Search.SelectTantou, "", new { id = "SelectTantou", @class = "text-danger align-middle" })
+                  </div>
+                </th>
+                <th style="width: 25%;">
+                  @Html.LabelFor(model => model.Search.SelectSyasyu, htmlAttributes: new { @class = "control-label align-self-center align-middle text-end", @style = "padding: 0;" })
+                  <div class="" style="display: inline-block; _display: inline; padding: 0; width: 80%;">
+                    @Html.DropDownListFor(model => model.Search.SelectSyasyu, new SelectList(Model.Search.SyasyuSelectList, "Value", "Text", "Selected"), "車種を選択", new { @class = "form-control", @style = "padding: 0;" })
+                    @Html.ValidationMessageFor(model => model.Search.SelectSyasyu, "", new { id = "SelectDriverKubun", @class = "text-danger align-middle" })
+                  </div>
+                </th>
+                <th style="width: 25%;">
+                  @Html.LabelFor(model => model.Search.SelectKata, htmlAttributes: new { @class = "control-label align-self-center align-middle text-end", @style = "padding: 0;" })
+                  <div class="2" style="display: inline-block; _display: inline; padding: 0; width: 80%;">
+                    @Html.DropDownListFor(model => model.Search.SelectKata, new SelectList(Model.Search.KataSelectList, "Value", "Text", "Selected"), "型を選択", new { @class = "form-control", @style = "padding: 0;" })
+                    @Html.ValidationMessageFor(model => model.Search.SelectKata, "", new { id = "SelectMonth", @class = "text-danger align-middle" })
+                  </div>
+                </th>
+              </tr>
+            </tbody>
+          </table>
+          <table class="table jbc-table table-hedder" width="100%" style="margin: 0; padding: 0;">
+            <tbody>
+              <tr style="height: 25px;">
+                <th style="width: 33%; padding: 1px 1rem;"><button class="btn btn-primary btn-sm" style="width: 100%; padding: 0;" onclick="submitAnkenAddNew(); return false;">新規登録</button></th>
+                <th style="width: 33%"></th>
+                <th style="width: 33%"></th>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+
+  <div id="AnkenList" style="margin-top: 20px;" >
+  </div>
+
+</body>
+
+
+<script>
+
+
+  const weeks = ["日", "月", "火", "水", "木", "金", "土"];
+
+  $(window).on('load', function () {
+
+    var selectDay = new Date($("#Search_SelectDay").val());
+
+    /** 日付を文字列にフォーマットする */
+    var disp = DayToString(selectDay);
+    $("#TargetDayLavel").val(disp);
+
+    $("#TargetDayInput").val($("#Search_SelectDay").val());
+
+    var radio = document.getElementsByName('num_of_inq');
+    for (let i = 0; i < radio.length; i++) {
+      if (radio.item(i).value == $("#Search_SelectGroup").val()) {
+        radio.item(i).checked = true;
+      }
+    }
+
+    ankenListDisplay();
+  });
+
+  $(function () {
+
+    $('input[name="num_of_inq"]:radio').change(function () {
+      ankenListDisplay();
+    });
+
+    $('#Search_SelectTantou').on('change', function () {
+      ankenListDisplay();
+    });
+
+    $('#Search_SelectSyasyu').on('change', function () {
+      ankenListDisplay();
+    });
+
+    $('#Search_SelectKata').on('change', function () {
+      ankenListDisplay();
+    });
+
+    $("#TargetDayInput").on('change', function () {
+      var val = $(this).val();
+      ChangeTargetDay();
+    });
+
+    $("#TargetDayInput").datepicker({
+      changeYear: true,
+      altField: '#Search_SelectDay',  // 入力結果の表示箇所
+      altFormat: "yy/mm/dd",  // 入力結果の表示方法 Dは曜日の省略形、DDは省略なし
+    });
+
+  });
+
+  /**
+ * 指定年月変更後処理
+ * */
+  function ChangeTargetDay() {
+
+    var val = $("#Search_SelectDay").val();
+    var dateVal = new Date(val);
+    var disp = DayToString(dateVal);
+    $("#TargetDayLavel").val(disp);
+
+    ankenListDisplay();
+
+  };
+
+  /**
+ * 指定抽出日の変更処理
+ * @@param move
+ */
+  function ChangeDay(move) {
+
+    var selectDay = new Date($("#Search_SelectDay").val());
+    var changeDay = new Date(selectDay.setDate(selectDay.getDate() + Number(move)));
+    $("#Search_SelectDay").val(formatDate(changeDay, "/"));
+    $("#TargetDayInput").val($("#Search_SelectDay").val());
+
+    ChangeTargetDay()
+
+  };
+
+  /**
+   * 
+   * @@param date
+   */
+  function formatDate(date) {
+    var yyyy = date.getFullYear();
+    var mm = ('00' + (date.getMonth() + 1)).slice(-2);
+    var dd = ('00' + date.getDate()).slice(-2);
+    const ymd = String(yyyy) + '/' + String(mm) + '/' + String(dd);
+    return ymd;
+  };
+
+  /**
+   * */
+  function ankenListDisplay() {
+
+    var selectTab = $('input[name="num_of_inq"]:checked').val();
+    $('#Search_SelectGroup').val(selectTab);
+
+    $.post('@Url.RouteUrl("Default", new { controller = "AnkenList", Action = "JsonGetDataList" })',
+      {
+        SelectDay: $('#Search_SelectDay').val(),
+        SelectTantou: $('#Search_SelectTantou').val(),
+        SelectSyasyu: $('#Search_SelectSyasyu').val(),
+        SelectKata: $('#Search_SelectKata').val(),
+        SelectGroup: $('#Search_SelectGroup').val(),
+        sortItemParam: $('#SortParam_SortItemParam').val(),
+        sortOrder: $('#SortParam_SortOrder').val(),
+      },
+      function (data) {
+        //alert(data.partialView);
+        $('#AnkenList').html(data.partialView);
+      }
+    );
+
+  }
+
+  /**
+   * 
+   * @@param name
+   */
+  function ankenListFirstSortChange(name) {
+
+    if (typeof name === "undefined") {
+      return;
+    }
+
+    var sortName = $("#SortParam_SortItemParam").val();
+    var sortOrder = $("#SortParam_SortOrder").val();
+
+    if (name != sortName) {
+      $("#SortParam_SortOrder").val("asc");
+    }
+    if (sortOrder.indexOf("desc") != -1) {
+      $("#SortParam_SortOrder").val("asc");
+    } else {
+      $("#SortParam_SortOrder").val("desc");
+    }
+
+    $("#SortParam_SortItemParam").val(name);
+
+
+    ankenListDisplay();
+
+
+  }
+
+  /**
+   * 
+   * @@param flgChecked
+   */
+  function ChangeALLCheckBoxChanged(flgChecked) {
+    $('input:checkbox[name="Target"]').each(function () {
+
+      if ($(this).parents('tr').children('td:nth-child(2)').first().text().trim() == 0) {
+        $(this).prop('checked', flgChecked);
+      }
+    });
+  };
+
+  /** */
+  function submitAnkenAddNew() {
+
+    //alert("submitAnkenAddNew");
+
+    var form = document.createElement('form');
+    form.action = '@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "Index" })';
+    form.method = 'POST';
+
+    //alert(form.action);
+
+    // body に追加
+    document.body.appendChild(form);
+
+    var html = '';
+    html += '            <input type="hidden" id="SelectDay" name="SelectDay" value="' + $('#Search_SelectDay').val() + '" />';
+    html += '            <input type="hidden" id="SelectTantou" name="SelectTantou" value="' + $('#Search_SelectTantou').val() + '" />';
+    html += '            <input type="hidden" id="SelectSyasyu" name="SelectSyasyu" value="' + $('#Search_SelectSyasyu').val() + '" />';
+    html += '            <input type="hidden" id="SelectKata" name="SelectKata" value="' + $('#Search_SelectKata').val() + '" />';
+    html += '            <input type="hidden" id="SelectGroup" name="SelectGroup" value="' + $('#Search_SelectGroup').val() + '" />';
+    html += '            <input type="hidden" id="BackMenuAction" name="BackMenuAction" value="' + $('#Search_BackMenuAction').val() + '" />';
+
+    form.innerHTML = html;
+    form.submit();
+  }
+
+  //function submitAnkenEdit(paramAnkenId) {
+
+
+  //}
+
+  function submitAnkenEdit(ankenid) {
+    //alert("submitAnkenEdit::" + ankenid);
+
+    var form = document.createElement('form');
+    form.action = '@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "Index" })';
+    form.method = 'POST';
+
+    //alert(form.action);
+
+    // body に追加
+    document.body.appendChild(form);
+
+    var html = '';
+    html += '            <input type="hidden" id="ankenId" name="ankenId" value="' + ankenid + '" />';
+    html += '            <input type="hidden" id="SelectDay" name="SelectDay" value="' + $('#Search_SelectDay').val() + '" />';
+    html += '            <input type="hidden" id="SelectTantou" name="SelectTantou" value="' + $('#Search_SelectTantou').val() + '" />';
+    html += '            <input type="hidden" id="SelectSyasyu" name="SelectSyasyu" value="' + $('#Search_SelectSyasyu').val() + '" />';
+    html += '            <input type="hidden" id="SelectKata" name="SelectKata" value="' + $('#Search_SelectKata').val() + '" />';
+    html += '            <input type="hidden" id="SelectGroup" name="SelectGroup" value="' + $('#Search_SelectGroup').val() + '" />';
+    html += '            <input type="hidden" id="BackMenuAction" name="BackMenuAction" value="' + $('#Search_BackMenuAction').val() + '" />';
+
+    form.innerHTML = html;
+    form.submit();
+
+  }
+
+  function submitPrintOrder(id) {
+    alert(id);
+  }
+
+  function backMenuForAnkenList() {
+
+    //alert("submitAnkenAddNew");
+
+    var form = document.createElement('form');
+    form.action = '@Url.RouteUrl("Default", new { controller = "AnkenList", Action = "Index" })';
+    form.method = 'POST';
+
+    //alert(form.action);
+
+    // body に追加
+    document.body.appendChild(form);
+
+    var html = '';
+    html += '            <input type="hidden" id="SelectDay" name="SelectDay" value="' + $('#Search_SelectDay').val() + '" />';
+    html += '            <input type="hidden" id="SelectTantou" name="SelectTantou" value="' + $('#Search_SelectTantou').val() + '" />';
+    html += '            <input type="hidden" id="SelectSyasyu" name="SelectSyasyu" value="' + $('#Search_SelectSyasyu').val() + '" />';
+    html += '            <input type="hidden" id="SelectKata" name="SelectKata" value="' + $('#Search_SelectKata').val() + '" />';
+    html += '            <input type="hidden" id="SelectGroup" name="SelectGroup" value="' + $('#Search_SelectGroup').val() + '" />';
+    html += '            <input type="hidden" id="BackMenuAction" name="BackMenuAction" value="' + $('#Search_BackMenuAction').val() + '" />';
+
+    form.innerHTML = html;
+    form.submit();
+  }
+
+</script>

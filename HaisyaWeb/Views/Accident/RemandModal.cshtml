@@ -1,0 +1,107 @@
+@model HaisyaWeb.Dto.RemandDataModel
+
+<style>
+  .flow-list{
+    background-color: #ffbfbf;
+  }
+
+</style>
+
+
+<div role="dialog" aria-hidden="true" tabindex="-1" class="modal fade">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-3">差戻しするユーザーを選択</h1>
+      </div>
+      <div class="modal-body" style="border:#000000 1px solid;">
+        <table style="width:460px;">
+          <tr>
+            <th>差戻し理由</th>
+          </tr>
+          <tr>
+            <td><textarea id="remandReason" name="remandReason" class="inputtable textareas" style="width:100%;"></textarea></td>
+          </tr>
+        </table>
+
+        <div class="table-div">
+          <table class="list" style="width: 100%">
+            <thead>
+              <tr>
+                <th class="flow-list" width="40px">選択</th>
+                <th class="flow-list" width="200px">ルート名</th>
+                <th class="flow-list">対象者</th>
+              </tr>
+            </thead>
+            <tbody id="RemandListModelTableBody">
+              @if (Model.RemandListModel != null)
+              {
+
+                @foreach (var item in Model.RemandListModel)
+                {
+                  <tr>
+                    <td align="center">
+                      <input type="radio" name="remandSelection" value="@item.Jiko_WorkFlow_ID" />
+                    </td>
+                    <td>@item.Route_Name</td>
+                    <td>@item.Display_Name</td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+        <div class="header-buttons" style="margin-top: 20px;">
+          <button class="btn btn-outline-warning" style="width:120px;" onclick="ModalClose(); return false;">キャンセル</button>
+          <button class="btn btn-outline-success" style="width:120px;float:right;" onclick="SubmitRemand(); return false;">登録</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function ModalClose() {
+    $('#ModalHere').find('.modal').modal('hide');
+    $('#ModalHere').html('');
+  }
+
+  function SubmitRemand() {
+    var selectedRadio = $('input[name="remandSelection"]:checked');
+    var remandReason = $('#remandReason').val();
+
+    if (!selectedRadio.length) {
+      alertInputError('差戻しの対象を選択してください。');
+      return;
+    }
+
+    if (!remandReason.trim()) {
+      alertInputError('差戻し理由を入力してください。');
+      return;
+    }
+
+    var jikoWorkFlowId = selectedRadio.val();
+    var Jiko_ID = @Html.Raw(Json.Serialize(Model.Jiko_ID));
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "Accident", action = "PostRemand" })',
+      type: 'POST',
+      data: {
+        Jiko_WorkFlow_ID: jikoWorkFlowId,
+        Reject_Reason: remandReason,
+        Jiko_WorkFlow_Status_ID: @Model.Jiko_WorkFlow_Status_ID,
+      },
+      success: function (response) {
+        console.log('送信成功:', response);
+        if (response.errorMessage != null) {
+          alertError(`【エラー】${response.errorMessage}`);
+        }
+        ModalClose();
+        CancelButton('SubmitRemand', Jiko_ID);
+        updateView();
+      },
+      error: function (xhr, status, error) {
+        console.error('送信エラー:', error);
+      },
+    });
+  }
+</script>

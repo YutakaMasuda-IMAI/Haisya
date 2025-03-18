@@ -1,0 +1,165 @@
+﻿<Window x:Class="HaisyaDesktop.View.Haisya.MapOnPosition"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:Wpf="clr-namespace:Microsoft.Web.WebView2.Wpf;assembly=Microsoft.Web.WebView2.Wpf" 
+        xmlns:local="clr-namespace:HaisyaDesktop.View.Haisya"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        Title="地図on荷物・車輌位置情報" MinHeight="800" MinWidth="1200" Loaded="Window_Loaded" Closing="Window_Closing">
+
+    <Window.Resources>
+        <Style x:Key="MenuButton" TargetType="Button">
+            <Setter Property="Margin" Value="3"/>
+            <Setter Property="FontSize" Value="18" />
+        </Style>
+        <Style x:Key="ListViewItemTextBlock" TargetType="TextBlock">
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0" />
+        </Style>
+        <Style x:Key="ListViewItemTextLabel" TargetType="Label">
+            <Setter Property="Margin" Value="0" />
+            <Setter Property="Padding" Value="0"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid x:Name="Main" Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0">
+            <DockPanel>
+                <Label Content="荷物・車輌位置情報" HorizontalContentAlignment="Center" FontSize="20" Margin="0"></Label>
+            </DockPanel>
+            
+        </Grid>
+
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="40" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <Button Grid.Column="0" Style="{StaticResource MenuButton}" Click="Button_Click" ></Button>
+                <Button Grid.Column="1" Style="{StaticResource MenuButton}" ></Button>
+                <Button Grid.Column="2" Style="{StaticResource MenuButton}" ></Button>
+                <Button Grid.Column="3" Style="{StaticResource MenuButton}" ></Button>
+                <Button Grid.Column="4" Style="{StaticResource MenuButton}" ></Button>
+                <Button Grid.Column="5" Name="Close" Style="{StaticResource MenuButton}" Click="Close_Click" ></Button>
+            </Grid>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="7*" />
+                    <ColumnDefinition Width="10" />
+                    <ColumnDefinition Width="3*" />
+                </Grid.ColumnDefinitions>
+
+                <GridSplitter Grid.Column="1" Background="Gray" HorizontalAlignment="Stretch" ></GridSplitter>
+
+                <Grid Grid.Column="0">
+          <Wpf:WebView2 x:Name="webView" Grid.Column="0"  Source="{Binding MapsApiForJSUrl.Value}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  />
+
+
+                </Grid>
+
+                <Grid Grid.Column="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="25"/>
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <Grid Grid.Row="0">
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Content="並替B" Margin="2" />
+                            <Button DockPanel.Dock="Right" Content="並替B" Margin="2" />
+                            <Button DockPanel.Dock="Right" Content="並替A" Margin="2" />
+                            <TextBlock DockPanel.Dock="Left" Text="案件一覧" FontSize="18" TextAlignment="Center" VerticalAlignment="Center" />
+                        </DockPanel>
+                    </Grid>
+                    <Grid Grid.Row="1" Background="Aqua">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                                <ColumnDefinition />
+                            </Grid.ColumnDefinitions>
+
+                            <Button Content="未割当" Grid.Column="0" Margin="2" />
+                            <Button Content="割当済" Grid.Column="1" Margin="2"  />
+                            <Button Content="全て" Grid.Column="2" Margin="2"  />
+                        </Grid>
+                        <DockPanel>
+                            
+                        </DockPanel>
+                    </Grid>
+
+                    <Grid Grid.Row="2" Background="CornflowerBlue">
+                        <ListView Name="AnkenListView" ItemsSource="{Binding AnkenInfoList}" Background="CornflowerBlue" SelectionChanged="AnkenListView_SelectionChanged">
+                            <ListView.ItemContainerStyle>
+                                <Style TargetType="ListViewItem">
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                </Style>
+                            </ListView.ItemContainerStyle>
+                            <ListView.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Name="AnkenListViewItemGrid" Background="LightGreen" >
+                                        <Border BorderThickness="1" BorderBrush="Black"/>
+                                        <DockPanel Margin="5">
+                                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+                                                <Label Content="依頼主：" Style="{StaticResource ListViewItemTextLabel}" />
+                                                <TextBlock Text="{Binding KokyakuName}" Style="{StaticResource ListViewItemTextBlock}" />
+                                            </StackPanel>
+                                            
+                                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" >
+                                                <Label Content="車種　：" Style="{StaticResource ListViewItemTextLabel}" />
+                                                <TextBlock Text="{Binding SyasyuDisplay}" Style="{StaticResource ListViewItemTextBlock}" />
+                                                <TextBlock Text="{Binding Daisuu, StringFormat={}{0}台}" Margin="10,0,0,0" Style="{StaticResource ListViewItemTextBlock}" />
+                                                <TextBlock Text="{Binding Products}" DockPanel.Dock="Top" Style="{StaticResource ListViewItemTextBlock}" Margin="10,0,0,0" />
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" >
+                                                <Label Content="積時間：" Style="{StaticResource ListViewItemTextLabel}" />
+                                                <TextBlock Text="{Binding OroshiDate, StringFormat=HH:mm}" Style="{StaticResource ListViewItemTextBlock}" />
+                                                <Label Content="卸日時：" Style="{StaticResource ListViewItemTextLabel}" Margin="20,0,0,0" />
+                                                <TextBlock Text="{Binding OroshiDate, StringFormat=MM月dd日 HH:mm}" Style="{StaticResource ListViewItemTextBlock}" />
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top">
+                                                <Label Content="施設名：" Style="{StaticResource ListViewItemTextLabel}" />
+                                                <TextBlock Text="{Binding TsumiFacilityName}" Style="{StaticResource ListViewItemTextBlock}"  />
+                                            </StackPanel>
+                                            
+                                            <TextBlock Text="{Binding TsumiAddress}" DockPanel.Dock="Top" Style="{StaticResource ListViewItemTextBlock}"  />
+                                        </DockPanel>
+                                    </Grid>
+                                </DataTemplate>
+                            </ListView.ItemTemplate>
+                        </ListView>
+                        
+                        
+                        
+                    </Grid>
+
+                </Grid>
+
+            </Grid>
+            
+        </Grid>
+
+    </Grid>
+    
+    
+</Window>

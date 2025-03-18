@@ -1,0 +1,105 @@
+﻿@model HaisyaWeb.Models.CustomerTruckmeteListDataDto
+
+
+<style>
+
+</style>
+
+
+<div hidden>
+  
+</div>
+
+@if (Model.TokuisakiForNotConnectList.Count() == 0)
+{
+  <div style="width: 100%; background: #3366CC ">
+    <h4 style="text-align:left; margin-left: 20px;color: white;">データ無し</h4>
+  </div>
+}
+
+
+<table id="myTable" class="ex_table-tokuisaki table-bordered border-info" width="100%" border="1" >
+  <thead style="background-color: chartreuse;  ">
+    <tr align="center">
+      <th class="ex-table-th" rowspan="2" style="vertical-align: middle;">選択</th>
+      <th class="ex-table-th" rowspan="2">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('コード')" style="">顧客<br />コード</a>
+      </th>
+      <th class="ex-table-th" colspan="2">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('社名')" style="">社名</a>
+      </th>
+      <th class="ex-table-th">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('検索カナ')" style="">検索カナ</a>
+      </th>
+      <th class="ex-table-th" colspan="2">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('略称')" style="">略称</a>
+      </th>
+    </tr>
+    <tr align="center">
+      <th class="ex-table-th">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('郵便番号')" style="">郵便番号</a>
+      </th>
+      <th class="ex-table-th">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('住所１')" style="">住所１</a>
+      </th>
+      <th class="ex-table-th">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('住所２')" style="">住所２</a>
+      </th>
+      <th class="ex-table-th">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('電話番号')" style="">電話番号</a>
+      </th>
+      <th class="ex-table-th">
+        <a data-koumoku="Kubun_Sort" href="#" onclick="ankenListFirstSortChange('FAX番号')" style="">FAX番号</a>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    @{ 
+        int i = 1;
+    }
+    @foreach (var item in Model.TokuisakiForNotConnectList.OrderBy(m => m.コード).ToList())
+    {
+      int rem;
+      int div = Math.DivRem(i, 2, out rem);
+      string color = rem == 0 ? "khaki" : "	whitesmoke";
+      <tr style="font-size: 12px; font-weight: bold; background-color: @(color); height: 20px;">
+        <td width="50px" rowspan="2" style="vertical-align: middle;">
+          <button class="btn btn-success" style="width: 100%; padding:0;" onclick="submitData('@(item.コード)'); return false;">選択</button>
+        </td>
+        <td width="30px" rowspan="2" style="vertical-align: middle;" align="center">
+          @Html.DisplayFor(modelItem => item.コード)
+        </td>
+        <td width="180px" colspan="2">
+          @Html.DisplayFor(modelItem => item.社名)
+        </td>
+        <td width="100px" >
+          @Html.DisplayFor(modelItem => item.検索カナ)
+        </td>
+        <td width="150px" colspan="2">
+          @Html.DisplayFor(modelItem => item.略称)
+        </td>
+      </tr>
+      <tr style="font-size: 12px; font-weight: bold; background-color: @(color); height: 20px;">
+        <td width="50px">
+          @Html.DisplayFor(modelItem => item.郵便番号)
+        </td>
+        <td width="150px">
+          @Html.DisplayFor(modelItem => item.住所１)
+        </td>
+        <td width="150px">
+          @Html.DisplayFor(modelItem => item.住所２)
+        </td>
+        <td width="70px">
+          @Html.DisplayFor(modelItem => item.電話番号)
+        </td>
+        <td width="70px">
+          @Html.DisplayFor(modelItem => item.FAX番号)
+        </td>
+      </tr>
+      i++;
+    }
+  </tbody>
+</table>
+
+
+

@@ -1,0 +1,692 @@
+@model DailyReportModel.DailyReportRegistrationDetailModel
+
+<head>
+  <meta charset="UTF-8">
+  <style>
+  </style>
+</head>
+
+
+<div style="padding:5px 10px 5px 15px;">
+  <div hidden>
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => Model.HighwayData)
+    @Html.TextBoxFor(model => Model.ExecType)
+    @Html.TextBoxFor(model => Model.Syasyu)
+    @Html.TextBoxFor(model => Model.SyasyuSize)
+    @Html.TextBoxFor(model => Model.Kata)
+    @Html.TextBoxFor(model => Model.Width)
+    @Html.TextBoxFor(model => Model.Weight)
+    @Html.TextBoxFor(model => Model.Company_ID)
+    @Html.TextBoxFor(model => Model.Nenpi)
+    @Html.TextBoxFor(model => Model.Regulation)
+    @Html.TextBoxFor(model => Model.Twouturn)
+    @Html.TextBoxFor(model => Model.Ferry)
+    @Html.TextBoxFor(model => Model.Area)
+    @Html.TextBoxFor(model => Model.TsumiTaskTime)
+    @Html.TextBoxFor(model => Model.OroshiTaskTime)
+    @Html.TextBoxFor(model => Model.PageType)
+    <input hidden id="SetAddressItem" />
+    @Html.TextBoxFor(model => Model.Nippou_Stay.Start_Datetime)
+    @Html.TextBoxFor(model => Model.Nippou_Stay.End_Datetime)
+    @Html.TextBoxFor(model => Model.Nippou_Stay.Start_ShikuName)
+    @Html.TextBoxFor(model => Model.Nippou_Stay.End_ShikuName)
+    @Html.TextBoxFor(model => Model.Nippou_Stay.Interval_Time)
+    @Html.TextBoxFor(model => Model.Nippou_Stay.Dllowance)
+    @Html.TextBoxFor(model => Model.Nippou_Stay.Day)
+    @Html.TextBoxFor(model => Model.NippouStayDegitakoIdList)
+    @Html.TextBoxFor(model => Model.Nippou_Kaiso.Start_Datetime)
+    @Html.TextBoxFor(model => Model.Nippou_Kaiso.End_Datetime)
+    @Html.TextBoxFor(model => Model.Nippou_Kaiso.Start_ShikuName)
+    @Html.TextBoxFor(model => Model.Nippou_Kaiso.End_ShikuName)
+    @Html.TextBoxFor(model => Model.Nippou_Kaiso.Distance)
+    @Html.TextBoxFor(model => Model.Nippou_Kaiso.Dllowance)
+    @Html.TextBoxFor(model => Model.Nippou_Kaiso.Commnet)
+    @Html.TextBoxFor(model => Model.Nippou_Kaiso.Day)
+    @Html.HiddenFor(model => Model.NippouKaisoDegitakoIdList)
+    @Html.HiddenFor(model => Model.KUDGSIRIdList)
+    @Html.HiddenFor(model => Model.SelectDay)
+    @Html.HiddenFor(model => Model.Anken_ID)
+    @Html.HiddenFor(model => Model.AnkenDisplay_ID)
+    @Html.HiddenFor(model => Model.SyabanNumber)
+    @Html.HiddenFor(model => Model.DisplayName)
+    @Html.HiddenFor(Model => Model.Search.SingleSwitch)
+    @Html.HiddenFor(Model => Model.Search.SelectEndDay)
+    @Html.HiddenFor(Model => Model.Search.KokyakuId)
+    @Html.HiddenFor(Model => Model.Search.KokyakuName)
+    @Html.HiddenFor(Model => Model.Search.SelectTantou)
+    @Html.HiddenFor(Model => Model.Search.SelectFilter)
+    @Html.HiddenFor(Model => Model.Search.SelectSeikyuTantou)
+    @Html.HiddenFor(Model => Model.Search.SelectGroup)
+    @Html.HiddenFor(Model => Model.Search.IsCollapse)
+    @Html.HiddenFor(Model => Model.Search.SelectTokuisakiID)
+  </div>
+
+  <div class="anken-detail">
+    <div class="header" style="">
+      <div>
+        <h3 id="labelTitle" class="heading-40" style="width: 300px;">運転日報登録修正</h3>
+      </div>
+      <div align="center">
+        <button class="btn btn-outline-info" style="width: 200px;" onclick="submitAnkenEdit()">案件修正</button>
+      </div>
+      <div align="right">
+        <button class="btn btn-outline-warning" style="width:200px;" onclick="btnCloseOnClick(); return false;">閉じる</button>
+      </div>
+    </div>
+    <div class="data-container">
+      <span class="data-label" style="width:160px;">案件名（工事名）</span>
+      <span class="data-content" style="width:700px;">@Html.DisplayFor(model => model.HaisyaDataList.Work_Name)</span>
+    </div>
+    <div class="data-container">
+      <span class="data-label" style="width:60px;">荷主</span>
+      <span class="data-content" style="width:200px;">@Html.DisplayFor(model => model.HaisyaDataList.Customer_Name_Abbr)</span>
+      <span class="data-label" style="width:60px;">荷物</span>
+      <span class="data-content" style="width:200px;">@Html.DisplayFor(model => model.HaisyaDataList.LuggageDisplay)</span>
+      <span class="data-label" style="width:60px;">台数</span>
+      <span class="data-content" style="width:50px;">@Html.DisplayFor(model => model.HaisyaDataList.Daisuu)</span>
+      <span class="data-label" style="width:60px;">運送</span>
+      @{
+        string haisyaKubun = Model.HaisyaDataList?.Haisya_Kubun switch
+        {
+          1 => "自車",
+          2 => "傭車",
+          3 => "専属傭車",
+          4 => "自車専属",
+          5 => "自車専任",
+          _ => ""
+        };
+      }
+      <span class="data-content" style="width:100px;">@haisyaKubun</span>
+      <span class="data-label" style="width:60px;">車番</span>
+      <span class="data-content" style="width:80px;">@Html.DisplayFor(model => model.SyabanNumber)</span>
+      <span class="data-label" style="width:80px;">乗務員</span>
+      <span class="data-content" style="width:120px;">@Html.DisplayFor(model => model.DisplayName)</span>
+    </div>
+    <div class="data-container">
+      <span class="data-label" style="width:60px;">積み</span>
+      <span class="data-content" style="width:500px;">@Html.DisplayFor(model => model.HaisyaDataList.StartAddressDisplay3)</span>
+      <span class="data-label" style="width:60px;">卸し</span>
+      <span class="data-content" style="width:500px;">@Html.DisplayFor(model => model.HaisyaDataList.EndAddressDisplay3)</span>
+    </div>
+  </div>
+  <button type="button" class="btn btn-primary btn-sm" style="width: 100%; padding: 0;" data-bs-toggle="collapse" data-bs-target="#tblCollapseInfo" aria-expanded="false" aria-controls="tblCollapseInfo">
+    <div style="padding: 0rem 2rem;"><span class="size17" style="float:left;">インフォメーション</span><span style="float:right;">▼</span></div>
+  </button>
+  <div id="tblCollapseInfo" class="container collapse show" style="padding: 5px; border-collapse: collapse; border: 1px solid #cccccc;">
+    <div style="" class="row">
+      <div class="col-sm-6" style="">
+        <div>
+          <div class="heading-21" style="font-weight: bold;">日報請求特記事項</div>
+          <div style="border: 1px solid #000000; width: 100%; height: 100px; padding: 5px; overflow: auto; ">
+            @Html.DisplayFor(model => model.SeikyuRemarks)
+          </div>
+        </div>
+        <div>
+          <div class="heading-21" style="font-weight: bold;">高速請求情報</div>
+          <div class="detail-list">
+            <table class="table table-HaisyaWeb">
+              <thead class="table-light">
+                <tr>
+                  <th>請求タイプ</th>
+                  <th>内容</th>
+                </tr>
+              </thead>
+              <tbody>
+                @if (Model.TollSeikyuKubun != null && Model.TollSeikyuKubun.Any())
+                {
+                  foreach (var item in Model.TollSeikyuKubun)
+                  {
+                    string seikyuKubunText = item.SeikyuKubun switch
+                    {
+                      1 => "自己負担",
+                      2 => "荷主負担",
+                      3 => "会社負担",
+                      _ => ""
+                    };
+                    string seikyuTypeText = item.Seikyu_Type switch
+                    {
+                      1 => "距離",
+                      2 => "住所",
+                      _ => ""
+                    };
+                    <tr>
+                      <td>
+                        @seikyuTypeText
+                      </td>
+                      <td>
+                        @{
+                          if (seikyuTypeText == "距離")
+                          {
+                            @($"{item.Distance1}km 〜 {item.Distance2}km　まで　{seikyuKubunText}")
+                          }
+                          else if (seikyuTypeText == "住所")
+                          {
+                            @($"{item.Address1}km 〜 {item.Address2}km　まで　{seikyuKubunText}")
+                          }
+                          else
+                          {
+                            @: -
+                          }
+                        }
+                      </td>
+                    </tr>
+                  }
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-6" style="">
+        <div class="heading-21" style="font-weight: bold;">案件登録情報</div>
+        <div class="detail-list table-HaisyaWeb">
+          <table class="table" style="empty-cells: show;">
+            <thead class="table-light">
+              <tr>
+                <th>ルート</th>
+                <th width="15%">所要時間</th>
+                <th width="15%">距離</th>
+                <th width="15%">有料道路</th>
+                <th width="15%">見積原価</th>
+                <th width="15%">標準運賃</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td align="center">@Html.DisplayFor(model => model.AnkenDetail.RouteTypeDisplay)&nbsp;</td>
+                <td align="center">@Html.DisplayFor(model => model.AnkenDetail.Route_TotalTime)</td>
+                <td align="right">@Html.DisplayFor(model => model.AnkenDetail.Route_TotalDistance)km</td>
+                <td align="right">@String.Format("{0:N0}", Model.AnkenDetail.Route_Totaltoll)</td>
+                <td align="right">@String.Format("{0:N0}", Model.AnkenDetail.Route_GrossAmountTotal)</td>
+                <td align="right">@String.Format("{0:N0}", Model.AnkenDetail.Route_StdALLFreight)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="detail-list table-HaisyaWeb">
+          <table class="table">
+            <thead class="table-light">
+              <tr>
+                <th rowspan="2">運賃区分</th>
+                <th rowspan="2">基本運賃</th>
+                <th rowspan="2">追加費用</th>
+                <th rowspan="2">有料道路</th>
+                <th rowspan="2" style="color:#ff0000;">値引額</th>
+                <th rowspan="2">請求運賃</th>
+                <th colspan="2">荷待ち時間</th>
+              </tr>
+              <tr>
+                <th>積み時間</th>
+                <th>卸し時間</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="text-align:center;">
+                  @{
+                    string seikyuKubun = Model.AnkenDetail.SeikyuKubun switch
+                    {
+                      0 => "確定運賃",
+                      1 => "暫定運賃",
+                      _ => ""
+                    };
+                  }
+                  @seikyuKubun
+                </td>
+                <td style="text-align:right;">@String.Format("{0:N0}", Model.AnkenDetail.BaseFee)</td>
+                <td style="text-align:right;">@String.Format("{0:N0}", Model.AnkenDetail.ExtraCharge)</td>
+                <td style="text-align:right;">@String.Format("{0:N0}", Model.AnkenDetail.Toll)</td>
+                <td style="text-align: right; color: #ff0000;">@String.Format("{0:N0}", Model.AnkenDetail.Discount)</td>
+                <td style="text-align:right;">@String.Format("{0:N0}", Model.AnkenDetail.GrossAmount)</td>
+                <td style="text-align:center;">@Html.DisplayFor(model => model.AnkenDetail.TsumiTaskTime)</td>
+                <td style="text-align:center;">@Html.DisplayFor(model => model.AnkenDetail.OroshiTaskTime)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="detail-list">
+          <table class="table table-HaisyaWeb" style="empty-cells: show;">
+            <thead class="table-light">
+              <tr>
+                <th width="15%">開始日時</th>
+                <th width="10%">開始区分</th>
+                <th width="15%">終了日時</th>
+                <th width="10%">終了区分</th>
+                <th width="30%">区間</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td align="center">@Convert.ToDateTime(Model.AnkenDisplay.StartDatetime).ToString("yy/MM/dd HH:mm")</td>
+                <td align="center">@(Model.PointKubunCode.FirstOrDefault(m => m.Code_Data == Model.AnkenDisplay.Start_Point_Kubun.ToString()).Code_Name)</td>
+                <td align="center">@Convert.ToDateTime(Model.AnkenDisplay.EndDatetime).ToString("yy/MM/dd HH:mm")</td>
+                <td align="center">@(Model.PointKubunCode.FirstOrDefault(m => m.Code_Data == Model.AnkenDisplay.End_Point_Kubun.ToString()).Code_Name)</td>
+                <td align="center">@(Model.AnkenDisplay.Display2)</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </div>
+  <br />
+
+  @await Html.PartialAsync("DailyReportRegistrationDetail_Anken", Model)
+
+  <br />
+  <div style="width: 100%;">
+    <div class="row">
+      <div class="col-sm-6">
+        <button class="btn btn-outline-primary" onclick="btnOnClickForRegAnkenData(); return false;" style="width:90%;">上記ルート情報を登録して日報情報を表示</button>
+      </div>
+      <div class="col-sm-6">
+        <button class="btn btn-outline-danger" onclick="btnOnClickForNoRegAnkenData(); return false;" style="width:90%;">登録しないで日報情報を表示</button>
+      </div>
+    </div>
+  </div>
+  <div id="divDaileReortDetail_Nippou" style="width: 100%"></div>
+</div>
+
+<script>
+  if (typeof NippouToll === 'undefined') {
+    var NippouToll = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouToll))') || [];
+  } else {
+    NippouToll = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouToll))') || [];
+  }
+  if (typeof OtherPaidData === 'undefined') {
+    var OtherPaidData = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouTollOther))') || [];
+  } else {
+    OtherPaidData = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouTollOther))') || [];
+  }
+  var NippouApproval = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouApproval))');
+  var NippouStay = JSON.parse('@Html.Raw(Json.Serialize(Model.Nippou_Stay))');
+  var NippouKaiso = JSON.parse('@Html.Raw(Json.Serialize(Model.Nippou_Kaiso))');
+  var NippouStayDegitakoIdList = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouStayDegitakoIdList))') || [];
+  var NippouKaisoDegitakoIdList = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouKaisoDegitakoIdList))') || [];
+  var InitialDisplayNippouTollOther = JSON.parse('@Html.Raw(Json.Serialize(Model.InitialDisplayNippouTollOther))') || [];
+  var InitialDisplayNippouToll = JSON.parse('@Html.Raw(Json.Serialize(Model.InitialDisplayNippouToll))') || [];
+  var HighwayData = JSON.parse('@Html.Raw(Json.Serialize(Model.HighwayData))') || [];
+
+  function btnOnClickForNoRegAnkenData() {
+    DailyReportRegistrationDetailNippouDisplay($('#AnkenDisplay_ID').val());
+    return false;
+  }
+
+  async function submitAnkenEdit() {
+    var modelUriage_ID = @Html.Raw(Json.Serialize(Model.Uriage?.Uriage_ID ?? 0));
+    var form = document.createElement('form');
+    form.action = '@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "Index" })';
+    form.method = 'POST';
+
+    // body に追加
+    document.body.appendChild(form);
+
+    var html = '';
+    html += '      <input type="hidden" id="ankenId" name="ankenId" value="' + Anken_ID + '" />';
+
+    form.innerHTML = html;
+    form.submit();
+  }
+
+  function btnOnClickForRegAnkenData() {
+    if (varidationCheckForAnken()) {
+      return false;
+    }
+
+    //Formの参照を取る
+    var $form = $('#frmAnken');
+
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "AnkenPointRegExec" })',
+      type: 'post',
+      data: $form.serialize(),
+    }).done(function (response) {
+      if (response.errorMessage != null) {
+        alertInputError("【エラー】" + response.errorMessage);
+        return false;
+      } else {
+        DailyReportRegistrationDetailNippouDisplay($('#AnkenDisplay_ID').val());
+        return false;
+      }
+    }).fail(function (xhr) {
+      alertInputError('【ネットワークエラー】:' + xhr);
+      console.log(xhr);
+      return false;
+    }).always(function (xhr, msg) {
+      console.log(xhr, msg);
+    });
+
+    return false;
+  }
+
+  function varidationCheckForAnken() {
+
+    let flgResult = false;
+    let text = document.querySelectorAll(".pointInputCheck");
+
+    text.forEach(function (inputObj) {
+      let inputObjID = inputObj.id.substring(0, inputObj.id.indexOf('__')) + '__Address';
+      let doc = document.getElementById(inputObjID);
+      if (!(doc.value != null && doc.value.length > 0)) {
+        alertInputError("ルート場所が指定されていません");
+        doc.style.backgroundColor = 'lightcoral'
+        flgResult = true;
+        return;
+      } else {
+        doc.style.backgroundColor = 'white'
+      }
+
+      inputObjID = inputObj.id.substring(0, inputObj.id.indexOf('__')) + '__Kubun';
+      doc = document.getElementById(inputObjID);
+      if (!(doc.value != null && doc.value.length > 0)) {
+        alertInputError("積み卸しが選択されていません");
+        doc.style.backgroundColor = 'lightcoral'
+        flgResult = true;
+        return;
+      } else {
+        doc.style.backgroundColor = 'white'
+      }
+
+    });
+
+    if (flgResult) { return true; }
+
+    return false;
+  }
+
+  async function btnCloseOnClick() {
+    BackMenuOnClick();
+    return false;
+  };
+
+  function BackMenuOnClick() {
+    let form = document.createElement('form');
+    form.id = "formBackMenu";
+
+
+    form.action = '@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "Index" })';
+    form.method = 'POST';
+
+    // body に追加
+    document.body.appendChild(form);
+
+    let html = '';
+    html += '      <input type="hidden" id="SelectDay" name="SelectDay" value="' + $('#SelectDay').val() + '" />';
+    html += '      <input type="hidden" id="SelectEndDay" name="SelectEndDay" value="' + $('#Search_SelectEndDay').val() + '" />';
+    html += '      <input type="hidden" id="SelectTokuisakiID" name="SelectTokuisakiID" value="' + $('#Search_SelectTokuisakiID').val() + '" />';
+    html += '      <input type="hidden" id="SelectTantou" name="SelectTantou" value="' + $('#Search_SelectTantou').val() + '" />';
+    html += '      <input type="hidden" id="SelectSeikyuTantou" name="SelectSeikyuTantou" value="' + $('#Search_SelectSeikyuTantou').val() + '" />';
+    html += '      <input type="hidden" id="SelectKata" name="SelectFilter" value="' + $('#Search_SelectFilter').val() + '" />';
+    html += '      <input type="hidden" id="SelectGroup" name="SelectGroup" value="' + $('#Search_SelectGroup').val() + '" />';
+    html += '      <input type="hidden" id="Kokyaku_ID" name="KokyakuID" value="' + $('#Search_KokyakuId').val() + '" />';
+    html += '      <input type="hidden" id="Kokyaku_Name" name="KokyakuName" value="' + $('#Search_KokyakuName').val() + '" />';
+    html += '      <input type="hidden" id="SingleSwitch" name="SingleSwitch" value="' + $('#Search_SingleSwitch').val() + '" />';
+    html += '      <input type="hidden" id="IsCollapse" name="IsCollapse" value="' + $('#Search_IsCollapse').val() + '" />';
+    form.innerHTML = html;
+    form.submit();
+  };
+
+  // 変更内容があるかどうかのデータチェック
+  function DataCheck() {
+    let nippouKaisoDegitakoIdList = $('#NippouKaisoDegitakoIdList').val() || [];
+    if (!Array.isArray(nippouKaisoDegitakoIdList)) {
+      nippouKaisoDegitakoIdList = [nippouKaisoDegitakoIdList];
+    }
+
+    const nippouKaisoDegitakoIdListInt = nippouKaisoDegitakoIdList
+      .map(function (item) {
+        return parseInt(item, 10);
+      })
+      .filter(function (item) {
+        return !isNaN(item);
+      });
+
+    let nippouStayDegitakoIdList = $('#NippouStayDegitakoIdList').val() || [];
+    if (!Array.isArray(nippouStayDegitakoIdList)) {
+      nippouStayDegitakoIdList = [nippouStayDegitakoIdList];
+    }
+
+    const nippouStayDegitakoIdListInt = nippouStayDegitakoIdList
+      .map(function (item) {
+        return parseInt(item, 10);
+      })
+      .filter(function (item) {
+        return !isNaN(item);
+      });
+    const isStayIdListEqual = compareArrays(NippouStayDegitakoIdList, nippouStayDegitakoIdListInt);
+
+    if (!isStayIdListEqual) {
+      return false;
+    }
+
+    const isKaisoIdListEqual = compareArrays(NippouKaisoDegitakoIdList, nippouKaisoDegitakoIdListInt);
+
+    if (!isKaisoIdListEqual) {
+      return false;
+    }
+    // 泊まり設定の比較
+    if ((NippouStay != null ? (NippouStay.start_Datetime || '') : '') !== $('#Nippou_Stay_Start_Datetime').val()) return false;
+    if ((NippouStay != null ? (NippouStay.end_Datetime || '') : '') !== $('#Nippou_Stay_End_Datetime').val()) return false;
+    if ((NippouStay != null ? (NippouStay.start_ShikuName || '') : '') !== $('#Nippou_Stay_Start_ShikuName').val()) return false;
+    if ((NippouStay != null ? (NippouStay.end_ShikuName || '') : '') !== $('#Nippou_Stay_End_ShikuName').val()) return false;
+
+    const formIntervalTime = $('#Nippou_Stay_Interval_Time').val();
+    const formDllowance = parseFloat($('#Nippou_Stay_Dllowance').val() || 0);
+    if (NippouStay != null){
+      if ((NippouStay.interval_Time === null && formIntervalTime !== '') ||
+      (NippouStay.interval_Time !== null && parseInt(formIntervalTime) !== NippouStay.interval_Time)) {
+        return false;
+      }
+      if (NippouStay.dllowance !== formDllowance) return false;
+    }
+    else{
+      if (formIntervalTime !== ''){
+        return false;
+      }
+      if ($('#Nippou_Stay_Dllowance').val() !== ''){
+        return false;
+      }
+    }
+    // 空車回送設定の比較
+    if ((NippouKaiso != null ? (NippouKaiso.start_Datetime || '') : '') !== $('#Nippou_Kaiso_Start_Datetime').val()) return false;
+    if ((NippouKaiso != null ? (NippouKaiso.end_Datetime || '') : '') !== $('#Nippou_Kaiso_End_Datetime').val()) return false;
+    if ((NippouKaiso != null ? (NippouKaiso.start_ShikuName || '') : '') !== $('#Nippou_Kaiso_Start_ShikuName').val()) return false;
+    if ((NippouKaiso != null ? (NippouKaiso.end_ShikuName || '') : '') !== $('#Nippou_Kaiso_End_ShikuName').val()) return false;
+    if ((NippouKaiso != null ? (NippouKaiso.commnet || '') : '') !== $('#Nippou_Kaiso_Commnet').val()) return false;
+
+    // distanceの比較
+    const formDistance = $('#Nippou_Kaiso_Distance').val();
+    if (NippouKaiso != null){
+      if ((NippouKaiso.distance === null && formDistance !== '') ||
+         (NippouKaiso.distance !== null && parseInt(formDistance) !== NippouKaiso.distance)) {
+        return false;
+      }
+      const formKaisoDllowance = parseFloat($('#Nippou_Kaiso_Dllowance').val() || 0);
+      if (NippouKaiso.dllowance !== formKaisoDllowance) return false;
+    } else{
+      if (formDistance !== ''){
+        return false;
+      }
+      if ($('#Nippou_Kaiso_Dllowance').val() !== ''){
+        return false;
+      }
+    }
+    
+    // dllowanceの比較
+    if (!compareLists(NippouToll, InitialDisplayNippouToll)) {
+      return false;
+    }
+
+    // その他有料代の比較
+    if (!compareLists(OtherPaidData, InitialDisplayNippouTollOther)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  function compareArrays(arr1, arr2) {
+    if (arr1.length !== arr2.length) {
+      return false;
+    }
+
+    // 配列をソートしてから比較
+    const sortedArr1 = [...arr1].sort();
+    const sortedArr2 = [...arr2].sort();
+
+    for (let i = 0; i < sortedArr1.length; i++) {
+      if (sortedArr1[i] !== sortedArr2[i]) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  function compareObjects(obj1, obj2) {
+    return obj1.Toll_Kubun === obj2.Toll_Kubun &&
+      obj1.Start_Name === obj2.Start_Name &&
+      obj1.End_Name === obj2.End_Name &&
+      obj1.Toll_Fee === obj2.Toll_Fee;
+  }
+
+  function compareLists(list1, list2) {
+    if (list1.length !== list2.length) return false;
+    for (let i = 0; i < list1.length; i++) {
+      if (!compareObjects(list1[i], list2[i])) return false;
+    }
+    return true;
+  }
+
+  function ProvisionalRegistration(ApprovalStatus = 0) {
+    event.preventDefault();
+
+    let nippouKaisoDegitakoIdList = $('#NippouKaisoDegitakoIdList').val() || [];
+    if (!Array.isArray(nippouKaisoDegitakoIdList)) {
+      nippouKaisoDegitakoIdList = [nippouKaisoDegitakoIdList];
+    }
+
+    const nippouKaisoDegitakoIdListInt = nippouKaisoDegitakoIdList
+      .map(function (item) {
+        return parseInt(item, 10);
+      })
+      .filter(function (item) {
+        return !isNaN(item);
+      });
+
+    let nippouStayDegitakoIdList = $('#NippouStayDegitakoIdList').val() || [];
+    if (!Array.isArray(nippouStayDegitakoIdList)) {
+      nippouStayDegitakoIdList = [nippouStayDegitakoIdList];
+    }
+
+    const nippouStayDegitakoIdListInt = nippouStayDegitakoIdList
+      .map(function (item) {
+        return parseInt(item, 10);
+      })
+      .filter(function (item) {
+        return !isNaN(item);
+      });
+
+    let KUDGSIRIdList = $('#KUDGSIRIdList').val() || [];
+    if (!Array.isArray(KUDGSIRIdList)) {
+      KUDGSIRIdList = [KUDGSIRIdList];
+    }
+
+    const KUDGSIRIdListInt = KUDGSIRIdList
+      .map(function (item) {
+        return parseInt(item, 10);
+      })
+      .filter(function (item) {
+        return !isNaN(item);
+      });
+    const data = {
+      Nippou_ID: @Html.Raw(Json.Serialize(Model.Nippou_ID)),
+      HaisyaDataList: @Html.Raw(Json.Serialize(Model.HaisyaDataList)),
+      NippouTollOther: OtherPaidData,
+      NippouToll: NippouToll,
+      Nippou_Stay: {
+        Start_Datetime: $('#Nippou_Stay_Start_Datetime').val(),
+        End_Datetime: $('#Nippou_Stay_End_Datetime').val(),
+        Start_ShikuName: $('#Nippou_Stay_Start_ShikuName').val(),
+        End_ShikuName: $('#Nippou_Stay_End_ShikuName').val(),
+        Interval_Time: parseInt($('#Nippou_Stay_Interval_Time').val()),
+        Dllowance: ($('#Nippou_Stay_Dllowance').val() || 0)
+      },
+      NippouStayDegitakoIdList: nippouStayDegitakoIdListInt,
+      Nippou_Kaiso: {
+        Start_Datetime: $('#Nippou_Kaiso_Start_Datetime').val(),
+        End_Datetime: $('#Nippou_Kaiso_End_Datetime').val(),
+        Start_ShikuName: $('#Nippou_Kaiso_Start_ShikuName').val(),
+        End_ShikuName: $('#Nippou_Kaiso_End_ShikuName').val(),
+        Commnet: $('#Nippou_Kaiso_Commnet').val(),
+        Distance: parseInt($('#Nippou_Kaiso_Distance').val()),
+        Dllowance: ($('#Nippou_Kaiso_Dllowance').val() || 0)
+      },
+      NippouKaisoDegitakoIdList: nippouKaisoDegitakoIdListInt,
+      KUDGSIRIdList: KUDGSIRIdListInt,
+      InitialDisplayNippouToll: InitialDisplayNippouToll,
+      AnkenDisplay: @Html.Raw(Json.Serialize(Model.AnkenDisplay)),
+      Nippou: {
+        RenkeiStatus: $('#digitalTachograph').is(':checked') ? 0 : 1,
+        ApprovalStatus: ApprovalStatus,
+        Nippou_ID: @Html.Raw(Json.Serialize(Model.Nippou_ID)),
+        Anken_ID: @Html.Raw(Json.Serialize(Model.Nippou.Anken_ID)),
+        AnkenDisplay_ID: @Html.Raw(Json.Serialize(Model.Nippou.AnkenDisplay_ID)),
+        Distance: $('#Nippou_Distance').val(),
+      }
+    }
+
+    $.post('@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "ProvisionalRegistration" })',
+      {
+        data: JSON.stringify(data)
+      })
+      .done(function (response) {
+        if (response.message != null) {
+          alert("【エラー】" + response.message);
+          return false;
+        } else {
+          showChangeTransitionDialog(Anken_ID)
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+        console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+      });
+  };
+
+  function ApprovalRegistration() {
+    event.preventDefault();
+
+    var comment = $('#Nippou_Kaiso_Commnet').val();
+    var dllowance = $('#Nippou_Stay_Dllowance').val();
+    let Distance = $('#Nippou_Distance').val();
+    if ($('#digitalTachograph').is(':checked')) {
+      if (!comment || !dllowance) {
+        alertError('泊まり設定　または　空車回送設定を行ってください');
+        return;
+      }
+    } else {
+      if (!Distance) {
+        alertError('日報情報の走行距離を入力してください');
+        return;
+      }
+    }
+
+    alertYesNoMsg("確認", "承認登録します。よろしいですか。", "question", "はい", "いいえ")
+    .then(function (result) {
+      if (result) {
+        ProvisionalRegistration(1)
+
+      } else {
+      }
+
+    })
+    .catch(function (error) {
+      console.error('Error in alertThreeButtonsMsg:', error);
+    });
+  }
+</script>

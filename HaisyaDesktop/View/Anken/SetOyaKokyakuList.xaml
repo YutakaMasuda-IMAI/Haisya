@@ -1,0 +1,171 @@
+﻿<Window x:Class="HaisyaDesktop.View.Anken.SetOyaKokyakuList"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HaisyaDesktop.View.Anken"
+        mc:Ignorable="d"
+        Title="案件顧客詳細設定" MinHeight="700" MinWidth="800" 
+        Loaded="Window_Loaded">
+  
+  <Window.Resources>
+    <ResourceDictionary>
+      <Style x:Key="KomokuTitle" TargetType="Label">
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Padding" Value="0" />
+      </Style>
+      <Style x:Key="SelectTextBox" TargetType="TextBox">
+        <Setter Property="Margin" Value="5,3" />
+        <Setter Property="TextAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center"/>
+        <Setter Property="FontSize" Value="18"/>
+      </Style>
+      <Style x:Key="SelectButton" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+        <Setter Property="Margin" Value="3,2" />
+        <Setter Property="FontSize" Value="16"/>
+      </Style>
+      <Style x:Key="SelectTextBlock" TargetType="TextBlock">
+        <Setter Property="Margin" Value="5,2" />
+        <Setter Property="VerticalAlignment" Value="Center"/>
+      </Style>
+   
+      <BitmapImage x:Key="ImageSource1" UriSource="/IMG/Trash.png" />
+    </ResourceDictionary>
+  </Window.Resources>  
+  
+  
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="50"/>
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <DockPanel Grid.Row="0" Background="Azure">
+      <Button Name="btnClose" Content="閉じる" DockPanel.Dock="Right" Width="150" Click="btnClose_Click" Margin="5" />
+      <Label Content="親顧客情報設定" FontSize="20" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0" />
+    </DockPanel>
+
+    <Border Grid.Row="0" BorderBrush="DarkGray" BorderThickness="2" />
+    <Border Grid.Row="1" BorderBrush="DarkGray" BorderThickness="2" />
+    <Grid Grid.Row="1" >
+
+      <Grid Margin="20,5,20,5">
+        <Grid.RowDefinitions>
+          <RowDefinition Height="40" />
+          <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0">
+          <Button x:Name="btnAddNew" Content="行追加" DockPanel.Dock="Left" Width="200" Background="Turquoise" FontSize="16" FontWeight="Bold" Click="btnAddNew_Click" ></Button>
+          <Button x:Name="btnSave" Content="登録" DockPanel.Dock="Right" Width="200" Background="CornflowerBlue" FontSize="16" FontWeight="Bold" Click="Commit_Click" ></Button>
+          <TextBlock DockPanel.Dock="Bottom" />
+        </DockPanel>
+        
+        <DockPanel Grid.Row="1">
+          <Border DockPanel.Dock="Bottom"  BorderBrush="Gray" BorderThickness="2" Background="Gold"  CornerRadius="5">
+            <Grid Margin="0,5,5,5" >
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="30" />
+                <ColumnDefinition Width="*" />
+              </Grid.ColumnDefinitions>
+              <Grid Grid.Column="0"  >
+                <TextBlock Text="最終顧客" Width="20" DockPanel.Dock="Left" VerticalAlignment="Center" FontSize="16" TextWrapping="Wrap" Foreground="DimGray" />
+              </Grid>
+              <StackPanel Orientation="Vertical" Grid.Column="1">
+                <DockPanel>
+                  <TextBlock Text="{Binding KokyakuId}" Visibility="Visible" Width="60" FontSize="20" Background="Transparent" DockPanel.Dock="Left" Style="{StaticResource SelectTextBlock}" />
+                  <TextBlock Text="{Binding KokyakuName}" DockPanel.Dock="Bottom" Style="{StaticResource SelectTextBlock}" Padding="2,0,0,0" />
+                </DockPanel>
+                <Border BorderThickness="0,1,0,0" BorderBrush="Silver" Margin="70,0,100,0" ></Border>
+                <DockPanel Margin="70,0,0,0">
+                  <Label Content="担当者：" Width="60" DockPanel.Dock="Left" VerticalContentAlignment="Center" />
+                  <TextBlock Text="{Binding KokyakuTantouId}" Visibility="Visible" Width="60" FontSize="20" Background="Transparent" Foreground="Gray" DockPanel.Dock="Left" Style="{StaticResource SelectTextBlock}" />
+                  <TextBlock Text="{Binding KokyakuTantouName}" Visibility="Visible" Width="150" FontSize="20" Background="Transparent" DockPanel.Dock="Right" Style="{StaticResource SelectTextBlock}" />
+                  <TextBlock Text="{Binding KokyakuTantouPhone}" DockPanel.Dock="Left" Style="{StaticResource SelectTextBlock}" Padding="2,0,0,0" />
+                </DockPanel>
+              </StackPanel>
+            </Grid>
+          </Border>
+
+          <ListBox x:Name="listOyaKokyakuList" DockPanel.Dock="Top" ItemsSource="{Binding OyaKokyakuList, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, NotifyOnTargetUpdated=True}" Background="Transparent" >
+            <ListBox.Template>
+              <ControlTemplate TargetType="ItemsControl">
+                <Border BorderThickness="0" BorderBrush="Transparent" Background="Transparent" CornerRadius="0" >
+                  <ItemsPresenter Margin="5"></ItemsPresenter>
+                </Border>
+              </ControlTemplate>
+            </ListBox.Template>
+            
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <Grid Height="95" Margin="0,5,5,5" Background="Transparent">
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="30" />
+                    <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
+                  <Grid.RowDefinitions>
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="30" />
+                  </Grid.RowDefinitions>
+                  <Grid Grid.Column="0" Grid.Row="0" Grid.RowSpan="2" >
+                    <TextBlock Text="{Binding KomokuTitle}" Width="20" DockPanel.Dock="Left" VerticalAlignment="Center" FontSize="16" TextWrapping="Wrap" Foreground="DimGray" />
+                    <TextBlock Text="{Binding Anken_Order}" Width="0" DockPanel.Dock="Left" Visibility="Hidden"  />
+                  </Grid>
+                  <Grid Grid.Column="1" Margin="10,0,0,0" >
+                    <StackPanel Orientation="Vertical">
+                      <DockPanel>
+                        <TextBlock Text="{Binding KokyakuId}" Visibility="Visible" Width="60" FontSize="20" Background="Transparent" Foreground="Gray" DockPanel.Dock="Left" Style="{StaticResource SelectTextBlock}" />
+                        <Button Name="btnKokyaku" Content="選択" Width="80" DockPanel.Dock="Right" Style="{StaticResource SelectButton}" Click="btnKokyaku_Click" />
+                        <TextBlock Text="{Binding KokyakuName}" DockPanel.Dock="Left" Style="{StaticResource SelectTextBlock}" Padding="2,0,0,0" />
+                      </DockPanel>
+                      <Border BorderThickness="0,1,0,0" BorderBrush="Silver" Margin="70,0,100,0" ></Border>
+                      <DockPanel Margin="70,0,0,0">
+                        <Label Content="担当者：" Width="60" DockPanel.Dock="Left" VerticalContentAlignment="Center" />
+                        <TextBlock Text="{Binding TantouId}" Visibility="Visible" Width="60" FontSize="20" Background="Transparent" Foreground="Gray" DockPanel.Dock="Left" Style="{StaticResource SelectTextBlock}" />
+                        <TextBlock Text="{Binding TantouPhone}" Visibility="Visible" Width="150" FontSize="20" Background="Transparent" DockPanel.Dock="Right" Style="{StaticResource SelectTextBlock}" />
+                        <TextBlock Text="{Binding TantouName}" DockPanel.Dock="Left" Style="{StaticResource SelectTextBlock}" Padding="2,0,0,0" />
+                        
+                      </DockPanel>
+                    </StackPanel>
+                  </Grid>
+                  <DockPanel Grid.Column="1" Grid.Row="1" >
+                    <Button DockPanel.Dock="Right" Content="削除" Width="80"  Style="{StaticResource SelectButton}" Click="Del_Click" />
+                    <Label Content="↓↓↓↓↓↓↓" DockPanel.Dock="Left" HorizontalContentAlignment="Center" FontSize="20" />
+                  </DockPanel>
+                  
+                </Grid>
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+            
+            <ListBox.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Orientation="Vertical">
+                </StackPanel>
+              </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+            <ListBox.ItemContainerStyle>
+              <Style TargetType="ListBoxItem">
+                <Setter Property="Template">
+                  <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ContentControl}">
+                      <Border BorderBrush="Gray" BorderThickness="2" Background="Wheat"  CornerRadius="5">
+                        <ContentPresenter />
+                      </Border>
+                    </ControlTemplate>
+                  </Setter.Value>
+                </Setter>
+              </Style>
+            </ListBox.ItemContainerStyle>
+
+          </ListBox>
+        </DockPanel>
+        
+      </Grid>
+      
+      
+      
+      
+    </Grid>
+  </Grid>
+</Window>

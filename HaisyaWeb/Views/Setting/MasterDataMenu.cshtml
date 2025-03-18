@@ -1,0 +1,55 @@
+﻿
+
+@{
+  Layout = "_Layout";
+}
+
+<link href="~/css/Master.css" rel="stylesheet" />
+<link href="~/css/Setting.css" rel="stylesheet" />
+<style>
+</style>
+
+
+<body data-spy="scroll" data-target="#navbar">
+
+  <div id="ALL">
+    <div id="sub">
+      <div class="container subInner clearfix">
+        <ul class="nav nav-tabs nav-tabs-jbc">
+          <li id="tabCustomer" class="sub-btn active"><a class="" asp-area="" asp-controller="Customer" asp-action="Index">顧客マスタ</a></li>
+          <li id="tabCustomerBranch" class="sub-btn"><a class="" asp-area="" asp-controller="Customer" asp-action="CustomerBranchIndex">顧客支店担当マスタ</a></li>
+          <li id="tabCustomerLink" class="sub-btn"><a class="" asp-area="" asp-controller="Customer" asp-action="TracmateLink">ﾄﾗｯｸﾒｲﾄ連携</a></li>
+          <li id="tabYosya" class="sub-btn"><a class="" asp-area="" asp-controller="Yosya" asp-action="Index">傭車マスタ</a></li>
+          <li id="tabPayee" class="sub-btn"><a class="" asp-area="" asp-controller="Payee" asp-action="Index">支払先マスタ</a></li>
+        </ul>
+      </div>
+    </div>
+    <div id="wrap" class="container">
+      <div id="wrap-inside">
+        <div role="main" style="margin-top: 5px;">
+          @RenderBody()
+        </div>
+      </div>
+    </div>
+  </div>
+
+  @await RenderSectionAsync("Scripts", required: false)
+</body>
+<script>
+  $(function () {
+
+    $('.sub-btn').on('click', function () {
+      //alert("sub-btn");
+      $('.sub-btn').removeClass('active');
+      $(this).addClass('active');
+    });
+
+    $('.sub-btn').on('click', function () {
+      //alert("sub-btn");
+      $('.sub-btn').removeClass('active');
+      $(this).addClass('active');
+    });
+
+
+  });
+</script>

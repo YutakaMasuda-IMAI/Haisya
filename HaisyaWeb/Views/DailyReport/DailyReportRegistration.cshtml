@@ -1,0 +1,334 @@
+@model DailyReportModel.DailyReportRegistrationModel
+@*
+  For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+  Layout = "_Layout";
+  ViewData["Title"] = "運転日報登録修正";
+
+  // C#コード
+  var DataDataLists = Newtonsoft.Json.JsonConvert.SerializeObject(Model.DataDataLists);
+  var SelectDay = Newtonsoft.Json.JsonConvert.SerializeObject(Model.Search.SelectDay);
+  var SelectEndDay = Newtonsoft.Json.JsonConvert.SerializeObject(Model.Search.SelectEndDay);
+  var SelectTokuisakiID = Newtonsoft.Json.JsonConvert.SerializeObject(Model.Search.SelectTokuisakiID);
+  var SingleSwitch = Newtonsoft.Json.JsonConvert.SerializeObject(Model.Search.SingleSwitch);
+  var KokyakuId = Newtonsoft.Json.JsonConvert.SerializeObject(Model.Search.KokyakuId);
+  var KokyakuName = Newtonsoft.Json.JsonConvert.SerializeObject(Model.Search.KokyakuName);
+  var SelectTantou = Newtonsoft.Json.JsonConvert.SerializeObject(Model.Search.SelectTantou);
+  var SelectFilter = Newtonsoft.Json.JsonConvert.SerializeObject(Model.Search.SelectFilter);
+  var SelectSeikyuTantou = Newtonsoft.Json.JsonConvert.SerializeObject(Model.Search.SelectSeikyuTantou);
+  var SelectGroup = Newtonsoft.Json.JsonConvert.SerializeObject(Model.Search.SelectGroup);
+  var IsCollapse = Newtonsoft.Json.JsonConvert.SerializeObject(Model.Search.IsCollapse);
+  
+  var startDay = DateTime.TryParseExact(Model.Search.SelectDay, "yyyy/MM/dd", null, System.Globalization.DateTimeStyles.None, out var dt) ? dt.ToString("MM/dd") : "";
+  var endDay = DateTime.TryParseExact(Model.Search.SelectEndDay, "yyyy/MM/dd", null, System.Globalization.DateTimeStyles.None, out dt) ? dt.ToString("MM/dd") : "";
+    @functions {
+    string GetStatusClass(int? status)
+    {
+      return status switch
+      {
+        0 => "status-0",
+        1 => "status-1",
+        2 => "status-2",
+        3 => "status-3",
+        _ => throw new ArgumentOutOfRangeException(nameof(status)),
+      };
+    }
+    }
+}
+
+
+<link href="~/css/DailyReport.css" rel="stylesheet" />
+<style>
+  body.daily-report-registration .container {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    padding: 0;
+  }
+
+  .side-bar {
+    width: 380px;
+    border-right: 1px solid black;
+    padding-top: 0px;
+    margin-left: 1px;
+    padding-right: 1px;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .condition-title {
+    font-weight: bold;
+    font-size: 16px;
+  }
+
+  .anken-data-tree {
+    font-size: 14px;
+    display: flex;
+    flex-direction: row;
+  }
+
+  #tableRoutList th, #tableRoutList td {
+    padding-right: 8px;
+    padding-left: 8px;
+    text-align: left;
+  }
+
+  .anken-data-tree-background.status-0 {
+    background-color: white;
+  }
+
+  .anken-data-tree-background.status-1 {
+    background-color: #90EE90;
+  }
+
+  .anken-data-tree-background.status-2 {
+    background-color: #ADD8E6;
+  }
+
+  .anken-data-tree-background.status-3 {
+    background-color: #D3D3D3;
+  }
+</style>
+
+
+
+<div style="width: 100%; height: 100%; display: flex; flex-direction: row; margin-top: -15px; border: #cccccc 1px solid;">
+  <div id="side-bar" class="side-bar">
+    <div class="condition-title">抽出条件</div>
+    <div style="margin: 0px; display: flex;">
+      <div style="width:70px;">配車日：</div>
+      <div>
+        @if (!Model.Search.SingleSwitch)
+        {
+          @startDay
+        }
+        else
+        {
+          @($"{startDay} 〜 {endDay}")
+        }
+      </div>
+    </div>
+
+    @{
+      var KokyakuGroupList = Model.HaisyaDataList.OrderBy(m => m.KokyakuCode).GroupBy(m => new { id = m.KokyakuTantouId, name = m.KokyakuTantouName });
+    }
+
+    @foreach (var group in KokyakuGroupList)
+    {
+      var listData = Model.HaisyaDataList.Where(m => m.KokyakuTantouId == group.Key.id).OrderBy(m => m.Day).ThenBy(m => m.Employee_Number).ToList();
+
+      <div style="margin: 0px; display: flex;">
+        <div style="width:50px;">荷主：</div>
+        <div>@group.Key.name</div><br />
+      </div>
+      <div style="margin-bottom: 10px; display: block; ">
+        <table id="tableRoutList" style="width:100%;">
+          <tbody class="root-list-body2">
+
+            @foreach (var item in listData)
+            {
+              <tr class="anken-data-tree-background @GetStatusClass(item.NippouStatus)" onClick="changeDisplay('@item.Anken_ID', '@item.AnkenDisplay_ID', '@item.Day.ToString("yyyy/MM/dd")', '@item.SYABAN', '@item.Employee_Number')">
+                <td style="width: 15px; padding: 0px;cursor: pointer;">
+                  @if (item == listData.Last())
+                  {
+                    @:┗
+                  }
+                  else
+                  {
+                    @:┣
+                  }
+                </td>
+                <td style="width: 50px; padding: 0px; cursor: pointer;">@item.Day.ToString("MM/dd"):</td>
+                <td style="width: 10px; padding: 0px; cursor: pointer;">
+                  @switch (item.Haisya_Kubun)
+                  {
+                    case 1:
+                      @:自車
+                      break;
+                    case 2:
+                      @:傭車
+                      break;
+                    case 3:
+                      @:専属傭車
+                      break;
+                    case 4:
+                      @:自車専属
+                      break;
+                    case 5:
+                      @:自車専任
+                      break;
+                    default:
+                      @:未定
+                      break;
+                  }
+                </td>
+                <td style="width: 50px; padding: 0px; cursor: pointer;">(@item.SYABAN)</td>
+                <td style="padding: 0px; cursor: pointer;">@item.Driver_Name</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    }
+  </div>
+
+  <div id="divDaileReortDetail" style="width: 100%"></div>
+
+</div>
+
+
+
+<script>
+  var DataDataLists = @Html.Raw(DataDataLists);
+  var SelectDay = @Html.Raw(SelectDay);
+  var SelectEndDay = @Html.Raw(SelectEndDay);
+  var SelectTokuisakiID = @Html.Raw(SelectTokuisakiID);
+  var Anken_ID = JSON.parse('@Html.Raw(Json.Serialize(Model.Anken_ID))');
+  var AnkenDisplay_ID = JSON.parse('@Html.Raw(Json.Serialize(Model.AnkenDisplay_ID))');
+  var DriverCd = JSON.parse('@Html.Raw(Json.Serialize(Model.HaisyaDataData?.Employee_Number))');
+  var Syaban = JSON.parse('@Html.Raw(Json.Serialize(Model.HaisyaDataData?.SYABAN))');
+  var SingleSwitch = @Html.Raw(SingleSwitch);;
+  var KokyakuId = @Html.Raw(KokyakuId);
+  var KokyakuName = @Html.Raw(KokyakuName);
+  var SelectTantou = @Html.Raw(SelectTantou);
+  var SelectFilter = @Html.Raw(SelectFilter);
+  var SelectSeikyuTantou = @Html.Raw(SelectSeikyuTantou);
+  var SelectGroup = @Html.Raw(SelectGroup);
+  var IsCollapse = @Html.Raw(IsCollapse);
+  function getWindowHeight() {
+    return window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+  }
+
+  // ページ読み込み時に実行される関数
+  window.onload = function() {
+    DailyReportRegistrationDetailDisplay(Anken_ID)
+      // side-barの高さを画面の高さに設定
+    var sideBar = document.getElementById('side-bar');
+    sideBar.style.minHeight = (getWindowHeight() - 163) + 'px';
+  }
+
+  // ウィンドウサイズが変更された場合に実行される関数
+  window.onresize = function() {
+    // side-barの高さを画面の高さに設定
+    var sideBar = document.getElementById('side-bar');
+    sideBar.style.minHeight = (getWindowHeight() - 163) + 'px';
+  }
+
+  function changeDateFormat(day) {
+    var formatted = `${day.getFullYear()}\年${(day.getMonth() + 1).toString().padStart(2, '0')}\月${day.getDate().toString().padStart(2, '0')}\日\)`.replace(/\n|\r/g, '');
+  }
+
+  function changeDisplay(AnkenID, AnkenDisplayId, Day, SYABAN, DriverCode) {
+    AnkenDisplay_ID = AnkenDisplayId
+    Anken_ID = AnkenID
+    SelectDay = Day
+    Syaban = SYABAN
+    DriverCd = DriverCode
+    if (DataCheck()) {
+      // DataCheckがtrueを返した場合
+      DailyReportRegistrationDetailDisplay(AnkenID);
+    } else {
+      // DataCheckがfalseを返した場合
+      showChangeConfirmationDialog(AnkenID);
+    }
+  }
+
+    function showChangeConfirmationDialog(AnkenID) { 
+    if (AnkenID) {
+        Anken_ID = AnkenID;
+    }
+    alertThreeButtonsMsg("確認", "内容が変更されています", "question", "仮登録", "破棄", "承認登録")
+      .then(function(result) {
+        switch (result) {
+          case 1:
+            // 「仮登録」が選択された場合
+            ProvisionalRegistration();
+            break;
+          case 2:
+            // 「破棄」が選択された場合
+            DailyReportRegistrationDetailDisplay(Anken_ID);
+            break;
+          case 3:
+            // 「承認登録」が選択された場合
+            ApprovalRegistration();
+            break;
+          default:
+            // 予期しない値が返された場合
+            console.error('Unexpected result from alertThreeButtonsMsg:', result);
+        }
+      })
+      .catch(function(error) {
+        console.error('Error in alertThreeButtonsMsg:', error);
+      });
+  }
+
+  function DailyReportRegistrationDetailDisplay(Anken_ID) {
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "DailyReportRegistrationDetail" })',
+      type: 'GET',
+      data: {
+                Anken_ID, AnkenDisplay_ID, DriverCd, Syaban, SelectDay, SelectEndDay, SelectTokuisakiID, SingleSwitch, KokyakuId, KokyakuName, SelectTantou, SelectFilter, SelectSeikyuTantou, SelectGroup, IsCollapse
+      },
+      success: function(data) {
+        // サーバーから返されたデータを処理する
+        // 必要に応じて、HTMLを更新する
+        $('#divDaileReortDetail').html(data.partialView);
+      },
+      error: function(xhr, status, error) {
+        // エラー処理
+        console.error(error);
+      }
+    });
+
+  };
+
+  function DailyReportRegistrationDetailNippouDisplay(AnkenDisplay_ID) {
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "DailyReportRegistrationDetailToNippou" })',
+      type: 'GET',
+      data: {
+        Anken_ID, AnkenDisplay_ID, DriverCd, Syaban, SelectDay, SelectEndDay, SelectTokuisakiID
+      },
+      success: function(data) {
+        // サーバーから返されたデータを処理する
+        // 必要に応じて、HTMLを更新する
+        $('#divDaileReortDetail_Nippou').html(data.partialView);
+
+      },
+      error: function(xhr, status, error) {
+        // エラー処理
+        console.error(error);
+      }
+    });
+
+  };
+
+  function reloadPage() {
+    var form = $('<form action="' + '@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "DailyReportRegistration" })' + '" method="get"></form>');
+    form.append($('<input type="hidden" name="SelectDay" value="' + SelectDay + '">'));
+    form.append($('<input type="hidden" name="SelectEndDay" value="' + SelectEndDay + '">'));
+    form.append($('<input type="hidden" name="Anken_ID" value="' + Anken_ID + '">'));
+    form.append($('<input type="hidden" name="AnkenDisplay_ID" value="' + AnkenDisplay_ID + '">'));
+
+    // フォームをbodyに追加して送信
+    $('body').append(form);
+    form.submit();
+  };
+
+  function UpdateColapse() {
+    if ($('#tblCollapseSearch').hasClass('show')) {
+      $('#tblCollapseSearch').removeClass("show");
+    } else {
+      $('#tblCollapseSearch').addClass("show");
+    }
+  };
+
+
+  function ModalClose() {
+    $('#ModalHere').find('.modal').modal('hide');
+  };
+
+</script>
+
+<script src="~/js/EnterKeyCancel.js"></script>

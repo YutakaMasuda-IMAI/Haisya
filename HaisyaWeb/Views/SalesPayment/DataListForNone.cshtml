@@ -1,0 +1,388 @@
+﻿@model HaisyaWeb.Models.SalesPaymentModel.DataListModel
+
+@if (Model.DataDataLists.Count() == 0)
+{
+<div class="no-data-row">
+  <h4 class="no-data-row-text">データ無し</h4>
+</div>
+}
+else
+{
+  var listData = Model.DataDataLists;
+  if (!string.IsNullOrEmpty(Model.SortParam.SortOrder) && !string.IsNullOrEmpty(Model.SortParam.SortItemParam))
+  {
+    if ("asc".Equals(Model.SortParam.SortOrder))
+    {
+      listData = listData.OrderBy(s => s.GetType().GetProperty(Model.SortParam.SortItemParam).GetValue(s, null)).ThenBy(s => s.Anken_No).ToList();
+    }
+    else
+    {
+      listData = listData.OrderByDescending(s => s.GetType().GetProperty(Model.SortParam.SortItemParam).GetValue(s, null)).ThenBy(s => s.Anken_No).ToList();
+    }
+  }
+  @if (Model.UriageKubun == 1)
+  {
+    <table id="myTable" class="table ex_DataList search-list" style="margin-top:20px;" border="1">
+      <thead>
+        <tr>
+            <th rowspan="2" width="50px">
+              詳細
+            </th>
+            <th rowspan="2" width="70px">
+              <a href="#" style="" onclick="dataListSort('Reg_Status')">ステータス</a>
+            </th>
+            <th rowspan="2" width="160px">
+              <a href="#" style="" onclick="dataListSort('Haisya_Tantou_Name')">配車担当</a>
+            </th>
+            <th hidden rowspan="2">
+              <a href="#" style="">配車担当Id</a>
+            </th>
+            <th rowspan="2">
+              <a href="#" style="" onclick="dataListSort('Customer_Name_Abbr')">荷主</a>
+            </th>
+            <th rowspan="2" width="70px">
+              <a href="#" style="" onclick="dataListSort('Publish_FromDatetime')">積日</a>
+            </th>
+            <th rowspan="2" width="70px">
+              <a href="#" style="" onclick="dataListSort('Publish_ToDatetime')">卸日</a>
+            </th>
+            <th rowspan="2" width="250px">
+              <a href="#" style="" onclick="dataListSort('StartAddressDisplay3')">積地</a>
+            </th>
+            <th rowspan="2" width="250px">
+              <a href="#" style="" onclick="dataListSort('EndAddressDisplay3')">卸地</a>
+            </th>
+            <th rowspan="2" width="80px">
+              <a href="#" style="" onclick="dataListSort('SyasyuDisplay2')">車種</a>
+            </th>
+            <th width="80px">
+              <a href="#" style="" onclick="dataListSort('SeikyuUnchin')">運賃</a>
+            </th>
+            <th rowspan="2" width="60px">
+              <a href="#" style="" onclick="dataListSort('Zei_Kubun')">税区分</a>
+            </th>
+            <th rowspan="2" width="60px">
+              <a href="#" style="" onclick="dataListSort('Haisya_Kubun')">配車<br />区分</a>
+            </th>
+            <th width="100px">
+              <a href="#" style="" onclick="dataListSort('Syaban')">車番</a>
+            </th>
+            <th width="100px">
+              <a href="#" style="" onclick="dataListSort('Yosya1_Driver_Name')">傭車１</a>
+            </th>
+            <th rowspan="2" width="60px">
+              <a href="#" style="" onclick="dataListSort('SenzokuID')">専属ID</a>
+            </th>
+        </tr>
+        <tr>
+            <th width="80px">
+               <a href="#" style="" onclick="dataListSort('Tatekaekin')">立替</a>
+            </th>
+            <th>
+               <a href="#" style="" onclick="dataListSort('Driver_Name')">乗務員名</a>
+            </th>
+            <th>
+               <a href="#" style="" onclick="dataListSort('Yosya2_Driver_Name')">傭車２</a>
+            </th>
+        </tr>
+        </thead>
+        <tbody>
+          @{
+            var i = 0;
+          }
+          @foreach (var item in listData)
+          {
+            i++;
+            var color = i % 2 == 1 ? "row-even" : "row-odd";
+            <tr>
+                <td class="@(color)" rowspan="2">
+                    <button class="btn btn-outline-success btn-select" onclick="sendInputIndexForm(@item.Anken_ID,0); return false;">選択</button>
+                </td>
+                <td class="@(color)" rowspan="2" align="center">
+                    @{
+                        string regStatusText = item.Reg_Status switch
+                        {
+                            0 => "未登録",
+                            1 => "暫定",
+                            2 => "確定",
+                            3 => "仮登録",
+                            _ => "未登録"
+                        };
+                    }
+                    @Html.Raw(regStatusText)
+                </td>
+                <td class="@(color)" rowspan="2">
+                    @Html.DisplayFor(modelItem => item.Haisya_Tantou_Name)
+                </td>
+                <td class="@(color)" hidden rowspan="2">
+                    @Html.DisplayFor(modelItem => item.SeikyuTantouID)
+                </td>
+                <td class="@(color)" rowspan="2">
+                    @Html.DisplayFor(modelItem => item.Customer_Name_Abbr)
+                </td>
+                <td class="@(color)" rowspan="2" align="center">
+                    @(item.Publish_FromDatetime?.ToString("MM/dd") ?? "") <br /> @(item.Publish_FromDatetime?.ToString("HH:mm") ?? "")
+                </td>
+                <td class="@(color)" rowspan="2" align="center">
+                    @(item.Publish_ToDatetime?.ToString("MM/dd") ?? "") <br /> @(item.Publish_ToDatetime?.ToString("HH:mm") ?? "")
+                </td>
+                <td class="@(color)" rowspan="2">
+                    @Html.DisplayFor(modelItem => item.StartAddressDisplay3)
+                </td>
+                <td class="@(color)" rowspan="2">
+                    @Html.DisplayFor(modelItem => item.EndAddressDisplay3)
+                </td>
+                <td class="@(color)" rowspan="2" align="center">
+                    @Html.DisplayFor(modelItem => item.SyasyuDisplay2)
+                </td>
+                <td class="@(color)" align="right">
+                    @Convert.ToInt32(item.SeikyuUnchin).ToString("#,0")
+                </td>
+                <td class="@(color)" rowspan="2" align="center">
+                    @*@Html.DisplayFor(modelItem => item.Zei_Kubun)*@
+                    @{
+                        string Zei_Kubun = "";
+                        Zei_Kubun = item.Zei_Kubun == 0 ? "課税" :
+                                    item.Zei_Kubun == 1 ? "非課税" :
+                                    "";
+                    }
+                    @Html.DisplayFor(modelItem => Zei_Kubun)
+                </td>
+                <td class="@(color)" rowspan="2" align="center">
+                    @{
+                        string Haisya_Kubun = "";
+                        Haisya_Kubun = item.Haisya_Kubun == 1 ? "自車" :
+                                        item.Haisya_Kubun == 2 ? "傭車" :
+                                        item.Haisya_Kubun == 3 ? "専属傭車" :
+                                        item.Haisya_Kubun == 4 ? "自車専属" :
+                                        item.Haisya_Kubun == 5 ? "自車専任" :
+                                        "";
+                    }
+                    @Html.DisplayFor(modelItem => Haisya_Kubun)
+                </td>
+                <td class="@(color)" align="center">
+                    @Html.DisplayFor(modelItem => item.Syaban)
+                </td>
+                <td class="@(color)" align="center">
+                    @Html.DisplayFor(modelItem => item.Yosya1_Driver_Name)
+                </td>
+                <td class="@(color)" rowspan="2" align="center">
+                    @Html.DisplayFor(modelItem => item.SenzokuID)
+                </td>
+            </tr>
+            <tr>
+                <td class="@(color)" align="right">
+                    @Convert.ToInt32(item.Tatekaekin).ToString("#,0")
+                </td>
+                <td class="@(color)" align="center">
+                    @Html.DisplayFor(modelItem => item.Driver_Name)
+                </td>
+                <td class="@(color)" align="center">
+                    @Html.DisplayFor(modelItem => item.Yosya2_Driver_Name)
+                </td>
+            </tr>
+          }
+        </tbody>
+    </table>
+    }
+
+    @if (Model.UriageKubun == 2)
+    {
+    <table id="myTable" class="table ex_DataList search-list" style="" border="1">
+      <thead>
+        <tr>
+            <th width="50px">
+              詳細
+            </th>
+            <th width="70px">
+              <a href="#" style="" onclick="dataListSort('Reg_Status')">ステータス</a>
+            </th>
+            <th width="160px">
+              <a href="#" style="" onclick="dataListSort('Haisya_Tantou_Name')">配車担当</a>
+            </th>
+            <th hidden >
+              配車担当Id
+            </th>
+            <th width="300px">
+              <a href="#" style="" onclick="dataListSort('Customer_Name_Abbr')">荷主</a>
+            </th>
+            <th>
+              <a href="#" style="" onclick="dataListSort('Senzoku_Name')">専属名</a>
+            </th>
+            <th width="100px">
+              <a href="#" style="" onclick="dataListSort('SyasyuDisplay2')">車種</a>
+            </th>
+            <th width="80px">
+              <a href="#" style="" onclick="dataListSort('Seikyu_Kubun')">請求区分</a>
+            </th>
+            <th width="80px">
+              <a href="#" style="" onclick="dataListSort('Calc_Kubun')">計算区分</a>
+            </th>
+            <th width="80px">
+              <a href="#" style="" onclick="dataListSort('Monthly_Fee')">月額</a>
+            </th>
+            <th width="80px">
+              <a href="#" style="" onclick="dataListSort('Daily_Fee')">日額</a>
+            </th>
+            <th width="80px">
+              <a href="#" style="" onclick="dataListSort('SeikyuUnchin')">運賃</a>
+            </th>
+            <th width="80px">
+              <a href="#" style="" onclick="dataListSort('Tatekaekin')">立替</a>
+            </th>
+        </tr>
+      </thead>
+      <tbody>
+        @{
+          var i = 1;
+        }
+        @foreach (var item in Model.DataDataLists.ToList())
+        {
+          i++;
+          var color = i % 2 == 0 ? "row-even" : "row-odd";
+          <tr>
+              <td class="@(color)" align="center">
+                  <button class="btn btn-outline-success btn-select" onclick="sendInputIndexForm(@item.Anken_ID,@item.SenzokuID); return false;">詳細</button>
+              </td>
+              <td class="@(color)" align="center">
+                  @{
+                      string regStatusText = item.Reg_Status switch
+                      {
+                          0 => "未登録",
+                          1 => "暫定",
+                          2 => "確定",
+                          3 => "仮登録",
+                          _ => "未登録"
+                      };
+                  }
+                  @Html.Raw(regStatusText)
+              </td>
+              <td class="@(color)">
+                  @Html.DisplayFor(modelItem => item.Haisya_Tantou_Name)
+              </td>
+              <td class="@(color)" hidden>
+                  @Html.DisplayFor(modelItem => item.SeikyuTantouID)
+              </td>
+              <td class="@(color)">
+                  @Html.DisplayFor(modelItem => item.Customer_Name_Abbr)
+              </td>
+              <td class="@(color)">
+                  @Html.DisplayFor(modelItem => item.Senzoku_Name)
+              </td>
+              <td class="@(color)" align="center">
+                  @Html.DisplayFor(modelItem => item.SyasyuDisplay2)
+              </td>
+              <td class="@(color)" align="center">
+                  @Html.DisplayFor(modelItem => item.Seikyu_Kubun)
+              </td>
+              <td class="@(color)" align="center">
+                  @Html.DisplayFor(modelItem => item.Calc_Kubun)
+              </td>
+              <td class="@(color)" align="right">
+                  @Convert.ToInt32(item.Monthly_Fee).ToString("#,0")
+              </td>
+              <td class="@(color)" align="right">
+                  @Convert.ToInt32(item.Daily_Fee).ToString("#,0")
+              </td>
+              <td class="@(color)" align="right">
+                  @Convert.ToInt32(item.SeikyuUnchin).ToString("#,0")
+              </td>
+              <td class="@(color)" align="right">
+                  @Convert.ToInt32(item.Tatekaekin).ToString("#,0")
+              </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+    }
+
+    @if (Model.UriageKubun == 3)
+    {
+    <table id="myTable" class="table ex_DataList search-list" style="" border="1">
+      <thead>
+        <tr>
+          <th width="50px">
+            詳細
+          </th>
+          <th width="70px">
+            <a href="#" style="" onclick="dataListSort('Reg_Status')">ステータス</a>
+          </th>
+          <th width="100px">
+            <a href="#" style="" onclick="dataListSort('Direct_Uriage_Date')">売上日</a>
+          </th>
+          <th hidden >
+            配車担当Id
+          </th>
+          <th>
+            <a href="#" style="" onclick="dataListSort('Direct_Customer_Name')">顧客</a>
+          </th>
+          <th width="300px">
+            <a href="#" style="" onclick="dataListSort('Direct_Customer_TantouName')">顧客担当</a>
+          </th>
+          <th width="80px">
+            <a href="#" style="" onclick="dataListSort('Direct_Uriage_KubunName')">売上区分</a>
+          </th>
+          <th width="300px">
+            <a href="#" style="" onclick="dataListSort('Direct_Uriage_BumonName')">売上部門</a>
+          </th>
+          <th width="80px">
+            <a href="#" style="" onclick="dataListSort('Direct_Uriage_SeikyuTotal')">請求額計</a>
+          </th>
+          <th width="80px">
+            <a href="#" style="" onclick="dataListSort('Direct_Uriage_ShiharaiTotal')">下払額計</a>
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        @{
+          var i = 1;
+        }
+        @foreach (var item in listData)
+        {
+          i++;
+          var color = i % 2 == 0 ? "row-even" : "row-odd";
+          <tr>
+              <td class="@(color)" align="center">
+                  <button class="btn btn-outline-success btn-select" onclick="sendInputIndexForm(0,@item.Uriage_ID); return false;">詳細</button>
+              </td>
+              <td class="@(color)" align="center">
+                  @{
+                      string regStatusText = item.Reg_Status switch
+                      {
+                          0 => "未登録",
+                          1 => "暫定",
+                          2 => "確定",
+                          3 => "仮登録",
+                          _ => "未登録"
+                      };
+                  }
+              <td class="@(color)" align="center">
+                  @(item.Direct_Uriage_Date?.ToString("MM/dd") ?? "")
+              </td>
+              <td class="@(color)" hidden>
+                  @Html.DisplayFor(modelItem => item.SeikyuTantouID)
+              </td>
+              <td class="@(color)">
+                  @Html.DisplayFor(modelItem => item.Direct_Customer_Name)
+              </td>
+              <td class="@(color)">
+                  @Html.DisplayFor(modelItem => item.Direct_Customer_TantouName)
+              </td>
+              <td class="@(color)">
+                  @Html.DisplayFor(modelItem => item.Direct_Uriage_KubunName)
+              </td>
+              <td class="@(color)">
+                  @Html.DisplayFor(modelItem => item.Direct_Uriage_BumonName)
+              </td>
+              <td class="@(color)" align="right">
+                  @Convert.ToInt32(item.Direct_Uriage_SeikyuTotal).ToString("#,0")
+              </td>
+              <td class="@(color)" align="right">
+                  @Convert.ToInt32(item.Direct_Uriage_ShiharaiTotal).ToString("#,0")
+              </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  }
+}

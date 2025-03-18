@@ -1,0 +1,518 @@
+﻿@model HaisyaWeb.Models.YosyaModel.YosyaModalDto
+
+@{
+  Layout = "_ModalLayout";
+
+}
+
+<style>
+  /*  .float-left {
+    float: left;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }
+
+  .float-right {
+    float: right;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }*/
+
+  .readonly {
+    background-color: lightgray;
+  }
+
+  input:invalid {
+    background-color: lightpink;
+  }
+
+  input[type=text] {
+    padding: 0.1rem 0 0.1rem 0.5rem;
+  }
+</style>
+
+
+
+<div role="dialog" aria-hidden="true" tabindex="-1" class="modal">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:900px;">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: gainsboro;">
+        <h1 class="modal-title fs-3" id="exampleModalLabel">@(Model.Title)</h1>
+        @if (Model.EditEnabled)
+        {
+          <button type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
+        }
+
+        <button type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
+      </div>
+      <div class="model-body">
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmMain", @class = "contact-form", @style = "padding: 0;", @onsubmit = "return false;" }))
+        {
+          <div id="hidden" hidden>
+            @Html.HiddenFor(model => Model.CompanyID)
+            @Html.HiddenFor(model => Model.BtnCaption)
+            @Html.HiddenFor(model => Model.Title)
+            @Html.HiddenFor(model => Model.CustomerDriverSyaryoID)
+          </div>
+
+          <div class="row" style="margin-right: 1px; padding: 0 0.2rem;">
+            <div class="col-12" style="padding-right: 0;">
+              <div class="contents-wrap-middle" style="margin: 10px;">
+                <h4 class="">注意</h4>
+                <span>
+                  ・一度データを登録すると物理削除は出来ません。「非表示フラグ」を立ててください。
+                </span>
+              </div>
+              <h4>@(Model.TitleForDriver)</h4>
+              <table class="table table-striped-columns table-bordered border-primary" border="1" style="margin: 10px; width:96%;">
+                <thead>
+                  <tr style="background-color: aquamarine;">
+                    <th align="center" style="text-align: center;" width="250px">項目名</th>
+                    <th align="center" style="text-align: center;" width="300px">値</th>
+                    <th align="center" style="text-align: center;" width="200px">項目名</th>
+                    <th align="center" style="text-align: center;" width="350px">値</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr hidden>
+                    <th>Customer_Driver_ID</th>
+                    <td>@Html.TextBoxFor(model => Model.CustomerDriverData.Customer_Driver_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px;" })</td>
+                    <td></td>
+                  </tr>
+                  <tr hidden>
+                    <th>Customer_ID</th>
+                    <td>@Html.TextBoxFor(model => Model.CustomerDriverData.Customer_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px;" })</td>
+                    <td></td>
+                  </tr>
+                  <tr hidden>
+                    <th>Customer_Branch_ID</th>
+                    <td>@Html.TextBoxFor(model => Model.CustomerDriverData.Customer_Branch_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px;" })</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <th>傭車乗務員NO</th>
+                    <td>@Html.TextBoxFor(model => Model.CustomerDriverData.Employee_Number, null, new { @class = "form-control", @style = "width: 200px;" })</td>
+                    <th style="color: red;">担当配車</th>
+                    <td>
+                      @Html.DropDownListFor(model => model.CustomerDriverData.Group_ID, new SelectList(Model.GroupList, "Value", "Text", "Selected"), "担当配車を選択", new { @class = "form-control list dropDownList", @style = "width: 100%" })
+                      @Html.ValidationMessageFor(model => model.CustomerDriverData.Group_ID, "", new { id = "SelectGroupID", @class = "text -danger align-middle" })
+                    </td>
+                  </tr>
+                  <tr>
+                    <th style="color: red;">乗務員名(性)</th>
+                    <td>@Html.TextBoxFor(model => Model.CustomerDriverData.Last_Name, null, new { @class = "form-control", @style = "width: 95%;" })</td>
+                    <th>乗務員名(名)</th>
+                    <td>@Html.TextBoxFor(model => Model.CustomerDriverData.First_Name, null, new { @class = "form-control", @style = "width: 95%;" })</td>
+                  </tr>
+                  <tr>
+                    <th style="color: red;">乗務員名(表示)</th>
+                    <td id="root">@Html.TextBoxFor(model => Model.CustomerDriverData.Display_Name, null, new { @class = "form-control", @style = "width: 95%;" })</td>
+                    <th></th>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <th style="color: red;">開始日</th>
+                    <td>@Html.TextBoxFor(m => Model.CustomerDriverData.From_Date, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", @style = "width: 90%;" })</td>
+                    <th style="">終了日</th>
+                    <td>@Html.TextBoxFor(m => Model.CustomerDriverData.To_Date, "{0:yyyy-MM-dd}", new { @class = "form-control", type = "date", @style = "width: 90%;" })</td>
+                  </tr>
+                  <tr>
+                    <th>非表示フラグ</th>
+                    <td class=""><div style="display: flex;">@Html.CheckBoxFor(model => Model.CustomerDriverData.Del_Flg, new { @class = "form-control text-left form-check-input" })<span style="font-size:12px;">オンにすると、登録時に選択不可。</span></div></td>
+                    <th>最終更新日</th>
+                    <td>@Convert.ToDateTime(Model.CustomerDriverData.Update_Datetime).ToString("yyyy/MM/dd HH:mm:ss")</td>
+                    <td hidden>@Html.TextBoxFor(model => Model.CustomerDriverData.Update_Datetime, null, new { @class = "form-control text-end" })</td>
+                  </tr>
+                </tbody>
+              </table>
+              <h4>@(Model.TitleForSyaryo)</h4>
+              <table class="table table-striped-columns table-bordered border-primary" border="1" style="margin: 10px; width:96%;">
+                @*<thead>
+                    <tr style="background-color: aquamarine;">
+                      <th align="center" style="text-align: center;" width="200px">項目名</th>
+                      <th align="center" style="text-align: center;" width="350px">値</th>
+                      <th align="center" style="text-align: center;" width="200px">項目名</th>
+                      <th align="center" style="text-align: center;" width="350px">値</th>
+                    </tr>
+                  </thead>*@
+                <tbody>
+                  <tr hidden>
+                    <th></th>
+                    <td>@Html.TextBoxFor(model => Model.CustomerDriverSyaryoData.Customer_DriverSyaryo_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px; padding: 0;" })</td>
+                    <td></td>
+                  </tr>
+                  <tr hidden>
+                    <th></th>
+                    <td>@Html.TextBoxFor(model => Model.CustomerDriverSyaryoData.Customer_Driver_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px; padding: 0;" })</td>
+                    <td></td>
+                  </tr>
+                  <tr hidden>
+                    <th></th>
+                    <td>@Html.TextBoxFor(model => Model.CustomerDriverSyaryoData.Customer_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px; padding: 0;" })</td>
+                    <td></td>
+                  </tr>
+                  <tr hidden>
+                    <th></th>
+                    <td>@Html.TextBoxFor(model => Model.CustomerDriverSyaryoData.Customer_Branch_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px; padding: 0;" })</td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <th>車種</th>
+                    <td colspan="3">
+                      <table width="100%" style="margin: 0px; padding: 0px;">
+                        <tr>
+                          <th style="width: 50px; text-align: right;">車種</th>
+                          <td style="width: 80px;">@Html.TextBoxFor(model => Model.CustomerDriverSyaryoData.Syasyu, null, new { @class = "form-control text-left", @style = "width: 100px; margin-right:0px;", @onblur = "" })</td>
+                          <th></th>
+                          <th style="width: 50px; text-align: right;">型</th>
+                          <td style="width: 80px;">@Html.TextBoxFor(model => Model.CustomerDriverSyaryoData.Kata, null, new { @class = "form-control text-left", @style = "width: 100px;", @onblur = "" })</td>
+                          <th></th>
+                          <th style="width: 50px; text-align: right;">サイズ</th>
+                          <td style="width: 80px;">@Html.TextBoxFor(model => Model.CustomerDriverSyaryoData.SIZE, null, new { @class = "form-control text-left", @style = "width: 100px;", @onblur = "" })</td>
+                          <th></th>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th style="color: red;">開始日</th>
+                    <td>
+                      @Html.TextBoxFor(model => Model.CustomerDriverSyaryoData.Start_Date, "{0:yyyy-MM-dd}", new { @class = "form-control", @style = "width: 150px;", type = "date" })
+                    </td>
+                    <th>終了日</th>
+                    <td>
+                      @Html.TextBoxFor(model => Model.CustomerDriverSyaryoData.End_Date, "{0:yyyy-MM-dd}", new { @class = "form-control", @style = "width: 150px;", type = "date" })
+                    </td>
+                  </tr>
+                  <tr>
+                    <th style="color: red;">車番</th>
+                    <td colspan="3">
+                      <table width="100%" style="margin: 0px; padding: 0px;">
+                        <tr>
+                          <th style="width: 50px; text-align: right;">地域</th>
+                          <td style="width: 80px;">@Html.TextBoxFor(model => Model.CustomerDriverSyaryoData.Syaban_Chiiki, null, new { @class = "form-control text-left", @style = "width: 80px; margin-right:0px;", @onblur = "" })</td>
+                          <th></th>
+                          <th style="width: 50px; text-align: right;">分類</th>
+                          <td style="width: 80px;">@Html.TextBoxFor(model => Model.CustomerDriverSyaryoData.Syaban_Bunrui, null, new { @class = "form-control text-left", @style = "width: 80px;", @onblur = "" })</td>
+                          <th></th>
+                          <th style="width: 50px; text-align: right;">カナ</th>
+                          <td style="width: 80px;">@Html.TextBoxFor(model => Model.CustomerDriverSyaryoData.Syaban_Kana, null, new { @class = "form-control text-left", @style = "width: 80px;", @onblur = "" })</td>
+                          <th></th>
+                          <th style="width: 80px; text-align: right; color: red;">ナンバー</th>
+                          <td style="width: 80px;">@Html.TextBoxFor(model => Model.CustomerDriverSyaryoData.Syaban_Number, null, new { @class = "form-control text-left", @style = "width: 80px;", @onblur = "" })</td>
+                          <th></th>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>備考</th>
+                    <td colspan="3">@Html.TextBoxFor(model => Model.CustomerDriverSyaryoData.REMARKS, null, new { @class = "form-control", @style = "width: 95%;" })</td>
+                  </tr>
+                  <tr>
+                    <th>非表示フラグ</th>
+                    <td colspan="3" style=""><div style="display: flex;">@Html.CheckBoxFor(model => Model.CustomerDriverSyaryoData.Del_Flg, new { @class = "form-control text-left form-check-input" })<span>オンにすると、登録時に選択不可。</span></div></td>
+                  </tr>
+                </tbody>
+              </table>
+
+            </div>
+            <div hidden class="col-4" style="padding-left: 0; margin-top: 0px;">
+              <div class="modal-header" style="">
+                <h4>担当配車</h4>
+                @if (Model.EditEnabled)
+                {
+                  <button type="button" class="btn btn-success" onclick="insertRow(); return false;">行追加</button>
+                }
+              </div>
+
+              <table id="tableHaisyaGroup" width="100%" class="table table-setting table-bordered border-info table-striped" style="margin-top: 10px;">
+                <thead>
+                  <tr align="center" style="background-color:aquamarine; vertical-align: middle;">
+                    <th hidden>Group_ID</th>
+                    <th>担当グループ</th>
+                    <th width="70px">行削除</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @{
+                    var CustomerDataTantouHaisyaGroupList = Model.CustomerDataTantouHaisyaGroupList.ToList();
+                    for (int i = 0; i < CustomerDataTantouHaisyaGroupList.Count; i++)
+                    {
+                      <tr style="vertical-align: middle;">
+                        <td align="center" width="100px" hidden>@Html.TextBoxFor(model => CustomerDataTantouHaisyaGroupList[(int)i].Customer_ID, (string)"{0}", (object)(new { @readonly = "readonly", @class = "form-control text-end", style = "" }))</td>
+
+                        @if (Model.EditEnabled)
+                        {
+                          <td align="center">@Html.DropDownListFor(model => CustomerDataTantouHaisyaGroupList[(int)i].Group_ID, (IEnumerable<SelectListItem>)new SelectList((System.Collections.IEnumerable)Model.CompanyUserGroupList, (string)"Value", (string)"Text", (object)false), (string)"担当配車を選択", (object)(new { @class = "form-control", style = "width: 100%" }))</td>
+                          <td style="vertical-align: middle;" align="center"><input type="button" class="btn btn-warning" value="行削除" onclick="deleteRow(this)" /></td>
+                        }
+                        else
+                        {
+                          <td align="center">@Html.DropDownListFor(model => CustomerDataTantouHaisyaGroupList[(int)i].Group_ID, (IEnumerable<SelectListItem>)new SelectList((System.Collections.IEnumerable)Model.CompanyUserGroupList, (string)"Value", (string)"Text", (object)false), (string)"担当配車を選択", (object)(new { @readonly = true, @class = "form-control", style = "width: 100%" }))</td>
+                          <td></td>
+                        }
+                      </tr>
+                    }
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+  $(function () {
+
+    setTimeout(function () {
+      $('.modal-backdrop')
+        .not('.modal-stack')
+        .css('z-index', 1039)
+        .addClass('modal-stack');
+    }, 0);
+
+
+    $('input[name="CustomerDriverData.Post_Code"]').on('change', function () {
+      //alert("change");
+      var val = $(this).val();
+      val = val.replace('-', '');
+
+      if (val.length == 7) {
+        var address = (zipcodeJa[val] || {}).address || {};
+        $('#CustomerDriverData_Address1').val(address[0] + address[1] + address[2]);
+      }
+
+    });
+
+
+
+  });
+
+
+
+  function regExec() {
+
+    if (varidationCheck()) {
+      return false;
+    }
+
+    //Formの参照を取る
+    var $form = $('#frmMain');
+
+    //alert($form.serialize());
+
+    $.ajax({
+          url: '@Url.RouteUrl("Default", new { controller = "Yosya", Action = "YosyaRegExec" })',
+          type: 'post',
+          data: $form.serialize(),
+        }).done(function (response) {
+          if (response.errorMessage != null) {
+              alertError(`【エラー】${response.errorMessage}`);
+              return false;
+          } else {
+            closeModelAndRefresh();
+            return false;
+          }
+        }).fail(function (xhr) {
+          alertInputError('【ネットワークエラー】:' + xhr);
+            console.log(xhr);
+            return false;
+        }).always(function (xhr, msg) {
+            console.log(xhr, msg);
+        });
+
+  };
+
+
+
+
+  function varidationCheck() {
+
+    if (!($('#CustomerDriverData_Group_ID').val() != null && isNaN($('#CustomerDriverData_Group_ID').val()) == false)) {
+      alertInputError("担当配車が選択されていません");
+      $('#CustomerDriverData_Group_ID').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#CustomerDriverData_Group_ID').css('background-color', 'white');
+    }
+
+    if (!($('#CustomerDriverData_Last_Name').val() != null && $('#CustomerDriverData_Last_Name').val().length > 0)) {
+      alertInputError("性が入力されていません");
+      $('#CustomerDriverData_Last_Name').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#CustomerDriverData_Last_Name').css('background-color', 'white');
+    }
+
+    if (!($('#CustomerDriverData_Display_Name').val() != null && $('#CustomerDriverData_Display_Name').val().length > 0)) {
+      alertInputError("表示名が入力されていません");
+      $('#CustomerDriverData_Display_Name').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#CustomerDriverData_Display_Name').css('background-color', 'white');
+    }
+
+    var objStart = $('#CustomerDriverData_From_Date');
+
+    if (!(objStart.val() != null && objStart.val().length > 0)) {
+      alertInputError("乗務員の開始日が指定されていません");
+      $('#' + objStart.attr('id') + '').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      let datetime = new Date(objStart.val());
+      if (datetime.getFullYear() > 2000) {
+        $('#' + objStart.attr('id') + '').css('background-color', 'white');
+      } else {
+        alertInputError("日時が選択されていません");
+        $('#' + objStart.attr('id') + '').css('background-color', 'lightcoral');
+        return true;
+
+      }
+    }
+
+
+    if (!($('#CustomerDriverSyaryoData_Syaban_Number').val() != null && $('#CustomerDriverSyaryoData_Syaban_Number').val().length > 0)) {
+      alertInputError("車番が入力されていません");
+      $('#CustomerDriverSyaryoData_Syaban_Number').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#CustomerDriverSyaryoData_Syaban_Number').css('background-color', 'white');
+    }
+
+    objStart = $('#CustomerDriverSyaryoData_Start_Date');
+    if (!(objStart.val() != null && objStart.val().length > 0)) {
+      alertInputError("車輌の開始日が指定されていません");
+      $('#' + objStart.attr('id') + '').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      let datetime = new Date(objStart.val());
+      if (datetime.getFullYear() > 2000) {
+        $('#' + objStart.attr('id') + '').css('background-color', 'white');
+      } else {
+        alertInputError("日時が選択されていません");
+        $('#' + objStart.attr('id') + '').css('background-color', 'lightcoral');
+        return true;
+
+      }
+    }
+
+
+    // table要素を取得
+    var tableElem = document.getElementById('tableHaisyaGroup');
+
+    // 行（tr要素）を取得
+    var rowElems = tableElem.rows;
+
+    // 取得した行（tr要素）を繰り返しHTMLを取得
+    var htmlStr = '';
+    for (i = 1, len = rowElems.length; i < len; i++) {
+
+      var GroupID = $('#CustomerDataTantouHaisyaGroupList_' + (i - 1) + '__Group_ID').val();
+
+      if (!(GroupID != null && GroupID.length > 0)) {
+        alertInputError("担当者が未選択です。");
+        $('#CustomerDataTantouHaisyaGroupList_' + (i - 1) + '__Group_ID').css('background-color', 'lightcoral');
+        return true;
+      } else {
+        $('#CustomerDataTaCustomerDataTantouHaisyaGroupList_ntouList_' + (i - 1) + '__Group_ID').css('background-color', 'white');
+      }
+
+      if (checkData(i, GroupID)) {
+        alertInputError("担当者が複数選択されています。");
+        $('#CustomerDataTantouHaisyaGroupList_' + (i - 1) + '__Group_ID').css('background-color', 'lightcoral');
+        return true;
+        }
+
+    };
+
+    return false;
+
+  };
+
+  function checkData(m, paramGroupID) {
+    // table要素を取得
+    var tableElem = document.getElementById('tableHaisyaGroup');
+    // 行（tr要素）を取得
+    var rowElems = tableElem.rows;
+    for (r = 1, lenA = rowElems.length; r < lenA; r++) {
+      if (r != m) {
+        var User_ID = $('#CustomerDataTantouHaisyaGroupList_' + (r - 1) + '__Group_ID').val();
+        if ((User_ID != null && User_ID.length > 0)) {
+          if (User_ID == paramGroupID) {
+            return true;
+          }
+        }
+      }
+    };
+    return false;
+  };
+
+  function insertRow() {
+
+    //alert("insertRow");
+
+    //// テーブル取得
+    //var table = document.getElementById("tableModal");
+    //// 行を行末に追加
+    //var row = table.insertRow(-1);
+    //row.style.verticalAlign = "middle";
+
+    //// セルの挿入
+    //var cell1 = row.insertCell(-1);
+    //var cell2 = row.insertCell(-1);
+    //var cell3 = row.insertCell(-1);
+
+
+    //// 行数取得
+    //var row_len = table.rows.length - 2;
+
+    //// 列非表示
+    //cell1.hidden = true;
+    //cell3.align = "center";
+
+    //// セルの内容入力
+    //cell1.innerHTML = repalceidName(row_len, $("#CustomerDataTantouList_0__Customer_ID").parent().html());
+    //cell2.innerHTML = repalceidName(row_len, $("#CustomerDataTantouList_0__Group_ID").parent().html());
+
+    var newNo = CommonTableInsertRow("row-", "CustomerDataTantouHaisyaGroupList", "tableHaisyaGroup");
+
+    if ($('#BtnCaption').val()) {
+      cell3.innerHTML = '<input type="button" class="btn btn-warning" value="行削除" onclick="deleteRow(this)">';
+    }
+
+    $("#CustomerDataTantouList_" + row_len + "__Customer_ID").val($("#CustomerID").val());
+    $("#CustomerDataTantouList_" + row_len + "__Group_ID").val('');
+  };
+
+  function repalceidName(row_len, html) {
+    html = html.replace("CustomerDataTantouList_0", "CustomerDataTantouList_" + row_len + "");
+    html = html.replace("CustomerDataTantouList[0]", "CustomerDataTantouList[" + row_len + "]");
+    return html;
+  }
+
+  /**
+   * 行削除
+   */
+  function deleteRow(obj) {
+    // 削除ボタンを押下された行を取得
+    tr = obj.parentNode.parentNode;
+
+    if (tr.sectionRowIndex > 0) {
+      // trのインデックスを取得して行を削除する
+      tr.parentNode.deleteRow(tr.sectionRowIndex);
+    }
+
+  };
+
+</script>
+<script src="~/js/EnterKeyCancel.js"></script>

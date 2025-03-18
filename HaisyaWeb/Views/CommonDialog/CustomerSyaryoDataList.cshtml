@@ -1,0 +1,171 @@
+﻿@model CommonDialogModel.SelectCustomerDriverModel
+
+
+<style>
+
+  .table-CustomerDriverlist-input {
+    border: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
+    font-size: initial;
+  }
+
+</style>
+
+
+
+@if (Model.CustomerSyaryoList.Count() == 0)
+{
+  <div style="width: 100%; background: #3366CC ">
+    <h4 style="text-align:left; margin-left: 20px;color: white;">データ無し</h4>
+  </div>
+}
+
+
+<table id="myTable" class="ex_table-CustomerDriver table table-sm table-bordered border-info" width="100%" border="1">
+  <thead style="background-color: chartreuse;  ">
+    <tr align="center">
+      <th rowspan="2" class="ex-table-th" style="vertical-align: middle;">選択</th>
+      
+      <th class="ex-table-th" style="width: 80px; text-align: center;">
+        車種
+      </th>
+      <th class="ex-table-th" style="width: 80px; text-align: center;">
+        型
+      </th>
+      <th colspan="2" class="ex-table-th" style="width: 200px; text-align: center;">
+        車番
+      </th>
+    </tr>
+    <tr>
+      <th class="ex-table-th" style="">
+        担当開始日
+      </th>
+      <th class="ex-table-th" style="">
+        担当終了日
+      </th>
+      <th class="ex-table-th" style="width: 80px; text-align: center;">
+        コード
+      </th>
+      <th class="ex-table-th" style="width : auto;">
+        乗務員名
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    @{
+      int i = 1;
+    }
+    @foreach (var item in Model.CustomerSyaryoList.OrderBy(m => m.Syasyu).ThenBy(m => m.Kata).ThenBy(m => m.Syaban_Number).ToList())
+    {
+      var customerBranch = Model.CustomerBranchList.FirstOrDefault(m => m.Customer_Branch_ID == item.Customer_Branch_ID);
+      int rem;
+      int div = Math.DivRem(i, 2, out rem);
+      string color = rem == 0 ? "khaki" : "	whitesmoke";
+
+      bool flgDisplay = true;
+
+      if (flgDisplay)
+      {
+    <tr style="font-size: 12px; font-weight: bold; background-color: @(color);">
+      <td rowspan="2" width="60px" style="vertical-align: middle;">
+        <button name="btnSelectData" class="btn btn-success" style="width: 100%; padding:0;">選択</button>
+      </td>
+
+
+
+      <td style="text-align: center;">@(item.Syasyu)</td>
+      <td style="text-align: center;">@(item.Kata)</td>
+      <td style="text-align: center;" colspan="2">@(item.Syaban_Chiiki) @(item.Syaban_Bunrui) @(item.Syaban_Kana) @(item.Syaban_Number)</td>
+
+      <td hidden>
+        @Html.TextBoxFor(modelItem => customerBranch.Customer_Branch_Name_Abbr, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.Customer_Driver_ID, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.Customer_Driver_ID, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.Customer_Branch_ID, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.Customer_DriverSyaryo_ID, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.Customer_ID, null, new { @readonly = "readonly", })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.Employee_Number, null, new { @readonly = "readonly", @class = "table-CustomerDriverlist-input", @style = "width:70px;text-align: center;" })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.FULL_SYABAN, null, new { @readonly = "readonly", @class = "table-CustomerDriverlist-input", @style = "width:70px;text-align: center;" })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.Syasyu, null, new { @readonly = "readonly", @class = "table-CustomerDriverlist-input", @style = "width:80px;text-align: center;" })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.Kata, null, new { @readonly = "readonly", @class = "table-CustomerDriverlist-input", @style = "width:70px;text-align: center;" })
+      </td>
+      <td hidden>
+        @Html.DisplayFor(modelItem => item.Syaban_Chiiki) @Html.DisplayFor(modelItem => item.Syaban_Bunrui) @Html.DisplayFor(modelItem => item.Syaban_Kana) @Html.DisplayFor(modelItem => item.Syaban_Number)
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.Syaban_Number, null, new { @readonly = "readonly", @class = "table-CustomerDriverlist-input", @style = "width:120px;text-align: center;" })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.From_Date, "{0:yy/MM/dd}", new { @readonly = "readonly", @class = "table-CustomerDriverlist-input", @style = "width:80px; text-align: center;" })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.To_Date, "{0:yy/MM/dd}", new { @readonly = "readonly", @class = "table-CustomerDriverlist-input", @style = "width:80px; text-align: center;" })
+      </td>
+      <td hidden>
+        @Html.TextBoxFor(modelItem => item.Display_Name, null, new { @readonly = "readonly", @class = "table-CustomerDriverlist-input", @style = "width:120px;text-align: center;" })
+      </td>
+    </tr>
+    <tr style="font-size: 12px; font-weight: bold; background-color: @(color); height: 20px; border-bottom: double;">
+
+      <td style="text-align:center;">
+        @Convert.ToDateTime(item.From_Date).ToString("yy/MM/dd")
+      </td>
+      <td style="text-align:center;">
+        @if (item.To_Date != null)
+        {
+          @Convert.ToDateTime(item.To_Date).ToString("yy/MM/dd")
+        }
+      </td>
+      <td style="text-align: center;">@(item.Employee_Number)</td>
+      <td style="text-align:left;">
+        @Html.DisplayFor(modelItem => item.Display_Name)
+      </td>
+
+    </tr>
+      }
+
+
+      i++;
+    }
+  </tbody>
+</table>
+
+
+
+<script>
+
+  $(function () {
+
+
+    $('button[name="btnSelectData"]').on('click', function () {
+
+      let result = SelectCommonDialog($(this));
+
+      selectOnClick(result);
+
+    });
+
+
+  });
+
+</script>

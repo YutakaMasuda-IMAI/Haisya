@@ -1,0 +1,344 @@
+﻿body {
+}
+
+
+.map-page-container {
+    display: flex;
+    margin: 0;
+    padding: 0;
+}
+
+.map-container {
+    height: calc(100vh);
+    flex-grow: 1;
+    position: relative;
+}
+
+.map-container2 {
+    flex-grow: 1;
+    position: relative;
+}
+
+.maiForm {
+    height: 1200px;
+}
+
+.routedisplay {
+    border: none !important;
+}
+
+img.ui-datepicker-trigger {
+    cursor: pointer;
+    margin-left: 7px !important;
+    vertical-align: top;
+    margin: 3px 0 0 3px;
+    height: 25px;
+}
+
+table.table-hedder {
+    margin: 0 0 2px 0;
+}
+
+    table.table-hedder th {
+        /*border: 1px solid black;*/
+        vertical-align: middle;
+        padding: 0;
+    }
+
+    table.table-hedder tr {
+        height: 35px;
+    }
+
+table.ex_tableAnkenList {
+    /*table-layout: fixed;*/
+    border: 5px;
+}
+
+    table.ex_tableAnkenList th {
+        font-size: 13px;
+        padding: 0.0rem 0.1rem 0.0rem 0.1rem;
+        vertical-align: middle;
+        border: 1px solid lightgrey;
+    }
+
+    table.ex_tableAnkenList tr {
+    }
+
+    table.ex_tableAnkenList td {
+        font-size: 12px;
+        padding: 0.0rem 0.1rem 0.0rem 0.2rem;
+        overflow: hidden;
+        color: black;
+        vertical-align: middle;
+        border: 1px solid lightgrey;
+    }
+
+/*    table.ex_tableAnkenList tr:nth-child(2n+1) td {
+        background: #e7fbb5;
+    }*/
+
+    table.ex_tableAnkenList .odd {
+        background-color: #eee;
+    }
+
+    table.ex_tableAnkenList .even {
+        background-color: #e7fbb5;
+    }
+
+    table.ex_tableAnkenList .haisya {
+        background-color: aquamarine;
+    }
+
+table.ex_DriverList {
+    border: 5px;
+}
+
+    table.ex_DriverList th {
+        font-size: 14px;
+        padding: 0.2rem 0.1rem 0.2rem 0.1rem;
+        vertical-align: middle;
+        color: black;
+        border: 1px solid lightgrey;
+        text-align: center;
+        background-color: aquamarine;
+    }
+
+    table.ex_DriverList tr {
+    }
+
+    table.ex_DriverList td {
+        font-size: 14px;
+        padding: 0.2rem 0.2rem 0.2rem 0.3rem;
+        overflow: hidden;
+        color: black;
+        border: 1px solid lightgrey;
+    }
+
+    table.ex_DriverList tr:nth-child(2n+1) td {
+        background-color: beige;
+    }
+
+
+.btn-anken {
+    text-align: center;
+    background-color: PaleTurquoise;
+    display: block;
+    text-decoration: none;
+    color: black;
+    box-shadow: 3px 3px gray;
+    margin: 1px;
+    border-radius: 5px;
+    padding: 0;
+}
+
+.btnCircle {
+    text-align: center;
+    background-color: gold;
+    display: block;
+    text-decoration: none;
+    color: black;
+    box-shadow: 3px 3px gray;
+    margin: 1px;
+    border-radius: 50%;
+    width: 100%;
+    font-size: 20px;
+    padding: 0;
+    display: inline-block;
+}
+
+.btnAddressList {
+    width: 380px;
+    /*    height: 30px;*/
+    text-align: center;
+    padding: 5px 10px;
+    background-color: PaleTurquoise;
+    display: block;
+    text-decoration: none;
+    color: black;
+    box-shadow: 2px 2px gray;
+    margin: 5px;
+    border-radius: 5px;
+}
+
+
+.btnBuildingList {
+    width: 380px;
+    /*    height: 30px;*/
+    text-align: center;
+    padding: 5px 10px;
+    background-color: yellow;
+    display: block;
+    text-decoration: none;
+    color: black;
+    box-shadow: 2px 2px gray;
+    margin: 5px;
+    border-radius: 5px;
+}
+
+
+.label-Title {
+    padding: 0;
+    margin: 0;
+    line-height: 100%;
+}
+
+.label-Title-Required {
+    padding: 0;
+    margin: 0;
+    line-height: 100%;
+    color: #ff00dc;
+    font-weight: bold;
+}
+
+
+.col-form-label2 {
+    margin-bottom: 0;
+    font-size: inherit;
+    line-height: 1.5;
+}
+
+
+.form-control2 {
+    padding: 0;
+}
+
+.tableInputMain {
+    /*border: 1px solid #e8e8e8;*/
+    /*border-color: lightgray;*/
+    width: 100%;
+}
+
+    .tableInputMain th {
+        background: #FFFF66;
+        font-weight: normal;
+        width: 110px;
+        text-align: center !important;
+        border-top: 1px solid black;
+        border-left: 1px solid black;
+        border-bottom: 1px solid black;
+        border-right: 1px solid black;
+    }
+
+    .tableInputMain td {
+        width: 40%;
+        border-top: 1px solid black;
+        border-left: 1px solid black;
+        border-bottom: 1px solid black;
+        border-right: 1px solid black;
+    }
+
+.kakoSerch::after {
+    content: "過去";
+    color: #ffffff;
+    background-color: blue;
+    font-size: 0.5em;
+    padding: 0.3em;
+    border-radius: 0.5em;
+    margin-left: 0.3em;
+}
+
+
+.display-text {
+    color: green;
+}
+
+.dropDownList {
+    border: 1px solid lightcoral;
+    /*border-color: lightgray;*/
+}
+
+.inputbox {
+    border: 1px solid black;
+    /*border-color: lightgray;*/
+}
+
+.input-anken {
+    padding: 0;
+}
+
+
+
+.table-anekn th {
+    border-width: .1rem;
+    padding: 0;
+}
+
+.table-anekn td {
+    border-width: .1rem;
+    padding: 0;
+
+}
+
+
+.contact-form {
+    /*border: 1px solid #ccc;*/
+    padding: 10px;
+    font-size: 13px;
+    font-family: sans-serif;
+}
+
+    .contact-form .item {
+        display: block;
+        overflow: hidden;
+        margin-bottom: 10px;
+    }
+
+    .contact-form .item2 {
+        display: block;
+        overflow: hidden;
+        margin-bottom: 1px;
+    }
+
+
+    .contact-form .item.no-label {
+        padding: 5px 0px 5px 60px;
+    }
+
+        .contact-form .item .label {
+            float: left;
+            padding: 5px;
+            margin: 0;
+            font-size: 16px;
+            width: 120px;
+        }
+
+        .contact-form .item .radio-group {
+            padding: 5px 5px 5px 5px;
+            display: inline-block;
+            font-size: 20px;
+            border: .2em solid #00FF00;
+            border-radius: 5px;
+        }
+
+        .contact-form .item .radio-group .btn {
+            margin-right: 0.3rem;
+        }
+
+        .contact-form .item .list {
+            padding: 5px 5px 5px 5px;
+            display: inline-block;
+            font-size: 20px;
+            width: auto;
+        }
+
+        .contact-form .item .select-button {
+            display: inline-block;
+            font-size: 20px;
+            width: auto;
+            width: 70px;
+            vertical-align: baseline;
+        }
+
+
+        .contact-form .item input[type=text],
+        .contact-form .item input[type=datetime-local],
+        .contact-form .item input[type=email],
+        .contact-form .item textarea {
+            display: inline-block;
+            /*margin-left: 10px;*/
+            padding: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+            font-size: 20px;
+  
+        }

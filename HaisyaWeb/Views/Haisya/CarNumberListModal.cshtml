@@ -1,0 +1,293 @@
+@model HaisyaWeb.Dto.SyabanRenrakuCustomModel
+
+@{
+  Layout = "_ModalLayout";
+}
+@{
+  // C#コード
+  var SyabanRenrakuModel3 = Newtonsoft.Json.JsonConvert.SerializeObject(Model.SyabanRenrakuModel3);
+  var CarNumberLists = Newtonsoft.Json.JsonConvert.SerializeObject(Model.CarNumberLists);
+}
+
+<link href="~/css/List.css" rel="stylesheet" />
+<link href="~/css/Entry.css" rel="stylesheet" />
+
+<style>
+.button-container {
+  margin-top: 10px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+.button-container button {
+  font-size: 16px;
+  padding: 4px 80px;
+  margin: 0 30px;
+}
+
+.form-control {
+  border: none;
+  background: transparent;
+}
+
+textarea.form-control {
+  resize: none;
+  height: 100%;
+  padding: 0;
+  min-height: 0;
+  font-size: 12px;
+}
+</style>
+
+<div role="dialog" aria-hidden="true" tabindex="-1" class="modal fade" style="z-index: 1040;">
+  <div class="modal-dialog" role="document" style="max-width:1300px; max-height:600px">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-3" id="exampleModalLabel">車番連絡送信</h1>
+        <a href="#" data-dismiss="modal" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</a>
+      </div>
+      <div class="table-div" style="padding:5px;">
+        <table class="no-line">
+          <tr>
+            <th>配車日</th>
+            <td>
+              @Convert.ToDateTime(Model.SyabanRenrakuModel3.TargetDate).ToString("yyyy/MM/dd")
+            </td>
+            <td colspan="5"></td>
+          </tr>
+          <tr>
+            <th>顧客コード</th>
+            <td>@(Model.SyabanRenrakuModel3.Customer_Code)</td>
+            <th>顧客名</th>
+            <td>@(Model.SyabanRenrakuModel3.Customer_Name_Abbr)</td>
+            <td colspan="3"></td>
+          </tr>
+          <tr>
+            <th width="80px">担当者名</th>
+            <td width="200px">@(Model.SyabanRenrakuModel3.Tantou_Name_Abbr)</td>
+            <th width="80px">メールアドレス1</th>
+            <td width="300px">@(Model.SyabanRenrakuModel3.MailAddress1)</td>
+            <th width="80px">メールアドレス2</th>
+            <td width="300px">@(Model.SyabanRenrakuModel3.MailAddress2)</td>
+            <td></td>
+          </tr>
+          <tr>
+            <th>電話番号</th>
+            <td>@(Model.SyabanRenrakuModel3.Phone1)</td>
+            <td colspan="5"></td>
+          </tr>
+        </table>
+
+        <div class="button-container">
+          <button type="button" class="btn btn-outline-success" onclick="callHaisya3(1)">送信</button>
+          <button type="button" class="btn btn-outline-info" onclick="callHaisya3(2)">印刷</button>
+        </div>
+
+        <table id="myTable" class="table ex_DataList search-list" style="" border="1">
+          <thead>
+            <tr align="center">
+              <th width="60px">ステータス</th>
+              <th width="50px">車番</th>
+              <th width="60px">担当配車</th>
+              <th width="80px">傭車1</th>
+              <th width="80px">傭車2</th>
+              <th width="80px">傭車3</th>
+              <th width="80px">積日</th>
+              <th width="80px">卸日</th>
+              <th width="120px">積み場所</th>
+              <th width="120px">卸し場所</th>
+              <th width="120px">荷物</th>
+              <th width="120px">工事名</th>
+              <th width="60px">暫定金額</th>
+              <th width="60px">確定金額</th>
+              <th>備考</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (int i = 0; i < Model.CarNumberLists.Count(); i++)
+            {
+              var color = i % 2 == 0 ? "row-even" : "row-odd";
+              var item = Model.CarNumberLists[i];
+              <tr>
+                <td class="@(color)" align="center">
+                  @{
+                    string Anken_Status_Display = "";
+                    Anken_Status_Display = item.Anken_Status == 0 ? "確定" :
+                                item.Anken_Status == 1 ? "暫定" :
+                                item.Anken_Status == 1 ? "暫定(配車不要)" :
+                                "";
+                  }
+                  @Html.DisplayFor(modelItem => Anken_Status_Display)
+                </td>
+                <td class="@(color)" align="center">
+                  @Html.DisplayFor(modelItem => item.SYABAN)
+                </td>
+                <td class="@(color)">
+                  @Html.DisplayFor(modelItem => item.Tantou_Name)
+                </td>
+                <td class="@(color)">
+                  @Html.DisplayFor(modelItem => item.Yosya_Display1)
+                </td>
+                <td class="@(color)">
+                  @Html.DisplayFor(modelItem => item.Yosya_Display2)
+                </td>
+                <td class="@(color)">
+                  @Html.DisplayFor(modelItem => item.Yosya_Display3)
+                </td>
+                <td class="@(color)" align="center">
+                  @Convert.ToDateTime(item.StartDatetime).ToString("yyyy/MM/dd")
+                </td>
+                <td class="@(color)" align="center">
+                  @Convert.ToDateTime(item.EndDatetime).ToString("yyyy/MM/dd")
+                </td>
+                <td class="@(color)">
+                  @Html.DisplayFor(modelItem => item.StartAddressDisplay3)
+                </td>
+                <td class="@(color)">
+                  @Html.DisplayFor(modelItem => item.EndAddressDisplay3)
+                </td>
+                <td class="@(color)">
+                  @Html.DisplayFor(modelItem => item.Luggage)
+                </td>
+                <td class="@(color)">
+                  @Html.DisplayFor(modelItem => item.Work_Name)
+                </td>
+                <td class="@(color)" align="right">
+                  @Convert.ToInt32(item.ZanteiAmount).ToString("#,0")
+                </td>
+                <td class="@(color)" align="right">
+                  @Convert.ToInt32(item.KakuteiAmount).ToString("#,0")
+                </td>
+                <td class="@(color)" align="center">
+                  <textarea id="remarks_@(item.AnkenDisplay_ID)" name="Remarks" class="form-control"
+                        rows="1"
+                        onchange="updateRemarks(@(item.AnkenDisplay_ID), this.value)">@item.Remarks</textarea>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  var SyabanRenrakuModel3 = @Html.Raw(SyabanRenrakuModel3);
+  var CarNumberLists = @Html.Raw(CarNumberLists);
+
+  var updatedRemarks = {};
+
+  function updateRemarks(ankenDisplayId, value) {
+    updatedRemarks[ankenDisplayId] = value;
+  }
+
+  $(document).ready(function () {
+    CarNumberLists.forEach(function (item) {
+      var remarksValue = item.Remarks != null ? item.Remarks : "";
+      updateRemarks(item.AnkenDisplay_ID, remarksValue);
+    });
+  });
+
+  $(function () {
+    setTimeout(function () {
+      $('.modal-backdrop')
+        .not('.modal-stack')
+        .css('z-index', 1039)
+        .addClass('modal-stack');
+    }, 0);
+  });
+
+  function callHaisya3(renrakuKubun) {
+    var printDate = new Date();
+    var remarks = "";
+    var postDataList = [];
+
+    var postData = {
+      printDate: printDate,
+      tantouId: SyabanRenrakuModel3.TantouId,
+      CustomerBranchId: SyabanRenrakuModel3.CustomerId,
+      mailAddress1: SyabanRenrakuModel3.MailAddress1,
+      mailAddress2: SyabanRenrakuModel3.MailAddress2,
+      ankenId: SyabanRenrakuModel3.AnkenId,
+      renrakuKubun: renrakuKubun,
+      remarks: remarks,
+      remarksList: "",
+      Group_ID: SyabanRenrakuModel3.GroupID,
+      Day: SyabanRenrakuModel3.TargetDate,
+    };
+
+    var remarksList = [];
+    for (var ankenDisplayId in updatedRemarks) {
+      remarksList.push(ankenDisplayId + ":" + updatedRemarks[ankenDisplayId]);
+    }
+    postData.remarksList = remarksList.join(",");
+
+    postDataList.push(postData);
+    if (postDataList.length > 0) {
+      $.ajax({
+        url: '@Url.RouteUrl("Default", new { controller = "Haisya", action = "PostSyabanRenraku" })',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(postDataList),
+        success: function (response) {
+          if (response.errorMessage != null) {
+            alertError(`【エラー】${response.errorMessage}`);
+          }
+        },
+        error: function (xhr) {
+          alertError('【ネットワークエラー】:' + xhr);
+          console.log(xhr);
+        },
+        complete: async function (xhr, msg) {
+
+          if (renrakuKubun == 2) {
+            exportPDF("SYABAN_LIST");
+          }
+        }
+      });
+    }
+  }
+
+  function exportPDF(report_type) {
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "Haisya", action = "GetHaisyaData" })',
+      type: 'GET',
+      contentType: 'application/json',
+      data: {
+        Haisya_ID: SyabanRenrakuModel3.HaisyaID
+      },
+      success: function (response) {
+        if (response.message != null) {
+          alertError(`【エラー】${response.message}`);
+        }
+
+        const haisyaData = response?.data?.haisya;
+        const haisyaYosyaData = response?.data?.haisyaYosya;
+        const procedureParamater = {
+          ankenId: haisyaData?.anken_ID ? haisyaData?.anken_ID.toString() : undefined,
+          ankenDisplayId: haisyaData?.ankenDisplay_ID ? haisyaData?.ankenDisplay_ID.toString() : undefined,
+          haisyaId: haisyaData?.haisya_ID ? haisyaData?.haisya_ID.toString() : undefined,
+          day: haisyaData?.day,
+          customerBranchId: haisyaYosyaData?.yosya_Branch_ID ? haisyaYosyaData?.yosya_Branch_ID.toString() : undefined,
+        }
+
+        const url = '@Url.RouteUrl("Default", new { controller = "Report", action = "PreviewPDFReportByReportType" })' + '/' + report_type;
+
+        $("#form-pdf-export").remove();
+
+        const form = $('<form id="form-pdf-export" target="_blank" method="post" action="' + url + '"></form>');
+        form.append('<input type="hidden" name="searchJson" value="' + encodeURIComponent(JSON.stringify(procedureParamater)) + '" />');
+        $('body').append(form);
+        form.submit();
+
+        return false;
+      },
+      error: function (xhr) {
+        alertError('【ネットワークエラー】:' + xhr);
+      },
+      complete: async function (xhr, msg) {}
+    });
+  }
+</script>

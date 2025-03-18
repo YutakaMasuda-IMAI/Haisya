@@ -1,0 +1,1236 @@
+﻿@model HaisyaWeb.Models.CustomerBranchModalDto
+
+@{
+  Layout = "_ModalLayout";
+}
+
+
+<style>
+
+  .tab_class {
+    width: calc(100%/5);
+    height: 50px;
+    background-color: aquamarine;
+    line-height: 50px;
+    font-size: 15px;
+    text-align: center;
+    display: block;
+    float: left;
+    order: -1;
+    border: double;
+  }
+
+  input[name="tab_name"] {
+    display: none;
+  }
+
+  input:checked + .tab_class {
+    background-color: cadetblue;
+    color: aliceblue;
+  }
+
+  .content_class {
+    display: none;
+    width: 100%;
+  }
+
+  input:checked + .tab_class + .content_class {
+    display: block;
+  }
+
+  /*  .float-left {
+    float: left;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }
+
+  .float-right {
+    float: right;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }*/
+
+  .readonly {
+    background-color: lightgray;
+  }
+
+  .table-customer-tantou th {
+    padding: 0.1rem;
+  }
+
+    table tbody tr th {
+        align-content: center;
+    }
+
+    select {
+        padding: 0 0 0 0.5rem;
+    }
+
+    input {
+        padding: 0 0 0 0.5rem;
+    }
+
+  .div-content {
+    margin: auto;
+    flex-wrap: wrap;
+    display: flex;
+    padding: 0 5px 0 5px
+  }
+</style>
+
+
+<div class="modal-dialog modal-dialog-centered" role="document" style="">
+  <div class="modal-content">
+    <div id="divCustomerBranchBody" class="model-body">
+      <div>
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmCustomerBranch", @onsubmit = "return false;" }))
+        {
+        <div id="hidden" hidden>
+          @Html.HiddenFor(model => Model.EditEnabled)
+          @Html.HiddenFor(model => Model.CompanyID)
+          @Html.HiddenFor(model => Model.CustomerID)
+          @Html.HiddenFor(model => Model.CustomerData.Customer_ID)
+          @Html.HiddenFor(model => Model.CustomerData.Yosya_Flg)
+          @Html.HiddenFor(model => Model.CustomerBranchID)
+          @Html.HiddenFor(model => Model.CustomerBranchData.Toll_Kubun)
+          <input type="hidden" id="SelectCustomerModalKubun" />
+        </div>
+
+          <div class="div-content">
+            <input type="radio" name="tab_name" id="tab1" checked>
+            <label class="tab_class" for="tab1">全般</label>
+            <div class="content_class">
+              <div class="contents-wrap-middle" style="margin: 10px;">
+                <h4 class="">注意</h4>
+                <span>
+                  ・この画面で入力内容を
+                  ・一度データを登録すると物理削除は出来ません。「非表示フラグ」を立ててください。
+                </span>
+              </div>
+              <table class="table table-striped-columns table-bordered border-primary" border="1" style="margin: 10px; width:96%;">
+                <thead>
+                  <tr style="background-color: aquamarine;">
+                    <th width="100px" align="center" style="text-align: center;">項目名</th>
+                    <th width="350px" align="center" style="text-align: center;">値</th>
+                    <th width="100px" align="center" style="text-align: center;">項目名</th>
+                    <th width="350px" align="center" style="text-align: center;">値</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr hidden>
+                    <th></th>
+                    <td>@Html.TextBoxFor(model => Model.CustomerBranchData.Customer_ID, null, new { @class = "form-control text-left", @onblur = "", @style = "width: 95%;" })</td>
+                    <th></th>
+                    <td>@Html.TextBoxFor(model => Model.CustomerBranchData.Customer_Branch_ID, null, new { @class = "form-control text-left", @onblur = "", @style = "width: 95%;" })</td>
+                  </tr>
+                  <tr>
+                    <th>顧客コード</th>
+                    <td style="display: flex;">
+                      @Html.TextBoxFor(model => Model.CustomerData.Customer_Code, null, new { @readonly = "", @class = "form-control text-left readonly", @onblur = "", @style = "width: 100px;" })
+                      <span style="width:2rem;"></span>
+                      <label style="text-align: right; align-content: center;">@((Model.CustomerData.Yosya_Flg == 0) ? "傭車フラグ無し": "傭車フラグあり" )</label>
+                      @if (Model.EditEnabled)
+                      {
+                      <span style="width:2rem;"></span>
+                      <button class="btn btn-success" onclick="openCommonDialogForCustomer(); return false;">親の付替え</button>
+                      }
+                    </td>
+                    <th>顧客名</th>
+                    <td>@Html.TextBoxFor(model => Model.CustomerData.Customer_Name, null, new { @readonly = "", @class = "form-control text-left readonly", @onblur = "", @style = "width: 95%;" })</td>
+                  </tr>
+                  <tr>
+                    <th style="color: red;">得意先コード</th>
+                    <td style="display: flex;">
+                      @Html.TextBoxFor(model => Model.CustomerBranchData.Customer_Branch_Code_Trac_Tokuisaki, null, new { @class = "form-control text-left", @style = "width: 100px;" })
+                      <span style="width:2rem;"></span>
+                      <label style="text-align: right; align-content: center;">ﾄﾗｯｸﾒｲﾄ連携ｺｰﾄﾞ</label>
+                    </td>
+                    <th style="color: red;">傭車先コード</th>
+                    <td >
+                      <div style="display: flex;">
+                        @Html.TextBoxFor(model => Model.CustomerBranchData.Customer_Branch_Code_Trac_Yosyasaki, null, new { @class = "form-control text-left YosyaFlg", @style = "width: 100px;" })
+                        <span class="YosyaFlg" style="width:2rem;"></span>
+                        <label class="YosyaFlg" style="text-align: right; align-content: center;">ﾄﾗｯｸﾒｲﾄ連携ｺｰﾄﾞ</label>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th style="color: red;">支店コード</th>
+                    <td>
+                      @Html.TextBoxFor(model => Model.CustomerBranchData.Customer_Branch_Code, null, new { @class = "form-control text-left", @style = "width: 100px;" })
+                    </td>
+                    <th style="">法人番号</th>
+                    <td>
+                      @Html.TextBoxFor(model => Model.CustomerBranchData.Customer_Branch_Number, null, new { @class = "form-control text-left", @style = "width: 200px;" })
+                    </td>
+                  </tr>
+                  <tr>
+                    <th style="color: red;">支店正式名称</th>
+                    <td>
+                      @Html.TextBoxFor(model => Model.CustomerBranchData.Customer_Branch_Name, null, new { @class = "form-control text-left", @style = "width: 95%;" })
+                    </td>
+                    <th style="color: red;">表示名</th>
+                    <td>
+                      @Html.TextBoxFor(model => Model.CustomerBranchData.Customer_Branch_Name_Abbr, null, new { @class = "form-control text-left", @style = "width: 80%;" })
+                    </td>
+                  </tr>
+                  <tr>
+                    <th style="color: red;">支店名カナ</th>
+                    <td>
+                      @Html.TextBoxFor(model => Model.CustomerBranchData.Customer_Branch_Name_Kana, null, new { @class = "form-control text-left", @style = "width: 80%;" })
+                    </td>
+                    <th style="color: red;"></th>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <th style="color: red;">郵便番号</th>
+                    <td>
+                      @Html.TextBoxFor(model => Model.CustomerBranchData.Customer_Branch_Post, null, new { @class = "form-control text-left", @style = "width: 100px;" })
+                    </td>
+                    <th style="color: red;">住所１</th>
+                    <td>
+                      @Html.TextBoxFor(model => Model.CustomerBranchData.Customer_Branch_Address1, null, new { @class = "form-control text-left", @style = "width: 95%;" })
+                    </td>
+                  </tr>
+                  <tr>
+                    <th style="">住所２</th>
+                    <td>
+                      @Html.TextBoxFor(model => Model.CustomerBranchData.Customer_Branch_Address2, null, new { @class = "form-control text-left", @style = "width: 95%;" })
+                    </td>
+                    <th style="">住所３</th>
+                    <td>
+                      @Html.TextBoxFor(model => Model.CustomerBranchData.Customer_Branch_Address3, null, new { @class = "form-control text-left", @style = "width: 95%;" })
+                    </td>
+                  </tr>
+                  <tr>
+                    <th style="color: red;">電話番号1</th>
+                    <td>
+                      @Html.TextBoxFor(model => Model.CustomerBranchData.Customer_Branch_Phone1, null, new { @class = "form-control text-left", @style = "width: 180px;" })
+                    </td>
+                    <th style="">電話番号2</th>
+                    <td>
+                      @Html.TextBoxFor(model => Model.CustomerBranchData.Customer_Branch_Phone2, null, new { @class = "form-control text-left", @style = "width: 180px;" })
+                    </td>
+                  </tr>
+                  <tr>
+                    <th style="color: red;">FAX番号1</th>
+                    <td>
+                      @Html.TextBoxFor(model => Model.CustomerBranchData.Customer_Branch_Fax1, null, new { @class = "form-control text-left", @style = "width: 180px;" })
+                    </td>
+                    <th style="">FAX番号2</th>
+                    <td>
+                      @Html.TextBoxFor(model => Model.CustomerBranchData.Customer_Branch_Fax2, null, new { @class = "form-control text-left", @style = "width: 180px;" })
+                    </td>
+                  </tr>
+                  <tr>
+                    <th style="">ﾒｰﾙ宛名</th>
+                    <td>
+                      @Html.TextBoxFor(model => Model.CustomerBranchData.Mail_Title, null, new { @class = "form-control text-left", @style = "width: 80%;" })
+                    </td>
+                    <th style="color: red;"></th>
+                    <td>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th style="">ﾒｰﾙｱﾄﾞﾚｽ1</th>
+                    <td>
+                      @Html.TextBoxFor(model => Model.CustomerBranchData.Mail_Address1, null, new { @class = "form-control text-left", @style = "width: 80%;" })
+                    </td>
+                    <th style="">ﾒｰﾙｱﾄﾞﾚｽ2</th>
+                    <td>
+                      @Html.TextBoxFor(model => Model.CustomerBranchData.Mail_Address2, null, new { @class = "form-control text-left", @style = "width: 80%;" })
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>非表示フラグ</th>
+                    <td class="">
+                      <div style="display: inline-flex;">
+                        @Html.CheckBoxFor(model => Model.CustomerBranchData.Del_Flg, new { @class = "form-control text-left form-check-input" })
+                        <label style="margin-left: 20px; font-size: 11px;">※オンにすると、登録時に選択不可。</label>
+                      </div>
+                    </td>
+                  </tr>
+                  <tr hidden>
+                    <th style="color: red;">登録者</th>
+                    <td>
+                      @Html.TextBoxFor(model => Model.CustomerBranchData.Insert_User, null, new { @class = "form-control text-left", @style = "width: 200px;" })
+                    </td>
+                    <th style="color: red;">更新者</th>
+                    <td>
+                      @Html.TextBoxFor(model => Model.CustomerBranchData.Update_User, null, new { @class = "form-control text-left", @style = "width: 200px;" })
+                    </td>
+                  </tr>
+                  <tr>
+                    <th>登録年月日:</th>
+                    <td>@Convert.ToDateTime(Model.CustomerBranchData.Insert_Datetime).ToString("yyyy/MM/dd HH:mm:ss")</td>
+                    <th>最終更新日:</th>
+                    <td>@Convert.ToDateTime(Model.CustomerBranchData.Update_Datetime).ToString("yyyy/MM/dd HH:mm:ss")</td>
+                  </tr>
+                  <tr hidden>
+                    <th>登録年月日</th>
+                    <td hidden>@Html.TextBoxFor(model => Model.CustomerBranchData.Insert_Datetime, null, new { @class = "form-control" })</td>
+                    <th>最終更新日</th>
+                    <td hidden>@Html.TextBoxFor(model => Model.CustomerBranchData.Update_Datetime, null, new { @class = "form-control" })</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="modal-header" style="padding-top: 0; padding-bottom: 0; margin-right: 2rem;">
+                <h4>顧客担当</h4>
+                <button type="button" class="btn btn-success" onclick="insertRow(); return false;">行追加</button>
+              </div>
+              <table id="tableTantou" class="table table-bordered border-primary table-customer-tantou" border="1" style="margin: 10px; width:96%;">
+                <thead>
+                  <tr style="background-color: aquamarine;">
+
+                    <th hidden rowspan="2">Tantou_ID</th>
+                    <th hidden rowspan="2">Customer_ID</th>
+                    <th hidden rowspan="2">Company_ID</th>
+                    <th hidden rowspan="2">Customer_Branch_ID</th>
+
+
+                    <th width="25%" align="center" style="text-align: center; color: red;">担当者名</th>
+                    <th width="25%" align="center" style="text-align: center; color: red;">表記名</th>
+                    <th width="25%" align="center" style="text-align: center;">担当者名カナ</th>
+                    <th width="15%" align="center" style="text-align: center;">部署名</th>
+                    <th width="10%" align="center" style="text-align: center;">役職名</th>
+                    <th rowspan="3" max-width="20px" width="20px" style="writing-mode: vertical-lr; text-align: center; align-content: center;">削除</th>
+                  </tr>
+
+                  <tr style="background-color: aquamarine;">
+                    <th align="center" style="text-align: center;">メールアドレス１</th>
+                    <th align="center" style="text-align: center;">メールアドレス２</th>
+                    <th colspan="3" width="40%" align="center" style="text-align: center;">メール宛名</th>
+                  </tr>
+                  <tr style="background-color: aquamarine;">
+                    <th align="center" style="text-align: center;">電話番号１</th>
+                    <th align="center" style="text-align: center;">電話番号２</th>
+                    <th align="center" style="text-align: center;">FAX番号１</th>
+                    <th align="center" style="text-align: center;">FAX番号２</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @{
+                    var CustomerTantouList = Model.CustomerTantouList.OrderBy(m => m.Tantou_Code).ThenBy(m => m.Tantou_ID).ToList();
+                    for (int i = 0; i < CustomerTantouList.Count; i++)
+                    {
+                      <tr id="row-@(i)-1" name="row-@(i)" style="vertical-align: middle;">
+                        <td hidden rowspan="2">@Html.TextBoxFor(model => CustomerTantouList[i].Tantou_ID, null, new { @readonly = "readonly", @class = "form-control", @style = "" })</td>
+                        <td hidden rowspan="2">@Html.TextBoxFor(model => CustomerTantouList[i].Customer_ID, null, new { @readonly = "readonly", @class = "form-control", @style = "" })</td>
+                        <td hidden rowspan="2">@Html.TextBoxFor(model => CustomerTantouList[i].Company_ID, null, new { @readonly = "readonly", @class = "form-control", @style = "" })</td>
+                        <td hidden rowspan="2">@Html.TextBoxFor(model => CustomerTantouList[i].Customer_Branch_ID, null, new { @readonly = "readonly", @class = "form-control", @style = "" })</td>
+
+                        @if (Model.EditEnabled)
+                        {
+
+                          <td>@Html.TextBoxFor(model => CustomerTantouList[i].Tantou_Name, null, new { @class = "form-control", @style = "" })</td>
+                          <td>@Html.TextBoxFor(model => CustomerTantouList[i].Tantou_Name_Abbr, null, new { @class = "form-control", @style = "" })</td>
+                          <td>@Html.TextBoxFor(model => CustomerTantouList[i].Tantou_Name_Kana, null, new { @class = "form-control", @style = "" })</td>
+                          <td>@Html.TextBoxFor(model => CustomerTantouList[i].Busyo_Name, null, new { @class = "form-control", @style = "" })</td>
+                          <td>@Html.TextBoxFor(model => CustomerTantouList[i].Position_Name, null, new { @class = "form-control", @style = "" })</td>
+
+                          @if (CustomerTantouList[i].Tantou_ID == 0)
+                          {
+                            <td rowspan="3" style="vertical-align: middle;padding: 0;" align="center"><button class="btn btn-warning" onclick="deleteRow(this); return false;" style="margin: 0;">行<br />削<br />除</button></td>
+                          }
+                          else
+                          {
+                            <td rowspan="3" style="vertical-align: middle;padding: 0;" align="center">@Html.CheckBoxFor(model => CustomerTantouList[i].Del_Flg, new { @class = "form-control text-left form-check-input" })</td>
+                          }
+                        }
+                        else
+                        {
+                          <td>@(CustomerTantouList[i].Tantou_Name)</td>
+                          <td>@(CustomerTantouList[i].Tantou_Name_Abbr)</td>
+                          <td>@(CustomerTantouList[i].Tantou_Name_Kana)</td>
+                          <td>@(CustomerTantouList[i].Busyo_Name)</td>
+                          <td>@(CustomerTantouList[i].Position_Name)</td>
+                          <td rowspan="3"></td>
+                        }
+                      </tr>
+                      <tr id="row-@(i)-2" name="row-@(i)" style="vertical-align: middle;">
+                        @if (Model.EditEnabled)
+                        {
+                          <td>@Html.TextBoxFor(model => CustomerTantouList[i].Mail_Address1, null, new { @class = "form-control", @style = "" })</td>
+                          <td>@Html.TextBoxFor(model => CustomerTantouList[i].Mail_Address2, null, new { @class = "form-control", @style = "" })</td>
+                          <td colspan="3">@Html.TextBoxFor(model => CustomerTantouList[i].Mail_Title, null, new { @class = "form-control", @style = "" })</td>
+                        }
+                        else
+                        {
+                          <td>@(CustomerTantouList[i].Mail_Address1)</td>
+                          <td>@(CustomerTantouList[i].Mail_Address2)</td>
+                          <td colspan="3">@(CustomerTantouList[i].Tantou_Name_Abbr)</td>
+                        }
+                      </tr>
+                      <tr id="row-@(i)-3" name="row-@(i)" style="vertical-align: middle; border-bottom : 5px double red ">
+                        @if (Model.EditEnabled)
+                        {
+                          <td>@Html.TextBoxFor(model => CustomerTantouList[i].Phone1, null, new { @class = "form-control", @style = "" })</td>
+                          <td>@Html.TextBoxFor(model => CustomerTantouList[i].Phone2, null, new { @class = "form-control", @style = "" })</td>
+                          <td>@Html.TextBoxFor(model => CustomerTantouList[i].Fax1, null, new { @class = "form-control", @style = "" })</td>
+                          <td colspan="2">@Html.TextBoxFor(model => CustomerTantouList[i].Fax2, null, new { @class = "form-control", @style = "" })</td>
+                        }
+                        else
+                        {
+
+                          <td>@(CustomerTantouList[i].Phone1)</td>
+                          <td>@(CustomerTantouList[i].Phone2)</td>
+                          <td>@(CustomerTantouList[i].Fax1)</td>
+                          <td colspan="2">@(CustomerTantouList[i].Fax2)</td>
+                        }
+                      </tr>
+
+                    }
+                  }
+                </tbody>
+              </table>
+            </div>
+            <input type="radio" name="tab_name" id="tab2">
+            <label class="tab_class" for="tab2">請求/受領書情報</label>
+            <div class="content_class">
+              <div>
+                <h4>請求情報</h4>
+                <table class="table table-striped-columns table-bordered border-primary" border="1" style="margin: 10px; width:96%;">
+                  <thead>
+                    <tr style="background-color: aquamarine;">
+                      <th width="120px" align="center" style="text-align: center;">項目名</th>
+                      <th width="350px" align="center" style="text-align: center;">値</th>
+                      <th width="120px" align="center" style="text-align: center;">項目名</th>
+                      <th width="350px" align="center" style="text-align: center;">値</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th style="color: red;">請求担当</th>
+                      <td>
+                        @Html.DropDownListFor(model => model.CustomerBranchData.SeikyuTantouID, new SelectList(Model.CompanyUserGroupList, "Value", "Text", "Selected"), "担当者を選択", new { @class = "form-control", @style = "width: auto;" })
+                      </td>
+                      <th style="">請求先集約</th>
+                      <td style="display: flex;">
+                        <button class="btn btn-outline-secondary" style="width:70px;" onclick="SlectSeikyuCustomer('seikyu'); return false;">選択</button>
+                        @Html.HiddenFor(model => Model.CustomerBranchData.Seikyu_Customer_Branch_ID)
+                        @Html.TextBoxFor(model => Model.Seikyu_Customer_Branch_Name, null, new { @readonly = "@readonly", @class = "form-control text-left", @style = "margin-left:0.3rem; width: 350px;" })
+                      </td>
+                    </tr>
+                    <tr>
+                      <th style="color: red;">請求区分</th>
+                      <td style="display: flex;">
+                        @Html.DropDownListFor(model => model.CustomerBranchData.Seikyu_Kubun, new SelectList(Model.SeikyuKubunSelectList, "Value", "Text", "Selected"), "請求区分を選択", new { @class = "form-control", @style = "width: auto;" })
+                        <span style="width:1rem;"></span>
+                        <label style="text-align: right; align-content: center;">単位：</label>
+                        @Html.DropDownListFor(model => model.CustomerBranchData.SeikyuDate_Kubun, new SelectList(Model.SeikyuDateKubunSelectList, "Value", "Text", "Selected"), "請求日区分を選択", new { @class = "form-control", @style = "width: auto;" })
+                      </td>
+                      <th style="color: red;">締日/消費税</th>
+                      <td style="display: flex;">
+                        <label style="text-align: right; align-content: center;">締日：</label>
+                        @Html.TextBoxFor(model => Model.CustomerBranchData.Shime_Day, null, new { @class = "form-control text-left", @style = "width: 50px;" })
+                        <span style="width:1rem;"></span>
+                        <label style="text-align: right; align-content: center;">消費税：</label>
+                        @Html.DropDownListFor(model => model.CustomerBranchData.Tax_Fraction_Kubun, new SelectList(Model.SeikyuTakKubunSelectList, "Value", "Text", "Selected"), "消費税区分", new { @class = "form-control", @style = "width: auto;" })
+                        <span style="width:1rem;"></span>
+                        <label style="text-align: right; align-content: center;">丸め位置：</label>
+                        @Html.TextBoxFor(model => Model.CustomerBranchData.Tax_Fraction_Position, null, new { @class = "form-control text-left", @style = "width: 50px;" })
+                      </td>
+                    </tr>
+                    <tr>
+                      <th style="color: red;">回収</th>
+                      <td style="display: flex;">
+                        <label style="text-align: right; align-content: center;">回収サイト：</label>
+                        @Html.DropDownListFor(model => model.CustomerBranchData.Collection_Sight, new SelectList(Model.CollectionSightSelectList, "Value", "Text", "Selected"), "", new { @class = "form-control", @style = "width: auto;" })
+                        <span style="width:1rem;"></span>
+                        <label style="text-align: right; align-content: center;">回収日：</label>
+                        @Html.TextBoxFor(model => Model.CustomerBranchData.Collection_Day, null, new { @class = "form-control text-left", @style = "width: 50px;" })
+                      </td>
+                      <th style="color: red;">請求先宛名</th>
+                      <td>
+                        @Html.TextBoxFor(model => Model.CustomerBranchData.Seikyu_Atesaki, null, new { @class = "form-control text-left", @style = "width: 80%;" })
+                      </td>
+                    </tr>
+                    <tr>
+                      <th style="">請求先住所</th>
+                      <td colspan="3">
+                        <div style="">
+                          <table width="100%">
+                            <tbody>
+                              <tr>
+                                <th style="width: 80px;text-align: right;">郵便番号</th>
+                                <td>@Html.TextBoxFor(model => Model.CustomerBranchData.Seikuy_PostCode, null, new { @class = "form-control text-left", @style = "width: 100px;" })</td>
+                              </tr>
+                              <tr>
+                                <th style="text-align:right;">住所１</th>
+                                <td>@Html.TextBoxFor(model => Model.CustomerBranchData.Seikyu_Address1, null, new { @class = "form-control text-left", @style = "width: 80%;" })</td>
+                              </tr>
+                              <tr>
+                                <th style="text-align:right;">住所２</th>
+                                <td>@Html.TextBoxFor(model => Model.CustomerBranchData.Seikyu_Address2, null, new { @class = "form-control text-left", @style = "width: 80%;" })</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th style="">問合電話暗号</th>
+                      <td>
+                        @Html.TextBoxFor(model => Model.CustomerBranchData.Seikyu_Phone1, null, new { @class = "form-control text-left", @style = "width: 180px;" })
+                      </td>
+                      <th style="">問合FAX番号</th>
+                      <td>
+                        @Html.TextBoxFor(model => Model.CustomerBranchData.Seikyu_Fax1, null, new { @class = "form-control text-left", @style = "width: 180px;" })
+                      </td>
+                    </tr>
+                    <tr>
+                      <th style="">ﾒｰﾙｱﾄﾞﾚｽ1</th>
+                      <td>
+                        @Html.TextBoxFor(model => Model.CustomerBranchData.Seikyu_Mail_Address1, null, new { @class = "form-control text-left", @style = "width: 80%;" })
+                      </td>
+                      <th style="">ﾒｰﾙ宛名</th>
+                      <td>
+                        @Html.TextBoxFor(model => Model.CustomerBranchData.Seikyu_Mail_Header, null, new { @class = "form-control text-left", @style = "width: 80%;" })
+                      </td>
+                    </tr>
+                    <tr>
+                      <th style="">注意事項</th>
+                      <td colspan="3" style="">電子請求するには、このメールアドレスとメールヘッダーを設定する必要があります</td>
+                    </tr>
+
+                  </tbody>
+                </table>
+              </div>
+
+              <br />
+              <div>
+                <h4>受領書情報</h4>
+                <table class="table table-striped-columns table-bordered border-primary" border="1" style="margin: 10px; width:96%;">
+                  <thead>
+                    <tr style="background-color: aquamarine;">
+                      <th width="100px" align="center" style="text-align: center;">項目名</th>
+                      <th width="350px" align="center" style="text-align: center;">値</th>
+                      <th width="100px" align="center" style="text-align: center;">項目名</th>
+                      <th width="350px" align="center" style="text-align: center;">値</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th style="color: red;">受領札印刷</th>
+                      <td style="align-content: center;">
+                        <div style="display: flex;">
+                          @Html.CheckBoxFor(model => Model.ReceiptOutputFlg, new { @class = "form-control form-check-input" })
+                          <span style="width:1rem;"></span>
+                          <label style="align-content: center;">チェックを外すと印刷対象外</label>
+                        </div>
+                       
+                      </td>
+                      <th style="">宛名</th>
+                      <td>
+                        @Html.TextBoxFor(model => Model.CustomerBranchData.Receipt_Atesaki, null, new { @class = "form-control text-left", @style = "width: 90%;" })
+                      </td>
+                    </tr>
+                    <tr>
+                      <th style="">郵便番号</th>
+                      <td>
+                        @Html.TextBoxFor(model => Model.CustomerBranchData.Receipt_Post, null, new { @class = "form-control text-left", @style = "width: 100px;" })
+                      </td>
+                      <th style="">住所１</th>
+                      <td>
+                        @Html.TextBoxFor(model => Model.CustomerBranchData.Receipt_Address1, null, new { @class = "form-control text-left", @style = "width: 95%;" })
+                      </td>
+                    </tr>
+                    <tr>
+                      <th style="">問合電話暗号</th>
+                      <td>
+                        @Html.TextBoxFor(model => Model.CustomerBranchData.Receipt_Phone1, null, new { @class = "form-control text-left", @style = "width: 180px;" })
+                      </td>
+                      <th style="">問合FAX番号</th>
+                      <td>
+                        @Html.TextBoxFor(model => Model.CustomerBranchData.Receipt_Fax1, null, new { @class = "form-control text-left", @style = "width: 180px;" })
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+            </div>
+
+            <input type="radio" name="tab_name" id="tab3">
+            <label class="tab_class" for="tab3">支払情報</label>
+            <div class="content_class">
+              <div id="divYosya">
+                <h4>支払情報</h4>
+                <table class="table table-striped-columns table-bordered border-primary" border="1" style="margin: 10px; width:96%;">
+                  <thead>
+                    <tr style="background-color: aquamarine;">
+                      <th width="100px" align="center" style="text-align: center;">項目名</th>
+                      <th width="350px" align="center" style="text-align: center;">値</th>
+                      <th width="100px" align="center" style="text-align: center;">項目名</th>
+                      <th width="350px" align="center" style="text-align: center;">値</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <th style="color: red;">支払担当</th>
+                      <td>
+                        @Html.DropDownListFor(model => model.CustomerBranchData.Shiharai_TantouID, new SelectList(Model.CompanyUserGroupListForShiharai, "Value", "Text", "Selected"), "担当者を選択", new { @class = "form-control", @style = "width: auto;" })
+                      </td>
+                      <th style="">支払先集約</th>
+                      <td style="display: flex;">
+                        <button class="btn btn-outline-secondary" style="width:70px;" onclick="SlectSeikyuCustomer('shiharai'); return false;">選択</button>
+                        @Html.HiddenFor(model => Model.CustomerBranchData.Shiharai_Customer_Branch_ID)
+                        @Html.TextBoxFor(model => Model.Shiharai_Customer_Branch_Name, null, new { @readonly = "@readonly", @class = "form-control text-left", @style = "margin-left:0.3rem; width: 350px;" })
+                      </td>
+                    </tr>
+                    <tr>
+                      <th style="color: red;">締日</th>
+                      <td>@Html.TextBoxFor(model => Model.CustomerBranchData.Shiharai_Shime_Day, null, new { @class = "form-control text-left", @style = "width: 50px;" })</td>
+                      <th style="color: red;">支払</th>
+                      <td style="display: flex;">
+                        <label style="text-align: right; align-content: center;">支払サイト：</label>
+                        @Html.DropDownListFor(model => model.CustomerBranchData.Shiharai_Sight, new SelectList(Model.CollectionSightSelectList, "Value", "Text", "Selected"), "", new { @class = "form-control", @style = "width: auto;" })
+                        <span style="width:1rem;"></span>
+                        <label style="text-align: right; align-content: center;">支払日：</label>
+                        @Html.TextBoxFor(model => Model.CustomerBranchData.Shiharai_Day, null, new { @class = "form-control text-left", @style = "width: 50px;" })
+                      </td>
+                    </tr>
+                    <tr>
+                      <th style="color: red;">支払先宛名</th>
+                      <td>
+                        @Html.TextBoxFor(model => Model.CustomerBranchData.Shiharai_Atesaki, null, new { @class = "form-control text-left", @style = "width: 80%;" })
+                      </td>
+                      <th colspan="2">支払先宛名と住所は支払確認表で使用します</th>
+                    </tr>
+                    <tr>
+                      <th style="">支払先住所</th>
+                      <td colspan="3">
+                        <div style="">
+                          <table width="100%">
+                            <tbody>
+                              <tr>
+                                <th style="width: 80px;text-align: right;">郵便番号</th>
+                                <td>@Html.TextBoxFor(model => Model.CustomerBranchData.Shiharai_PostCode, null, new { @class = "form-control text-left", @style = "width: 100px;" })</td>
+                              </tr>
+                              <tr>
+                                <th style="text-align:right;">住所１</th>
+                                <td>@Html.TextBoxFor(model => Model.CustomerBranchData.Shiharai_Address1, null, new { @class = "form-control text-left", @style = "width: 80%;" })</td>
+                              </tr>
+                              <tr>
+                                <th style="text-align:right;">住所２</th>
+                                <td>@Html.TextBoxFor(model => Model.CustomerBranchData.Shiharai_Address2, null, new { @class = "form-control text-left", @style = "width: 80%;" })</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <th style="">問合電話暗号</th>
+                      <td>
+                        @Html.TextBoxFor(model => Model.CustomerBranchData.Shiharai_Phone1, null, new { @class = "form-control text-left", @style = "width: 180px;" })
+                      </td>
+                      <th style="">問合FAX番号</th>
+                      <td>
+                        @Html.TextBoxFor(model => Model.CustomerBranchData.Shiharai_Fax1, null, new { @class = "form-control text-left", @style = "width: 180px;" })
+                      </td>
+                    </tr>
+                    <tr>
+                      <th style="">ﾒｰﾙｱﾄﾞﾚｽ1</th>
+                      <td>
+                        @Html.TextBoxFor(model => Model.CustomerBranchData.Seikyu_Mail_Address1, null, new { @class = "form-control text-left", @style = "width: 80%;" })
+                      </td>
+                      <th style="">ﾒｰﾙ宛名</th>
+                      <td>
+                        @Html.TextBoxFor(model => Model.CustomerBranchData.Seikyu_Mail_Header, null, new { @class = "form-control text-left", @style = "width: 80%;" })
+                      </td>
+                    </tr>
+                    <tr>
+                      <th style="">注意事項</th>
+                      <td colspan="3" style="">電子での支払確認するには、このメールアドレスとメールヘッダーを設定する必要があります</td>
+                    </tr>
+
+                  </tbody>
+                </table>
+              </div>
+              <div id="divNoYosya">
+                <h4>支払情報</h4>
+                <h5>傭車ではないため、支払情報無し</h5>
+              </div>
+            </div>
+
+            <input type="radio" name="tab_name" id="tab4">
+            <label class="tab_class" for="tab4">特記事項</label>
+            <div class="content_class">
+              <div class="modal-header" style="padding-top: 0; padding-bottom: 0;">
+                <h4>@Html.LabelFor(model => model.Remarks, htmlAttributes: new { @class = "label", @style = "" })</h4>
+              </div>
+              <div class="model-body">
+                @Html.EditorFor(model => model.Remarks, new { htmlAttributes = new { @class = "form-control", @rows = "3", @style = "ime-mode: active; width: calc(100% - (10px)); margin: 0 5px 0 5px;" } })
+              </div>
+
+              <div class="modal-header" style="padding-top: 0; padding-bottom: 0;">
+                <h4>@Html.LabelFor(model => model.AnkenRemarks, htmlAttributes: new { @class = "label", @style = "" })</h4>
+              </div>
+              <div class="model-body">
+                @Html.EditorFor(model => model.AnkenRemarks, new { htmlAttributes = new { @class = "form-control", @rows = "3", @style = "ime-mode: active; width: calc(100% - (10px)); margin: 0 5px 0 5px;" } })
+              </div>
+
+              <div class="modal-header" style="padding-top: 0; padding-bottom: 0;">
+                <h4>@Html.LabelFor(model => model.SeikyuRemarks, htmlAttributes: new { @class = "label", @style = "" })</h4>
+              </div>
+              <div class="model-body">
+                @Html.EditorFor(model => model.SeikyuRemarks, new { htmlAttributes = new { @class = "form-control", @rows = "3", @style = "ime-mode: active; width: calc(100% - (10px)); margin: 0 5px 0 5px;" } })
+              </div>
+            </div>
+            <input type="radio" name="tab_name" id="tab5">
+            <label class="tab_class" for="tab5">高速請求</label>
+            <div class="content_class">
+              <div>
+                <div class="" style="margin: 0 10px 0 10px;">
+                  <div class="">
+                    <fieldset>
+                      <h4>高速請求情報</h4>
+                      <fieldset2>
+                        <div>
+                          <input type="radio" id="huey" name="tollkubun" value="0" />
+                          <label for="huey">設定無し</label>
+
+                          <input type="radio" id="huey" name="tollkubun" value="1"  style="margin-left: 3rem;" />
+                          <label for="huey">全行程荷主負担</label>
+
+                          <input type="radio" id="dewey" name="tollkubun" value="2" style="margin-left: 3rem;" />
+                          <label for="dewey">全行程会社負担</label>
+
+                          <input type="radio" id="dewey" name="tollkubun" value="3" style="margin-left: 3rem;" />
+                          <label for="dewey">全行程自己負担</label>
+                        </div>
+                      </fieldset2>
+                    </fieldset>
+                  </div>
+                  <fieldset2>
+                    <div>
+                      <input type="radio" id="louie" name="tollkubun" value="4" />
+                      <label for="louie">手動設定</label>
+                    </div>
+                    <div id="divManualTollSetting">
+                      <div>
+                        <label>距離</label>
+                        <table id="CustomerTollSeikyuKubunList_Distance" class="table-bordered border-dark" width="100%" border="1">
+                          <thead>
+                            <tr style="text-align: center;" class="bg-info">
+                              <th style="width: 700px; ">内容</th>
+                              <th>削除</th>
+                              <th>追加</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            @{
+                              var listTollSetting = Model.CustomerTollSeikyuKubunList_Distance.OrderBy(m => m.Distance1).ToList();
+                              for (int i = 0; i < listTollSetting.Count; i++)
+                              {
+                                <tr>
+                                  <td id="CustomerTollSeikyuKubunList_Distance_@(i)__Distance">
+                                    @Html.TextBoxFor(model => model.CustomerTollSeikyuKubunList_Distance[i].Distance1, null, new { @class = "form-control", @style = "display: inline-block; width: 80px; text-align: right;", @type = "number" })
+                                    km　～　
+                                    @Html.TextBoxFor(model => model.CustomerTollSeikyuKubunList_Distance[i].Distance2, null, new { @class = "form-control", @style = "display: inline-block; width: 80px; text-align: right;", @type = "number" })
+                                    km　まで　
+                                    @Html.DropDownListFor(model => model.CustomerTollSeikyuKubunList_Distance[i].SeikyuKubun, new SelectList(Model.FutanKubunSelectList, "Value", "Text", "Selected"), new { @class = "form-control list", @style = "display: inline-block; text-align: center;width: 100px;" })
+                                  </td>
+                                  <td id="CustomerTollSeikyuKubunList_Distance_@(i)__Delete" class="text-center"><button class="btn btn-outline-danger align-middle" onclick="deleteRowForSeikyuKubun(this); return false;">削除</button></td>
+                                  <td id="CustomerTollSeikyuKubunList_Distance_@(i)__Insert" class="text-center"><button class="btn btn-outline-info" onclick="insertRowSeikyuKubun('CustomerTollSeikyuKubunList_Distance'); return false;">追加</button></td>
+                                  <td id="CustomerTollSeikyuKubunList_Distance_@(i)__SeikyuType" hidden>@Html.DropDownListFor(model => model.CustomerTollSeikyuKubunList_Distance[i].Seikyu_Type, new SelectList(Model.FutanTypeSelectList, "Value", "Text", "Selected"), new { @class = "form-control list", @style = "display: inline-block; text-align: center;width: 60px;" })</td>
+                                  <td id="CustomerTollSeikyuKubunList_Distance_@(i)__Customer_Branch_ID" hidden>@Html.TextBoxFor(model => model.CustomerTollSeikyuKubunList_Distance[i].Customer_Branch_ID)</td>
+                                  <td id="CustomerTollSeikyuKubunList_Distance_@(i)__Sort" hidden>@Html.TextBoxFor(model => model.CustomerTollSeikyuKubunList_Distance[i].Sort)</td>
+                                </tr>
+                              }
+                            }
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <label>住所</label>
+                        <table id="CustomerTollSeikyuKubunList_Address" class="table-bordered border-dark" width="100%" border="1">
+                          <thead>
+                            <tr style="text-align: center;" class="bg-info">
+                              <th style="width: 700px; ">内容</th>
+                              <th>削除</th>
+                              <th>追加</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            @{
+                              listTollSetting = Model.CustomerTollSeikyuKubunList_Address.OrderBy(m => m.Address1).ToList();
+                              for (int i = 0; i < listTollSetting.Count; i++)
+                              {
+                                <tr>
+                                  <td id="CustomerTollSeikyuKubunList_Address_@(i)__Distance">
+                                    @Html.TextBoxFor(model => model.CustomerTollSeikyuKubunList_Address[i].Address1, null, new { @class = "form-control", @style = "display: inline-block; width: 150px;", @placeholder = "住所を県から" })
+                                    ～　
+                                    @Html.TextBoxFor(model => model.CustomerTollSeikyuKubunList_Address[i].Address2, null, new { @class = "form-control", @style = "display: inline-block; width: 150px;", @placeholder = "住所を県から" })
+                                    まで　
+                                    @Html.DropDownListFor(model => model.CustomerTollSeikyuKubunList_Address[i].SeikyuKubun, new SelectList(Model.FutanKubunSelectList, "Value", "Text", "Selected"), new { @class = "form-control list", @style = "display: inline-block; text-align: center;width: 100px;" })
+                                  </td>
+                                  <td id="CustomerTollSeikyuKubunList_Address_@(i)__Delete" class="text-center"><button class="btn btn-outline-danger" onclick="deleteRowForSeikyuKubun(this); return false;">削除</button></td>
+                                  <td id="CustomerTollSeikyuKubunList_Address_@(i)__Insert" class="text-center"><button class="btn btn-outline-info" onclick="insertRowSeikyuKubun('CustomerTollSeikyuKubunList_Address'); return false;">追加</button></td>
+                                  <td id="CustomerTollSeikyuKubunList_Address_@(i)__SeikyuType" hidden>@Html.DropDownListFor(model => model.CustomerTollSeikyuKubunList_Address[i].Seikyu_Type, new SelectList(Model.FutanTypeSelectList, "Value", "Text", "Selected"), new { @class = "form-control list", @style = "display: inline-block; text-align: center;width: 60px;" })</td>
+                                  <td id="CustomerTollSeikyuKubunList_Address_@(i)__Customer_Branch_ID" hidden>@Html.TextBoxFor(model => model.CustomerTollSeikyuKubunList_Address[i].Customer_Branch_ID)</td>
+                                  <td id="CustomerTollSeikyuKubunList_Address_@(i)__Sort" hidden>@Html.TextBoxFor(model => model.CustomerTollSeikyuKubunList_Address[i].Sort)</td>
+                                </tr>
+                              }
+                            }
+                          </tbody>
+                        </table>
+                      </div>
+                      <div>
+                        <label>IC名</label>
+                        <table id="CustomerTollSeikyuKubunList_IC" class="table-bordered border-dark" width="100%" border="1">
+                          <thead>
+                            <tr style="text-align: center;" class="bg-info">
+                              <th style="width: 700px; ">内容</th>
+                              <th>削除</th>
+                              <th>追加</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            @{
+                                listTollSetting = Model.CustomerTollSeikyuKubunList_IC.OrderBy(m => m.IC1).ToList();
+                                for (int i = 0; i < listTollSetting.Count; i++)
+                                {
+                                <tr>
+                                  <td id="CustomerTollSeikyuKubunList_IC_@(i)__Distance" style="">
+                                    @Html.TextBoxFor(model => model.CustomerTollSeikyuKubunList_IC[i].IC1, null, new { @class = "form-control", @style = "display: inline-block; width: 160px; text-align: right;" })
+                                    ～　
+                                    @Html.TextBoxFor(model => model.CustomerTollSeikyuKubunList_IC[i].IC2, null, new { @class = "form-control", @style = "display: inline-block; width: 160px; text-align: right;" })
+                                    まで　
+                                    @Html.DropDownListFor(model => model.CustomerTollSeikyuKubunList_IC[i].SeikyuKubun, new SelectList(Model.FutanKubunSelectList, "Value", "Text", "Selected"), new { @class = "form-control list", @style = "display: inline-block; text-align: center;width: 100px;" })
+                                  </td>
+                                  <td id="CustomerTollSeikyuKubunList_IC_@(i)__Delete" class="text-center"><button class="btn btn-outline-danger align-middle" onclick="deleteRowForSeikyuKubun(this); return false;">削除</button></td>
+                                  <td id="CustomerTollSeikyuKubunList_IC_@(i)__Insert" class="text-center"><button class="btn btn-outline-info" onclick="insertRowSeikyuKubun('CustomerTollSeikyuKubunList_IC'); return false;">追加</button></td>
+                                  <td id="CustomerTollSeikyuKubunList_IC_@(i)__SeikyuType" hidden>@Html.DropDownListFor(model => model.CustomerTollSeikyuKubunList_IC[i].Seikyu_Type, new SelectList(Model.FutanTypeSelectList, "Value", "Text", "Selected"), new { @class = "form-control list", @style = "display: inline-block; text-align: center;width: 60px;" })</td>
+                                  <td id="CustomerTollSeikyuKubunList_IC_@(i)__Customer_Branch_ID" hidden>@Html.TextBoxFor(model => model.CustomerTollSeikyuKubunList_IC[i].Customer_Branch_ID)</td>
+                                  <td id="CustomerTollSeikyuKubunList_IC_@(i)__Sort" hidden>@Html.TextBoxFor(model => model.CustomerTollSeikyuKubunList_IC[i].Sort)</td>
+                                </tr>
+                              }
+                            }
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  </fieldset2>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  $(function () {
+
+    $(document).ready(function () {
+
+      var radio = document.getElementsByName('tollkubun');
+      for (let i = 0; i < radio.length; i++) {
+        if (radio.item(i).value == $('#CustomerBranchData_Toll_Kubun').val()) {
+          radio.item(i).checked = true;
+        }
+      };
+
+      yosyaDisplayChange();
+
+
+
+    });
+
+
+    $('input[name="tollkubun"]').on('change', function () {
+      let val = $(this).val();
+      $('#CustomerBranchData_Toll_Kubun').val(val);
+    });
+
+    if ($('#EditEnabled').val() == 'True')
+    {
+      $(".ui-dialog-titlebar").append('<button type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>');
+    }
+
+    $('#Seikyu_Customer_Branch_Name').addClear({ onClear: function () { $('#CustomerBranchData_Seikyu_Customer_Branch_ID').val(0); }, top: 10, });
+    $('#Shiharai_Customer_Branch_Name').addClear({ onClear: function () { $('#CustomerBranchData_Shiharai_Customer_Branch_ID').val(0); }, top: 10, });
+
+    });
+
+  function yosyaDisplayChange() {
+
+    if ($('#CustomerData_Yosya_Flg').val() == '1') {
+      $('#divNoYosya').hide();
+      $('#divYosya').show();
+      $(".YosyaFlg").prop("disabled", false);
+
+    } else {
+
+      $(".YosyaFlg").prop("disabled", true);
+      $('#divYosya').hide();
+      $('#divNoYosya').show();
+
+    }
+
+  }
+
+  /**
+   * 登録処理
+   * */
+  function regExec() {
+
+    if (varidationCheck()) {
+      return false;
+    }
+
+    let $form = $('#frmCustomerBranch');
+
+    $.ajax({
+          url: '@Url.RouteUrl("Default", new { controller = "Customer", Action = "CustomerBranchRegExec" })',
+          type: 'post',
+      data: $form.serialize(),
+        }).done(function (response) {
+          if (response.errorMessage != null && response.errorMessage !== '') {
+              alertError(`【エラー】${response.errorMessage}`);
+              return false;
+          } else {
+            closeModelAndRefresh();
+            return false;
+          }
+        }).fail(function (xhr) {
+          alert('【ネットワークエラー】:' + xhr);
+            console.log(xhr);
+            return false;
+        }).always(function (xhr, msg) {
+            console.log(xhr, msg);
+        });
+
+  };
+
+  /**
+   * 入力チェック
+   * */
+  function varidationCheck() {
+
+    if (!($('#CustomerBranchData_Customer_Branch_Name').val() != null && $('#CustomerBranchData_Customer_Branch_Name').val().length > 0)) {
+      alertInputError("名称が入力されていません");
+      $('#CustomerBranchData_Customer_Branch_Name').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#CustomerBranchData_Customer_Branch_Name').css('background-color', 'white');
+    }
+
+    if (!($('#CustomerBranchData_Customer_Branch_Name_Abbr').val() != null && $('#CustomerBranchData_Customer_Branch_Name_Abbr').val().length > 0)) {
+      alertInputError("略名が入力されていません");
+      $('#CustomerBranchData_Customer_Branch_Name_Abbr').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#CustomerBranchData_Customer_Branch_Name_Abbr').css('background-color', 'white');
+    }
+
+    if (!($('#CustomerBranchData_Customer_Branch_Name_Kana').val() != null && $('#CustomerBranchData_Customer_Branch_Name_Kana').val().length > 0)) {
+      alertInputError("カナが入力されていません");
+      $('#CustomerBranchData_Customer_Branch_Name_Kana').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#CustomerBranchData_Customer_Branch_Name_Kana').css('background-color', 'white');
+    }
+
+    if (!($('#CustomerBranchData_Customer_Branch_Post').val() != null && $('#CustomerBranchData_Customer_Branch_Post').val().length > 0)) {
+      alertInputError("郵便番号が入力されていません");
+      $('#CustomerBranchData_Customer_Branch_Post').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#CustomerBranchData_Customer_Branch_Post').css('background-color', 'white');
+    }
+
+    if (!($('#CustomerBranchData_Customer_Branch_Address1').val() != null && $('#CustomerBranchData_Customer_Branch_Address1').val().length > 0)) {
+      alertInputError("住所1が入力されていません");
+      $('#CustomerBranchData_Customer_Branch_Address1').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#CustomerBranchData_Customer_Branch_Address1').css('background-color', 'white');
+    }
+
+    if (!($('#CustomerBranchData_Customer_Branch_Phone1').val() != null && $('#CustomerBranchData_Customer_Branch_Phone1').val().length > 0)) {
+      alertInputError("電話番号が入力されていません");
+      $('#CustomerBranchData_Customer_Branch_Phone1').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#CustomerBranchData_Customer_Branch_Phone1').css('background-color', 'white');
+    }
+
+    // table要素を取得
+    var tableElem = document.getElementById('tableTantou');
+
+    var row_len = Math.floor(tableElem.rows.length / 3) - 1;
+
+/*    alert(row_len);*/
+
+    // 取得した行（tr要素）を繰り返しHTMLを取得
+    var htmlStr = '';
+    for (i = 1, len = row_len; i <= len; i++) {
+
+      var TantouName = $('#CustomerTantouList_' + (i - 1) + '__Tantou_Name').val();
+      var TantouNameAbbr = $('#CustomerTantouList_' + (i - 1) + '__Tantou_Name_Abbr').val();
+      var address1 = $('#CustomerTantouList_' + (i - 1) + '__Mail_Address1').val();
+      var mailTitle = $('#CustomerTantouList_' + (i - 1) + '__Mail_Title').val();
+
+
+
+      if (!(TantouName != null && TantouName.length > 0)) {
+        alertInputError("担当者名が未入力です。");
+        $('#CustomerTantouList_' + (i - 1) + '__Tantou_Name').css('background-color', 'lightcoral');
+        return true;
+      } else {
+        $('#CustomerTantouList_' + (i - 1) + '__Tantou_Name').css('background-color', 'white');
+      }
+
+      if (!(TantouNameAbbr != null && TantouNameAbbr.length > 0)) {
+        alertInputError("表記名が未入力です。");
+        $('#CustomerTantouList_' + (i - 1) + '__Tantou_Name_Abbr').css('background-color', 'lightcoral');
+        return true;
+      } else {
+        $('#CustomerTantouList_' + (i - 1) + '__Tantou_Name_Abbr').css('background-color', 'white');
+      }
+
+      //if (!(address1 != null && address1.length > 0)) {
+      //  alertInputError("メールアドレスが未入力です。");
+      //  $('#CustomerTantouList_' + (i - 1) + '__Mail_Address1').css('background-color', 'lightcoral');
+      //  return true;
+      //} else {
+      //  $('#CustomerTantouList_' + (i - 1) + '__Mail_Address1').css('background-color', 'white');
+      //}
+
+      if ((address1 != null && address1.length > 0)) {
+        if (!(mailTitle != null && mailTitle.length > 0)) {
+          alertInputError("メールタイトルが未入力です。");
+          $('#CustomerTantouList_' + (i - 1) + '__Mail_Title').css('background-color', 'lightcoral');
+          return true;
+        } else {
+          $('#CustomerTantouList_' + (i - 1) + '__Mail_Title').css('background-color', 'white');
+        }
+
+      }
+
+      if (checkData(i, TantouName)) {
+        alertInputError("担当者が複数選択されています。");
+        $('#CustomerTantouList_' + (i - 1) + '__Tantou_Name').css('background-color', 'lightcoral');
+        return true;
+      }
+
+    };
+
+    return false;
+
+  };
+
+  /**
+   * 担当者の重複チェック
+   * @@param m
+   * @@param paramID
+   */
+  function checkData(m, paramID) {
+    // table要素を取得
+    var tableElem = document.getElementById('tableTantou');
+    // 行（tr要素）を取得
+    var row_len = Math.floor(tableElem.rows.length / 3) - 1;
+
+    for (r = 1, lenA = row_len; r <= lenA; r++) {
+      if (r != m) {
+        var check = $('#CustomerTantouList_' + (r - 1) + '__Tantou_Name').val();
+        if ((check != null && check.length > 0)) {
+          if (check == paramID) {
+            return true;
+          }
+        }
+      }
+    };
+    return false;
+  };
+
+
+  function SlectSeikyuCustomer(kubun) {
+
+    $('#SelectCustomerModalKubun').val(kubun);
+
+    openCommonDialogForCustomer($('#CustomerID').val());
+
+  };
+
+  /**
+ * 共通得意先選択ダイアログで一覧選択されたときのCallBack関数
+ * */
+  function selectCustomerSelectedCallBack(obj) {
+
+    var kubun = $('#SelectCustomerModalKubun').val();
+
+    if (kubun == "seikyu") {
+      $('#CustomerBranchData_Seikyu_Customer_Branch_ID').val(obj["Customer_Branch_ID"]);
+      $('#Seikyu_Customer_Branch_Name').val(obj["Customer_Branch_Name_Abbr"]);
+    }
+    if (kubun == "shiharai") {
+      $('#CustomerBranchData_Shiharai_Customer_Branch_ID').val(obj["Customer_Branch_ID"]);
+      $('#Shiharai_Customer_Branch_Name').val(obj["Customer_Branch_Name_Abbr"]);
+    }
+  };
+
+
+  /**
+   * 担当者登録の行追加
+   * */
+  function insertRow() {
+
+    //alert("insertRow");
+
+    var row_len = CommonTableInsertRow('row-', 'CustomerTantouList', 'tableTantou', 3);
+
+    $("#CustomerTantouList_" + row_len + "__Tantou_Name").val('');
+    $("#CustomerTantouList_" + row_len + "__Tantou_Name_Abbr").val('');
+    $("#CustomerTantouList_" + row_len + "__Tantou_Name_Kana").val('');
+    $("#CustomerTantouList_" + row_len + "__Busyo_Name").val('');
+    $("#CustomerTantouList_" + row_len + "__Position_Name").val('');
+    $("#CustomerTantouList_" + row_len + "__Mail_Address1").val('');
+    $("#CustomerTantouList_" + row_len + "__Mail_Address2").val('');
+    $("#CustomerTantouList_" + row_len + "__Phone1").val('');
+    $("#CustomerTantouList_" + row_len + "__Fax1").val('');
+    $("#CustomerTantouList_" + row_len + "__Phone2").val('');
+    $("#CustomerTantouList_" + row_len + "__Fax2").val('');
+
+  };
+
+  /**
+   * 担当者登録の行追加時のidとnameの名称変更処理
+   * @@param row_len
+   * @@param html
+   */
+  function repalceidName(row_len, html) {
+    html = html.replace("CustomerTantouList_0", "CustomerTantouList_" + row_len + "");
+    html = html.replace("CustomerTantouList[0]", "CustomerTantouList[" + row_len + "]");
+    return html;
+  }
+
+  /**
+   * 担当者データの行削除
+   */
+  function deleteRow(obj) {
+    // 削除ボタンを押下された行を取得
+    tr = obj.parentNode.parentNode;
+
+    var rowindex = tr.sectionRowIndex
+
+    var table = document.getElementById("tableTantou");
+
+    if (tr.sectionRowIndex > 0) {
+      // trのインデックスを取得して行を削除する
+      table.deleteRow(rowindex + 3);
+      table.deleteRow(rowindex + 2);
+    }
+
+  };
+
+  /**
+   * 高速請求情報の行追加処理
+   * @@param idName
+   */
+  function insertRowSeikyuKubun(idName) {
+
+    //alert(idName);
+
+    // テーブル取得
+    var table = document.getElementById(idName);
+    // 行を行末に追加
+    var row = table.insertRow(-1);
+    row.style.verticalAlign = "middle";
+    // 行数取得
+    var row_len = Math.floor(table.rows.length) - 2;
+
+    // セルの挿入
+    var cell1 = row.insertCell(-1);
+    var cell2 = row.insertCell(-1);
+    var cell3 = row.insertCell(-1);
+    var cell4 = row.insertCell(-1);
+    var cell5 = row.insertCell(-1);
+    var cell6 = row.insertCell(-1);
+
+    cell2.align = "center";
+    cell3.align = "center";
+
+    cell4.hidden = true;
+    cell5.hidden = true;
+    cell6.hidden = true;
+
+    //// セルの内容入力
+    cell1.innerHTML = repalceidNameEx(idName, row_len, $("#" + idName + "_0__Distance").html());
+    cell2.innerHTML = repalceidNameEx(idName, row_len, $("#" + idName + "_0__Delete").html());
+    cell3.innerHTML = repalceidNameEx(idName, row_len, $("#" + idName + "_0__Insert").html());
+    cell4.innerHTML = repalceidNameEx(idName, row_len, $("#" + idName + "_0__SeikyuType").html());
+    cell5.innerHTML = repalceidNameEx(idName, row_len, $("#" + idName + "_0__Customer_Branch_ID").html());
+    cell6.innerHTML = repalceidNameEx(idName, row_len, $("#" + idName + "_0__Sort").html());
+
+    $("#" + idName + "_" + row_len + "__SeikyuType").val(0);
+    $("#" + idName + "_" + row_len + "__Sort").val(row_len);
+
+    $("#" + idName + "_" + row_len +"__Distance input:text").each(function () {
+      this.value = "";
+    });
+  };
+
+  /**
+ * 高速請求情報の行追加時のidとnameの名称変更処理
+ * @@param row_len
+ * @@param html
+ */
+  function repalceidNameEx(idName,row_len, html) {
+    //html = html.replace(idName + "_0", idName + "_" + row_len + "");
+    //html = html.replace(idName + "[0]", idName + "[" + row_len + "]");
+    html = replace_all(html, idName + "_0", idName + "_" + row_len + "");
+    html = replace_all(html, idName + "[0]", idName + "[" + row_len + "]");
+    return html;
+  }
+
+
+  /**
+* 行削除
+*/
+  function deleteRowForSeikyuKubun(obj) {
+    // 削除ボタンを押下された行を取得
+    tr = obj.parentNode.parentNode;
+    // trのインデックスを取得して行を削除する
+    tr.parentNode.deleteRow(tr.sectionRowIndex);
+  };
+
+  function openCommonDialogForCustomer() {
+
+    openCommonDialogForCustomerOya($('#Company_ID').val(), $('#User_ID').val(), $('#CustomerOyaID').val());
+
+  };
+
+  /**
+   * 共通得意先選択ダイアログで一覧選択されたときのCallBack関数
+   * */
+  function selectCustomerOyaSelectedCallBack(obj) {
+
+    if ($('#CustomerData_Yosya_Flg').val() == '1' && obj["Yosya_Flg"] == '0') {
+      alertWarning("付け替えた親は傭車設定されていません。傭車データが消えます。");
+    }
+
+    $('#CustomerData_Customer_ID').val(obj["Customer_ID"]);
+    $('#CustomerData_Customer_Code').val(obj["Customer_Code"]);
+    $('#CustomerData_Customer_Name').val(obj["Customer_Name_Abbr"]);
+    $('#CustomerData_Yosya_Flg').val(obj["Yosya_Flg"]);
+    $('#CustomerBranchData_Customer_ID').val(obj["Customer_ID"]);
+
+    yosyaDisplayChange();
+
+  };
+
+</script>

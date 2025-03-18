@@ -1,0 +1,294 @@
+﻿@model SettingModel.AnkenLuggageGroupDto
+
+    @{
+        Layout = "_LayoutForSettingWindow";
+
+        var listData = Model.LuggageGroupList.OrderBy(m => m.SortOrder).ToList();
+    }
+
+  <div id="content">
+    <div hidden>
+      @Html.HiddenFor(model => Model.CompanyID)
+    </div>
+    <h2>
+      <span class="glyphicon glyphicon-chevron-right"></span>案件荷物グループ設定
+    </h2>
+
+    <div id="main">
+      <div class="setting-separator">荷物グループリスト<span style="font-size: 12px; color: red;"> - 案件登録時に選択する荷物情報のグループ項目を登録します。</span></div>
+
+      <div class="contents-wrap-middle">
+        <h4 class="">使い方</h4>
+        <span>
+          ・右側の上下「▲ ▼」ボタンで並び替えできます。<br>
+          ・並び替え終了後は、最上部の「並び順変更反映」ボタンにて保存して下さい。<br>
+          <span style="background-color: #FF9966 ">・同時に複数のユーザーが変更処理を実施するとデータが壊れたり、不整合が発生したりします。必ず１ユーザーのみで実施してください。</span>
+        </span>
+      </div>
+
+      <div class="clearfix">
+        @if (Model.EditEnabled)
+        {
+        <button class="btn btn-primary" style="width: 200px;margin: 2px;" onclick="ExecShowDetailOnClick('新規', ''); return false;">新規登録</button>
+        <button id="btnSortCommit" disabled class="btn btn-success" style="width: 200px;margin: 2px; float: right; margin-right: 40px;" onclick="SortCommit_Click(); return false;">並び順変更反映</button>
+        }
+        <div id="option_attendance_setting" class="sight-settings">
+          <div class="tables">
+            <table id="tableMain" width="100%" border="1" class="table border border-info table-striped">
+              <thead>
+                <tr align="center">
+                  <th>荷物ｸﾞﾙｰﾌﾟ名</th>
+                  <th>並び順</th>
+                  <th hidden>会社ID</th>
+                  <th hidden>項目ID</th>
+
+                  <th>更新日時</th>
+                  <th style="font-size: 10px;">削除<br />フラグ</th>
+                  <th>修正</th>
+                  <th>並び順</th>
+                </tr>
+              </thead>
+              <tbody>
+                @{
+                  int i = 1;
+                  foreach (var item in listData)
+                  {
+                                <tr id="@(i)">
+                                  <td align="center" width="150px">@(item.Luggage_GroupName)</td>
+                                  <td align="center" width="70px">@(item.SortOrder)</td>
+                                  <td align="center" width="100px" hidden>@(item.Company_ID)</td>
+                                  <td align="center" width="100px" hidden>@(item.Luggage_Group_ID)</td>
+
+                                  <td align="center" width="250px">@Convert.ToDateTime(item.Update_Datetime).ToString("yyyy/MM/dd HH:mm:ss")</td>
+                                  <td align="center" width="60px">@Html.CheckBoxFor(m => item.Del_Flg, new { @class = "form-control text-left form-check-input", @onclick = "return false;", @disabled = "disabled" })</td>
+                                  <td align="center" width="100px" style="margin: 0; vertical-align: middle; ">
+                                    @if (Model.EditEnabled)
+                                    {
+                                      <button class="btn btn-outline-success" style="width: 100%; padding: 0; font-size: 12px; height: 30px; " onclick="ExecShowDetailOnClick('@(item.Luggage_Group_ID)'); return false;">詳細</button>
+                                    }
+                                  </td>
+                                  <td align="center" width="150px" style="margin: 0; padding: 0; vertical-align: middle; ">
+                                    @if (Model.EditEnabled)
+                                    {
+                                      <input type="button" value="上" onclick="moveUp(this)">
+                                      <input type="button" value="下" onclick="moveDown(this)">
+                                    }
+                                  </td>
+                                </tr>
+                    i++;
+                  }
+                }
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+<script>
+
+  function moveUp(obj1) {
+    // tr行を取得
+    var line1 = obj1.parentNode.parentNode;
+    // 一番上の行のときは終了する
+    if (line1.previousElementSibling === null) {
+      alert("１番上の行です");
+      return;
+    }
+    //　行のIDを取得し移動
+    a = line1.id;
+    $("#" + a).insertBefore(line1.previousElementSibling);
+
+    var idMinus = (Number(a) - 1).toString();
+    var line2 = document.getElementById(idMinus);
+
+    var idNew = line2.cells[1].innerHTML;
+    var idBefore = line1.cells[1].innerHTML
+
+    line2.cells[1].innerHTML = idBefore;
+    line1.cells[1].innerHTML = idNew;
+
+    line2.id = a;
+    line1.id = idMinus;
+
+    document.getElementById("btnSortCommit").disabled = null;
+
+  };
+
+  function moveDown(obj1) {
+    // tr行を取得
+    var line1 = obj1.parentNode.parentNode;
+    // 一番下の行のときは終了する
+    if (line1.nextElementSibling === null) {
+      alert("１番下の行です");
+      return;
+    }
+    //　行のIDを取得し移動
+    a = line1.id;
+    $("#" + a).insertAfter(line1.nextElementSibling);
+
+    var idPlus = (Number(a) + 1).toString();
+    var line2 = document.getElementById(idPlus);
+
+    var idNew = line2.cells[1].innerHTML;
+    var idBefore = line1.cells[1].innerHTML
+
+    line2.cells[1].innerHTML = idBefore;
+    line1.cells[1].innerHTML = idNew;
+
+    line2.id = a;
+    line1.id = idPlus;
+
+    document.getElementById("btnSortCommit").disabled = null;
+  };
+
+  /**
+   * 変更登録画面を開く
+   * @@param paramKey
+   */
+  function ExecShowDetailOnClick(paramKey) {
+
+    //alert(document.getElementById("btnSortCommit").disabled);
+
+    if (false == document.getElementById("btnSortCommit").disabled) {
+      var result = window.confirm('並び順を変更しています。先に登録しないと変更内容が消えます。登録しますか？');
+      if (result) { alert("「並び順変更反映」ボタンを押してください。"); return false; }
+    }
+    CommonWaitStart();
+    $.post('@Url.RouteUrl("Default", new { controller = "Setting", Action = "AnkenLuggageGroupModal" })',
+      {
+        id: paramKey,
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】" + response.partialView);
+          $("#ModalHere").html(response.partialView);
+          $("#ModalHere").find('.modal').modal('show');
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+          console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+        CommonWaitEnd();
+      });
+  };
+
+  function closeModel() {
+    //$('#ModalHere').find('.modal').modal('hide');
+    $('#ModalHere').find('.modal').modal('hide');
+    $("#ModalHere").html('');
+  };
+
+  function closeModelAndRefresh() {
+    $('#ModalHere').find('.modal').modal('hide');
+    location.reload();
+    document.getElementById("btnSortCommit").disabled = "disabled";
+    alertInfo("登録が完了しました。");
+  };
+
+  /**
+   * 並び順を登録する
+   * */
+  function SortCommit_Click() {
+    CommonWaitStart();
+    // table要素を取得
+    var tableElem = document.getElementById('tableMain');
+
+    // 行（tr要素）を取得
+    var rowElems = tableElem.rows;
+
+    // 取得した行（tr要素）を繰り返しHTMLを取得
+    var htmlStr = '';
+    for (i = 1, len = rowElems.length; i < len; i++) {
+      htmlStr += "    <tr>";
+      htmlStr += "      <td><input name='LuggageGroupList[" + (i - 1).toString() + "].SortOrder' value='" + rowElems[i].cells[1].innerHTML + "' /></td>";
+      htmlStr += "      <td><input name='LuggageGroupList[" + (i - 1).toString() + "].Luggage_GroupName' value='" + rowElems[i].cells[0].innerHTML + "' /></td>";
+      htmlStr += "      <td><input name='LuggageGroupList[" + (i - 1).toString() + "].Company_ID' value='" + rowElems[i].cells[2].innerHTML + "' /></td>";
+      htmlStr += "      <td><input name='LuggageGroupList[" + (i - 1).toString() + "].Luggage_Group_ID' value='" + rowElems[i].cells[3].innerHTML + "' /></td>";
+      htmlStr += "    </tr>";
+    }
+
+    var html = "";
+    html += "<form id='sortData'>";
+    html += "<div hidden>";
+    html += "  <input name='CompanyID' value='" + $('#CompanyID').val() + "' />";
+    html += "</div >";
+    html += "<table>";
+    html += "  <tbody>";
+    html += htmlStr;
+    html += "  </tbody>";
+    html += "</table>";
+    html += "</form >";
+
+    $("#SortHere").html(html);
+
+    //alert(htmlStr);
+    document.getElementById("btnSortCommit").disabled = "disabled";
+
+    //Formの参照を取る
+    var $form = $('#sortData');
+
+    $.ajax({
+        url: '@Url.RouteUrl("Default", new { controller = "Setting", Action = "AnkenLuggageGroupSortCommit" })',
+        type: 'post',
+        data: $form.serialize(),
+      }).done(function (response) {
+        if (response.errorMessage != null) {
+          alert("【エラー】" + response.errorMessage, 'warning');
+          return false;
+        } else {
+          if (response.retrunFlg) {
+            alertInfo('正常に登録出来ました。', 'success');
+          } else {
+            alertError('登録に失敗しました。原因不明。');
+          }
+          return false;
+        }
+      }).fail(function (xhr) {
+        alert('【ネットワークエラー】:' + xhr, 'warning');
+          console.log(xhr);
+          return false;
+      }).always(function (xhr, msg) {
+        CommonWaitEnd();
+      });
+
+  };
+
+  /**
+   * 新規登録時用のグループ名重複チェックを行う
+   * @@param name
+   */
+  function varidationCheckForOverlap(name) {
+
+    // table要素を取得
+    var tableElem = document.getElementById('tableMain');
+
+    // 行（tr要素）を取得
+    var rowElems = tableElem.rows;
+
+    // 取得した行（tr要素）を繰り返しHTMLを取得
+    var htmlStr = '';
+    for (i = 1, len = rowElems.length; i < len; i++) {
+
+      var nameA = rowElems[i].cells[0].innerHTML;
+
+      //alert(syasyu + ";;;;" + kata);
+      //alert(syasyuA + ";;;;" + kataA);
+
+      if (nameA == name) {
+        return true;
+      }
+    }
+
+    return false;
+
+  };
+
+</script>

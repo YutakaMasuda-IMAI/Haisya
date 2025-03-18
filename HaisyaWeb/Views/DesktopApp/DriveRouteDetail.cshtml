@@ -1,0 +1,606 @@
+﻿@model HaisyaWeb.Models.AnkenModel.RouteDetailModel
+@{
+    Layout = "_LayoutForDesktop";
+}
+
+
+
+<link href="~/css/RouteDetail.css" rel="stylesheet" />
+
+@{
+    string routeType = Model.routeType;
+    string routeTypeDisplay = "推奨";
+    string routeTypeClass = "ex_route_name ";
+
+    switch (routeType)
+    {
+
+        case "0":
+            routeTypeDisplay = "推奨ルート";
+            routeTypeClass += "ex_route_name_0";
+            break;
+        case "1":
+            routeTypeDisplay = "一般道優先";
+            routeTypeClass += "ex_route_name_1";
+            break;
+        case "2":
+            routeTypeDisplay = "道幅優先";
+            routeTypeClass += "ex_route_name_2";
+            break;
+        case "3":
+            routeTypeDisplay = "距離優先";
+            routeTypeClass += "ex_route_name_3";
+            break;
+        case "4":
+            routeTypeDisplay = "別ルート";
+            routeTypeClass += "ex_route_name_4";
+            break;
+        default:
+            routeTypeDisplay = "不明";
+            routeTypeClass += "ex_route_name_99";
+            break;
+    }
+
+}
+
+
+<head>
+    <style>
+
+        #ZMap {
+            position: absolute;
+            top: 0px;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+    <!-- ローダーのURLをscriptでロードする -->
+    <!-- ログイン認証の場合 -->
+    <script src="@(Model.MapsApiForJSUrl)"></script>
+
+</head>
+
+<body style="margin-bottom: 0px;">
+    <div hidden>
+        @Html.HiddenFor(model => Model.CenterLatlon.lat)
+        @Html.HiddenFor(model => Model.CenterLatlon.lng)
+    </div>
+    <div class="map-page-container">
+        <div class="left-side-area is-show fade-in">
+            <div class="map-route-page-result">
+                <div class="map-route-page-result-inner">
+                    @*<a class="go-back">
+                    <span>ルート検索結果に戻る</span>
+                </a>*@
+                    <div class="map-route-page-result-content">
+                        <div class="map-route-result-detail-car-header">
+                            <h2 class="title is-5">
+                                <span>候補</span>
+                                @*<span>(16:59 ~ 18:24)</span>*@
+                                <span>@(routeTypeDisplay)</span>
+                            </h2>
+                            <div class="route-info subtitle is-6">
+                                @if (Model.driveList != null)
+                                {
+                                    double distance = Model.driveList.distance;
+                                    distance = distance / 1000;
+                                    <span style="font-size: 16px; font-weight: 200">@Convert.ToDouble(distance).ToString("#.0km")</span>
+                                }
+                                else
+                                {
+                                    <span>　</span>
+                                }
+
+                                <span>　</span>
+
+                                @if (Model.driveList != null)
+                                {
+                                    int time = Model.driveList.time;
+                                    string TimeVal = "";
+                                    if (time / 60 > 0) { TimeVal = (time / 60) + "時間" + Convert.ToInt32(time % 60).ToString("00") + "分"; }
+                                    if (time / 60 <= 0) { TimeVal = (time % 60) + "分"; }
+                                    <span style="font-size: 16px; font-weight: 200">@(TimeVal)</span>
+                                }
+                                else
+                                {
+                                    <span>　</span>
+                                }
+
+                                <span>　</span>
+                                <span style="font-size: 16px; font-weight: 200">@Convert.ToInt32(Model.driveList.toll).ToString("C")円</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="map-route-page-result-content">
+                      <div>
+
+                        @{
+                          int iCount = 0;
+                          string pointName = null;
+                          string directionName = null;
+                          string guidancecode = null;
+                          string routeName = null;
+                          string tollName = null;
+                          double linkDistance = 0;
+                          double linkToll = 0;
+                          string rodeType = "";
+                        }
+
+                        @foreach (var item in Model.driveList.link)
+                        {
+
+                          @if (item.tollFlag == true)
+                          {
+                            tollName = "有料区間";
+                          }
+                          else
+                          {
+                            tollName = null;
+                          }
+
+                          @*if (iCount == 64)
+                          {
+                            tollName = null;
+                          }
+                          @if (item.guidance.guidancecode != null)
+                          {
+                            tollName = null;
+                          }*@
+
+                          @if ((item.guidance.guidancecode == null && !item.roadType.Equals("フェリー航路")) ||
+                                           ((rodeType.Equals("フェリー航路") && item.roadType.Equals("フェリー航路"))))
+                          {
+                            pointName = null;
+                            directionName = null;
+                            guidancecode = null;
+                          }
+                          else
+                          {
+                            if (item.guidance.pointName != null)
+                            {
+                              pointName = item.guidance.pointName;
+                            }
+                            else if (item.roadType.Equals("フェリー航路"))
+                            {
+                              pointName = item.roadType;
+                            }
+
+
+                            if (item.guidance.routeName != null)
+                            {
+                              routeName = item.guidance.routeName;
+                            }
+                            if (item.guidance.directionName != null)
+                            {
+                              directionName = item.guidance.directionName;
+                            }
+
+                            switch (item.guidance.guidancecode)
+                            {
+                              case "0":
+                                guidancecode = "を直進方向";
+                                break;
+                              case "1":
+                                guidancecode = "を斜め右方向";
+                                break;
+                              case "2":
+                                guidancecode = "を斜め左方向";
+                                break;
+                              case "3":
+                                guidancecode = "を右方向";
+                                break;
+                              case "4":
+                                guidancecode = "を左方向";
+                                break;
+                              case "5":
+                                guidancecode = "を右斜め方向";
+                                break;
+                              case "6":
+                                guidancecode = "を左斜め方向";
+                                break;
+                              case "7":
+                                guidancecode = "をUターン";
+                                break;
+                              default:
+                                guidancecode = null;
+                                break;
+
+                            };
+                          }
+
+                          @if (item.distance > 0)
+                          {
+                            linkDistance += item.distance;
+                          }
+
+                          @if (item.toll > 0)
+                          {
+                            linkToll += item.toll;
+                          }
+
+                          @if (iCount == 0)
+                          {
+                            <div class="content-wrapper">
+                              <div class="items">
+                                <div class="left-item">
+                                  <div class="point-icon">
+                                    <img src="~/img/point-icon-s.png" height="22" width="22" />
+                                  </div>
+                                </div>
+                                <div class="right-item">
+                                  @*<a class="point">@(Model.StartAddress)</a>*@
+                                  <a class="point" style="padding-left: 10px;">スタート地点</a>
+                                </div>
+                              </div>
+                              <div class="items">
+                                <div class="left-item">
+                                  <div class="road">
+                                    <div class="dots">
+                                      <div class="dot">
+                                      </div>
+                                      <div class="dot">
+                                      </div>
+                                      <div class="dot">
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="right-item">
+                                </div>
+                              </div>
+                            </div>
+                          }
+                          else if (pointName != null)
+                          {
+                            <div class="content-wrapper">
+                              <div class="items">
+                                <div class="left-item">
+                                  <div class="marker">
+                                  </div>
+                                </div>
+                                <div class="right-item">
+                                  <a class="point">@(pointName)@(guidancecode)</a>
+                                  <span>   </span>
+                                  <span style="font-size: 10px; color: chocolate;">@Convert.ToDouble(linkDistance / 1000).ToString("0.0km")</span>
+                                  @if (item.toll > 0)
+                                  {
+                                    <span> </span>
+                                    <span style="font-size: 10px; color: fuchsia;">@Convert.ToInt32(item.toll).ToString("C")円</span>
+                                  }
+                                </div>
+                              </div>
+                              <div class="items">
+                                <div class="left-item">
+                                  <div class="road">
+                                    <div class="dots">
+                                      <div class="dot">
+                                      </div>
+                                      <div class="dot">
+                                      </div>
+                                      <div class="dot">
+                                      </div>
+                                      <div class="dot">
+                                      </div>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="right-item">
+                                  <div>
+                                  </div>
+                                  <div class="road-info">
+                                    <p class="road-name">
+                                      <span>@(routeName)</span>
+                                    </p>
+                                    <p class="toll">@(tollName)</p>
+                                    @if (directionName != null)
+                                    {
+                                      <p class="road-name"><label style="font-size: 12px;">(@(directionName))</label></p>
+                                    }
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          }
+
+                          if (iCount >= 0) { iCount++; }
+                          rodeType = item.roadType;
+
+                        }
+                        <div class="content-wrapper">
+                          <div class="items">
+                            <div class="left-item">
+                              <img src="~/img/point-icon-e.png" height="22" width="22" />
+                            </div>
+                            <div class="right-item">
+                              <a class="point" style="padding-left: 10px;">
+                                @*<span>@(Model.EndAddress)</span>*@
+                                <span>ゴール地点</span>
+                              </a>
+                            </div>
+                          </div>
+                        </div>
+
+                      </div>
+                    </div>
+                </div>
+            </div>
+
+            <div hidden>
+                <table id="Map">
+                    @foreach (var item in Model.driveList.link)
+                    {
+                        @foreach (var item2 in item.line)
+                        {
+                            <tr>
+                                <td>@(item.linkID)</td>
+                                <td>@(item2.lat)</td>
+                                <td>@(item2.lng)</td>
+                            </tr>
+                        }
+                    }
+                </table>
+
+            </div>
+        </div>
+
+
+        <div style="margin: 0; padding: 0;">
+            @if (Model.WebViewFlg == 0)
+            {
+                <div id="mapHead">
+                    <!-- ログイン認証の場合 -->
+                    <button onclick="logout(); return false;" style="width: 100px;height:30px;font-size:12px;">logout</button>
+                    <button onclick="aaaTest(); return false;" style="width: 100px; height: 30px; font-size: 12px; ">aaaa</button>
+                </div>
+                <div id="MapContainer" class="map-container2" style="margin:0;padding:0;">
+                    <div id="ZMap" style="background:#00ffff;"></div>
+                </div>
+            }
+            else
+            {
+                <div id="MapContainer" class="map-container" style="margin:0;padding:0;">
+                    <div id="ZMap" style="background:#00ffff;"></div>
+                </div>
+            }
+
+        </div>
+    </div>
+</body>
+
+<script>
+
+
+
+    $(function () {
+
+        // ウィンドウの高さ
+        var w_height = 0;
+        //ウィンドウ幅の高さをw_heightに取得
+        var w_width = 0;
+
+
+        $(document).ready(function () {
+            SetWindowSize();
+        });
+
+        $(window).on('beforeunload', function (e) {
+            alert("beforeunload");
+            logout();
+        });
+
+        $(window).on("unload", function () {
+            logout();
+            alert("logout");
+
+        });
+
+        $(window).resize(function (event) {
+            //alert(window.innerHeight);
+
+            SetWindowSize();
+        });
+
+
+        function SetWindowSize() {
+
+            // ウィンドウの高さ
+            w_height = window.innerHeight - 10;
+            //ウィンドウ幅の高さをw_heightに取得
+            w_width = window.innerWidth - 380;
+
+            if ($('#WebViewFlg').text == 0) {
+                // ウィンドウの高さ
+                w_height = window.innerHeight - 45;
+                //ウィンドウ幅の高さをw_heightに取得
+                w_width = window.innerWidth - 400;
+            }
+
+            if (w_height < 0) { w_height = 50; }
+            if (w_width < 0) { w_width = 50; }
+
+            //要素MapContainerをdiv_targetに取得
+            var div_target = document.getElementById("MapContainer");
+            //div_targetの高さをw_heightに書き換え
+            div_target.style.height = w_height + 'px';
+            div_target.style.width = w_width + 'px';
+
+            $('#ZMap').height(div_target.style.height - 0);
+            $('#ZMap').width(div_target.style.width - 0);
+        };
+
+    });
+
+
+    ZisAuth.addEventListener("load", function (e) {
+        login();
+    });
+
+
+    function login() {
+        const obj = {
+            uid: "@(Model.MapApiSettings.AuthAid.Uid)"
+            , pwd: "@(Model.MapApiSettings.AuthAid.Pwd)"
+            , sid: "@(Model.MapApiSettings.AuthAid.Sid)"
+            , device_flag: 1
+        }
+        ZisAuth.login(obj);
+    };
+
+    function logout() {
+        ZisAuth.logout();
+        alert("logout");
+    };
+
+    function logoutForDesktop() {
+        ZisAuth.logout();
+    };
+
+
+
+    // 地図オブジェクト
+    var map = null;
+    // 地図ポリライン
+    var pl = null;
+
+    //var latFirst = null;
+    //var lngFirst = null;
+
+    // failedイベントリスナー設定
+    // 認証クラスでエラーが発生した場合にfailedが発行される
+    ZisAuth.addEventListener("failed", function (e) {
+        alert("エラーが発生しました。(" + e.status.code + ")");
+    });
+
+    // readyイベントリスナー設定
+    // 認証クラスで地図が利用可能な場合にreadyが発行される
+    ZisAuth.addEventListener("ready", function (e) {
+        // マップエレメント要素を取得する
+        var mapElement = document.getElementById("ZMap");
+
+        var centerLat = document.getElementById("CenterLatlon_lat").value;
+        var centerLng = document.getElementById("CenterLatlon_lng").value;
+
+        //alert(centerLat + ";;;" + centerLng);
+
+        // MapOptionsをデフォルト値から変更する場合各パラメータに値を設定
+        var mapOptions = ZisAuth.getMapOption();
+        //mapOptions.zipsMapType = "kP8KjZdn";
+        mapOptions.center = new ZDC.LatLng(34.35132785373264, 132.35272922092014);
+        mapOptions.zoom = 9; // ★ズームレベルを設定
+        mapOptions.minZoom = 3
+        mapOptions.maxZoom = 22;
+        mapOptions.touchOperation = true;
+
+        // 地図を生成
+        map = new ZDC.Map(
+            mapElement,
+            mapOptions,
+            function () {
+                // Success callback
+                // コントロールを追加する
+                // コンパスの表示
+                map.addControl(new ZDC.Compass('top-right'));
+                // ズームボタンの表示
+                map.addControl(new ZDC.ZoomButton('bottom-right'));
+                // スケールバーの表示
+                map.addControl(new ZDC.ScaleBar('bottom-left'));
+                // 中心マーカーを作成します
+                map.addControl(new ZDC.CenterMarker());
+
+                setPolyline();
+
+                map.setCenter(new ZDC.LatLng(centerLat, centerLng));
+
+            },
+            function () {
+                // Failure callback
+            }
+        );
+         
+    });
+
+
+
+    /* ダブルタップ判定処理 */
+    function doubletap(event) {
+        if (!tapCount) {
+            /* シングルタップ */
+            tapCount++;
+
+            setTimeout(function () {
+                tapCount = 0;
+            }, 350);
+
+        } else {
+            /* ダブルタップ */
+            tapCount = 0;
+
+            mapZoom(event);
+        }
+    };
+
+    /* ★クリック／タップ地点を中心に地図を拡大 */
+    function mapZoom(event) {
+        map.setCenter(event.latlng);
+        map.setZoom(map.getZoom() + 1);
+    };
+
+    function aaaTest() {
+        setPolyline();
+    };
+
+
+
+    function setPolyline() {
+
+        var selector = "#Map tr";
+        var latlons = [];
+        
+
+        $(selector).each(function (i, e) {
+
+            for (var i = 0, l = $(this).length; i < l; i++) {
+
+                var cells = $(this).eq(i).children();//1行目から順にth、td問わず列を取得
+
+                var latVal = cells.eq(1).text();
+                var lngVal = cells.eq(2).text();
+
+                //if (latFirst == null) {
+                //    latFirst = latVal;
+                //}
+                //if (lngFirst == null) {
+                //    lngFirst = lngVal;
+                //}
+
+                //if (i == 0) {
+                //    latFirst = latVal;
+                //    lngFirst = lngVal;
+                //}
+
+
+                //alert(latVal + ";" + lngVal);
+                latlons.push(new ZDC.LatLng(parseFloat(latVal), parseFloat(lngVal)));
+
+            }
+
+        });
+
+        // ポリラインを作成
+        // ポリラインを地図オブジェクト(map)に追加
+        if (pl === null || pl === undefined) { } else { map.removeWidget(pl); }
+        pl = new ZDC.Polyline(latlons, { color: '#ff0000', width: 5, pattern: 'solid', opacity: 1.0 });
+        map.addWidget(pl);
+
+        //map.setCenter(new ZDC.LatLng(latFirst, lngFirst));
+
+        return;
+
+    };
+
+    function setCenter() {
+        ////alert(latFirst + ";;;" + lngFirst);
+        ////map.setCenter(new ZDC.LatLng(Number(" + latFirst + "), Number(" + lngFirst + ")));
+    };
+
+</script>

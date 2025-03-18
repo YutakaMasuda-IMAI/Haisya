@@ -1,0 +1,234 @@
+﻿@model HomeModel.HomeMainModel
+
+
+@{
+  Layout = "_Layout";
+}
+
+<link href="~/css/Home.css" rel="stylesheet" />
+
+<div id="HomeMain" class="text-center" style="width: 1650px;">
+
+  <div class="row" style="display: block; width: auto; ">
+    <div class="topLeft">
+
+      <div style="width: 100%;">
+        <div class="row-cols-auto" style="margin-top: 10px;">
+          <div class="row" style="margin: 0.01rem;">
+            <h5 class="col-10 heading-40" style="width: 300px;"><span class="glyphicon glyphicon-info-sign"></span>お知らせ</h5>
+          </div>
+          <div id="SystemInfo" class="table-info" style="border: 1px solid; height: 400px;">
+            <div id="SystemInfoLoading" style="margin-left: 10rem;">
+              <partial name="~/Views/Common/Loading1.cshtml" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="width: 100%;">
+        <div class="row-cols-auto" style="margin-top: 0px;">
+          <div class="row" style="margin: 0.01rem;">
+            <h5 class="col-10 heading-40" style="width: 300px;"><span class="glyphicon glyphicon-tags"></span>日次業務</h5>
+          </div>
+          <div class="table-info" style="border: 1px solid; height: 400px;">
+            <div class="" style="display: flex; height: 100%; ">
+              <div id="CalenderInfo" class="UnderLeft" style="">
+                <h4 id="monthAndYear" style="text-align-last: center;"><input type="tel" id="monthAndYearVal" style="border: none;" /></h4>
+                <input type="hidden" id="monthVal" />
+                <input type="hidden" id="dateVal" />
+                <div class="button-container-calendar">
+                  <button id="previous" style="float: left;" onclick="previousMonth()">‹</button>
+                  <button id="next" style="float: right;" onclick="nextMonth()">›</button>
+                </div>
+                <table class="calendar">
+                  <thead>
+                    <tr class="calendar">
+                      <th>日</th>
+                      <th>月</th>
+                      <th>火</th>
+                      <th>水</th>
+                      <th>木</th>
+                      <th>金</th>
+                      <th>土</th>
+                    </tr>
+                  </thead>
+                  <tbody id="calendar-body">
+                    <!-- JavaScriptでカレンダーが生成される -->
+                  </tbody>
+                </table>
+
+              </div>
+              <div id="DailyInfo" class="UnderRight" style="border-left: double;">
+                @*<div id="DailyInfoLoading" style="margin-left: 10rem; height: 100%; align-content: center;">
+                  <partial name="~/Views/Common/Loading1.cshtml" />
+                </div>*@
+
+              </div>
+            </div>
+            
+          </div>
+        </div>
+
+
+      </div>
+
+      
+    </div>
+
+    
+    <div class="topRight">
+      @await Html.PartialAsync("AdminInfo", Model)
+    </div>
+
+  </div>
+
+
+
+</div>
+
+
+
+<script>
+
+  $(window).on('load', function () {
+    const currentDate = new Date();
+    generateCalendar(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+    addEvent(currentDate);
+  });
+
+  $(function () {
+
+    LoadList();
+
+  });
+
+  /**
+   * カレンダーの日付をクリック
+   * @@param val
+   */
+  function dayCalendarOnClick(val) {
+      $('#' + $('#dateVal').val()).css("background-color", "");
+      var date = $('#monthVal').val();
+      var currentDate = new Date(date);
+      //var day = currentDate.getDate();
+   /*   alert(currentDate);*/
+      currentDate.setDate(currentDate.getDate() + Number(val) - 1);
+      //alert(currentDate);
+      $('#dateVal').val(currentDate.getDate());
+      addEvent(currentDate);
+
+  }
+
+  /**
+   * カレンダーを作成
+   * @@param year
+   * @@param month
+   */
+  function generateCalendar(year, month, day) {
+    const date = new Date(year, month, 1);
+    const firstDay = date.getDay();
+    const lastDate = new Date(year, month + 1, 0).getDate();
+    let calendarHTML = '';
+    let dayCount = 1;
+
+    for (let i = 0; i < 6; i++) {
+      if (dayCount <= lastDate) {
+      calendarHTML += '<tr>';
+      for (let j = 0; j < 7; j++) {
+        if (i === 0 && j < firstDay) {
+          calendarHTML += '<td></td>'; // 空のセル
+        } else if (dayCount <= lastDate) {
+          calendarHTML += `<td id="${dayCount}" data-id="${dayCount}" class="calendar" onclick="dayCalendarOnClick(${dayCount}); return false;">${dayCount}</td>`;
+          dayCount++;
+        } else {
+          calendarHTML += '<td></td>'; // 月末後の空のセル
+        }
+      }
+        calendarHTML += '</tr>';
+      }
+    }
+    document.getElementById('calendar-body').innerHTML = calendarHTML;
+
+    $('#monthVal').val(date);
+    $('#dateVal').val(day);
+    var date2 = date;
+    date2.setMonth(date2.getMonth() + 1);
+    var mval = date2.getMonth();
+    if (mval == 0) { mval = 12; }
+    var disp = String(date2.getFullYear()) + '年 ' + String(mval) + '月';
+    $("#monthAndYearVal").val(disp);
+    
+  }
+
+  
+  /**
+   * テーブルリストの表示
+   * */
+  function LoadList() {
+
+    DisplaySystemInfo();
+  };
+
+
+  /**
+   * システムからのお知らせ
+   * */
+  async function DisplaySystemInfo() {
+
+    $('#DigiTachoLinkLoading').show();
+
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "Home", Action = "JsonDisplaySystemInfo" })',
+      type: 'post',
+    }).done(function (response) {
+      //alert(response.errorMessage);
+      if (response.errorMessage != null) {
+          alertError(`【エラー】${response.errorMessage}`);
+          return false;
+      } else {
+        $('#SystemInfoLoading').hide();
+        $('#SystemInfo').html(response.partialView);
+        return false;
+      }
+    }).fail(function (xhr) {
+      alertError(xhr, "【ネットワークエラー】");
+      console.log(xhr);
+      return false;
+    }).always(function (xhr, msg) {
+      $('#DigiTachoLinkLoading').hide();
+      console.log(xhr, msg);
+    });
+
+  };
+
+  // 前の月を表示する
+  function previousMonth() {
+    changeMonth(-1);
+  }
+
+  // 次の月を表示する
+  function nextMonth() {
+    changeMonth(1);
+  }
+
+  function changeMonth(val) {
+    var date = $('#monthVal').val();
+    var currentDate = new Date(date);
+    var lastDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
+    currentDate.setMonth(currentDate.getMonth() + val);
+    var day = $('#dateVal').val();
+    if (day > lastDate) { day = lastDate; }
+    currentDate.setDate(day);
+    generateCalendar(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+
+    addEvent(currentDate);
+  }
+
+  // イベントを追加する
+  function addEvent(date) {
+    const targetDay = (new Date(date)).getDate();
+    $('#' + targetDay).css("background-color", "lawngreen");
+  }
+
+
+</script>

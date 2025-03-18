@@ -1,0 +1,480 @@
+﻿@model HaisyaWeb.Models.CustomerModalDto
+
+@{
+  Layout = "_ModalLayout";
+}
+
+
+<style>
+  /*  .float-left {
+    float: left;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }
+
+  .float-right {
+    float: right;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }*/
+
+  .readonly {
+    background-color: lightgray;
+  }
+
+  .table-customer-Branch  th {
+    padding: 0.1rem;
+  }
+</style>
+
+
+<div role="dialog" id="modal-option" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:1000px;">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: gainsboro;">
+        <h1 class="modal-title fs-3" id="exampleModalLabel">@(Model.Title)</h1>
+        <button type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
+      </div>
+      <div class="model-body">
+        <form id="form1">
+          <div id="hidden" hidden>
+            @Html.HiddenFor(model => Model.CompanyID)
+            @Html.HiddenFor(model => Model.CustomerID)
+          </div>
+          <div class="contents-wrap-middle" style="margin: 10px;">
+            <h4 class="">注意</h4>
+            <span>
+              ・この画面で入力内容を
+              ・一度データを登録すると物理削除は出来ません。「非表示フラグ」を立ててください。
+            </span>
+          </div>
+          <table class="table table-striped-columns table-bordered border-primary" border="1" style="margin: 10px; width:96%;">
+            <thead>
+              <tr style="background-color: aquamarine;">
+                <th width="100px" align="center" style="text-align: center;">項目名</th>
+                <th width="350px" align="center" style="text-align: center;">値</th>
+                <th width="100px" align="center" style="text-align: center;">項目名</th>
+                <th width="350px" align="center" style="text-align: center;">値</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr hidden>
+                <th></th>
+                <td>@Html.TextBoxFor(model => Model.CustomerData.Customer_ID, null, new { @class = "form-control text-left", @onblur = "", @style = "width: 95%; padding: 0;" })</td>
+                <th></th>
+                <td>@Html.TextBoxFor(model => Model.CustomerData.Company_ID, null, new { @class = "form-control text-left", @onblur = "", @style = "width: 95%; padding: 0;" })</td>
+              </tr>
+              <tr hidden>
+                <th></th>
+                <td>@Html.TextBoxFor(model => Model.CustomerData.Customer_ID_Oya, null, new { @class = "form-control text-left", @onblur = "", @style = "width: 95%; padding: 0;" })</td>
+                <th></th>
+                <td></td>
+              </tr>
+              <tr>
+                <th>傭車フラグ</th>
+                <td>
+                  <div style="display: inline-flex;">
+                    @{ 
+                        Model.YosyaFlg = (Model.CustomerData.Yosya_Flg == 0) ? false : true;
+                    }
+
+                    @Html.CheckBoxFor(model => Model.YosyaFlg, new { @class = "form-control text-left form-check-input" })
+                    <label style="margin-left: 20px; font-size: 11px;">※オンにすると傭車乗務員が登録可能。</label>
+                  </div>
+                </td>
+                <th></th>
+                <td></td>
+              </tr>
+              <tr>
+                <th>親顧客コード</th>
+                <td>@Html.TextBoxFor(model => Model.CustomerData.Customer_Code_Oya, null, new { @class = "form-control text-left readonly", @onblur = "", @style = "width: 100px; padding: 0;" })</td>
+                <th>親顧客名　</th>
+                <td>@Html.TextBoxFor(model => Model.Customer_Name_Oya, null, new { @class = "form-control text-left readonly", @onblur = "", @style = "width: 95%; padding: 0;" })</td>
+              </tr>
+              <tr>
+                <th style="color: red;">顧客コード</th>
+                <td>
+                  @Html.TextBoxFor(model => Model.CustomerData.Customer_Code, null, new { @class = "form-control text-left", @style = "width: 100px; padding: 0;" })
+                </td>
+                <th style="color: red;">顧客名</th>
+                <td>
+                  @Html.TextBoxFor(model => Model.CustomerData.Customer_Name, null, new { @class = "form-control text-left", @style = "width: 95%; padding: 0;" })
+                </td>
+              </tr>
+              <tr>
+                <th style="color: red;">略名</th>
+                <td>
+                  @Html.TextBoxFor(model => Model.CustomerData.Customer_Name_Abbr, null, new { @class = "form-control text-left", @style = "width: 80%; padding: 0;" })
+                </td>
+                <th style="color: red;">顧客名カナ</th>
+                <td>
+                  @Html.TextBoxFor(model => Model.CustomerData.Customer_Name_Kana, null, new { @class = "form-control text-left", @style = "width: 80%; padding: 0;" })
+                </td>
+              </tr>
+              <tr>
+                <th style="color: red;">郵便番号</th>
+                <td>
+                  @Html.TextBoxFor(model => Model.CustomerData.PostCode, null, new { @class = "form-control text-left", @style = "width: 100px; padding: 0;" })
+                </td>
+                <th style="color: red;">住所１</th>
+                <td>
+                  @Html.TextBoxFor(model => Model.CustomerData.Address1, null, new { @class = "form-control text-left", @style = "width: 95%; padding: 0;" })
+                </td>
+              </tr>
+              <tr>
+                <th style="color: red;">住所２</th>
+                <td>
+                  @Html.TextBoxFor(model => Model.CustomerData.Address2, null, new { @class = "form-control text-left", @style = "width: 95%; padding: 0;" })
+                </td>
+                <th style="color: red;">住所３</th>
+                <td>
+                  @Html.TextBoxFor(model => Model.CustomerData.Address3, null, new { @class = "form-control text-left", @style = "width: 95%; padding: 0;" })
+                </td>
+              </tr>
+              <tr>
+                <th style="color: red;">電話番号1</th>
+                <td>
+                  @Html.TextBoxFor(model => Model.CustomerData.Phone1, null, new { @class = "form-control text-left", @style = "width: 180px; padding: 0;" })
+                </td>
+                <th style="color: red;">電話番号2</th>
+                <td>
+                  @Html.TextBoxFor(model => Model.CustomerData.Phone2, null, new { @class = "form-control text-left", @style = "width: 180px; padding: 0;" })
+                </td>
+              </tr>
+              <tr>
+                <th style="color: red;">FAX番号1</th>
+                <td>
+                  @Html.TextBoxFor(model => Model.CustomerData.Fax1, null, new { @class = "form-control text-left", @style = "width: 180px; padding: 0;" })
+                </td>
+                <th style="color: red;">FAX番号2</th>
+                <td>
+                  @Html.TextBoxFor(model => Model.CustomerData.Fax2, null, new { @class = "form-control text-left", @style = "width: 180px; padding: 0;" })
+                </td>
+              </tr>
+              <tr>
+                <th>非表示フラグ</th>
+                <td class="">
+                  <div style="display: inline-flex;">
+                    @Html.CheckBoxFor(model => Model.CustomerData.Del_Flg, new { @class = "form-control text-left form-check-input" })
+                    <label style="margin-left: 20px; font-size: 11px;">※オンにすると、登録時に選択不可。</label>
+                  </div>
+                </td>
+              </tr>
+              <tr hidden>
+                <th style="color: red;">登録者</th>
+                <td>
+                  @Html.TextBoxFor(model => Model.CustomerData.Insert_User, null, new { @class = "form-control text-left", @style = "width: 200px; padding: 0;" })
+                </td>
+                <th style="color: red;">更新者</th>
+                <td>
+                  @Html.TextBoxFor(model => Model.CustomerData.Update_User, null, new { @class = "form-control text-left", @style = "width: 200px; padding: 0;" })
+                </td>
+              </tr>
+              <tr>
+                <th>登録年月日:</th>
+                <td>@Convert.ToDateTime(Model.CustomerData.Insert_Datetime).ToString("yyyy/MM/dd HH:mm:ss")</td>
+                <th>最終更新日:</th>
+                <td>@Convert.ToDateTime(Model.CustomerData.Update_Datetime).ToString("yyyy/MM/dd HH:mm:ss")</td>
+              </tr>
+              <tr hidden>
+                <th>登録年月日</th>
+                <td hidden>@Html.TextBoxFor(model => Model.CustomerData.Insert_Datetime, null, new { @class = "form-control" })</td>
+                <th>最終更新日</th>
+                <td hidden>@Html.TextBoxFor(model => Model.CustomerData.Update_Datetime, null, new { @class = "form-control" })</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="modal-header" style="padding-top: 0; padding-bottom: 0;">
+            <h4>支店（営業所）</h4>
+            <button type="button" class="btn btn-success" onclick="insertRow(); return false;">行追加</button>
+          </div>
+          <table id="tableBranch" class="table table-bordered border-primary table-customer-Branch" border="1" style="margin: 10px; width:96%;">
+            <thead>
+              <tr style="background-color: aquamarine;">
+
+                <th hidden rowspan="2">Customer_Branch_ID</th>
+                <th hidden rowspan="2">Customer_ID</th>
+
+                <th width="80px" align="center" style="text-align: center; color: red;">コード</th>
+                <th width="80px" align="center" style="text-align: center; color: red;">名称</th>
+                <th width="160px" align="center" style="text-align: center; color: red;">略名</th>
+              </tr>
+            </thead>
+            <tbody>
+              @{
+                var CustomerBranchList = Model.CustomerBranchList.OrderBy(m => m.Customer_Branch_Code).ToList();
+                for (int i = 0; i < CustomerBranchList.Count; i++)
+                {
+                  <tr style="vertical-align: middle;">
+                    <td hidden rowspan="2">@Html.TextBoxFor(model => CustomerBranchList[i].Customer_Branch_ID, null, new { @readonly = "readonly", @class = "form-control", @style = "" })</td>
+                    <td hidden rowspan="2">@Html.TextBoxFor(model => CustomerBranchList[i].Customer_ID, null, new { @readonly = "readonly", @class = "form-control", @style = "" })</td>
+
+                    @if (Model.EditEnabled)
+                    {
+                      <td>@Html.TextBoxFor(model => CustomerBranchList[i].Customer_Branch_Code, null, new { @class = "form-control", @style = "" })</td>
+                      <td>@Html.TextBoxFor(model => CustomerBranchList[i].Customer_Branch_Name, null, new { @class = "form-control", @style = "" })</td>
+                      <td>@Html.TextBoxFor(model => CustomerBranchList[i].Customer_Branch_Name_Abbr, null, new { @class = "form-control", @style = "" })</td>
+                    }
+                    else
+                    {
+                      <td>@(CustomerBranchList[i].Customer_Branch_Code)</td>
+                      <td>@(CustomerBranchList[i].Customer_Branch_Name)</td>
+                      <td>@(CustomerBranchList[i].Customer_Branch_Name_Abbr)</td>
+                    }
+                  </tr>
+
+                }
+              }
+            </tbody>
+          </table>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+  $(function () {
+
+
+  });
+
+  function regExec() {
+
+    if (varidationCheck()) {
+      return false;
+    }
+
+    //Formの参照を取る
+    var $form = $('#form1');
+
+    //alert($form.serialize());
+
+    $.ajax({
+          url: '@Url.RouteUrl("Default", new { controller = "Customer", Action = "CustomerRegExec" })',
+          type: 'post',
+          data: $form.serialize(),
+        }).done(function (response) {
+          if (response.errorMessage != null && response.errorMessage !== '') {
+              alertError(`【エラー】${response.errorMessage}`);
+              return false;
+          } else {
+            closeModelAndRefresh();
+            return false;
+          }
+        }).fail(function (xhr) {
+          alert('【ネットワークエラー】:' + xhr);
+            console.log(xhr);
+            return false;
+        }).always(function (xhr, msg) {
+            console.log(xhr, msg);
+        });
+
+  };
+
+
+
+
+  function varidationCheck() {
+
+    if (!($('#CustomerData_Customer_Name').val() != null && $('#CustomerData_Customer_Name').val().length > 0)) {
+      alert("顧客名が入力されていません");
+      $('#CustomerData_Customer_Name').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#CustomerData_Customer_Name').css('background-color', 'white');
+    }
+
+    if (!($('#CustomerData_Customer_Name_Abbr').val() != null && $('#CustomerData_Customer_Name_Abbr').val().length > 0)) {
+      alert("略名が入力されていません");
+      $('#CustomerData_Customer_Name_Abbr').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#CustomerData_Customer_Name_Abbr').css('background-color', 'white');
+    }
+
+    if (!($('#CustomerData_Customer_Name_Kana').val() != null && $('#CustomerData_Customer_Name_Kana').val().length > 0)) {
+      alert("顧客名カナが入力されていません");
+      $('#CustomerData_Customer_Name_Kana').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#CustomerData_Customer_Name_Kana').css('background-color', 'white');
+    }
+
+    //if (!($('#CustomerData_PostCode').val() != null && $('#CustomerData_PostCode').val().length > 0)) {
+    //  alert("郵便番号が入力されていません");
+    //  $('#CustomerData_PostCode').css('background-color', 'lightcoral');
+    //  return true;
+    //} else {
+    //  $('#CustomerData_PostCode').css('background-color', 'white');
+    //}
+
+    //if (!($('#CustomerData_Address1').val() != null && $('#CustomerData_Address1').val().length > 0)) {
+    //  alert("略名が入力されていません");
+    //  $('#CustomerData_Address1').css('background-color', 'lightcoral');
+    //  return true;
+    //} else {
+    //  $('#CustomerData_Address1').css('background-color', 'white');
+    //}
+
+    //if (!($('#CustomerData_Phone1').val() != null && $('#CustomerData_Phone1').val().length > 0)) {
+    //  alert("電話番号が入力されていません");
+    //  $('#CustomerData_Phone1').css('background-color', 'lightcoral');
+    //  return true;
+    //} else {
+    //  $('#CustomerData_Phone1').css('background-color', 'white');
+    //}
+
+
+    // table要素を取得
+    var tableElem = document.getElementById('tableBranch');
+
+    var row_len = Math.floor(tableElem.rows.length) - 1;
+
+    /*    alert(row_len);*/
+
+    // 取得した行（tr要素）を繰り返しHTMLを取得
+    var htmlStr = '';
+    for (i = 1, len = row_len; i <= len; i++) {
+
+      var BranchCode = $('#CustomerBranchList_' + (i - 1) + '__Customer_Branch_Code').val();
+      var BranchNameAbbr = $('#CustomerBranchList_' + (i - 1) + '__Customer_Branch_Name_Abbr').val();
+      var BranchName = $('#CustomerBranchList_' + (i - 1) + '__Customer_Branch_Name').val();
+
+      if (!(BranchCode != null && BranchCode.length > 0)) {
+        alert("支店コードが未入力です。");
+        $('#CustomerBranchList_' + (i - 1) + '__Customer_Branch_Code').css('background-color', 'lightcoral');
+        return true;
+      } else {
+        $('#CustomerBranchList_' + (i - 1) + '__Customer_Branch_Code').css('background-color', 'white');
+      }
+
+      if (!(BranchNameAbbr != null && BranchNameAbbr.length > 0)) {
+        
+        alert("支店名称が未入力です。");
+        $('#CustomerBranchList_' + (i - 1) + '__Customer_Branch_Name_Abbr').css('background-color', 'lightcoral');
+        return true;
+      } else {
+        $('#CustomerBranchList_' + (i - 1) + '__Customer_Branch_Name_Abbr').css('background-color', 'white');
+      }
+
+      if (!(BranchName != null && BranchName.length > 0)) {
+        alert("支店略名が未入力です。");
+        $('#CustomerBranchList_' + (i - 1) + '__Customer_Branch_Name').css('background-color', 'lightcoral');
+        return true;
+      } else {
+        $('#CustomerBranchList_' + (i - 1) + '__Customer_Branch_Name').css('background-color', 'white');
+      }
+
+      if (checkData(i, BranchCode)) {
+        alert("同一支店コードが複数選択されています。");
+        $('#CustomerBranchList_' + (i - 1) + '__Customer_Branch_Code').css('background-color', 'lightcoral');
+        return true;
+      }
+
+    };
+
+    return false;
+
+  };
+
+  function checkData(m, paramID) {
+    // table要素を取得
+    var tableElem = document.getElementById('tableBranch');
+    // 行（tr要素）を取得
+    var row_len = Math.floor(tableElem.rows.length / 2) - 1;
+
+    for (r = 1, lenA = row_len; r <= lenA; r++) {
+      if (r != m) {
+        var check = $('#CustomerBranchList_' + (r - 1) + '__Customer_Branch_Code').val();
+        if ((check != null && check.length > 0)) {
+          if (check == paramID) {
+            return true;
+          }
+        }
+      }
+    };
+    return false;
+  };
+
+
+  function insertRow() {
+
+    //alert("insertRow");
+
+    // テーブル取得
+    var table = document.getElementById("tableBranch");
+    // 行を行末に追加
+    var row = table.insertRow(-1);
+    row.style.verticalAlign = "middle";
+
+    // セルの挿入
+    var cell1 = row.insertCell(-1);
+    var cell2 = row.insertCell(-1);
+    var cell3 = row.insertCell(-1);
+    var cell4 = row.insertCell(-1);
+    var cell5 = row.insertCell(-1);
+
+    // 行数取得
+    var row_len = Math.floor(table.rows.length) - 2;
+
+    // セル結合
+    cell1.rowSpan = 2;
+    cell2.rowSpan = 2;
+
+
+    // 列非表示
+    cell1.hidden = true;
+    cell2.hidden = true;
+
+
+    //// セルの内容入力
+    cell1.innerHTML = repalceidName(row_len, $("#CustomerBranchList_0__Customer_Branch_ID").parent().html());
+    cell2.innerHTML = repalceidName(row_len, $("#CustomerBranchList_0__Customer_ID").parent().html());
+    cell3.innerHTML = repalceidName(row_len, $("#CustomerBranchList_0__Customer_Branch_Code").parent().html());
+    cell4.innerHTML = repalceidName(row_len, $("#CustomerBranchList_0__Customer_Branch_Name").parent().html());
+    cell5.innerHTML = repalceidName(row_len, $("#CustomerBranchList_0__Customer_Branch_Name_Abbr").parent().html());
+
+    $("#CustomerBranchList_" + row_len + "__Customer_Branch_ID").val('0');
+    $("#CustomerBranchList_" + row_len + "__Customer_ID").val($("#CustomerID").val());
+    $("#CustomerBranchList_" + row_len + "__Customer_Branch_Code").val('');
+    $("#CustomerBranchList_" + row_len + "__Customer_Branch_Name").val('');
+    $("#CustomerBranchList_" + row_len + "__Customer_Branch_Name_Abbr").val('');
+  
+  };
+
+  function repalceidName(row_len, html) {
+    html = html.replace("CustomerBranchList_0", "CustomerBranchList_" + row_len + "");
+    html = html.replace("CustomerBranchList[0]", "CustomerBranchList[" + row_len + "]");
+    return html;
+  }
+
+  /**
+ * 行削除
+ */
+  function deleteRow(obj) {
+    // 削除ボタンを押下された行を取得
+    tr = obj.parentNode.parentNode;
+
+    var rowindex = tr.sectionRowIndex
+
+    var table = document.getElementById("tableBranch");
+
+    if (tr.sectionRowIndex > 0) {
+      // trのインデックスを取得して行を削除する
+      table.deleteRow(rowindex + 3);
+      table.deleteRow(rowindex + 2);
+    }
+
+  };
+
+
+</script>

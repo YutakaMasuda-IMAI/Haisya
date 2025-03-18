@@ -1,0 +1,518 @@
+﻿@model HaisyaWeb.Models.ReportModel.ReportSearchModel
+@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+  Layout = "_Layout";
+  ViewData["Title"] = "共通検索画面";
+}
+
+<head>
+  <style>
+    .btn-export {
+      width: 300px;
+    }
+
+    .section-pattern {
+      padding: 10px;
+      min-height: 50px;
+      gap: 10px;
+    }
+
+    .item-pattern {
+      line-height: 50px;
+      cursor: pointer;
+    }
+
+      .item-pattern label {
+        cursor: pointer;
+      }
+
+
+
+    .report-item-search {
+      position: relative;
+      gap: 4px;
+    }
+
+      .report-item-search .group-input-search input {
+        padding-right: 20px;
+      }
+
+      .report-item-search .group-input-search .icon-clear {
+        font-size: 12px;
+        position: absolute;
+        right: 6px;
+        cursor: pointer;
+        top: 13px;
+        display: none;
+      }
+
+      .report-item-search .group-input-search:hover .icon-clear {
+        display: inline-block;
+      }
+
+    .report-item {
+      margin: 2px 0px;
+    }
+
+    .report-item-date {
+      position: relative;
+    }
+
+      .report-item-date .ui-datepicker-trigger {
+        position: absolute;
+        width: 20px !important;
+        height: 20px !important;
+        cursor: pointer;
+        right: 6px;
+        top: 8px;
+        margin: 0px;
+      }
+
+      .report-item-date .icon-clear {
+        font-size: 12px;
+        position: absolute;
+        right: 28px;
+        cursor: pointer;
+        top: 13px;
+        display: none;
+      }
+
+      .report-item-date:hover .icon-clear {
+        display: inline-block;
+      }
+
+      .report-item-date input {
+        padding-right: 25px;
+      }
+
+    .report-item-search button {
+      height: 36px;
+    }
+
+    .input-error {
+      background-color: lightcoral !important;
+    }
+
+  </style>
+</head>
+
+<div id="hedder" class="row" style="margin-bottom: -20px; margin-left: 0px; margin-right: 0px;">
+  <h6 class="heading-pagetitle">共通検索画面</h6>
+</div>
+<div class="containner" style="margin-top: 25px; padding: 0px 50px;">
+  @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "FormReportSearch" }))
+  {
+    @Html.HiddenFor(model => Model.Company_ID)
+    <div>
+      <h2> @Model.Report_Serch.Display_Title </h2>
+      <div style="max-width: 800px; margin: auto">
+        <div class="d-flex justify-content-between mt-3">
+          @if (Model.Report_Serch.Csv_Flg == 1)
+          {
+            <button type="button" value="csv" name="modeExport" class="btn btn-lg btn-export btn-primary">CSV出力</button>
+          }
+
+          @if (Model.Report_Serch.Pdf_Flg == 1)
+          {
+            <button type="button" value="pdf" name="modeExport" class="btn btn-lg btn-export btn-primary">PDF印刷</button>
+          }
+        </div>
+        <div class="d-flex border rounded section-pattern justify-content-around mt-3 flex-wrap">
+          @{
+            int i = 0;
+          }
+          @foreach (var item in Model.Report_Serch_Kubun_List)
+          {
+            <div class="item-pattern">
+              <input type="radio" id="radio@(item.Report_Serch_Kubun_ID)" name="ReportSearchKubunId" data-report_html="@item.Report_Html" value="@item.Report_Serch_Kubun_ID" @(i == 0 ? "checked" : "")>
+              <label for="radio@(item.Report_Serch_Kubun_ID)">@item.Display_Title</label>
+            </div>
+            i++;
+          }
+        </div>
+      </div>
+    </div>
+
+    <div id="ReportSearchItem" class="mt-3">
+    </div>
+  }
+</div>
+
+
+
+<script>
+
+  let fieldSearch = null;
+
+  function setFieldSearch(field) {
+    fieldSearch = field;
+  }
+  /********************************************************
+   * 共通得意先選択
+   ******************************************************* */
+  function onSearchCustomer() {
+    let CompanyID = $('#Company_ID').val();
+    openCommonDialogForCustomer(CompanyID, "", "")
+  };
+
+  function selectCustomerModalCloseCallBack() {
+        $('#ModalCommonDialog').find('.modal').modal('hide');
+  };
+
+  function selectCustomerSelectedCallBack(obj) {
+    if (fieldSearch) {
+      $(`input[name=${fieldSearch}]`).val(obj["Customer_Branch_ID"]).trigger('change');
+      const text = obj["Customer_Branch_ID"] + " - " + obj["Customer_Branch_Code"] + " - " + obj["Customer_Branch_Name_Abbr"];
+      $(`input[name=${fieldSearch}Text]`).val(text).trigger('change');
+    }
+  };
+
+  /********************************************************
+  * 共通得意先担当選択
+  ******************************************************* */
+  function onSearchCustomerTantou() {
+
+    const CustomerId = $('input[name=KokyakuId]').val() || $('input[name=CustomerId]').val() || $('input[name=CustomerID]').val()
+
+    const CompanyID = $('#Company_ID').val();
+
+    if (!CustomerId) {
+      alertInputError("まず顧客を選択してください。");
+      return false;
+    }
+
+    openCommonDialogForCustomerTantou(CompanyID, "", CustomerId, "");
+
+  };
+
+  function selectCustomerTantouSelectedCallBack(obj) {
+    if (fieldSearch) {
+      $(`input[name=${fieldSearch}]`).val(["Tantou_ID"]).trigger('change');
+      const text = obj["Tantou_ID"] + " - " + obj["Tantou_Code"] + " - " + obj["Tantou_Name_Abbr"];
+      $(`input[name=${fieldSearch}Text]`).val(text).trigger('change');
+    }
+
+  };
+  function selectCustomerTantouModalCloseCallBack() {
+        $('#ModalCommonDialog').find('.modal').modal('hide');
+  };
+
+  /********************************************************
+   * 共車輌選択
+   ******************************************************* */
+  function onSearchSyaryoManagement() {
+    const CompanyID = $('#Company_ID').val();
+    openCommonDialogForSayryo(CompanyID, $('#User_ID').val(), $('#SyaryoManagementID').val());
+  };
+
+  function selectSyaryoManagementSelectedCallBack(obj) {
+    if (fieldSearch) {
+      $(`input[name=${fieldSearch}]`).val(["SyaryoManagement_ID"]).trigger('change');
+      const text = obj["SyaryoManagement_ID"] + " - " + obj["Syasyu"] + " - " + obj["Kata"] + " - " + obj["Syaban_Number"];
+      $(`input[name=${fieldSearch}Text]`).val(text).trigger('change');
+    }
+  };
+
+  function selectSyaryoManagementModalCloseCallBack() {
+        $('#ModalCommonDialog').find('.modal').modal('hide');
+  };
+
+  /********************************************************
+  * 共通業者選択
+  ******************************************************* */
+  function onSearchVendor() {
+    const CompanyID = $('#Company_ID').val();
+    openCommonDialogForVender(CompanyID, "", "");
+  };
+
+  function selectVenderSelectedCallBack(obj) {
+    if (fieldSearch) {
+      $(`input[name=${fieldSearch}]`).val(["Vender_ID"]).trigger('change');
+      const text = obj["Vender_ID"] + " - " + obj["Vender_Code"] + " - " + obj["Vender_Name_Abbr"];
+      $(`input[name=${fieldSearch}Text]`).val(text).trigger('change');
+    }
+  };
+
+  function selectVenderModalCloseCallBack() {
+        $('#ModalCommonDialog').find('.modal').modal('hide');
+  };
+
+  /********************************************************
+   * 共通乗務員選択
+   ******************************************************* */
+  function onSearchCompanyDriver() {
+    const CompanyID = $('#Company_ID').val();
+    openCommonDialogForCompanyDriver(CompanyID, "", "");
+  };
+
+  function selectCompanyDriverSelectedCallBack(obj) {
+    if (fieldSearch) {
+      $(`input[name=${fieldSearch}]`).val(["Driver_ID"]).trigger('change');
+      const text = obj["Driver_ID"] + " - " + obj["Employee_Number"] + " - " + obj["Display_Name"];
+      $(`input[name=${fieldSearch}Text]`).val(text).trigger('change');
+    }
+  };
+
+  function selectCompanyDriverModalCloseCallBack() {
+        $('#ModalCommonDialog').find('.modal').modal('hide');
+  };
+
+  /********************************************************
+   * 共通傭車選択
+   ******************************************************* */
+  function onSearchCustomerSyaryo() {
+    const CompanyID = $('#Company_ID').val();
+    openCommonDialogForCustomerDriver(CompanyID, "", "", 0);
+  };
+
+  function selectCustomerDriverSelectedCallBack(obj) {
+    if (fieldSearch) {
+      $(`input[name=${fieldSearch}]`).val(["Customer_ID"]).trigger('change');
+      const text = obj["Customer_ID"] + " - " + obj["Customer_Branch_ID"] + " - " + obj["Customer_Driver_ID"] + " - " + obj["Employee_Number"] + " - " + obj["Display_Name"];
+      $(`input[name=${fieldSearch}Text]`).val(text).trigger('change');
+    }
+  };
+
+  function selectCustomerDriverModalCloseCallBack() {
+        $('#ModalCommonDialog').find('.modal').modal('hide');
+  };
+
+  // 入力データを初期化にする。
+  function initDataInput() {
+    $(".calendar").datepicker({
+      buttonImage: "../img/calender.png",        // カレンダーアイコン画像
+      buttonText: "カレンダーから選択", // ツールチップ表示文言
+      buttonImageOnly: true,           // 画像として表示
+      showOn: "both",                 // カレンダー呼び出し元の定義
+    });
+    for (let i = 0; i < $(".calendar").length; i++) {
+      let itemCalendar = $($(".calendar")[i]);
+      if (itemCalendar.data("format")) {
+        itemCalendar.datepicker("option", "dateFormat", itemCalendar.data("format"));
+      }
+      if (itemCalendar.data("default_value") && !itemCalendar.datepicker("getDate")) {
+        itemCalendar.datepicker("setDate", new Date(itemCalendar.data("default_value")));
+      }
+    }
+
+    // 数値の入力値をフォーマットする。
+    $(".input-item").each(function () {
+      if (["int", "float"].includes($(this).data("type"))) {
+        const format = $(this).data("format");
+        const valueOrigin = $(this).val()
+        $(this).data("value_origin", valueOrigin);
+        if ($(this).val() != "") {
+          $(this).val(formatNumber(valueOrigin, format));
+        }
+        // オリジン値を保存する。
+        $(this).focusin(function () {
+          if ($(this).data("value_origin") != "") {
+            $(this).val($(this).data("value_origin"));
+          }
+        });
+        // フォーカスが外れるとき入力値を変更する。
+        $(this).focusout(function () {
+          const valueOrigin = $(this).val()
+          $(this).data("value_origin", valueOrigin);
+          if (valueOrigin != "") {
+            $(this).val(formatNumber(valueOrigin, format));
+          }
+        });
+
+      }
+    });
+  }
+
+  //数値の形式
+  function formatNumber(value, format) {
+    try {
+      if (value === '' || value === null) {
+        return value;
+      }
+      let formatSplit = format.split(".");
+      let result = Number(value);
+      if (formatSplit.length > 1 && formatSplit[1].length) {
+        result = result.toFixed(formatSplit[1].length <= 11 ? formatSplit[1].length : 11);
+      }
+
+      let [integer, decimal] = result.toString().split(".");
+
+      if (formatSplit[0] === "#,###") {
+        integer = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      }
+
+      return decimal ? [integer, decimal].join(".") : integer;
+    } catch (e) {
+      console.log(value, format, e);
+      return value;
+    }
+  }
+
+  // 提出する時に入力値をバリエーションチェック
+  function validateInput() {
+    let isValidate = true;
+    $(".input-error").removeClass("input-error");
+
+    $(".input-item").each(function () {
+      let isError = false;
+      if ($(this).attr("required") && $(this).val() == "") {
+        const displayTitle = $(this).data("display_title");
+        alertInputError(`${displayTitle}が入力されていません`);
+        isError = true;
+      } else if (["int", "float"].includes($(this).data("type")) && $(this).val() != "") {
+        const typeNumber = $(this).data("type");
+        const valueNum = $(this).data('value_origin').replace(",", ".");
+
+        if (isNaN(Number(valueNum))
+          || typeNumber == "int" && !Number.isInteger(Number(valueNum))) {
+          const displayTitle = $(this).data("display_title");
+          alertInputError(`${displayTitle}が数値ではありません`);
+          isError = true;
+        }
+      }
+
+      if (isError) {
+        isValidate = false;
+
+        if ($(this).parent().hasClass("group-input-search")) {
+          $(this).parent().find("input[type=text]").addClass("input-error");
+        } else {
+          $(this).addClass("input-error");
+        }
+        return false;
+      }
+
+    });
+    return isValidate
+  }
+
+  /**
+   * Report_Serch_Kubun_IDで項目帳票一覧のデータを取得する。
+   */
+  async function dataListDisplay(Report_Serch_Kubun_ID) {
+    reportSearchKubunId = Report_Serch_Kubun_ID;
+
+    try {
+      ///処理中ダイアログ
+      Swal.fire({
+        title: 'データ読込中'
+        , html: '表示されるまでそのままお待ちください。'
+        , allowOutsideClick: true
+        , showConfirmButton: false
+        , didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+      return new Promise((resolve, reject) => {
+        $.post('@Url.RouteUrl("Default", new { controller = "Report", Action = "JsonGetDataSearchItemList" })',
+          {
+            Report_Serch_Kubun_ID: Report_Serch_Kubun_ID,
+          },
+          function (data) {
+            $('#ReportSearchItem').html(data.partialView);
+
+            initDataInput();
+
+            $(".input-item").change(function () {
+              isEdit = 1;
+            });
+
+            resolve(1);
+          }).always(function (xhr, msg) {
+            //完了ダイアログ
+            Swal.fire({
+              title: '処理終了'
+              , html: '処理を終了しました。'
+              , type: 'info'
+              , timer: 1
+            });
+          });
+      })
+
+    } catch (e) {
+      console.log(e)
+    } finally {
+
+    }
+  }
+
+  //PDFReport
+  async function PDFReport(searchKubunId, namePdf, params) {
+
+    const url = '@Url.RouteUrl(new { controller = "Report", action = "PreviewPDFReport", template = "__Template__" })'
+      .replace("__Template__", namePdf);
+
+    $("#form-pdf-export").remove();
+
+    const form = $('<form id="form-pdf-export" target="_blank" method="post" action="' + url + '"></form>');
+    form.append('<input type="hidden" name="SerchKubunID" value="' + searchKubunId + '" />');
+    form.append('<input type="hidden" name="searchJson" value="' + encodeURIComponent(JSON.stringify(params)) + '" />');
+    $('body').append(form);
+    form.submit();
+  }
+
+    //CSVをエクスポート
+  async function ExportCSV(searchKubunId, params) {
+
+    const url = '@Url.RouteUrl(new { controller = "Report", action = "ExportCSV" })';
+
+    $("#form-csv-export").remove();
+
+    const form = $('<form id="form-csv-export" method="post" action="' + url + '"></form>');
+    form.append('<input type="hidden" name="SerchKubunID" value="' + searchKubunId + '" />');
+    form.append('<input type="hidden" name="searchJson" value="' + encodeURIComponent(JSON.stringify(params)) + '" />');
+    $('body').append(form);
+    form.submit();
+  }
+
+  let isEdit = 0;
+  let reportSearchKubunId = $("input[name=ReportSearchKubunId]:checked").val();
+  $(function () {
+    if ($("input[name=ReportSearchKubunId]").length > 0) {
+      dataListDisplay($("input[name=ReportSearchKubunId]:checked").val());
+    }
+
+    $("input[name=ReportSearchKubunId]").change(async function () {
+      if (isEdit) {
+        const confirmed = await alertYesNoMsg("", "検索条件はクリアされます。よろしいでしょうか？", "warning", "はい", "いいえ");
+        if (confirmed) {
+          isEdit = 0;
+          dataListDisplay($(this).val())
+        } else {
+          $(this).prop("checked", false);
+          $("input[name=ReportSearchKubunId][value=" + reportSearchKubunId + "]").prop("checked", true);
+        }
+      } else {
+        dataListDisplay($(this).val())
+      }
+    });
+
+    $(".btn-export").click(function () {
+      if (validateInput()) {
+        const params = {};
+        const searchKubunId = $("input[name=ReportSearchKubunId]:checked").val();
+        const namePdf = $("input[name=ReportSearchKubunId]:checked").data("report_html") + ".pdf";
+        const modeExport = $(this).val();
+        $(".input-item-param").each(function () {
+          //日付を確認する
+          if ($(this).hasClass("calendar")) {
+            params[$(this).attr("name")] = $(this).datepicker("getDate");
+          } else {
+            params[$(this).attr("name")] = $(this).data('value_origin')?.replace(",", ".") || $(this).val();
+          }
+        });
+        console.log(params);
+        if (modeExport == "pdf") {
+          PDFReport(searchKubunId, namePdf, params);
+        } else {
+          ExportCSV(searchKubunId, params);
+        }
+      }
+    });
+
+
+  });
+</script>

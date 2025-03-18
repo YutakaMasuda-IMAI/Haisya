@@ -1,0 +1,91 @@
+﻿@model HaisyaWeb.Models.SelectCodeDto;
+
+
+@{
+
+}
+
+<link href="~/css/Tool.css" rel="stylesheet" />
+
+<style>
+  /*  .float-left {
+    float: left;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }
+
+  .float-right {
+    float: right;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }*/
+
+  .readonly {
+    background-color: lightgray;
+  }
+</style>
+
+
+<div role="dialog" id="modal-option" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:650px;">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: gainsboro;">
+        <h1 class="modal-title fs-3" id="exampleModalLabel">@(Model.m_Code.Code_Name)</h1>
+        <h5 class="modal-title fs-3" id="exampleModalLabel">@(Model.m_Code.Remarks)</h5>
+        <button type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
+      </div>
+      <div class="model-body">
+        <form id="form1">
+          <div hidden>
+            @Html.HiddenFor(model => Model.m_Code.Code_ID)
+          </div>
+          <table class="table ex_CodeDataList table-striped-columns table-bordered border-primary" border="1" style="margin: 10px; width:96%;">
+            <thead>
+              <tr style="background-color: aquamarine;">
+                <th align="center" style="text-align: center;">選択</th>
+                <th align="center" style="text-align: center;">コード</th>
+                <th align="center" style="text-align: center;">名称</th>
+                <th align="center" style="text-align: center;">備考</th>
+              </tr>
+            </thead>
+            <tbody>
+              @foreach (var item in Model.m_CodeDataList)
+              {
+                <tr>
+                  <td width="200px"><button class="btn btn-success" style="width: 100%; padding:0;" onclick="submitData(@(item.Code_Data),@(item.Code_Name),@(item.Code_Name_abbr))"></button></td>
+                  <td width="100px">@(item.Code_Data)</td>
+                  <td width="200px">@(item.Code_Name)</td>
+                  <td width="300px">@(item.Remarks)</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+
+  $(function () {
+
+
+  });
+
+
+  function submitData(codeData, Code_Name, Code_Name_abbr) {
+
+    var codeID = $('#m_Code_Code_ID').val();
+    returnSelectCode(codeID, codeData, Code_Name, Code_Name_abbr);
+    return false;
+  };
+
+
+</script>

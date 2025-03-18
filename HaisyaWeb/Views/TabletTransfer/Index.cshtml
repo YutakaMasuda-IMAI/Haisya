@@ -1,0 +1,378 @@
+﻿@model HaisyaWeb.Models.TabletTransferModel
+
+
+@{
+  Layout = "_ModalLayout";
+}
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+
+  <style>
+
+    #ZMap {
+      width: 100%;
+      height: 450px;
+    }
+  </style>
+
+</head>
+
+
+<div class="modal-dialog" role="document" style="max-width:1200px;">
+  <div class="modal-content">
+    @*<div class="modal-header">
+      <h1 class="modal-title fs-3" id="exampleModalLabel">タブレット連携</h1>
+      <button id="btnClose" type="button" class="btn btn-secondary">閉じる</button>
+    </div>*@
+    <div class="model-body">
+      <form id="form1" class="" style="">
+        <div hidden>
+          @Html.TextBoxFor(model => Model.WebViewFlg)
+          @Html.TextBoxFor(model => Model.UserID)
+          @Html.TextBoxFor(model => Model.Company_ID)
+          <input type="hidden" id="txtAddress" name="txtAddress" />
+          <input hidden id="SetAddressItem" />
+        </div>
+        <div class="row" style="margin: 5px;">
+          <div class="col-4" style="align-content: center;">
+            <div class="grid">
+              <div class="col-12">
+                <table width="100%">
+                  <tbody>
+                    <tr>
+                      <th>車種</th>
+                      <td>@(Model.Syaryo.SyasyuDisplay)</td>
+                    </tr>
+                    <tr>
+                      <th>車番</th>
+                      <td>@(Model.SyaryoManagement.Syaban_Chiiki) @(Model.SyaryoManagement.Syaban_Bunrui) @(Model.SyaryoManagement.Syaban_Kana) @(Model.SyaryoManagement.Syaban_Number)</td>
+                    </tr>
+                    <tr>
+                      <th>担当乗務員</th>
+                      <td>@(Model.CompanyDriver.Display_Name)</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <br />
+              <div class="col-12">
+                <label>送信メッセージ</label>
+              </div>
+              <div class="col-12">
+                @Html.TextAreaFor(model => model.SendMessage, 3, 0, new { @class = "", @Style = "padding: 0px 0px 0px 2px; width: 100%;" })
+              </div>
+              <div class="col-12">
+                <button type="button" class="btn btn-success" id="btnSendTablet">タブレット送信</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="maptd" class="col-8">
+            <table width="100%">
+              <tr>
+                <th width="40px" class="text-end">
+                  <label class="label-Title-Required control-label align-self-center align-middle text-end" style="padding: 0; color: #ff00dc;">住所<br />検索</label>
+                </th>
+                <td width="100px">
+                  <button id="btnSelectAddress" style="border-radius: 10%; width: 100px; font-size: 20px; padding: 0; " onclick="return false;">住所検索</button>
+                </td>
+                <td>
+                  <input type="text" id="txtAddress" class="form-control" />
+                </td>
+              </tr>
+            </table>
+            @if (Model.WebViewFlg == 0)
+            {
+              <div id="mapHead">
+                <!-- ログイン認証の場合 -->
+                <button onclick="logout(); return false;" style="width: 100px;height:30px;font-size:12px;">logout</button>
+                @*<button onclick="aaaTest(); return false;" style="width: 100px; height: 30px; font-size: 12px; ">aaaa</button>*@
+              </div>
+            }
+            <div id="MapContainer" class="" style="margin:0;padding:0;">
+              <div id="ZMap" style="background:#00ffff;"></div>
+            </div>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+</div>
+
+
+<script>
+
+  $(function () {
+
+    // ウィンドウの高さ
+    var w_height = 0;
+    //ウィンドウ幅の高さをw_heightに取得
+    var w_width = 0;
+
+    $(window).on('load',function() {
+      SetWindowSize();
+    });
+
+    $(window).resize(function (event) {
+      SetWindowSize();
+    });
+
+
+    $('#btnSelectAddress').on('click', function (event) {
+      // 住所選択共通ダイアログを開く
+      openCommonDialogForAddress($('#Company_ID').val(), $('#UserID').val(), null, 1);
+    });
+
+    $('#btnSendTablet').on('click', async function (event) {
+        @* event.preventDefault(); *@
+
+
+      var sMessage = "現在の地図の中心点のデータをタブレットに強制送信しますか？";
+
+      let resultMsg = await alertYesNoMsg("送信確認", sMessage, "warning");
+      if (resultMsg == false) { return false; }
+
+
+      let $form = $('#form1');
+
+      $.ajax({
+          url: '@Url.RouteUrl("Default", new { controller = "TabletTransfer", Action = "SendTablet" })',
+          type: 'post',
+          data: $form.serialize(),
+        }).done(function (response) {
+            if (response.errorMessage != null) {
+              alertError(`【エラー】${response.errorMessage}`);
+              return false;
+          } else {
+             alertSuccess('送信が完了しました');
+            return;
+          }
+        }).fail(function (xhr) {
+          alertError(xhr, "【ネットワークエラー】");
+          console.log(xhr);
+          return false;
+        }).always(function (xhr, msg) {
+            console.log(xhr, msg);
+        });
+
+      });
+
+  });
+
+  function SetWindowSize() {
+
+    //var w_height_Target = $('#pointTaskTable').width();
+    //$('#maptd').width() = w_height_Target / 2;
+
+    // ウィンドウの高さ
+    w_height = $('#maptd').height();
+    //ウィンドウ幅の高さをw_heightに取得
+    w_width = $('#maptd').width();
+
+    if (w_height < 0) { w_height = 50; }
+    if (w_width < 0) { w_width = 50; }
+
+    //要素MapContainerをdiv_targetに取得
+    var div_target = document.getElementById("MapContainer");
+    //div_targetの高さをw_heightに書き換え
+    div_target.style.height = w_height + 'px';
+    div_target.style.width = w_width + 'px';
+
+    $('#ZMap').height(div_target.style.height - 0);
+    $('#ZMap').width(div_target.style.width - 0);
+  };
+
+
+
+
+
+  function login() {
+    const obj = {
+          uid: "@(Model.MapApiSettings.AuthAid.Uid)"
+          , pwd: "@(Model.MapApiSettings.AuthAid.Pwd)"
+          , sid: "@(Model.MapApiSettings.AuthAid.Sid)"
+          , device_flag: 1
+      }
+    ZisAuth.login(obj);
+
+  };
+
+  function logout() {
+    ZisAuth.logout();
+    alert("logout");
+  };
+
+
+  ZisAuth.addEventListener("load", function (e) {
+    //login();
+  });
+
+  // 地図オブジェクト
+  var map = null;
+  // 地図ポリライン
+  var pl = [];
+
+  @* ZisAuth.addEventListener("loaded", function (e) {
+    alert("loaded");
+  }); *@
+
+  // failedイベントリスナー設定
+  // 認証クラスでエラーが発生した場合にfailedが発行される
+  ZisAuth.addEventListener("failed", function (e) {
+      alert("エラーが発生しました。(" + e.status.code + ")");
+  });
+
+  // readyイベントリスナー設定
+  // 認証クラスで地図が利用可能な場合にreadyが発行される
+  ZisAuth.addEventListener("ready", function (e) {
+    MapPreview();
+  });
+
+  // clickイベントリスナー設定
+  // 認証クラスで地図が利用可能な場合にclickが発行される
+  @* ZisAuth.addEventListener('click', function (map) {
+      alert("aaa");
+  }); *@
+
+  function MapPreview() {
+    // マップエレメント要素を取得する
+    var mapElement = document.getElementById("ZMap");
+
+    // MapOptionsをデフォルト値から変更する場合各パラメータに値を設定
+    var mapOptions = ZisAuth.getMapOption();
+    mapOptions.zipsMapType = "kP8KjZdn";
+    mapOptions.center = new ZDC.LatLng(34.35132785373264, 132.35272922092014);
+    mapOptions.zoom = 10; // ★ズームレベルを設定
+    mapOptions.minZoom = 3
+    mapOptions.maxZoom = 22;
+    mapOptions.touchOperation = true;
+
+    // 地図を生成
+    map = new ZDC.Map(
+      mapElement,
+      mapOptions,
+      function () {
+        // Success callback
+        // コントロールを追加する
+        // コンパスの表示
+        map.addControl(new ZDC.Compass('top-right'));
+        // ズームボタンの表示
+        map.addControl(new ZDC.ZoomButton('bottom-right'));
+        // スケールバーの表示
+        map.addControl(new ZDC.ScaleBar('bottom-left'));
+        // 中心マーカーを作成します
+        map.addControl(new ZDC.CenterMarker());
+
+      },
+      function () {
+        // Failure callback
+      }
+    );
+
+  };
+
+
+  function GetAddress(s, i) {
+
+      if (map == null || map.getCenter() == null) { return false; }
+
+      var sId = s + '_' + i;
+      $('#SetAddressItem').val(sId);
+
+      var latLng = map.getCenter();
+
+    var slatlon = String(latLng.lng) + ',' + String(latLng.lat);
+      //alert(slatlon);
+
+      //$('#' + komoku + '').val('');
+
+      $.post('@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "MapGetAddressFromPosition" })',
+        {
+          position: String(slatlon),
+          range: 180,
+        })
+        .done(function (response) {
+
+            if (response.errorMessage != null) {
+                alertError(`【エラー】${response.errorMessage}`);
+                return false;
+            } else {
+              $("#ModalHere2").html(response.partialView);
+              $("#ModalHere2").find('.modal').modal('show');
+              return;
+            }
+        })
+        .fail(function (xhr) {
+            alert('fail:' + xhr);
+            console.log(xhr);
+          return false;
+        })
+        .always(function (xhr, msg) {
+        /*    console.log(xhr, msg);*/
+        });
+      return false;
+    }
+
+     function ModalClose(type = 2) {
+      if(type == 1) {
+        //モーダルを閉じて再度開くとmapが表示されないためモーダルを閉じた際にもログアウトする
+        logout()
+        $('#ModalHere').find('.modal').modal('hide');
+        $("#ModalHere").html('');
+        $('div.modal-backdrop').remove()
+      } else {
+        $('#ModalHere2').find('.modal').modal('hide');
+        $("#ModalHere2").html('');
+      }
+  };
+
+
+  /**
+* 共通乗務員選択ダイアログで一覧選択されたときのCallBack関数
+* */
+  function selectAddressSelectedCallBack(obj) {
+
+    //alert(obj["Address"]);
+
+    //$('#Address').val(obj["Address"]);
+    //$('#Address_lat').val(obj["Lat"]);
+    //$('#Address_lng').val(obj["Lng"]);
+
+    let addressVal = obj["Address"];
+
+    if (addressVal == "") { return false; }
+
+    $.post('@Url.RouteUrl("Default", new { controller = "Map", Action = "GetlatlonFromAddress" })',
+    {
+      address: String(addressVal),
+    })
+    .done(function (response) {
+
+      if (response.errorMessage != null) {
+          alertError(`【エラー】${response.errorMessage}`);
+          return false;
+      } else {
+        alert(response.latlon_lat + ";;;" + response.latlon_lng);
+        var aa = new ZDC.LatLng(Number(response.latlon_lat), Number(response.latlon_lng));
+        alert(aa);
+        map.setCenter(aa);
+      }
+    })
+    .fail(function (xhr) {
+      alert('fail:' + xhr);
+      console.log(xhr);
+      return false;
+    })
+    .always(function (xhr, msg) {
+    });
+
+  };
+
+
+</script>

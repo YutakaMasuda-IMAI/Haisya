@@ -1,0 +1,266 @@
+﻿@model SettingModel.LoginUserModalDto
+
+@{
+  Layout = "_LayoutForSettingModal";
+
+}
+
+<style>
+  /*  .float-left {
+    float: left;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }
+
+  .float-right {
+    float: right;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }*/
+
+  .readonly {
+    background-color: lightgray;
+  }
+</style>
+
+
+<div role="dialog" aria-hidden="true" tabindex="-1" class="modal fade" style="z-index: 1240;" data-backdrop="static">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:750px;">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: gainsboro;">
+        <h1 class="modal-title fs-3" id="exampleModalLabel">@(Model.Title)</h1>
+        <button type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
+      </div>
+      <div class="model-body">
+        <form id="form1">
+          <div id="hidden" hidden>
+            @Html.HiddenFor(model => Model.CompanyID)
+            @Html.HiddenFor(model => Model.BtnCaption)
+            @Html.HiddenFor(model => Model.Title)
+          </div>
+          <div class="contents-wrap-middle" style="margin: 10px;">
+            <h4 class="">注意</h4>
+            <span>
+              ・一度データを登録すると物理削除は出来ません。「非表示フラグ」を立ててください。
+            </span>
+          </div>
+          <table class="table table-striped-columns table-bordered border-primary" border="1" style="margin: 10px; width:96%;">
+            <thead>
+              <tr style="background-color: aquamarine;">
+                <th align="center" style="text-align: center;">項目名</th>
+                <th align="center" style="text-align: center;">値</th>
+                <th align="center" style="text-align: center;">例</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr hidden>
+                <th width="200px">ログインユーザID</th>
+                <td width="200px">@Html.TextBoxFor(model => Model.LoginUser.LoginUser_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px; padding: 0;" })</td>
+                <td width="300px"></td>
+              </tr>
+              <tr>
+                <th style="color: red;">ユーザー</th>
+                <td>
+                  @Html.DropDownListFor(model => model.LoginUser.User_ID, new SelectList(Model.CompanyUserList, "User_ID", "Display_Name", false), "ユーザを選択", new { @class = "form-control list dropDownList", @style = "padding: 0; width: 100%" })
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <th style="color: red;">ログインID</th>
+                <td>@Html.TextBoxFor(model => Model.LoginUser.LoginID, null, new { @class = "form-control text-left", @style = "width: 200px; padding: 0;" })</td>
+                <td></td>
+              </tr>
+
+              @if (Model.LoginUser.LoginUser_ID == 0)
+              {
+                <tr>
+                  <th style="color: red;">パスワード</th>
+                  <td>
+                    @Html.TextBoxFor(model => Model.LoginUser.Password, null, new { @class = "form-control text-left", @style = "width: 200px; padding: 0;" })
+                    <p id="LoginUser_Password_ValidationMessage" style="margin: 0;"></p>
+                  </td>
+                  <td>「強いです！！」と表示されるまで頑張ってください。</td>
+                </tr>
+              }
+
+              <tr>
+                <th style="color: red;">ログインロック</th>
+                <td>@Html.CheckBoxFor(model => Model.LoginUser.Lock_Flg, new { @class = "form-control text-left form-check-input" })</td>
+                <td>チェックを入れるとログイン出来なくなります。</td>
+              </tr>
+              <tr>
+                <th style="color: red;">権限</th>
+                <td>
+                  @Html.DropDownListFor(model => model.LoginUser.Role, new SelectList(Model.LoginUserRoleList, "Role", "RoleName", false), "権限を選択", new { @class = "form-control list dropDownList", @style = "padding: 0; width: 100%" })
+                  @Html.ValidationMessageFor(model => model.LoginUser.Role, "", new { id = "SelectBranchID", @class = "text -danger align-middle" })
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <th style="color: red;">初期設定エリア</th>
+                <td>
+                  @Html.DropDownListFor(model => model.LoginUser.DefaultArea, new SelectList(Model.AreaList, "Area", "Area", false), "計算エリアを選択", new { @class = "form-control list dropDownList", @style = "padding: 0; width: 100%" })
+                </td>
+                <td width="300px">標準運賃を計算するための初期設定エリアを選択（案件登録画面で変更も可能）</td>
+              </tr>
+              <tr>
+                <th style="color: red;">初期設定車種</th>
+                <td>
+                  @Html.DropDownListFor(model => model.LoginUser.DefaultSyasyu, new SelectList(Model.SyasyuSelectList, "Value", "Text", "Selected"), "車種を選択", new { @class = "form-control list dropDownList", @style = "padding: 0; width: 100%" })
+                </td>
+                <td></td>
+              </tr>
+              <tr>
+                <th style="color: red;">初期設定型</th>
+                <td>
+                  @Html.DropDownListFor(model => model.LoginUser.DefaultKata, new SelectList(Model.KataSelectList, "Value", "Text", "Selected"), "型を選択", new { @class = "form-control list dropDownList", @style = "padding: 0; width: 100%" })
+                </td>
+                <td></td>
+              </tr>
+              @*<tr>
+      <th>非表示フラグ</th>
+      <td class="">@Html.CheckBoxFor(model => Model.LoginUser.Del_Flg, new { @class = "form-control text-left form-check-input" })</td>
+      <td>オンにすると、。</td>
+    </tr>*@
+              <tr>
+                <th>最終更新日</th>
+                <td>@Convert.ToDateTime(Model.LoginUser.UP_DATE).ToString("yyyy/MM/dd HH:mm:ss")</td>
+                <td hidden>@Html.TextBoxFor(model => Model.LoginUser.UP_DATE, null, new { @class = "form-control text-end" })</td>
+              </tr>
+            </tbody>
+          </table>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+  $(function () {
+
+    setTimeout(function () {
+      $('.modal-backdrop')
+        .not('.modal-stack')
+        .css('z-index', 1239)
+        .addClass('modal-stack');
+    }, 0);
+
+    $('#LoginUser_Password').on('keyup', function () {
+      // 入力値取得
+      const value = $(this).val();
+      // 入力値をもとに強度を確認
+      const result = pwCheckStrength(value);
+      // 結果を出力
+      $('#LoginUser_Password_ValidationMessage').text(result);
+    });
+
+  });
+
+
+  function regExec() {
+
+    if (varidationCheck()) {
+      return false;
+    }
+
+    //Formの参照を取る
+    var $form = $('#form1');
+
+    //alert($form.sArealize());
+
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "Setting", Action = "LoginUserRegExec" })',
+      type: 'post',
+      data: $form.serialize(),
+    }).done(function (response) {
+      if (response.errorMessage != null) {
+          alertError(`【エラー】${response.errorMessage}`);
+          return false;
+      } else {
+        closeModelAndRefresh();
+        return false;
+      }
+    }).fail(function (xhr) {
+      alert('【ネットワークエラー】:' + xhr);
+        console.log(xhr);
+        return false;
+    }).always(function (xhr, msg) {
+        console.log(xhr, msg);
+    });
+
+  }
+
+
+
+
+  function varidationCheck() {
+
+    if (!($('#LoginUser_User_ID').val() != null && $('#LoginUser_User_ID').val() > 0)) {
+      alert("ユーザが選択されていません");
+      $('#LoginUser_User_ID').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#LoginUser_User_ID').css('background-color', 'white');
+    }
+
+    if (!($('#LoginUser_LoginID').val() != null && $('#LoginUser_LoginID').val().length > 0)) {
+      alert("ログインIDが入力されていません");
+      $('#LoginUser_LoginID').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#LoginUser_LoginID').css('background-color', 'white');
+    }
+
+    if ($('#LoginUser_LoginUser_ID').val() == 0) {
+      if (!($('#LoginUser_Password').val() != null && $('#LoginUser_Password').val().length > 0)) {
+        alert("パスワードが入力されていません");
+        $('#LoginUser_Password').css('background-color', 'lightcoral');
+        return true;
+      } else {
+        $('#LoginUser_Password').css('background-color', 'white');
+      }
+      if ('強いです！！' != pwCheckStrength($('#LoginUser_Password').val())) {
+        alert("パスワードの強度が足りません。");
+        return true;
+      }
+    }
+
+    if (!($('#LoginUser_Role').val() != null && $('#LoginUser_Role').val() > 0)) {
+      alert("権限が選択されていません");
+      $('#LoginUser_Role').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#LoginUser_Role').css('background-color', 'white');
+    }
+
+    if (!($('#LoginUser_DefaultArea').val() != null && $('#LoginUser_DefaultArea').val().length > 0)) {
+      alert("初期計算エリアが選択されていません");
+      $('#LoginUser_DefaultArea').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#LoginUser_DefaultArea').css('background-color', 'white');
+    }
+
+    if (varidationCheckForOverlap($('#LoginUser_LoginID').val(), $('#LoginUser_LoginUser_ID').val())) {
+      alert("同じログインIDが既に登録されています");
+      $('#LoginUser_LoginID').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#LoginUser_LoginID').css('background-color', 'white');
+    }
+
+    return false;
+
+  };
+
+
+
+
+</script>

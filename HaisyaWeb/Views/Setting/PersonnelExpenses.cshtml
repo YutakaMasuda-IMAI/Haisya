@@ -1,0 +1,221 @@
+﻿@model SettingModel.PersonnelExpensesDto
+
+@{
+  Layout = "_LayoutForSettingWindow";
+}
+
+<style>
+  /*  .float-left {
+      float: left;
+      padding: 0.5em 1em;
+      margin: 2em 0;
+      background: #f0f7ff;
+      border: dashed 2px #5b8bd0;
+    }
+
+    .float-right {
+      float: right;
+      padding: 0.5em 1em;
+      margin: 2em 0;
+      background: #f0f7ff;
+      border: dashed 2px #5b8bd0;
+    }*/
+
+  .readonly {
+    background-color: lightgray;
+  }
+</style>
+
+
+
+<div id="main">
+  <div class="setting-separator">労務費<span style="font-size: 12px; color: red;"> - 労務費を計算する値を設置絵。</span></div>
+
+  <div class="contents-wrap-middle">
+    <h4 class="">使い方</h4>
+    <span>
+      <span style="background-color: #FF9966 ">・同時に複数のユーザーが変更処理を実施するとデータが壊れたり、不整合が発生したりします。必ず１ユーザーのみで実施してください。</span>
+    </span>
+  </div>
+
+  <div class="clearfix">
+    
+    <div id="option_attendance_setting" class="sight-settings">
+      <form id="form1">
+        <div id="hidden" hidden>
+          @Html.HiddenFor(model => Model.CompanyID)
+        </div>
+        <div class="tables">
+          @if (Model.EditEnabled)
+          {
+            <button type="button" class="btn btn-primary" style="width: 200px;" onclick="regExec(); return false;">登録</button>
+          }
+          <table id="tableMain" width="100%" class="table table-setting table-bordered border-info table-striped" style="margin-top: 10px;">
+            <thead>
+              <tr align="center" style="background-color:aquamarine; vertical-align: middle;">
+                <th hidden>会社ID</th>
+                <th hidden>車種</th>
+                <th hidden>型</th>
+                <th>車種</th>
+                <th>型</th>
+                <th>車種表示</th>
+                <th>時給<br />（所定内）</th>
+                <th hidden>日給</th>
+                <th hidden>深夜時間</th>
+                <th hidden>休日時間</th>
+                <th hidden>休日深夜<br />時間</th>
+                <th>福利厚生<br />費率</th>
+                <th>間接費率</th>
+                <th hidden>時間<br />労務費</th>
+                @*<th>行削除</th>*@
+              </tr>
+            </thead>
+            <tbody>
+              @{
+                  for (int i = 0; i < Model.M_PersonnelExpenseList.Count; i++)
+                  {
+                    var m_Syaryo = Model.M_SyaryoList.FirstOrDefault(m => m.SYASYU == Model.M_PersonnelExpenseList[i].Syasyu && m.KATA == Model.M_PersonnelExpenseList[i].Kata);
+
+                            <tr style="vertical-align: middle;">
+                              <td align="center" width="100px" hidden>@Html.TextBoxFor(model => Model.M_PersonnelExpenseList[i].Company_ID, null, new { @readonly = "readonly", @class = "form-control text-end", @style = "" })</td>
+                              <td align="center" width="100px" hidden>@Html.TextBoxFor(model => Model.M_PersonnelExpenseList[i].Syasyu, null, new { @readonly = "readonly", @class = "form-control text-end", @style = "" })</td>
+                              <td align="center" width="100px" hidden>@Html.TextBoxFor(model => Model.M_PersonnelExpenseList[i].Kata, null, new { @readonly = "readonly", @class = "form-control text-end", @style = "" })</td>
+                              <td align="center" width="150px">@(m_Syaryo.SYASYU)</td>
+                              <td align="center" width="150px">@(m_Syaryo.KATA)</td>
+                              <td align="center" width="250px">@(m_Syaryo.SyasyuDisplay)</td>
+                              @if (Model.EditEnabled)
+                              {
+                                <td align="center" width="120px">@Html.TextBoxFor(model => Model.M_PersonnelExpenseList[i].Base, "{0:N0}", new { @readonly = "readonly", @class = "form-control text-end", @style = "", @onblur = "kanmaChange(this);" })</td>
+                                <td align="center" width="100px" hidden>@Html.TextBoxFor(model => Model.M_PersonnelExpenseList[i].Day, "{0:N0}", new { @readonly = "readonly", @class = "form-control text-end", @style = "", @onblur = "kanmaChange(this);" })</td>
+                                <td align="center" width="100px" hidden>@Html.TextBoxFor(model => Model.M_PersonnelExpenseList[i].Midnight, "{0:N0}", new { @class = "form-control text-end", @style = "", @onblur = "kanmaChange(this);" })</td>
+                                <td align="center" width="100px" hidden>@Html.TextBoxFor(model => Model.M_PersonnelExpenseList[i].Holiday, "{0:N0}", new { @class = "form-control text-end", @style = "", @onblur = "kanmaChange(this);" })</td>
+                                <td align="center" width="100px" hidden>@Html.TextBoxFor(model => Model.M_PersonnelExpenseList[i].HolidayMidnight, "{0:N0}", new { @class = "form-control text-end", @style = "", @onblur = "kanmaChange(this);" })</td>
+                                <td align="center" width="120px">@Html.TextBoxFor(model => Model.M_PersonnelExpenseList[i].BenefitsCosts, "{0:N2}", new { @class = "form-control text-end", @style = "", @onblur = "" })</td>
+                                <td align="center" width="120px">@Html.TextBoxFor(model => Model.M_PersonnelExpenseList[i].IndirectCosts, "{0:N2}", new { @class = "form-control text-end", @style = "", @onblur = "" })</td>
+                                <td hidden></td>
+                                @*<td style="vertical-align: middle;" align="center" width="120px"><input type="button" class="btn btn-warning" value="行削除" onclick="deleteRow(this)" /></td>*@
+                              }
+                              else
+                              {
+                                <td align="center" width="120px" style="background-color: yellow;">@(String.Format("{0:N0}", Model.M_PersonnelExpenseList[i].Base))</td>
+                                <td align="center" width="100px" hidden>@(String.Format("{0:N0}", Model.M_PersonnelExpenseList[i].Day))</td>
+                                <td align="center" width="100px" hidden>@(String.Format("{0:N0}", Model.M_PersonnelExpenseList[i].Midnight))</td>
+                                <td align="center" width="100px" hidden>@(String.Format("{0:N0}", Model.M_PersonnelExpenseList[i].Holiday))</td>
+                                <td align="center" width="100px" hidden>@(String.Format("{0:N0}", Model.M_PersonnelExpenseList[i].HolidayMidnight))</td>
+                                <td align="center" width="120px" style="background-color: yellow; ">@(String.Format("{0:N2}", Model.M_PersonnelExpenseList[i].BenefitsCosts))</td>
+                                <td align="center" width="120px" style="background-color: yellow; ">@(String.Format("{0:N2}", Model.M_PersonnelExpenseList[i].IndirectCosts))</td>
+                                <td hidden></td>
+                                @*<td align="center" width="120px"></td>*@
+                              }
+                            </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  $(function () {
+
+
+
+  });
+
+  function closeAndRefresh() {
+    location.reload();
+    alert("登録が完了しました。");
+  };
+
+  function regExec() {
+
+      if (varidationCheck()) {
+        return false;
+      }
+
+      //Formの参照を取る
+      var $form = $('#form1');
+
+      //alert($form.serialize());
+
+      $.ajax({
+            url: '@Url.RouteUrl("Default", new { controller = "Setting", Action = "PersonnelExpenseRegExec" })',
+            type: 'post',
+            data: $form.serialize(),
+          }).done(function (response) {
+            if (response.errorMessage != null) {
+                alertError(`【エラー】${response.errorMessage}`);
+                return false;
+            } else {
+              closeAndRefresh();
+              return false;
+            }
+          }).fail(function (xhr) {
+            alert('【ネットワークエラー】:' + xhr);
+              console.log(xhr);
+              return false;
+          }).always(function (xhr, msg) {
+              console.log(xhr, msg);
+          });
+
+
+
+
+    }
+
+  function varidationCheck() {
+
+    // table要素を取得
+    var tableElem = document.getElementById('tableMain');
+
+    // 行（tr要素）を取得
+    var rowElems = tableElem.rows;
+
+    var toBefore = 0;
+
+    // 取得した行（tr要素）を繰り返しHTMLを取得
+    var htmlStr = '';
+    for (i = 1, len = rowElems.length; i < len; i++) {
+
+      var base = $('#M_PersonnelExpenseList_' + (i - 1) + '__Base').val();
+      var benefitsCosts = $('#M_PersonnelExpenseList_' + (i - 1) + '__BenefitsCosts').val();
+      var indirectCosts = $('#M_PersonnelExpenseList_' + (i - 1) + '__IndirectCosts').val().replace(',', '');
+
+
+      if (!(base != null)) {
+        alert("時給は必須です。");
+        $('#M_PersonnelExpenseList_' + (i - 1) + '__Base').css('background-color', 'lightcoral');
+        return true;
+      } else {
+        $('#M_PersonnelExpenseList_' + (i - 1) + '__Base').css('background-color', 'white');
+      }
+
+      if (!(benefitsCosts != null)) {
+        alert("福利厚生費率は必須です。");
+        $('#M_PersonnelExpenseList_' + (i - 1) + '__BenefitsCosts').css('background-color', 'lightcoral');
+        return true;
+      } else {
+        $('#M_PersonnelExpenseList_' + (i - 1) + '__BenefitsCosts').css('background-color', 'white');
+      }
+
+      if (!(indirectCosts != null)) {
+        alert("間接費率は必須です。");
+        $('#M_PersonnelExpenseList_' + (i - 1) + '__IndirectCosts').css('background-color', 'lightcoral');
+        return true;
+      } else {
+        $('#M_PersonnelExpenseList_' + (i - 1) + '__IndirectCosts').css('background-color', 'white');
+      }
+
+      /*toBefore = to;*/
+    };
+
+    return false;
+
+  };
+
+
+</script>

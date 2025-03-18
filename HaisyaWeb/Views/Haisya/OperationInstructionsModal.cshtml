@@ -1,0 +1,239 @@
+@model HaisyaWeb.Dto.OperationInstructionsModel
+
+@{
+  Layout = "_ModalLayout";
+}
+
+<style>
+  .model-body {
+    display: flex;
+    flex-direction: column;
+  }
+
+
+  .form-control {
+    border: none;
+    background: transparent;
+    padding: 5px;
+  }
+
+  textarea.form-control {
+    resize: none;
+    height: 100%;
+  }
+
+    textarea.form-control::first-line {
+      font-weight: bold;
+    }
+
+  .tab {
+    border: 1px solid #ccc;
+    text-align: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: white;
+    margin-bottom: 0;
+  }
+
+  table.on-line {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+    table.on-line th {
+      border: #000000 1px solid;
+      text-align: left;
+      font-size: 14px;
+      padding: 3px;
+      font-weight: bold;
+      width: 140px;
+    }
+      table.on-line th.bg-left {
+        background-color: #A1AF2F;
+      }
+      table.on-line th.bg-right {
+        background-color: #FFEFD5;
+      }
+      
+    table.on-line td {
+      border: #000000 1px solid;
+      text-align: left;
+      font-size: 14px;
+      padding: 3px;
+      width: 460px;
+    }
+</style>
+
+<div role="dialog" aria-hidden="true" tabindex="-1" class="modal fade" style="z-index: 1040;">
+  <div class="modal-dialog" role="document" style="max-width:1300px; max-height:600px">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-3" id="exampleModalLabel">運行指示書作成</h1>
+        <a href="#" data-dismiss="modal" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</a>
+      </div>
+      <div class="model-body">
+        <table class="head-button" style="margin-top:5px;">
+          <tr>
+            <td style="width:50%;text-align:center;">
+              <button type="button" class="btn btn-outline-success" style="width:120px;">送信</button>
+            </td>
+            <td style="width: 50%; text-align: center;">
+              <button type="button" class="btn btn-outline-info" style="width:120px;" onclick="openReport();">印刷</button>
+            </td>
+          </tr>
+
+        </table>
+
+        <div style="display: flex; width:1300px; padding:20px;">
+          <table class="on-line" style="width:600px; display: block;">
+            <tr>
+              <th class="bg-left">顧客</th>
+              <td>@(Model.KokyakuName)</td>
+            </tr>
+            <tr>
+              <th class="bg-left">積日</th>
+              <td><span id="syukkaDate"></span></td>
+            </tr>
+            <tr>
+              <th class="bg-left">卸日</th>
+              <td><span id="nohinsDate"></span></td>
+            </tr>
+            <tr>
+              <th class="bg-left">積地</th>
+              <td>
+                @(Model.SyukkaPlace.BuildingName) @(Model.SyukkaPlace.PostCode)
+                @(Model.SyukkaPlace.Address)
+              </td>
+            </tr>
+            <tr>
+              <th class="bg-left">卸地</th>
+              <td>
+                @(Model.NohinsPlace.BuildingName) @(Model.NohinsPlace.PostCode)
+                @(Model.NohinsPlace.Address)
+              </td>
+            </tr>
+            <tr>
+              <th class="bg-left">傭車先会社</th>
+              <td>@(Model.YosyaName)</td>
+            </tr>
+            <tr>
+              <th class="bg-left">傭車先番号</th>
+              <td>@(Model.YosyaDriverName)</td>
+            </tr>
+            <tr>
+              <th class="bg-left">連絡先メールアドレス</th>
+              <td>@(Model.YosyaMailAddress)</td>
+            </tr>
+          </table>
+
+          <table class="on-line" style="width: 600px; display: block; margin-left:30px;">
+            <tr>
+              <th class="bg-right">宛先</th>
+              <td>
+                @(Model.YosyaName)
+              </td>
+            </tr>
+            <tr>
+              <th class="bg-right">送り主担当者</th>
+              <td>
+                @(Model.CompanyUserName)
+              </td>
+            </tr>
+            <tr>
+              <th class="bg-right">車種・台数</th>
+              <td>
+                @(Model.SyasyuDisplay) × @(Model.Daisuu)台
+              </td>
+            </tr>
+            <tr>
+              <th class="bg-right">貨物 荷姿<br />重量 個数</th>
+              <td>
+                @(Model.LuggageDisplay)
+              </td>
+            </tr>
+            <tr>
+              <th class="bg-right">装備品</th>
+              <td>
+                @(Model.EquipmentDisplay)
+              </td>
+            </tr>
+            <tr>
+              <th class="bg-right">引取日時<br />場所<br />※1</th>
+              <td style="vertical-align:top;">
+                <textarea id="syukkaDatePlace" name="SyukkaDatePlace" class="form-control"></textarea>
+              </td>
+            </tr>
+            <tr>
+              <th class="bg-right">納品日時<br />場所<br />※1</th>
+              <td>
+                <textarea id="nohinsDatePlace" name="NohinsDatePlace" class="form-control"></textarea>
+              </td>
+            </tr>
+            <tr>
+              <th class="bg-right">特記事項</th>
+              <td>
+                <textarea id="remarks" name="Remarks" class="form-control">@Model.Remarks</textarea>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" style="border:none;">
+                ※1 <span style="color: red;">1行目のみ太文字で印刷されます</span>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(function () {
+    setTimeout(function () {
+      $('.modal-backdrop')
+        .not('.modal-stack')
+        .css('z-index', 1039)
+        .addClass('modal-stack');
+    }, 0);
+
+    // 積日の表示
+    var syukkaDate = new Date("@Model.SyukkaDate.PointDate");
+    var syukkaDateFormatted = `${syukkaDate.getFullYear()}年${(syukkaDate.getMonth() + 1).toString().padStart(2, '0')}月${syukkaDate.getDate().toString().padStart(2, '0')}日 ${getDayOfWeek(syukkaDate)}曜日`;
+    $("#syukkaDate").text(syukkaDateFormatted);
+    var syukkaDateWithStatusFormatted = `${syukkaDate.getFullYear()}年${(syukkaDate.getMonth() + 1).toString().padStart(2, '0')}月${syukkaDate.getDate().toString().padStart(2, '0')}日 ${getDayOfWeek(syukkaDate)}曜日 ${getPointStatus(@Model.SyukkaDate.PointStatusKubun)}`;
+    var syukkaPlace = "@Html.Raw(Model.SyukkaPlace.BuildingName) @Html.Raw(Model.SyukkaPlace.PostCode) @Html.Raw(Model.SyukkaPlace.Address)";
+    $("#syukkaDatePlace").val(`${syukkaDateWithStatusFormatted}\n${syukkaPlace}`);
+
+    // 卸日の表示
+    var nohinsDate = new Date("@Model.NohinsDate.PointDate");
+    var nohinsDateFormatted = `${nohinsDate.getFullYear()}年${(nohinsDate.getMonth() + 1).toString().padStart(2, '0')}月${nohinsDate.getDate().toString().padStart(2, '0')}日 ${getDayOfWeek(nohinsDate)}曜日`;
+    $("#nohinsDate").text(nohinsDateFormatted);
+    var nohinsDateWithStatusFormatted = `${nohinsDate.getFullYear()}年${(nohinsDate.getMonth() + 1).toString().padStart(2, '0')}月${nohinsDate.getDate().toString().padStart(2, '0')}日 ${getDayOfWeek(nohinsDate)}曜日 ${getPointStatus(@Model.NohinsDate.PointStatusKubun)}`;
+    var nohinsPlace = "@Html.Raw(Model.NohinsPlace.BuildingName) @Html.Raw(Model.NohinsPlace.PostCode) @Html.Raw(Model.NohinsPlace.Address)";
+    $("#nohinsDatePlace").val(`${nohinsDateWithStatusFormatted}\n${nohinsPlace}`);
+  });
+
+  function getDayOfWeek(date) {
+    var daysOfWeek = ['日', '月', '火', '水', '木', '金', '土'];
+    return daysOfWeek[date.getDay()];
+  }
+
+     function getPointStatus(statusKubun) {
+    switch (statusKubun) {
+      case 1:
+        return '確定';
+      case 2:
+        return '暫定';
+      default:
+        return '';
+    }
+  }
+
+
+  // 「運行指示書」印刷
+  function openReport() {
+    window.open('@Url.RouteUrl("Default", new { controller = "Report", Action = "UNKO_SHIJI_LIST" })');
+  };
+
+
+</script>

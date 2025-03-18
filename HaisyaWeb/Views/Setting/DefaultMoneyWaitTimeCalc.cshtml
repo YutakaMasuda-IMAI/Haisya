@@ -1,0 +1,293 @@
+﻿@model SettingModel.DefaultMoneyWaitTimeForAreaDto
+
+@{
+    Layout = "_LayoutForSettingWindow";
+
+    var listArea = Model.M_AreaList.OrderBy(m => m.Sort_Order).ToList();
+
+}
+
+<style>
+  .center {
+/*    position: absolute;
+    top: 0;
+    left: 50%;*/
+    transform: translateX(10%);
+    background: #fff;
+  }
+</style>
+
+<div id="content">
+  <!-- 2秒間だけアラートを表示する -->
+  <!--<div class="col-12">
+    <div id="alert-1" class="lead"></div>
+  </div>-->
+  <div hidden>
+    @Html.HiddenFor(model => Model.CompanyID)
+  </div>
+  <h2>
+    <span class="glyphicon glyphicon-chevron-right"></span>運輸局別待機時間料設定
+  </h2>
+
+  <div id="main">
+    <div class="setting-separator">運輸局別距離制運賃表<span style="font-size: 12px; color: red;"> - 標準運賃計算に使用する「運輸局別待機時間料」を設定。</span></div>
+
+    <div class="contents-wrap-middle">
+      <h4 class="">使い方</h4>
+      <span>
+        ・会社独自の
+        <span style="background-color: #FF9966 ">・同時に複数のユーザーが変更処理を実施するとデータが壊れたり、不整合が発生したりします。必ず１ユーザーのみで実施してください。</span>
+      </span>
+    </div>
+
+    <div class="contents-wrap-middle">
+      @if (Model.EditEnabled)
+      {
+        <button class="btn btn-primary" style="width: 200px;margin: 2px;" onclick="DefaultMoneyWaitTimeForAreaRegExec(); return false;">登録/修正</button>
+      }
+    </div>
+
+    <div class="clearfix">
+      <div id="option_attendance_setting" class="sight-settings">
+        <div class="tables">
+          <div style="display: flex; background-color: gainsboro; justify-content: space-between ">
+            <table class="table ex_tableSyaryoCost table-bordered border-info" border="1" style="margin-bottom: 0; border: double; border-width: medium; width: 100%;">
+              <tr>
+                <td width="50%" style="text-align: center;"><h1 class="modal-title fs-3" id="exampleModalLabel">運輸局提示金額</h1></td>
+                <td width="50%" style="text-align: center;"><h1 class="modal-title fs-3" id="exampleModalLabel">会社独自設定額</h1></td>
+              </tr>
+            </table>
+          </div>
+
+          @{
+            foreach (var itemArea in listArea)
+            {
+              <div class=" clearfix">
+                @*<div class="">
+                  <div style="display: flex; margin: 2px; background-color: cornsilk; justify-content: space-between; width: 100%;">
+                    <h1 class="modal-title fs-3" id="exampleModalLabel">@(itemArea.Area)</h1>
+
+                  </div>
+                </div>*@
+                <div id="option_attendance_setting" class="sight-settings" style="display: flex; width: 100%; ">
+
+
+                  <div class="tables center" style="width: 50%;">
+                    <table  name="tableDefaultMoneyWaitTimeForArea" class="table ex_tableSyaryoCost table-bordered border-info" border="1" style="border: double; border-width: medium; width: 80%;">
+                      <thead>
+                        <tr align="center" style="background-color:aquamarine;">
+                          <th>エリア</th>
+                          <th>車種サイズ</th>
+                          <th>待機時間料</th>
+                          <th>待機時間料(2h～)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @{
+                            var listSyaryoSize = Model.M_SyaryoSizeList.OrderBy(m => m.SortOrder).ToList();
+
+                            foreach (var itemSyaryoSize in listSyaryoSize)
+                            {
+                              var listDetail = Model.DefaultMoneyWaitTimeList.FirstOrDefault(m => m.Area == itemArea.Area && m.SyasyuSize == itemSyaryoSize.SIZE);
+                            <tr style="vertical-align: middle;">
+                              <td align="center" width="100px">@(itemArea.Area)</td>
+                              <td align="center" width="100px">@(itemSyaryoSize.SIZE)</td>
+                              @if (listDetail == null)
+                              {
+                                @if (Model.EditEnabled)
+                                {
+                            <td align="right" width="100px"><input type="text" class="form-control text-end" data-val="true" data-val-number="The field Amount must be a number." id="listDetail_Amount" name="listDetail.Amount" onblur="kanmaChange(this);" style="width: 100px;"></td>
+                                                      <td align="right" width="100px"><input type="text" class="form-control text-end" data-val="true" data-val-number="The field Amount must be a number." id="listDetail_Amount_Over2Hour" name="listDetail.Amount_Over2Hour" onblur="kanmaChange(this);" style="width: 100px;"></td>
+                                }
+                                else
+                                {
+                                  <td align="right" width="100px"></td>
+                                                      <td align="right" width="100px"></td>
+                                }
+
+                              }
+                              else
+                              {
+                                @if (Model.EditEnabledUnyu)
+                                {
+                            <td align="right" width="100px">@Html.TextBoxFor(model => listDetail.Amount, "{0:N0}", new { @class = "form-control text-end", @onblur = "kanmaChange(this);", @style = "width: 100px;" })</td>
+                                                      <td align="right" width="100px">@Html.TextBoxFor(model => listDetail.Amount_Over2Hour, "{0:N0}", new { @class = "form-control text-end", @onblur = "kanmaChange(this);", @style = "width: 100px;" })</td>
+                                }
+                                else
+                                {
+                            <td align="right" width="100px">@Convert.ToDouble(listDetail.Amount).ToString("#,###")</td>
+                                                      <td align="right" width="100px">@Convert.ToDouble(listDetail.Amount_Over2Hour).ToString("#,###")</td>
+                                }
+
+                              }
+                            </tr>
+                          }
+                        }
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="tables center" style="width:50%;">
+                    <table name="tableDefaultMoneyWaitTimeForAreaCompany" class="table ex_tableSyaryoCost table-bordered border-info" border="1" style="border: double; border-width: medium; width: 80%;">
+                      <thead>
+                        <tr align="center" style="background-color:aquamarine;">
+                          <th>エリア</th>
+                          <th>車種サイズ</th>
+                          <th>待機時間料</th>
+                          <th hidden>会社ID</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        @{
+                            var listSyaryoSize2 = Model.M_SyaryoSizeList.OrderBy(m => m.SortOrder).ToList();
+
+                            foreach (var itemSyaryoSize in listSyaryoSize2)
+                            {
+                              var listDetail = Model.DefaultMoneyWaitTimeForCompanyList.FirstOrDefault(m => m.Area == itemArea.Area && m.SyasyuSize == itemSyaryoSize.SIZE);
+                            <tr style="vertical-align: middle;">
+                              <td align="center" width="100px">@(itemArea.Area)</td>
+                              <td align="center" width="100px">@(itemSyaryoSize.SIZE)</td>
+                              @if (listDetail == null)
+                                {
+                                @if (Model.EditEnabled)
+                                {
+                                  <td align="right" width="100px"><input type="text" class="form-control text-end" data-val="true" data-val-number="The field Amount must be a number." id="listDetail_Amount" name="listDetail.Amount" onblur="kanmaChange(this);" style="width: 100px;"></td>
+                                }
+                                else
+                                {
+                                  <td align="right" width="100px"></td>
+                                }
+
+                              }
+                              else
+                              {
+                                @if (Model.EditEnabled)
+                                {
+                                  <td align="right" width="100px">@Html.TextBoxFor(model => listDetail.Amount, "{0:N0}", new { @class = "form-control text-end", @onblur = "kanmaChange(this);", @style = "width: 100px;" })</td>
+                                }
+                                else
+                                {
+                                  <td align="right" width="100px">@Convert.ToDouble(listDetail.Amount).ToString("#,###")</td>
+                                }
+
+                              }
+                              <td hidden>@(Model.CompanyID)</td>
+                            </tr>
+                          }
+                        }
+                      </tbody>
+                    </table>
+
+                  </div>
+
+                </div>
+              </div>
+
+
+            }
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="RegExecHere" hidden></div>
+</div>
+
+<script>
+
+  function DefaultMoneyWaitTimeForAreaRegExec() {
+
+    var htmlStr = '';
+
+    var rowCount = 0;
+
+    // table要素を取得
+    var tableElem = document.getElementsByName('tableDefaultMoneyWaitTimeForArea');
+
+    tableElem.forEach(function (value) {
+      var rowElems = value.rows;
+      for (i = 1, len = rowElems.length; i < len; i++) {
+        htmlStr += "    <tr>";
+        htmlStr += "      <td><input name='DefaultMoneyWaitTimeList[" + (rowCount).toString() + "].Area' value='" + rowElems[i].cells[0].innerHTML + "' /></td>";
+        htmlStr += "      <td><input name='DefaultMoneyWaitTimeList[" + (rowCount).toString() + "].SyasyuSize' value='" + rowElems[i].cells[1].innerHTML + "' /></td>";
+        htmlStr += "      <td><input name='DefaultMoneyWaitTimeList[" + (rowCount).toString() + "].Amount' value='" + rowElems[i].cells[2].firstElementChild.value + "' /></td>";
+        htmlStr += "      <td><input name='DefaultMoneyWaitTimeList[" + (rowCount).toString() + "].Amount_Over2Hour' value='" + rowElems[i].cells[3].firstElementChild.value + "' /></td>";
+        htmlStr += "    </tr>";
+        rowCount++;
+      }
+    });
+
+    rowCount = 0;
+
+    tableElem = document.getElementsByName('tableDefaultMoneyWaitTimeForAreaCompany');
+
+    tableElem.forEach(function (value) {
+      var rowElems = value.rows;
+      for (i = 1, len = rowElems.length; i < len; i++) {
+
+        var val = rowElems[i].cells[2].firstElementChild.value;
+        
+        if (val != "" && Number(val.replace(",","")) > 0) {
+          alert(val);
+          htmlStr += "    <tr>";
+          htmlStr += "      <td><input name='DefaultMoneyWaitTimeForCompanyList[" + (rowCount).toString() + "].Company_ID' value='" + rowElems[i].cells[3].innerHTML + "' /></td>";
+          htmlStr += "      <td><input name='DefaultMoneyWaitTimeForCompanyList[" + (rowCount).toString() + "].Area' value='" + rowElems[i].cells[0].innerHTML + "' /></td>";
+          htmlStr += "      <td><input name='DefaultMoneyWaitTimeForCompanyList[" + (rowCount).toString() + "].SyasyuSize' value='" + rowElems[i].cells[1].innerHTML + "' /></td>";
+          htmlStr += "      <td><input name='DefaultMoneyWaitTimeForCompanyList[" + (rowCount).toString() + "].Amount' value='" + rowElems[i].cells[2].firstElementChild.value + "' /></td>";
+          //htmlStr += "      <td><input name='DefaultMoneyWaitTimeForCompanyList[" + (rowCount).toString() + "].Amount_Over2Hour' value='" + rowElems[i].cells[3].firstElementChild.value + "' /></td>";
+          htmlStr += "    </tr>";
+          rowCount++;
+        }
+
+        
+      }
+    });
+
+    //alert(htmlStr);
+
+    var html = "";
+    html += "<form id='regData'>";
+    html += "<div hidden>";
+    html += "  <input name='CompanyID' value='" + $('#CompanyID').val() + "' />";
+    html += "</div >";
+    html += "<table>";
+    html += "  <tbody>";
+    html += htmlStr;
+    html += "  </tbody>";
+    html += "</table>";
+    html += "</form >";
+
+    $("#RegExecHere").html(html);
+
+
+
+    //Formの参照を取る
+    var $form = $('#regData');
+
+    $.ajax({
+        url: '@Url.RouteUrl("Default", new { controller = "Setting", Action = "DefaultMoneyWaitTimeForAreaRegExec" })',
+        type: 'post',
+        data: $form.sArealize(),
+      }).done(function (response) {
+        if (response.errorMessage != null) {
+          alert("【エラー】" + response.errorMessage, 'warning');
+          return false;
+        } else {
+          if (response.retrunFlg) {
+            alert('正常に登録出来ました。', 'success');
+          } else {
+            alert('登録に失敗しました。原因不明。', 'warning');
+          }
+          return false;
+        }
+      }).fail(function (xhr) {
+        alert('【ネットワークエラー】:' + xhr, 'warning');
+          console.log(xhr);
+          return false;
+      }).always(function (xhr, msg) {
+          //console.log(xhr, msg);
+      });
+
+  };
+
+</script>

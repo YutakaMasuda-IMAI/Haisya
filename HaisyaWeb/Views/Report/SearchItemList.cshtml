@@ -1,0 +1,108 @@
+﻿@model HaisyaWeb.Models.ReportModel.ReportSearchModel
+<table class="table table-setting table-bordered border-info table-striped">
+  <tbody>
+    @foreach (var group in Model.Group_Items)
+    {
+      <tr>
+        <td width="200px">
+          <label class="label @(group.NotNull_Flg == 1 ? "required" : "")">@group.Display_Title</label>
+        </td>
+        <td>
+          <div class="d-flex flex-wrap" style="gap: 4px;">
+            @foreach (var item in group.Items)
+            {
+              switch (item.Item_Kubun)
+              {
+                case 1:
+                  <div class="report-item report-item-search d-flex flex-wrap" style="@(item.Inputbox_Width == 0 ? "flex: 1" :"") ">
+                    <button class="btn btn-info btn-sm" type="button" onclick="setFieldSearch('@(item.Model_Prooerty)'); @(item.SelectBtnOnClick)()">
+                      設定
+                    </button>
+                    <div class="group-input-search" style="flex: 1;">
+                      <input type="hidden"
+                             class="input-item input-item-param"
+                             name="@item.Model_Prooerty"
+                             data-display_title="@item.Display_Title"
+                      @(item.NotNull_Flg == 1 ? "required" : "") />
+                      <input type="text"
+                             class="input-item form-control"
+                             name="@(item.Model_Prooerty)Text"
+                             readonly
+                             style="@(item.Inputbox_Width > 0 ? "width:" + item.Inputbox_Width + "px" : "")" />
+                      <span class="icon-clear glyphicon glyphicon-remove"></span>
+                    </div>
+                  </div>
+                  break;
+                case 2:
+                  <div class="report-item report-item-string" style="@(item.Inputbox_Width == 0 ? "flex: 1" :"") ">
+                    <input type="text"
+                           class="input-item-param input-item form-control d-inline"
+                           value="@item.Default_Val"
+                           name="@item.Model_Prooerty"
+                           maxLength="@item.MaxLength"
+                           style="@(item.Inputbox_Width > 0 ? "width:" + item.Inputbox_Width + "px" : "")"
+                           data-display_title="@item.Display_Title"
+                    @(item.NotNull_Flg == 1 ? "required" : "") />
+                  </div>
+                  break;
+                case 3:
+                  <div class="report-item report-item-number" style="@(item.Inputbox_Width == 0 ? "flex: 1" :"") ">
+                    <input type="text"
+                           class="input-item-param input-item form-control d-inline"
+                           value="@item.Default_Val"
+                           name="@item.Model_Prooerty"
+                           maxLength="@item.MaxLength"
+                           style="@(item.Inputbox_Width > 0 ? "width:" + item.Inputbox_Width + "px" : "")"
+                           data-display_title="@item.Display_Title"
+                           data-type="@item.Inputbox_Type"
+                           data-format="@item.Inputbox_Formart"
+                    @(item.NotNull_Flg == 1 ? "required" : "") />
+                  </div>
+                  break;
+                case 4:
+                  <div class="report-item report-item-date" style="@(item.Inputbox_Width == 0 ? "flex: 1" :"") ">
+                    <input type="text"
+                           class="input-item-param input-item form-control d-inline calendar"
+                           value="@item.Default_Val"
+                           name="@item.Model_Prooerty"
+                           readonly
+                           style="@(item.Inputbox_Width > 0 ? "width:" + item.Inputbox_Width + "px" : "")"
+                           data-display_title="@item.Display_Title"
+                           data-default_value="@item.Default_Val"
+                           data-format="@item.Inputbox_Formart"
+                    @(item.NotNull_Flg == 1 ? "required" : "") />
+                    <span class="icon-clear glyphicon glyphicon-remove"></span>
+                  </div>
+                  break;
+              }
+              @if (@item.Between_Display != null && @item.Between_Display != "")
+              {
+                <span style="margin: 0px 10px; line-height: 40px;"> @item.Between_Display</span>
+              }
+            }
+          </div>
+        </td>
+        <td width="500px">@group.Display_Message</td>
+      </tr>
+    }
+  </tbody>
+</table>
+<script>
+ 
+  $(".icon-clear").click(function () {
+    if ($(this).parent().hasClass("report-item-date")) {
+      if ($(this).parent().find("input").datepicker("getDate")) {
+        $(this).parent().find("input").trigger("change");
+      }
+      $(this).parent().find("input").datepicker("setDate", null);
+      $(this).parent().find("input").data("value_output", null);
+    }
+    if ($(this).parent().hasClass("group-input-search")) {
+      if ($(this).parent().find("input").val()) {
+        $(this).parent().find("input").trigger("change");
+      }
+      $(this).parent().find("input").val("");
+      $(this).parent().find("input[type=hidden]").val("");
+    }
+  });
+</script>

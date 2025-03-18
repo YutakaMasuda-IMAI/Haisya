@@ -1,0 +1,271 @@
+﻿@model AnkenModel.AnkenRirekiModel
+
+
+<style>
+
+  #ankenRirekiModal .divTitle {
+    border: groove;
+    font-size: 10px;
+    height: 20px;
+    padding-left: 0.5rem;
+    background-color: chartreuse;
+  }
+
+  #ankenRirekiModal .divdata {
+    border: groove;
+    font-size: 11px;
+    height: 20px;
+    padding: 0 0 0 0.5rem;
+    color: black;
+    margin: 0;
+    White-space: nowrap;
+  }
+
+  #ankenRirekiModal .divMain {
+    display: inline-flex;
+  }
+
+  #ankenRirekiModal .number {
+    width: 60px;
+    text-align: right;
+  }
+
+  #ankenRirekiModal .change {
+    background-color:yellow;
+  
+  }
+
+  #ankenRirekiModal .borderLine {
+    border-top: solid;
+  }
+</style>
+
+
+<!-- モダールの中身 -->
+<div role="dialog" id="addRireki" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog " role="document" style="max-width:1000px">
+    <div class="modal-content">
+      <div class="modal-header" style="display: flex; position: relative; justify-content: center;">
+        <h3 class="modal-title" id="exampleModalLabel" style="left: 2rem; position: absolute;">案件変更履歴画面</h3>
+
+        <label style="float: right; color: red; font-weight: bold; font-size: x-large;">案件№：@(Model.AnkenList.FirstOrDefault().Anken_No)</label>
+        <a href="#" data-dismiss="modal" class="btn btn-close" onclick="AnkenRirekiModalClose(); return false;" style="width: 30px; float: right; position: absolute; right: 2rem; "></a>
+      </div>
+      <div class="modal-body ex_driveList_model">
+        <div style=" overflow-x: auto; height: 600px; ">
+          <div id="ankenRirekiModal">
+            <div class="divMain">
+              <div style="width: 85px;">
+                <div class="divTitle">履歴番号</div>
+                <div class="divTitle">登録日時</div>
+                <div class="divTitle">登録者</div>
+                <div class="divTitle">案件名</div>
+                <div class="divTitle">案件状況</div>
+                <div class="divTitle">顧客名</div>
+                <div class="divTitle">顧客担当</div>
+                <div class="divTitle">車種</div>
+                <div class="divTitle">台数</div>
+                @*<div class="divTitle">配車担当</div>
+    <div class="divTitle">営業担当</div>*@
+                <div class="divTitle">配車予定</div>
+                <div class="divTitle">案件公開</div>
+                <div class="divTitle">車番連絡</div>
+                <div class="divTitle">荷待時間</div>
+                @*<div class="divTitle">労務費計算</div>
+    <div class="divTitle">運賃ｴﾘｱ</div>*@
+
+                <div class="divTitle borderLine">ルート</div>
+                <div class="divTitle">所要時間</div>
+                <div class="divTitle">距離</div>
+                <div class="divTitle">有料道路</div>
+                <div class="divTitle">見積原価</div>
+                <div class="divTitle">標準運賃</div>
+
+                <div class="divTitle borderLine">運賃区分</div>
+                <div class="divTitle">基本運賃</div>
+                <div class="divTitle">追加費用</div>
+                <div class="divTitle">有料道路</div>
+                <div class="divTitle">値引額</div>
+                <div class="divTitle">請求運賃</div>
+
+                <div class="divTitle borderLine">高速代</div>
+                <div class="divTitle">高速金額</div>
+                <div class="divTitle">高速備考</div>
+
+                <div class="divTitle borderLine">荷物</div>
+                <div class="divTitle">装備品</div>
+                <div class="divTitle">特記事項</div>
+
+
+                <div class="divTitle borderLine">積建物名</div>
+                <div class="divTitle">積住所</div>
+                <div class="divTitle">積日時</div>
+
+                @{
+                  var maxCount = Model.AnkenPointList.Where(m => m.Point_Order != 1).GroupBy(m => m.Anken_Order).Select(m => new { Anken_Order = m.Key, aaa = m.Count() }).OrderByDescending(m => m.aaa).FirstOrDefault();
+                  int maxCountA = maxCount == null ? 0 : maxCount.aaa - 1;
+
+                  for (int i = 1; i <= maxCountA; i++)
+                  {
+                    <div class="divTitle borderLine">経由区分@(i)</div>
+                    <div class="divTitle">経由建物名@(i)</div>
+                    <div class="divTitle">経由住所@(i)</div>
+                    <div class="divTitle">経由日時@(i)</div>
+                  }
+                }
+
+                <div class="divTitle borderLine">卸建物名</div>
+                <div class="divTitle">卸住所</div>
+                <div class="divTitle">卸日時</div>
+              </div>
+              @{ 
+                   
+
+                  var list = Model.AnkenList.OrderBy(m => m.Anken_Order).ToList();
+                  for (int i = 0; i < list.Count(); i++)
+                  {
+                    var target = list[i];
+                    var before = i == 0 ? list[0] : list[i - 1];
+                    string seikyuKubun = target.SeikyuKubun == 0 ? "確定運賃" : "暫定運賃";
+                    string nmberCommLimitKubun = target.NumberCommLimitKubun == 0 ? "要" : "不要";
+                    string ankenStatus = Model.CodeList.FirstOrDefault(m => m.Code_ID == 21 && m.Code_Data == target.Anken_Status.ToString()).Code_Name;
+                    string haisyaPlanKubun = Model.CodeList.FirstOrDefault(m => m.Code_ID == 22 && m.Code_Data == target.HaisyaPlanKubun.ToString()).Code_Name;
+                    string tollKubun = Model.CodeList.FirstOrDefault(m => m.Code_ID == 23 && m.Code_Data == target.Toll_Kubun.ToString()).Code_Name;
+                    var updateUser = Model.CompanyUserList.FirstOrDefault(m => m.User_ID == target.Update_User);
+                    var publishGroup = Model.CompanyUserGroupList.FirstOrDefault(m => m.Group_ID == target.PublishGroup_ID);
+
+                            <div style="width: 200px;">
+                              <div class="divdata">@(target.Anken_Order)</div>
+                              <div class="divdata">@(target.Update_Datetime)</div>
+                              <div class="divdata">@(updateUser == null ? "" : updateUser.Display_Name)</div>
+                              <div class="divdata @(target.Work_Name == before.Work_Name ? "" : "change")">@(target.Work_Name)</div>
+                              <div class="divdata @(target.Anken_Status == before.Anken_Status ? "" : "change")">@(ankenStatus)</div>
+                              <div class="divdata @(target.KokyakuId == before.KokyakuId ? "" : "change")">@(target.KokyakuName)</div>
+                              <div class="divdata @(target.KokyakuTantouId == before.KokyakuTantouId ? "" : "change")">@(target.KokyakuTantouName)</div>
+                              <div class="divdata @(target.Syaryo_ID == before.Syaryo_ID ? "" : "change")">@(target.SyasyuDisplay)</div>
+                              <div class="divdata @(target.Daisuu == before.Daisuu ? "" : "change")">@Convert.ToDouble(target.Daisuu).ToString("#,###台")</div>
+                              @*<div class="divdata">@(target.TantouID)</div>
+    <div class="divdata">@(target.EigyoID)</div>*@
+                              <div class="divdata @(target.HaisyaPlanKubun == before.HaisyaPlanKubun ? "" : "change")">@(haisyaPlanKubun)</div>
+                              <div class="divdata @(target.PublishGroup_ID == before.PublishGroup_ID ? "" : "change")">@(publishGroup == null ? "" : publishGroup.Display_Name)</div>
+                              <div class="divdata @(target.NumberCommLimitKubun == before.NumberCommLimitKubun && target.NumberCommLimitDateTime == before.NumberCommLimitDateTime ? "" : "change")">@(nmberCommLimitKubun) : @(target.NumberCommLimitDateTime)</div>
+                              <div class="divdata @(target.TsumiTaskTime == before.TsumiTaskTime && target.OroshiTaskTime == before.OroshiTaskTime ? "" : "change")">積み：@(target.TsumiTaskTime) ； 卸し：@(target.OroshiTaskTime)</div>
+                              @*<div class="divdata">@(target.DriverGrossCalc)</div>
+    <div class="divdata">@(target.Area)</div>*@
+
+                              <div class="divdata borderLine @(target.RouteTypeDisplay == before.RouteTypeDisplay ? "" : "change")">@(target.RouteTypeDisplay)</div>
+                              <div class="divdata @(target.Route_TotalTime == before.Route_TotalTime ? "" : "change")">@(target.Route_TotalTime)</div>
+                              <div class="divdata @(target.Route_TotalDistance == before.Route_TotalDistance ? "" : "change")"><div class="number">@Convert.ToDouble(target.Route_TotalDistance).ToString("#,###km")</div></div>
+                              <div class="divdata @(target.Route_Totaltoll == before.Route_Totaltoll ? "" : "change")"><div class="number">@Convert.ToDouble(target.Route_Totaltoll).ToString("#,###円")</div></div>
+                              <div class="divdata @(target.Route_GrossAmountTotal == before.Route_GrossAmountTotal ? "" : "change")"><div class="number">@Convert.ToDouble(target.Route_GrossAmountTotal).ToString("#,###円")</div></div>
+                              <div class="divdata @(target.Route_StdALLFreight == before.Route_StdALLFreight ? "" : "change")"><div class="number">@Convert.ToDouble(target.Route_StdALLFreight).ToString("#,###円")</div></div>
+
+                              <div class="divdata borderLine @(target.SeikyuKubun == before.SeikyuKubun ? "" : "change")">@(seikyuKubun)</div>
+                              <div class="divdata @(target.BaseFee == before.BaseFee ? "" : "change")"><div class="number">@Convert.ToDouble(target.BaseFee).ToString("#,###円")</div></div>
+                              <div class="divdata @(target.ExtraCharge == before.ExtraCharge ? "" : "change")"><div class="number">@Convert.ToDouble(target.ExtraCharge).ToString("#,###円")</div></div>
+                              <div class="divdata @(target.Toll == before.Toll ? "" : "change")"><div class="number">@Convert.ToDouble(target.Toll).ToString("#,###円")</div></div>
+                              <div class="divdata @(target.Discount == before.Discount ? "" : "change")"><div class="number">@Convert.ToDouble(target.Discount).ToString("#,###円")</div></div>
+                              <div class="divdata @(target.GrossAmount == before.GrossAmount ? "" : "change")"><div class="number">@Convert.ToDouble(target.GrossAmount).ToString("#,###円")</div></div>
+
+                              <div class="divdata borderLine @(target.Toll_Kubun == before.Toll_Kubun ? "" : "change")">@(tollKubun)</div>
+                              <div class="divdata @(target.Toll_Money == before.Toll_Money ? "" : "change")"><div class="number">@Convert.ToDouble(target.Toll_Money).ToString("#,###円")</div></div>
+                              <div class="divdata @(target.Toll_Remarks == before.Toll_Remarks ? "" : "change")">@(target.Toll_Remarks)</div>
+
+                              <div class="divdata borderLine @(target.Luggage == before.Luggage ? "" : "change")">@(target.Luggage)</div>
+                              <div class="divdata @(target.Equipment == before.Equipment ? "" : "change")">@(target.Equipment)</div>
+                              <div class="divdata @(target.Remarks == before.Remarks ? "" : "change")">@(target.Remarks)</div>
+
+                              @{
+                                  var start = Model.AnkenPointList.Where(m => m.Anken_Order == target.Anken_Order && m.Kubun != 2).OrderBy(m => m.Point_Order).FirstOrDefault();
+                                  var startB = Model.AnkenPointList.Where(m => m.Anken_Order == before.Anken_Order && m.Kubun != 2).OrderBy(m => m.Point_Order).FirstOrDefault();
+                                  var end = Model.AnkenPointList.Where(m => m.Anken_Order == target.Anken_Order && m.Kubun != 2).OrderByDescending(m => m.Point_Order).FirstOrDefault();
+                                  var endB = Model.AnkenPointList.Where(m => m.Anken_Order == before.Anken_Order && m.Kubun != 2).OrderByDescending(m => m.Point_Order).FirstOrDefault();
+
+                                  var keiyu = Model.AnkenPointList.Where(m => m.Anken_Order == target.Anken_Order && m.Point_Order != start.Point_Order && m.Point_Order != end.Point_Order).OrderBy(m => m.Point_Order).ToList();
+                                  var keiyuB = Model.AnkenPointList.Where(m => m.Anken_Order == before.Anken_Order && m.Point_Order != startB.Point_Order && m.Point_Order != endB.Point_Order).OrderBy(m => m.Point_Order).ToList();
+                              }
+
+                              @*<div class="divdata borderLine">@(Model.CodeList.FirstOrDefault(m => m.Code_ID == 3 && m.Code_Data == start.Kubun.ToString()).Code_Name)</div>*@
+                              <div class="divdata borderLine @(start.BuildingName == startB.BuildingName ? "" : "change")">@(start.BuildingName)</div>
+                              <div class="divdata @(start.Address == startB.Address ? "" : "change")">@(start.Address)</div>
+                              <div class="divdata @(start.PointDate == startB.PointDate && start.PointTime == startB.PointTime ? "" : "change")">@(start.PointDate == null ? "" : Convert.ToDateTime(start.PointDate).ToString("yyyy/MM/dd")) @(start.PointTime)</div>
+
+                              @{
+                                  for (int r = 0; r < maxCountA; r++)
+                                  {
+                                    var keiyuData = keiyu.Count() <= r ? null : keiyu[r];
+                                    var keiyuDataB = keiyuB.Count() <= r ? null : keiyuB[r];
+
+                                    if (keiyuData != null && keiyuDataB == null)
+                                    {
+                                    <div class="divdata borderLine change">@(Model.CodeList.FirstOrDefault(m => m.Code_ID == 3 && m.Code_Data == keiyuData.Kubun.ToString()).Code_Name)</div>
+                                    <div class="divdata change">@(keiyuData.BuildingName)</div>
+                                    <div class="divdata change">@(keiyuData.Address)</div>
+                                    <div class="divdata change">@(keiyuData.PointDate == null ? "" : Convert.ToDateTime(keiyuData.PointDate).ToString("yyyy/MM/dd")) @(keiyuData.PointTime)</div>
+                                  }
+                                  else if (keiyuData == null && keiyuDataB != null)
+                                  {
+                                    <div class="divdata borderLine change"></div>
+                                    <div class="divdata change"></div>
+                                    <div class="divdata change"></div>
+                                    <div class="divdata change"></div>
+                                  }
+                                  else if (keiyuData == null && keiyuDataB == null)
+                                  {
+                                    <div class="divdata borderLine"></div>
+                                    <div class="divdata"></div>
+                                    <div class="divdata"></div>
+                                    <div class="divdata"></div>
+                                  }
+                                  else
+                                  {
+                                    <div class="divdata borderLine">@(Model.CodeList.FirstOrDefault(m => m.Code_ID == 3 && m.Code_Data == keiyuData.Kubun.ToString()).Code_Name)</div>
+                                    <div class="divdata @(keiyuData.BuildingName == keiyuDataB.BuildingName ? "" : "change")">@(keiyuData.BuildingName)</div>
+                                    <div class="divdata @(keiyuData.Address == keiyuDataB.Address ? "" : "change")">@(keiyuData.Address)</div>
+                                    <div class="divdata @(keiyuData.PointDate == keiyuDataB.PointDate && keiyuData.PointTime == keiyuDataB.PointTime ? "" : "change")">@(keiyuData.PointDate == null ? "" : Convert.ToDateTime(keiyuData.PointDate).ToString("yyyy/MM/dd")) @(keiyuData.PointTime)</div>
+                                  }
+
+
+                                }
+                              }
+
+
+
+                              @*<div class="divdata borderLine">@(Model.CodeList.FirstOrDefault(m => m.Code_ID == 3 && m.Code_Data == end.Kubun.ToString()).Code_Name)</div>*@
+                              <div class="divdata borderLine @(end.BuildingName == endB.BuildingName ? "" : "change")">@(end.BuildingName)</div>
+                              <div class="divdata @(end.Address == endB.Address ? "" : "change")">@(end.Address)</div>
+                              <div class="divdata @(end.PointDate == endB.PointDate && start.PointTime == startB.PointTime ? "" : "change")">@(end.PointDate == null ? "" : Convert.ToDateTime(end.PointDate).ToString("yyyy/MM/dd")) @(end.PointTime)</div>
+
+                            </div>
+                  }
+
+              }
+
+            </div>
+          </div>
+
+
+        </div>
+
+      </div>
+      <div class="modal-footer" style="padding: 0;">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+<script>
+
+  $(function () {
+
+  });
+
+  function AnkenRirekiModalClose() {
+
+    $('#ModalAnkenRireki').find('.modal').modal('hide');
+  }
+
+
+</script>

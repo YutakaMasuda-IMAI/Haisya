@@ -1,0 +1,305 @@
+﻿@model CommonDialogModel.SelectCustomerModel
+
+
+
+<style>
+  .div-area-customer-dialog {
+    margin: auto;
+    flex-wrap: wrap;
+    display: flex;
+    padding: 0 5px 0 5px
+  }
+
+  .tab_class-customer-dialog {
+    width: calc(100%/2);
+    height: 50px;
+    background-color: aquamarine;
+    line-height: 50px;
+    font-size: 15px;
+    text-align: center;
+    display: block;
+    float: left;
+    order: -1;
+    border: double;
+  }
+
+  input[name="tab_name-customer-dialog"] {
+    display: none;
+  }
+
+  input:checked + .tab_class-customer-dialog {
+    background-color: cadetblue;
+    color: aliceblue;
+  }
+
+  .content_class-customer-dialog {
+    display: none;
+    width: 100%;
+  }
+
+  input:checked + .tab_class-customer-dialog + .content_class-customer-dialog {
+    display: block;
+  }
+
+  .table-CustomerListDataModal {
+    overflow: auto;
+    /*width: 100%;*/
+    max-height: 700px;
+  }
+
+    .table-CustomerListDataModal table {
+      margin: 0;
+      border-spacing: 0;
+      /*width: 100%;*/
+      font-size: 12px;
+    }
+
+    .table-CustomerListDataModal th {
+      white-space: nowrap;
+      position: sticky;
+      top: -1px;
+      left: 0;
+      border-right: 1px solid #999;
+      border-bottom: 1px solid #999;
+      background-color: lemonchiffon;
+      text-align: center;
+      padding: 0.2rem 0 0.2rem 0;
+    }
+
+    .table-CustomerListDataModal td {
+      white-space: nowrap;
+      padding: 2px;
+      border-right: 1px solid #999;
+      border-bottom: 1px solid #999;
+    }
+
+    .table-CustomerListDataModal tr:first-child th {
+      border-top: 1px solid #999;
+    }
+
+    .table-CustomerListDataModal th:first-child {
+      border-left: 1px solid #999;
+    }
+
+    .table-CustomerListDataModal tr:first-child th:first-child {
+      z-index: 1;
+    }
+</style>
+
+
+<div id="hiddenItem" hidden>
+  @Html.HiddenFor(Model => Model.CompanyID)
+  @Html.HiddenFor(Model => Model.SelectedID)
+  @Html.HiddenFor(Model => Model.UserID)
+
+</div>
+
+
+<div class="modal-dialog container" role="document" style="">
+  <div class="modal-content">
+    <div class="model-body">
+      <div class="div-area-customer-dialog">
+        <input type="radio" name="tab_name-customer-dialog" id="tabCommonDialog1" checked>
+        <label class="tab_class-customer-dialog" for="tabCommonDialog1">使用履歴</label>
+        <div class="content_class-customer-dialog">
+          <div class="row content-sarch">
+            <div id="divShiyoritsu" class="col-6 col-sm-6 table-CustomerListDataModal dataList" style="height:500px; margin: 0;">
+            </div>
+            <div id="divShiyoRireki" class="col-6 col-sm-6 table-CustomerListDataModal dataList" style="border-left: groove; height: 500px; margin: 0; padding-left: 0; width: 49%;">
+            </div>
+          </div>
+        </div>
+        <input type="radio" name="tab_name-customer-dialog" id="tabCommonDialog2">
+        <label class="tab_class-customer-dialog" for="tabCommonDialog2">検索</label>
+        <div class="content_class-customer-dialog">
+          <table class="table jbc-table table-borderless" style="padding: 0; background-color: whitesmoke; margin-bottom: 0;" border="1">
+            <tbody>
+              <tr>
+                <td width="20px"></td>
+                <td class="col-sm-3">
+                  <label class="control-label align-self-center align-middle text-end" style="padding:0;">顧客コード：</label>
+                  <input type="text" id="txtCode" style="width: 150px; display: inline-block;" class="form-control" />
+                </td>
+                <td class="col-sm-3">
+                  <label class="control-label align-self-center align-middle text-end" style="padding:0;">検索キー：</label>
+                  <input type="text" id="txtKey" style="width: 150px; display: inline-block;" class="form-control" />
+                </td>
+                <td class="col-sm-4">
+                  <label class="control-label align-self-center align-middle text-end" style="padding:0;">電話(Fax)番号：</label>
+                  <input type="text" id="txtPhone" style="width: 150px; display: inline-block;" class="form-control" />
+                </td>
+                <td>
+                  <button id="btnCustomerSerch" style="width: 100px;" class="btn btn-primary align-items-end" onclick="listDisplay();return false;">検索</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div id="alertTop" style="vertical-align: middle; margin-top: 0px;">
+            <label style="font-size:xx-small;">※Top100件を抽出</label>
+          </div>
+
+          <div id="CommonDialogToCustomerList" class="table-CustomerListDataModal dataList" style="height:500px; margin: 0;">
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+<script>
+
+  $(window).on('load', function () {
+
+  });
+
+    $('#btnCustomerSerch').hide();
+
+  $(async function () {
+
+    const _sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+    SetListUtilizationRate();
+    SetListForRirekiData();
+
+    ///得意先コードの条件変更時
+    $('#txtCode').on('change', function () {
+      listDisplay();
+      return false;
+    });
+
+    ///得意先名の条件変更時
+    $('#txtKey').on('change', function () {
+      listDisplay();
+      return false;
+    });
+
+    ///得意先電話番号の条件変更時
+    $('#txtPhone').on('change', function () {
+      listDisplay();
+      return false;
+    });
+
+    await _sleep(2000);
+
+    listDisplay();
+
+  });
+
+  /**
+   * 画面を閉じる
+   * selectCustomerModalCloseCallBack
+   * */
+  function ModalCommonDialogClose() {
+
+    $('#ModalCommonDialog').html('');
+
+    if (typeof selectCustomerModalCloseCallBack == 'function') {
+      // 関数があった場合の処理内容
+      selectCustomerModalCloseCallBack();
+    }    
+  };
+
+  /**
+   * 一覧データ選択時の処理
+   * selectCustomerModalCloseCallBack
+   * @@param data
+   */
+  function selectOnClick(data) {
+
+    $('#ModalCommonDialog').html('');
+    $('#ModalCommonDialog').dialog("close");
+    
+
+    //コールバック関数チェック
+    if (typeof selectCustomerSelectedCallBack == 'function') {
+      // 関数があった場合の処理内容
+      selectCustomerSelectedCallBack(data);
+    }
+
+  };
+
+
+  /**
+   * 得意先検索一覧の表示
+   * */
+  function listDisplay() {
+
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "JsonGetCustomerDataList" })',
+      {
+        code: $("#txtCode").val(),
+        key: $("#txtKey").val(),
+        phone: $("#txtPhone").val(),
+      },
+        function (data) {
+            if (data.message != null) {
+                alertError(`【エラー】${data.message}`);
+            }
+            else {
+                $('#CommonDialogToCustomerList').html(data.partialView);
+                $('#btnCustomerSerch').show();
+            }
+        }
+    );
+
+  };
+
+  /**
+   * 使用率データを表示
+   * */
+  function SetListUtilizationRate() {
+
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "JsonGetCustomerListForUtilizationRate" })',
+      {
+      })
+        .done(function (response) {
+        if (response.message != null) {
+          alertError(`【エラー】${response.message}`);
+          return false;
+        } else {
+          //alert("【done】" + response.partialView);
+          $('#divShiyoritsu').html(response.partialView);
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+        console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+        console.log(xhr, msg);
+      });
+  };
+
+  /**
+   * 使用履歴を表示
+   * */
+  function SetListForRirekiData() {
+
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "JsonGetCustomerListForRireki" })',
+      {
+      })
+      .done(function (response) {
+        if (response.message != null) {
+          alertError(`【エラー】${response.message}`);
+          return false;
+        } else {
+          //alert("【done】" + response.partialView);
+          $('#divShiyoRireki').html(response.partialView);
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+        console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+        console.log(xhr, msg);
+      });
+  };
+
+
+</script>
+<script src="~/js/EnterKeyCancel.js"></script>

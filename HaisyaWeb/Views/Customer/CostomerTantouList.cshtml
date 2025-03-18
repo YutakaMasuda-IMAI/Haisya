@@ -1,0 +1,140 @@
+﻿@model HaisyaWeb.Models.CustomerTantouDto
+
+
+@{
+  Layout = "_ModalLayout";
+}
+<link href="~/css/Anken.css" rel="stylesheet" />
+
+<style>
+</style>
+
+
+
+<div role="dialog" aria-hidden="true" tabindex="-1" class="modal fade" style="z-index: 1240;" data-backdrop="static">
+  <div class="modal-dialog container" role="document" style="width: 1250px;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-3" id="exampleModalLabel" style="width:120px;">担当者選択</h1>
+        <button type="button" class="btn btn-success" onclick="insertRow(); return false;">行追加</button>
+        <a href="#" data-dismiss="modal" class="btn btn-close" onclick="ModalClose(); return false;" style="width:30px;"></a>
+      </div>
+      <div class="model-body">
+        <div id="DataList" class="dataList" style="height:300px; margin: 0;">
+          <table id="tableTantou" class="table table-bordered border-primary table-customer-tantou" border="1" style="margin: 10px; width:96%;">
+            <thead>
+              <tr style="background-color: aquamarine;">
+                <th class="ex-table-th" rowspan="2" style="vertical-align: middle;">選択</th>
+                <th class="ex-table-th" rowspan="2" style="vertical-align: middle;">詳細</th>
+                <th hidden rowspan="2">Tantou_ID</th>
+                <th hidden rowspan="2">Customer_ID</th>
+                <th hidden rowspan="2">Company_ID</th>
+
+                <th width="80px" align="center" style="text-align: center;">部署名</th>
+                <th width="80px" align="center" style="text-align: center;">役職名</th>
+                <th width="160px" align="center" style="text-align: center; color: red;">担当者名</th>
+                <th colspan="2" width="160px" align="center" style="text-align: center;">担当者名カナ</th>
+                <th colspan="2" width="160px" align="center" style="text-align: center; color: red;">メール記載名</th>
+                <th rowspan="2" width="20px"></th>
+              </tr>
+              <tr style="background-color: aquamarine;">
+                <th colspan="2" width="100px" align="center" style="text-align: center; color: red; ">メールアドレス１</th>
+                <th width="160px" align="center" style="text-align: center;">メールアドレス２</th>
+                <th width="80px" align="center" style="text-align: center;">電話番号１</th>
+                <th width="80px" align="center" style="text-align: center;">FAX番号１</th>
+                <th width="80px" align="center" style="text-align: center;">電話番号２</th>
+                <th width="80px" align="center" style="text-align: center;">FAX番号２</th>
+              </tr>
+            </thead>
+            <tbody>
+              @{
+                var CustomerTantouList = Model.CustomerTantouList.OrderBy(m => m.Tantou_Code).ThenBy(m => m.Tantou_ID).ToList();
+                for (int i = 0; i < CustomerTantouList.Count; i++)
+                {
+                            <tr style="vertical-align: middle;">
+                              <td width="50px" rowspan="2" style="vertical-align: middle;">
+                                <button class="btn btn-success" style="width: 100%; padding:0;" onclick="submitCustomerTantouData('@(Model.CustomerID)', '@(CustomerTantouList[i].Tantou_ID)','@(CustomerTantouList[i].Tantou_Name)','@(CustomerTantouList[i].Phone1)'); return false;">選択</button>
+                              </td>
+                              <td width="50px" rowspan="2" style="vertical-align: middle;">
+                                <button class="btn btn-success" style="width: 100%; padding:0;" onclick="submitCustomerTantouDetail('@(Model.CustomerID)', '@(CustomerTantouList[i].Tantou_ID)'); return false;">詳細</button>
+                              </td>
+                              <td hidden rowspan="2">@Html.TextBoxFor(model => CustomerTantouList[i].Tantou_ID, null, new { @readonly = "readonly", @class = "form-control", @style = "" })</td>
+                              <td hidden rowspan="2">@Html.TextBoxFor(model => CustomerTantouList[i].Customer_ID, null, new { @readonly = "readonly", @class = "form-control", @style = "" })</td>
+                              <td hidden rowspan="2">@Html.TextBoxFor(model => CustomerTantouList[i].Company_ID, null, new { @readonly = "readonly", @class = "form-control", @style = "" })</td>
+
+                              <td>@(CustomerTantouList[i].Busyo_Name)</td>
+                              <td>@(CustomerTantouList[i].Position_Name)</td>
+                              <td>@(CustomerTantouList[i].Tantou_Name)</td>
+                              <td colspan="2">@(CustomerTantouList[i].Tantou_Name_Kana)</td>
+                              <td colspan="2">@(CustomerTantouList[i].Tantou_Name_Abbr)</td>
+                              <td rowspan="2"></td>
+                            </tr>
+                  <tr style="vertical-align: middle;">
+                    <td colspan="2">@(CustomerTantouList[i].Mail_Address1)</td>
+                    <td>@(CustomerTantouList[i].Mail_Address2)</td>
+                    <td>@(CustomerTantouList[i].Phone1)</td>
+                    <td>@(CustomerTantouList[i].Fax1)</td>
+                    <td>@(CustomerTantouList[i].Phone2)</td>
+                    <td>@(CustomerTantouList[i].Fax2)</td>
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+<script>
+
+  $(window).on('load', function () {
+  });
+
+
+  $(function () {
+
+    setTimeout(function () {
+      $('.modal-backdrop')
+        .not('.modal-stack')
+        .css('z-index', 1239)
+        .addClass('modal-stack');
+    }, 0);
+
+  });
+
+
+  function submitCustomerTantouDetail(customerID, tantouID) {
+
+   $.post('@Url.RouteUrl("Default", new { controller = "Customer", Action = "CostomerTantouModal" })',
+      {
+        CustomerID: customerID,
+        TantouID: tantouID,
+      })
+      .done(function (response) {
+        if (response.message != null) {
+            alertError(`【エラー】${response.message}`);
+            return false;
+        } else {
+          //alert("【done】" + response.partialView);
+          $("#ModalHere2").html(response.partialView);
+          $("#ModalHere2").find('.modal').modal('show');
+          return false;
+        }
+      })
+      .fail(function (xhr) {
+          console.log(xhr);
+      })
+      .always(function (xhr, msg) {
+          console.log(xhr, msg);
+      });
+
+  };
+
+</script>

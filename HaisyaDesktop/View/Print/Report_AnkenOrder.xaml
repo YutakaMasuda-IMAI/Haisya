@@ -1,0 +1,244 @@
+﻿<UserControl x:Class="HaisyaDesktop.View.Print.Report_AnkenOrder"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:HaisyaDesktop.View.Print"
+             xmlns:print="clr-namespace:HaisyaDesktop.ViewModel.Print"
+             xmlns:utils="clr-namespace:HaisyaDesktop.Utils"
+             d:DataContext="{d:DesignInstance Type=print:Report_AnkenOrderViewModel}"
+             mc:Ignorable="d" 
+            >
+
+  <UserControl.Resources>
+    <Style x:Key="RenrakuLavel" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="16" />
+      <!--<Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>-->
+    </Style>
+    <Style x:Key="KoumokuBorder" TargetType="Border">
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="BorderBrush" Value="Black" />
+      <Setter Property="Margin" Value="0,5,0,4"/>
+    </Style>
+
+    <!--<Style x:Key="KoumokuBorderRight" TargetType="Border">
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="BorderBrush" Value="Black" />
+      <Setter Property="Margin" Value="0,5,0,4"/>
+    </Style>-->
+
+    <Style x:Key="KoumokuTitle" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="16" />
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="HorizontalAlignment" Value="Center"/>
+      <Setter Property="Margin" Value="0,0,0,0" />
+    </Style>
+    <Style x:Key="KoumokuData" TargetType="TextBlock">
+      <Setter Property="FontSize" Value="16" />
+      <Setter Property="VerticalAlignment" Value="Center"/>
+      <Setter Property="HorizontalAlignment" Value="Left"/>
+      <Setter Property="Margin" Value="5,0,0,0" />
+      <!--<Setter Property="LineHeight" Value="20" />-->
+    </Style>
+    <Style x:Key="KoumokuUnderBordrLeft" TargetType="Border">
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="BorderBrush" Value="Black" />
+      <Setter Property="Margin" Value="0,0,0,0"/>
+      <Setter Property="Width" Value="100"/>
+      <Setter Property="Height" Value="35" />
+    </Style>
+    <Style x:Key="KoumokuUnderBordrRight" TargetType="Border">
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="BorderBrush" Value="Black" />
+      <Setter Property="Margin" Value="0,0,0,0"/>
+      <!--<Setter Property="Width" Value="400"/>-->
+      <Setter Property="Height" Value="35" />
+    </Style>
+    <Style x:Key="RichTextBoxStyle" TargetType="RichTextBox">
+      <Setter Property="FontSize" Value="16" />
+      <Setter Property="Block.LineHeight" Value="4" />
+      <Setter Property="Background" Value="Transparent"/>
+    </Style>
+  </UserControl.Resources>
+
+  <Border BorderThickness="3" BorderBrush="Transparent" >
+    
+  
+    <Grid Width="670" Height="950">
+      <StackPanel Orientation="Vertical">
+        <Border BorderThickness="3" BorderBrush="Black" >
+          <TextBlock Text="輸送発注書" FontSize="26" FontWeight="Bold" VerticalAlignment="Center" HorizontalAlignment="Center" />
+        </Border>
+        <Grid Margin="0,15,0,0">
+          <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+          </Grid.RowDefinitions>
+          <DockPanel Grid.Row="0">
+            <TextBlock Text="{Binding PrintDate}" Style="{StaticResource RenrakuLavel}" DockPanel.Dock="Right" HorizontalAlignment="Right" />
+          </DockPanel>
+          <DockPanel Grid.Row="1">
+            <Border BorderThickness="0,0,0,1" BorderBrush="Black" DockPanel.Dock="Left" >
+              <StackPanel Orientation="Horizontal">
+                <TextBlock Text="{Binding AtesakiDisplay.Value}" FontSize="24" FontWeight="Bold" Margin="10,0,0,0" />
+                <Label Content="御中" Margin="10,0,10,0" FontSize="14" VerticalContentAlignment="Bottom" />
+              </StackPanel>
+            </Border>
+            <Border DockPanel.Dock="Left"></Border>
+          </DockPanel>
+          <DockPanel Grid.Row="2">
+            <TextBlock Text="今井運送株式会社"  Style="{StaticResource RenrakuLavel}" DockPanel.Dock="Right" HorizontalAlignment="Right" />
+          </DockPanel>
+          <DockPanel Grid.Row="3">
+            <TextBlock Text="広島県廿日市市木材港北13-43"  Style="{StaticResource RenrakuLavel}" DockPanel.Dock="Right" HorizontalAlignment="Right" Margin="10,0,0,0" />
+            <TextBlock Text="738-0021"  Style="{StaticResource RenrakuLavel}" DockPanel.Dock="Right" HorizontalAlignment="Right"  Margin="0,0,0,0" />
+            <TextBlock Text="〒"  Style="{StaticResource RenrakuLavel}" DockPanel.Dock="Right" HorizontalAlignment="Right" />
+          </DockPanel>
+          <DockPanel Grid.Row="4">
+            <TextBlock Text="0829-34-1564"  Style="{StaticResource RenrakuLavel}" DockPanel.Dock="Right" HorizontalAlignment="Right" />
+            <TextBlock Text="TEL："  Style="{StaticResource RenrakuLavel}" DockPanel.Dock="Right" HorizontalAlignment="Right" />
+            <TextBlock Text="お世話になります。"  Style="{StaticResource RenrakuLavel}" DockPanel.Dock="Right" HorizontalAlignment="Left" />
+          </DockPanel>
+          <DockPanel Grid.Row="5">
+            <TextBlock Text="0829-34-1561"  Style="{StaticResource RenrakuLavel}" DockPanel.Dock="Right" HorizontalAlignment="Right" />
+            <TextBlock Text="FAX："  Style="{StaticResource RenrakuLavel}" DockPanel.Dock="Right" HorizontalAlignment="Right" />
+            <TextBlock Text="下記の件よろしくお願いいたします。"  Style="{StaticResource RenrakuLavel}" DockPanel.Dock="Right" HorizontalAlignment="Left" />
+          </DockPanel>
+          <DockPanel Grid.Row="6">
+            <TextBlock Text="{Binding SendNameDisplay.Value}"  Style="{StaticResource RenrakuLavel}" DockPanel.Dock="Right" HorizontalAlignment="Right" />
+          </DockPanel>
+        </Grid>
+        
+        <Grid >
+          <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="60" />
+            <RowDefinition Height="40" />
+            <RowDefinition Height="125" />
+            <RowDefinition Height="125" />
+            <RowDefinition Height="125" />
+          </Grid.RowDefinitions>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="*"/>
+          </Grid.ColumnDefinitions>
+
+          <Border Grid.Column="0" Grid.Row="0" Style="{StaticResource KoumokuBorder}" >
+            <TextBlock Text="車種・台数" Style="{StaticResource KoumokuTitle}" />
+          </Border>
+          <Border Grid.Column="0" Grid.Row="1" Style="{StaticResource KoumokuBorder}" >
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+              <TextBlock Text="貨物　荷姿" Style="{StaticResource KoumokuTitle}" />
+              <TextBlock Text="重量　個数" Style="{StaticResource KoumokuTitle}" />
+            </StackPanel>
+          </Border>
+          <Border Grid.Column="0" Grid.Row="2" Style="{StaticResource KoumokuBorder}" >
+            <TextBlock Text="装備品" Style="{StaticResource KoumokuTitle}" />
+          </Border>
+          <Border Grid.Column="0" Grid.Row="3" Style="{StaticResource KoumokuBorder}" >
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+              <TextBlock Text="{Binding TsumiTitle1Display.Value}" Style="{StaticResource KoumokuTitle}" />
+              <TextBlock Text="{Binding TsumiTitle2Display.Value}" Style="{StaticResource KoumokuTitle}" />
+            </StackPanel>
+          </Border>
+          <Border Grid.Column="0" Grid.Row="4" Style="{StaticResource KoumokuBorder}" >
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+              <TextBlock Text="{Binding OroshiTitle1Display.Value}" Style="{StaticResource KoumokuTitle}" />
+              <TextBlock Text="{Binding OroshiTitle2Display.Value}" Style="{StaticResource KoumokuTitle}" />
+            </StackPanel>
+          </Border>
+          <Border Grid.Column="0" Grid.Row="5" Style="{StaticResource KoumokuBorder}" >
+            <StackPanel Orientation="Vertical" VerticalAlignment="Center">
+              <TextBlock Text="{Binding SpecialNotesTitle1Display.Value}" Style="{StaticResource KoumokuTitle}" />
+              <TextBlock Text="{Binding SpecialNotesTitle2Display.Value}" Style="{StaticResource KoumokuTitle}" />
+            </StackPanel>
+          </Border>
+
+          <!--項目データ部分-->
+          
+          <Border Grid.Column="1" Grid.Row="0" Style="{StaticResource KoumokuBorder}" >
+            <TextBlock Text="{Binding SyasyuSyabanDaisuuDisplay.Value}" Style="{StaticResource KoumokuData}" />
+          </Border>
+          <Border Grid.Column="1" Grid.Row="1" Style="{StaticResource KoumokuBorder}" >
+            <RichTextBox x:Name="ABC"  AcceptsTab="True" DockPanel.Dock="Top" utils:RichTextBoxHelper.Document="{Binding TruckLoadDocument.Value}" 
+                          Style="{StaticResource RichTextBoxStyle}" ></RichTextBox>
+          </Border>
+          <Border Grid.Column="1" Grid.Row="2" Style="{StaticResource KoumokuBorder}" >
+            <TextBlock Text="{Binding EquipmentDisplay.Value}" Style="{StaticResource KoumokuData}" />
+          </Border>
+          <Border Grid.Column="1" Grid.Row="3" Style="{StaticResource KoumokuBorder}" >
+            <RichTextBox x:Name="Tsumi"  AcceptsTab="True" DockPanel.Dock="Top" utils:RichTextBoxHelper.Document="{Binding TsumiDocument.Value}"
+                         Style="{StaticResource RichTextBoxStyle}" ></RichTextBox>
+          </Border>
+          <Border Grid.Column="1" Grid.Row="4" Style="{StaticResource KoumokuBorder}" >
+            <RichTextBox x:Name="Oroshi"  AcceptsTab="True" DockPanel.Dock="Top" utils:RichTextBoxHelper.Document="{Binding OroshiDocument.Value}"
+                         Style="{StaticResource RichTextBoxStyle}" ></RichTextBox>
+          </Border>
+          <Border Grid.Column="1" Grid.Row="5" Style="{StaticResource KoumokuBorder}" >
+            <RichTextBox x:Name="SpecialNotes"  AcceptsTab="True" DockPanel.Dock="Top" utils:RichTextBoxHelper.Document="{Binding SpecialNotesDocument.Value}"
+                         Style="{StaticResource RichTextBoxStyle}" ></RichTextBox>
+          </Border>
+          
+        </Grid>
+
+        <Grid Margin="0,5,0,0" >
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="100" />
+          </Grid.ColumnDefinitions>
+
+          <Border BorderThickness="1" BorderBrush="Black" Grid.Column="0" >
+            <DockPanel >
+              <DockPanel DockPanel.Dock="Top">
+                <Border Style="{StaticResource KoumokuUnderBordrLeft}" DockPanel.Dock="Left">
+                  <TextBlock Text="運送会社" Style="{StaticResource KoumokuTitle}" />
+                </Border>
+                <Border Style="{StaticResource KoumokuUnderBordrRight}" DockPanel.Dock="Left"></Border>
+              </DockPanel>
+              <DockPanel DockPanel.Dock="Top">
+                <Border Style="{StaticResource KoumokuUnderBordrLeft}" DockPanel.Dock="Left">
+                  <TextBlock Text="車種" Style="{StaticResource KoumokuTitle}" />
+                </Border>
+                <Border Style="{StaticResource KoumokuUnderBordrRight}" DockPanel.Dock="Left"></Border>
+              </DockPanel>
+              <DockPanel DockPanel.Dock="Top">
+                <Border Style="{StaticResource KoumokuUnderBordrLeft}" DockPanel.Dock="Left">
+                  <TextBlock Text="車番" Style="{StaticResource KoumokuTitle}" />
+                </Border>
+                <Border Style="{StaticResource KoumokuUnderBordrRight}" DockPanel.Dock="Left"></Border>
+              </DockPanel>
+              <DockPanel DockPanel.Dock="Top">
+                <Border Style="{StaticResource KoumokuUnderBordrLeft}" DockPanel.Dock="Left">
+                  <TextBlock Text="乗務員名" Style="{StaticResource KoumokuTitle}" />
+                </Border>
+                <Border Style="{StaticResource KoumokuUnderBordrRight}" DockPanel.Dock="Left"></Border>
+              </DockPanel>
+              <DockPanel DockPanel.Dock="Top">
+                <Border Style="{StaticResource KoumokuUnderBordrLeft}" DockPanel.Dock="Left">
+                  <TextBlock Text="携帯" Style="{StaticResource KoumokuTitle}" />
+                </Border>
+                <Border Style="{StaticResource KoumokuUnderBordrRight}" DockPanel.Dock="Left"></Border>
+              </DockPanel>
+              <DockPanel DockPanel.Dock="Top">
+                <Border Style="{StaticResource KoumokuUnderBordrLeft}" DockPanel.Dock="Left">
+                  <TextBlock Text="入場時間" Style="{StaticResource KoumokuTitle}" />
+                </Border>
+                <Border Style="{StaticResource KoumokuUnderBordrRight}" DockPanel.Dock="Left"></Border>
+              </DockPanel>
+            </DockPanel>
+          </Border>
+        </Grid>
+
+      </StackPanel>
+    
+      
+    </Grid>
+    
+  </Border>
+</UserControl>

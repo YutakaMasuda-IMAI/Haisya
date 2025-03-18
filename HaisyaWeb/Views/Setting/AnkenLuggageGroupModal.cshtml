@@ -1,0 +1,185 @@
+﻿@model SettingModel.AnkenLuggageGroupModalDto
+
+@{
+  Layout = "_LayoutForSettingModal";
+
+}
+
+<style>
+  /*  .float-left {
+    float: left;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }
+
+  .float-right {
+    float: right;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }*/
+
+  .readonly {
+    background-color: lightgray;
+  }
+</style>
+
+
+<div role="dialog" id="addRireki" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:750px;">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: gainsboro;">
+        <h1 class="modal-title fs-3" id="exampleModalLabel">@(Model.Title)</h1>
+        <button type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
+      </div>
+      <div class="model-body">
+        <form id="form1">
+          <div id="hidden" hidden>
+            @Html.HiddenFor(model => Model.BtnCaption)
+            @Html.HiddenFor(model => Model.Title)
+            @Html.HiddenFor(model => Model.GroupID)
+          </div>
+          <div class="contents-wrap-middle" style="margin: 10px;">
+            <h4 class="">注意</h4>
+            <span>
+              ・一度データを登録すると物理削除は出来ません。「非表示フラグ」を立ててください。
+            </span>
+          </div>
+          <table class="table table-striped-columns table-bordered border-primary" border="1" style="margin: 10px; width:96%;">
+            <thead>
+              <tr style="background-color: aquamarine;">
+                <th align="center" style="text-align: center;">項目名</th>
+                <th align="center" style="text-align: center;">値</th>
+                <th align="center" style="text-align: center;">例</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr hidden>
+                <th width="200px">会社ID</th>
+                <td width="200px">@Html.TextBoxFor(model => Model.LuggageGroup.Company_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px; padding: 0;" })</td>
+                <td width="400px"></td>
+              </tr>
+              <tr hidden>
+                <th width="200px">並び順</th>
+                <td width="400px">@Html.TextBoxFor(model => Model.LuggageGroup.SortOrder, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px; padding: 0;" })</td>
+                <td></td>
+              </tr>
+              <tr>
+                <th style="color: red;">項目名称</th>
+                <td>@Html.TextBoxFor(model => Model.LuggageGroup.Luggage_GroupName, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td>フル名称を登録</td>
+              </tr>
+
+              <tr>
+                <th>非表示フラグ</th>
+                <td class="">@Html.CheckBoxFor(model => Model.LuggageGroup.Del_Flg, new { @class = "form-control text-left form-check-input" })</td>
+                <td>オンにすると、登録時に選択不可。</td>
+              </tr>
+              <tr>
+                <th>最終更新日</th>
+                <td>@Convert.ToDateTime(Model.LuggageGroup.Update_Datetime).ToString("yyyy/MM/dd HH:mm:ss")</td>
+                <td hidden>@Html.TextBoxFor(model => Model.LuggageGroup.Update_Datetime, null, new { @class = "form-control text-end" })</td>
+              </tr>
+              <tr hidden>
+                <th></th>
+                <td class="">@Html.TextBoxFor(model => Model.LuggageGroup.Remarks, new { @class = "form-control" })</td>
+              </tr>
+              <tr hidden>
+                <th></th>
+                <td class="">@Html.TextBoxFor(model => Model.LuggageGroup.Insert_Datetime, new { @class = "form-control" })</td>
+              </tr>
+              <tr hidden>
+                <th></th>
+                <td class="">@Html.TextBoxFor(model => Model.LuggageGroup.Insert_User, new { @class = "form-control" })</td>
+              </tr>
+              <tr hidden>
+                <th></th>
+                <td class="">@Html.TextBoxFor(model => Model.LuggageGroup.Update_User, new { @class = "form-control" })</td>
+              </tr>
+              <tr hidden>
+                <th></th>
+                <td class="">@Html.TextBoxFor(model => Model.LuggageGroup.Luggage_Group_ID, new { @class = "form-control" })</td>
+              </tr>
+            </tbody>
+          </table>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+  $(function () {
+
+  });
+
+
+
+  function regExec() {
+
+    if (varidationCheck()) {
+      return false;
+    }
+
+    //Formの参照を取る
+    var $form = $('#form1');
+
+    //alert($form.serialize());
+
+    $.ajax({
+          url: '@Url.RouteUrl("Default", new { controller = "Setting", Action = "AnkenLuggageGroupRegExec" })',
+          type: 'post',
+          data: $form.serialize(),
+        }).done(function (response) {
+          if (response.errorMessage != null) {
+              alertError(`【エラー】${response.errorMessage}`);
+              return false;
+          } else {
+            closeModelAndRefresh();
+            return false;
+          }
+        }).fail(function (xhr) {
+          alert('【ネットワークエラー】:' + xhr);
+            console.log(xhr);
+            return false;
+        }).always(function (xhr, msg) {
+            console.log(xhr, msg);
+        });
+
+  }
+
+
+  /**
+   * */
+  function varidationCheck() {
+
+    if (!($('#LuggageGroup_Luggage_GroupName').val() != null && $('#LuggageGroup_Luggage_GroupName').val().length > 0)) {
+      alert("グループ名が入力されていません");
+      $('#LuggageGroup_Luggage_GroupName').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#LuggageGroup_Luggage_GroupName').css('background-color', 'white');
+    }
+
+    if ($('#LuggageGroup_SortOrder').val() == 0) {
+      if (varidationCheckForOverlap($('#LuggageGroup_Luggage_GroupName').val())) {
+        alert("入力のグループ名は既に登録されています");
+        $('#LuggageGroup_Luggage_GroupName').css('background-color', 'lightcoral');
+        return true;
+      } else {
+        $('#LuggageGroup_Luggage_GroupName').css('background-color', 'white');
+      }
+    }
+
+    return false;
+
+  };
+
+</script>

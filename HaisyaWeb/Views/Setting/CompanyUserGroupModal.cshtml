@@ -1,0 +1,254 @@
+﻿@model SettingModel.CompanyUserGroupModalDto
+
+@{
+  Layout = "_LayoutForSettingModal";
+
+}
+
+<style>
+  /*  .float-left {
+    float: left;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }
+
+  .float-right {
+    float: right;
+    padding: 0.5em 1em;
+    margin: 2em 0;
+    background: #f0f7ff;
+    border: dashed 2px #5b8bd0;
+  }*/
+
+  .readonly {
+    background-color: lightgray;
+  }
+</style>
+
+
+<div role="dialog" id="modal-option" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:800px;">
+    <div class="modal-content">
+      <div class="modal-header" style="background-color: gainsboro;">
+        <h1 class="modal-title fs-3" id="exampleModalLabel">@(Model.Title)</h1>
+        <button type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
+        <button type="button" class="btn btn-success align-items-end" style="float: right; width: 150px;" onclick="insertRow(); return false;">行追加</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
+      </div>
+      <div class="model-body">
+        <form id="form1">
+          <div id="hidden" hidden>
+            @Html.HiddenFor(model => Model.CompanyID)
+            @Html.HiddenFor(model => Model.BtnCaption)
+            @Html.HiddenFor(model => Model.Title)
+            @Html.HiddenFor(model => Model.GroupID)
+            @Html.HiddenFor(model => Model.GroupKubun)
+          </div>
+          <div class="contents-wrap-middle" style="margin: 10px;">
+            <h4 class="">注意</h4>
+            <span>
+              ・グループは一度データを登録すると物理削除は出来ません。「非表示フラグ」を立ててください。
+            </span>
+          </div>
+          <table class="table jbc-table table-hedder table-primary" style="border-collapse: collapse;" border="1">
+            <tbody style="padding: 0 0 0 5px !important;">
+              <tr style="vertical-align: middle;">
+                <td hidden>@Html.TextBoxFor(m => Model.CompanyUserGroupData.Group_ID, null, new { @class = "form-control", type = "" })</td>
+                <td hidden>@Html.TextBoxFor(m => Model.CompanyUserGroupData.Company_ID, null, new { @class = "form-control", type = "" })</td>
+                <td hidden>@Html.TextBoxFor(m => Model.CompanyUserGroupData.Group_Kubun, null, new { @class = "form-control", type = "" })</td>
+                <td hidden>@Html.TextBoxFor(m => Model.CompanyUserGroupData.SortOrder, null, new { @class = "form-control", type = "" })</td>
+                <td hidden>@Html.TextBoxFor(m => Model.CompanyUserGroupData.Remarks, null, new { @class = "form-control", type = "" })</td>
+                <th width="80px" style="padding-left: 5px;">グループ名</th>
+                <td>@Html.TextBoxFor(m => Model.CompanyUserGroupData.Group_Name, null, new { @class = "form-control", type = "" })</td>
+                <th width="65px">表示名</th>
+                <td>@Html.TextBoxFor(m => Model.CompanyUserGroupData.Display_Name, null, new { @class = "form-control", type = "" })</td>
+                <th width="65px">非表示</th>
+                <td class="">@Html.CheckBoxFor(model => Model.CompanyUserGroupData.Del_Flg, new { @class = "form-control text-left form-check-input" })</td>
+                <th width="80px">更新日時</th>
+                <td width="100px">@Convert.ToDateTime(Model.CompanyUserGroupData.UP_DATE).ToString("yyyy/MM/dd HH:mm:ss")</td>
+              </tr>
+            </tbody>
+          </table>
+          <table id="tableModal" width="100%" class="table table-setting table-bordered border-info table-striped" style="margin-top: 10px;">
+            <thead>
+              <tr align="center" style="background-color:aquamarine; vertical-align: middle;">
+                <th hidden>Group_ID</th>
+                <th>担当者</th>
+                <th>非表示</th>
+                <th>行削除</th>
+              </tr>
+            </thead>
+            <tbody>
+              @{
+                var CompanyUserGroupUserList = Model.CompanyUserGroupUserList.OrderBy(m => m.User_ID).ToList();
+                for (int i = 0; i < CompanyUserGroupUserList.Count; i++)
+                {
+                  <tr id="row-@(i)" style="vertical-align: middle;">
+                    <td align="center" width="100px" hidden>@Html.TextBoxFor(model => CompanyUserGroupUserList[i].Group_ID, "{0}", new { @readonly = "readonly", @class = "form-control text-end", @style = "" })</td>
+
+                    @if (Model.EditEnabled)
+                    {
+                      <td align="center">@Html.DropDownListFor(model => CompanyUserGroupUserList[i].User_ID, new SelectList(Model.CompanyUserList, "Value", "Text", false), "担当配車を選択", new { @class = "form-control", @style = "width: 100%" })</td>
+                      <td class="" align="center" width="80px">@Html.CheckBoxFor(model => CompanyUserGroupUserList[i].Del_Flg, new { @class = "form-control text-left form-check-input" })</td>
+                      <td style="vertical-align: middle;" align="center" width="100px"><input type="button" class="btn btn-warning" value="行削除" onclick="deleteRow(this)" /></td>
+                    }
+                    else
+                    {
+                      <td align="center">@Html.DropDownListFor(model => CompanyUserGroupUserList[i].User_ID, new SelectList(Model.CompanyUserList, "Value", "Text", false), "担当配車を選択", new { @readonly = true, @class = "form-control", @style = "width: 100%" })</td>
+                      <td align="center" width="80px">@Html.CheckBoxFor(model => CompanyUserGroupUserList[i].Del_Flg, new { @class = "form-control text-left form-check-input", @onclick = "return false;" })</td>
+                      <td width="100px"></td>
+                    }
+                  </tr>
+                }
+              }
+            </tbody>
+          </table>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+  $(function () {
+
+
+
+  });
+
+  /**
+   * 登録完了後に一覧の再描画
+   * */
+  function closeAndRefresh() {
+    location.reload();
+    alert("登録が完了しました。");
+  };
+
+  /**
+   * 登録処理
+   * */
+  function regExec() {
+
+    if (varidationCheck()) {
+      return false;
+    }
+
+    //Formの参照を取る
+    var $form = $('#form1');
+
+    //alert($form.serialize());
+
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "Setting", Action = "CompanyUserGroupRegExec" })',
+      type: 'post',
+      data: $form.serialize(),
+    }).done(function (response) {
+      if (response.errorMessage != null) {
+          alertError(`【エラー】${response.errorMessage}`);
+          return false;
+      } else {
+        closeAndRefresh();
+        return false;
+      }
+    }).fail(function (xhr) {
+      alert('【ネットワークエラー】:' + xhr);
+      console.log(xhr);
+      return false;
+    }).always(function (xhr, msg) {
+      console.log(xhr, msg);
+    });
+
+  }
+
+  /**
+ * 入力チェック
+ * */
+  function varidationCheck() {
+
+    var result = false;
+
+    var idRowKeyName = "row-"
+
+    $("#tableModal").find("[id^=" + idRowKeyName + "]").each(function () {
+      var row = $("[id^=" + idRowKeyName + "]").attr('id');
+      var rowId = row.substring(idRowKeyName.length, 99);
+
+      var User_ID = $('#CompanyUserGroupUserList_' + rowId + '__User_ID').val();
+
+      if (!(User_ID != null && User_ID.length > 0)) {
+        alert("担当者が未選択です。");
+        $('#CompanyUserGroupUserList_' + rowId + '__User_ID').css('background-color', 'lightcoral');
+        result = true;
+        return false;
+      } else {
+        $('#CompanyUserGroupUserList_' + rowId + '__User_ID').css('background-color', 'white');
+      }
+
+      if (checkData(rowId, User_ID)) {
+        alert("担当者が複数選択されています。");
+        $('#CompanyUserGroupUserList_' + rowId + '__User_ID').css('background-color', 'lightcoral');
+        result = true;
+        return false;
+      }
+
+    });
+
+    return false;
+
+  };
+
+  /**
+   * 重複チェック
+   * @@param m
+   * @@param paramUserID
+   */
+  function checkData(m, paramUserID) {
+    var result = false;
+    $("#tableModal").find("[id^=" + idRowKeyName + "]").each(function () {
+      var row = $("[id^=" + idRowKeyName + "]").attr('id');
+      var rowId = row.substring(idRowKeyName.length, 99);
+      if (rowId != m) {
+        var User_ID = $('#CompanyUserGroupUserList_' + rowId + '__User_ID').val();
+        if ((User_ID != null && User_ID.length > 0)) {
+          if (User_ID == paramUserID) {
+            result = true;
+            return false;
+          }
+        }
+      }
+    });
+    return result;
+  }
+
+  /**
+   * 行追加
+   * */
+  function insertRow() {
+
+    var newNo = CommonTableInsertRow("row-", "CompanyUserGroupUserList", "tableModal");
+
+    if (newNo > 0) {
+      $("#CompanyUserGroupUserList_" + newNo + "__Group_ID").val($("#GroupID").val());
+      $("#CompanyUserGroupUserList_" + newNo + "__Del_Flg").val(0);
+      $("#CompanyUserGroupUserList_" + newNo + "__User_ID").val('');
+    }
+
+  };
+
+
+  /**
+   * 行削除
+   */
+  function deleteRow(obj) {
+    // 削除ボタンを押下された行を取得
+    tr = obj.parentNode.parentNode;
+    if (tr.sectionRowIndex > 0) {
+      // trのインデックスを取得して行を削除する
+      tr.parentNode.deleteRow(tr.sectionRowIndex);
+    }
+  };
+</script>

@@ -1,0 +1,190 @@
+﻿@model ExpenseModel.DataListModel
+
+@{
+  Layout = "_Layout";
+  ViewData["Title"] = "仕入れ・支払一覧";
+}
+
+<head>
+  <link href="~/css/List.css" rel="stylesheet" />
+</head>
+
+<div id="hedder" class="row" style="margin-bottom: -20px;">
+  <h6 class="heading-pagetitle">経費一覧</h6>
+  <form method="post" id="form-filter" style="padding: 0; margin: 0px;">
+  <div id="hiddenItem" hidden>
+    @Html.HiddenFor(model => Model.Search.CompanyID)
+    @Html.HiddenFor(model => Model.SortParam.SortOrder)
+    @Html.HiddenFor(model => Model.SortParam.SortItemParam)
+  </div>
+  <div class="form-group" style="width: 100%;padding:0px;">
+    <div class="row" style="width:100%;">
+      <table class="table jbc-table table-hedder" style="padding: 0; border-collapse: collapse; width: 100%; margin-left: 12px;">
+        <tbody>
+        <tr>
+          <th width="450px">
+            <div class="search-div" style="width: 400px;">
+              <label class="search-label">@Html.LabelFor(m => m.Search.Expense_category, htmlAttributes: new { @class = "label search-label2 required", @style = "color: #ff00dc; margin-left: 5px;" })</label>
+              <label class="radio-label">@Html.RadioButtonFor(m => m.Search.Expense_category, 2, htmlAttributes: new { @checked = Model.Search.Expense_category == 2 ? "checked" : "" }) <strong>車輌</strong></label>
+              <label class="radio-label">@Html.RadioButtonFor(m => m.Search.Expense_category, 1, htmlAttributes: new { @checked = Model.Search.Expense_category == 1 ? "checked" : "", @style = "margin: 0, 5px;" }) <strong>乗務員</strong></label>
+              <label class="radio-label">@Html.RadioButtonFor(m => m.Search.Expense_category, 3, htmlAttributes: new { @checked = Model.Search.Expense_category == 3 ? "checked" : "", @style = "margin: 0, 5px;" }) <strong>事故</strong></label>
+            </div>
+          </th>
+          <th width="300px">
+            @Html.LabelFor(m => m.Search.Vehicle_number, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "width:100px;" })
+            @Html.TextBoxFor(m => m.Search.Vehicle_number, htmlAttributes: new { @id = "vehicle_number", @type = "text", @class = "form-control search-text", @style = "width: 100px; display: inline-block;" })
+            @Html.ValidationMessageFor(m => m.Search.Vehicle_number)
+          </th>
+          <th width="400px">
+            @Html.LabelFor(m => m.Search.Driver_code, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "width:100px;" })
+            @Html.TextBoxFor(m => m.Search.Driver_code, htmlAttributes: new { @type = "text", @onchange = "Search();", @class = "form-control search-text", @style = "width: 200px; display: inline-block;" })
+          </th>
+          <th></th>
+        </tr>
+        <tr>
+          <th>
+            @Html.LabelFor(m => m.Search.Driver_name, htmlAttributes: new { @class = "label search-label2", @style = "" })
+            @Html.TextBoxFor(m => m.Search.Driver_name, htmlAttributes: new { @onchange = "Search();", @class = "form-control search-text", @style = "width: 175px; display: inline-block;" })
+          </th>
+          <th>
+            <div style="display: none; border-bottom: none;" id="filter-by-year">
+              @Html.LabelFor(m => m.Search.Accident_year, htmlAttributes: new { @class = "label search-label2 required", @style = "" })
+              @Html.DropDownListFor(m => m.Search.Accident_year, new SelectList(Model.Search.YearSelectList, "Value", "Text"), new { @onchange = "Search();", @class = "form-control search-select", @style = "width: 100px;display: inline-block;" })
+            </div>
+          </th>
+          <th id="filter-by-year-bummy"></th>
+          <th></th>
+        </tr>
+        <tr>
+          <th colspan="4" align="right" style="text-align:right;padding:5px 0 5px 0;">
+            <input type="button" id="create-vehicle-expense" value="車輌経費新規登録" class="btn btn-primary align-items-end" onclick="openEditView(2); return false;" />
+            <input type="button" id="create-employee-expense" disabled value="乗務員経費新規登録" class="btn btn-primary align-items-end" onclick="openEditView(1); return false;" />
+            <input type="button" id="create-accident-expense" disabled value="事故経費新規登録" class="btn btn-primary align-items-end" onclick="openEditView(3); return false;" />
+          </th>
+        </tr>
+      </tbody>
+      </table>
+    </div>
+    <div id="expense-data-list" class="data-list" style="width:100%;margin:0;">
+      @await Html.PartialAsync("_DataList.cshtml", Model)
+    </div>
+  </div>
+  </form>
+</div>
+
+
+@section Scripts {
+<script>
+  $(function () {
+    SetupUI('@Model.Search.Expense_category');
+
+    $('input:radio').on('change', function () {
+      SetupUI($(this).val());
+      Search();
+    });
+
+    $('#vehicle_number').on('change', function () {
+      var num = $('#vehicle_number').val();
+      if (num == '' || (num > 999 && num < 10000)) {
+        Search();
+      } else {
+        $('#expense-data-list').html($('#data-not-found').html());
+      }
+    });
+    Search();
+  });
+
+  function SetupUI(v) {
+    $('#create-vehicle-expense').prop('disabled', true);
+    $('#create-employee-expense').prop('disabled', true);
+    $('#create-accident-expense').prop('disabled', true);
+    $('#filter-by-year').prop('style', 'display:none');
+    $('#filter-by-year-bummy').prop('style', 'display:table-cell');
+    switch (v) {
+      case '2':
+        $('#create-vehicle-expense').prop('disabled', false);
+        break;
+      case '1':
+        $('#create-employee-expense').prop('disabled', false);
+        break;
+      case '3':
+        $('#create-accident-expense').prop('disabled', false);
+        $('#filter-by-year').prop('style', '');
+        $('#filter-by-year-bummy').prop('style', 'display:none');
+        $('#Search_Accident_year').val(0);
+        break;
+      default:
+        break;
+    }
+  }
+
+  function Search() {
+    $.ajax({
+      type: 'POST',
+      data: $('#form-filter').serialize(),
+      url: '@Url.RouteUrl("Default", new { controller = "Expense", action = "Search" })',
+      success: function (result) {
+        $('#expense-data-list').html(result.partialView);
+      },
+    });
+  }
+
+  // ①T_Expense．Expense_IDが渡された場合
+  //→該当する情報を取得して表示
+  //②T_Expense．Expense_ID＝Null、
+  //Expense_Kubun＝1：乗務員
+  //or　2：車輌
+  //or　3：事故　が渡された場合
+  function openEditView(expenseKubun, expenseId = 0) {
+    $.post(
+      '@Url.RouteUrl("Default", new { controller = "PurchasePaymentRegistration", Action = "GetTExpenseItemByKubun" })',
+      {
+        expenseKubun: expenseKubun,
+      },
+    )
+      .done(function (response) {
+        if (response.message != null) {
+          alertError(`【エラー】${response.message}`);
+          return false;
+        } else {
+          if (response.length == 0) {
+            alert('指定された経費区分に該当する経費アイテムがないため、新規登録できません。');
+          } else if (response.length != 0) {
+            var searchData = {
+              Expense_kubun: expenseKubun,
+              Expense_id: expenseId,
+              Vehicle_number: $('#vehicle_number').val(),
+              Driver_code: $('#Search_Driver_code').val(),
+              Driver_name: $('#Search_Driver_name').val(),
+              Accident_year: $('#Search_Accident_year').val(),
+            };
+            var searchJson = JSON.stringify(searchData);
+            var form = document.createElement('form');
+            form.action =
+              '@Url.RouteUrl("Default", new { controller = "PurchasePaymentRegistration", Action = "Index" })';
+            form.method = 'POST';
+
+            form.innerHTML +=
+              '<input type="hidden" id="jsondata" name="jsondata" value=\'' + searchJson + "' />";
+
+            document.body.appendChild(form);
+            form.submit();
+            return;
+          }
+        }
+      })
+      .fail(function (xhr) {
+        alertError('fail:' + xhr);
+        console.log(xhr);
+        return false;
+      })
+      .always(function (xhr, msg) {});
+  }
+</script>
+
+<script id="data-not-found" type="text/html">
+  <div class="no-data-row">
+    <h4 class="no-data-row-text">データ無し</h4>
+  </div>
+</script>
+}

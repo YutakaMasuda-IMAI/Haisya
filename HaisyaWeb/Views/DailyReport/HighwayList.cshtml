@@ -1,0 +1,112 @@
+@model DailyReportModel.DailyReportRegistrationDetailModel
+
+  <table class="table table-HaisyaWeb">
+    <thead class="table-active">
+      <tr>
+        <th style="width:200px;">開始日時</th>
+        <th style="width:300px;">開始道路名</th>
+        <th>開始IC名</th>
+        <th style="width:150px;">精算区分名</th>
+        <th style="width:120px;">料金</th>
+        <th style="width:120px;" rowspan="2">負担選択</th>
+        <th style="width:60px;" rowspan="2">保存</th>
+      </tr>
+      <tr>
+        <th>終了日時</th>
+        <th>終了道路名</th>
+        <th>終了IC名</th>
+        <th>読取NO</th>
+        <th>走行距離</th>
+      </tr>
+    </thead>
+    <tbody id="highwayDataTable" style="display: none;">
+      @{
+        var index = 0;
+      }
+      @if (Model.NippouTollDegitako != null && Model.NippouTollDegitako.Any())
+      {
+        foreach (var item in Model.NippouTollDegitako)
+        {
+          <tr data-index="@index" style="border-bottom: 0.05em dashed #cfcfcf;">
+            <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;text-align:center;">@Html.DisplayFor(modelItem => item.開始日時)</td>
+            <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;">@Html.DisplayFor(modelItem => item.開始道路名)</td>
+            <td hidden><input type="hidden" id="start-ic" value="@item.開始IC名" /></td>
+            <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;">@Html.DisplayFor(modelItem => item.開始IC名)</td>
+            <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer; text-align: center;">@Html.DisplayFor(modelItem => item.精算区分名)</td>
+            <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer; text-align: right;">@string.Format("{0:N0}", item.料金)円</td>
+            <td rowspan="2" style="align-content: center; text-align: center; border-bottom: 1px solid #000000; padding: 0;">
+              @Html.DropDownListFor(
+                  m => item.Futan_Kubun,
+                  new SelectList(Model.FutanKubunList, "Value", "Text"),
+                     new { @class = "form-control list text-center", @id = "entry" }
+              )
+            </td>
+            <td rowspan="2" style="align-content: center; text-align: center; border-bottom: 1px solid #000000; padding: 0; "><button class="highway-button" onClick="saveHighwayDataFutanKubunChange(@index)">保存</button></td>
+          </tr>
+          <tr data-index="@index" onclick="HighwayDataModal(this, @index);" >
+            <td style="cursor: pointer; text-align: center;">@Html.DisplayFor(modelItem => item.終了日時)</td>
+            <td style="cursor: pointer;">@Html.DisplayFor(modelItem => item.終了道路名)</td>
+            <td hidden><input type="hidden" id="end-ic" value="@item.終了IC名" /></td>
+            <td style="cursor: pointer;">@Html.DisplayFor(modelItem => item.終了IC名)</td>
+            <td style="cursor: pointer; text-align: center;">@Html.DisplayFor(modelItem => item.読取NO)</td>
+            <td style="cursor: pointer; text-align: right;">@Html.DisplayFor(modelItem => item.走行距離)km</td>
+          </tr>
+          index++;
+        }
+      }
+
+    </tbody>
+    <tbody id="nippouTollTable" style="display: none;">
+      @{
+        index = 0;
+      }
+      @if (Model.NippouToll != null && Model.NippouToll.Any())
+      {
+        @foreach (var item in Model.NippouToll)
+        {
+          <tr data-index="@index" style="border-bottom: 0.05em dashed #cfcfcf;">
+            <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer; text-align: center;">@Html.DisplayFor(modelItem => item.開始日時)</td>
+            <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;">@Html.DisplayFor(modelItem => item.開始道路名)</td>
+            <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;">@Html.DisplayFor(modelItem => item.開始IC名)</td>
+            <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;"></td>
+            <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer; text-align: right;">@String.Format("{0:N0}", item.料金)円</td>
+            <td rowspan="2">
+              @Html.DropDownListFor(
+                  m => item.Futan_Kubun,
+                  new SelectList(Model.FutanKubunList, "Value", "Text"),
+                  new { @class = "form-control list text-center", @id = "entry", onchange = $"onNippouTollFutanKubunChange(this, {index})" }
+              )
+            </td>
+            <td rowspan="2"><button class="highway-button" onClick="saveNippouTollDataChange(@index)">保存</button></td>
+          </tr>
+          <tr data-index="@index">
+            <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer; text-align: center;">@Html.DisplayFor(modelItem => item.終了日時)</td>
+            <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;">@Html.DisplayFor(modelItem => item.終了道路名)</td>
+            <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;">@Html.DisplayFor(modelItem => item.終了IC名)</td>
+            <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;"></td>
+            <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer; text-align: right;">@Html.DisplayFor(modelItem => item.走行距離)km</td>
+          </tr>
+          index++;
+        }
+      }
+    </tbody>
+  </table>
+<script>
+  $(document).ready(function() {
+    $('#digitalTachograph, #manualEntry').change(updateTableVisibility);
+    updateTableVisibility();
+  });
+
+  function updateTableVisibility() {
+    var isManualEntry = $('#manualEntry').is(':checked') || @(Model.HaisyaDataList.Haisya_Kubun == 2 ? "true" : "false");
+    var isDigitalTachograph = $('#digitalTachograph').is(':checked') && @(Model.HaisyaDataList.Haisya_Kubun != 2 ? "true" : "false");
+
+    if (isManualEntry) {
+      $('#highwayDataTable').hide();
+      $('#nippouTollTable').show();
+    } else if (isDigitalTachograph) {
+      $('#nippouTollTable').hide();
+      $('#highwayDataTable').show();
+    }
+  }
+</script>

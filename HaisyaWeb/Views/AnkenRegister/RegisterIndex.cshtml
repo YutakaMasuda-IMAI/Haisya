@@ -1,0 +1,2161 @@
+﻿@model AnkenModel.AnkenRegisterModel
+
+@{
+  Layout = "_Layout";
+  ViewData["Title"] = "案件登録";
+}
+
+
+<meta charset="UTF-8">
+<link href="~/css/Anken.css" rel="stylesheet" />
+
+<style>
+  body {
+    margin: 0;
+    padding: 0;
+  }
+
+  #ZMap {
+    position: absolute;
+    top: 20px;
+    bottom: 0;
+    width: 100%;
+  }
+
+  .row > * {
+    padding-right: 0.2rem;
+    padding-left: 0.2rem;
+  }
+
+  .row {
+    margin-left: 0;
+    padding: 0;
+    margin: 0;
+  }
+
+  .abc label,
+  .abc input {
+    font-size: 12px !important;
+  }
+</style>
+
+<!-- ローダーのURLをscriptでロードする -->
+<!-- ログイン認証の場合 -->
+<script src="@(Model.MapsApiForJSUrl)"></script>
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmMain", @class = "contact-form", @style = "padding: 0;", @onsubmit = "return false;" }))
+{
+  @Html.AntiForgeryToken()
+<div hidden>
+
+  @Html.HiddenFor(model => model.SelectDay)
+
+  @Html.HiddenFor(model => model.SelectTantou)
+  @Html.HiddenFor(model => model.SelectSyasyu)
+  @Html.HiddenFor(model => model.SelectKata)
+  @Html.HiddenFor(model => model.SelectGroup)
+  @Html.HiddenFor(model => model.SelectMonth)
+
+  @*@Html.TextBoxFor(model => model.BackMenu)*@
+  @Html.HiddenFor(model => model.SenzokuID)
+  @Html.HiddenFor(model => model.SenzokuDriverID)
+
+  <input type="text" id="AnkenID_Before" name="AnkenID_Before" value="@(Model.Anken_ID)" />
+  @Html.TextBoxFor(model => model.Anken_ID)
+
+  @Html.TextBoxFor(model => model.UserID)
+
+  @Html.TextBoxFor(model => model.Anken_Latest_Order)
+  @Html.TextBoxFor(model => model.Company_ID)
+  @Html.TextBoxFor(model => model.Branch_ID)
+
+  @Html.TextBoxFor(model => model.ExecType)
+  @Html.TextBoxFor(model => model.Syasyu)
+  @Html.TextBoxFor(model => model.SyasyuSize)
+  @Html.TextBoxFor(model => model.Kata)
+  @Html.TextBoxFor(model => model.Width)
+  @Html.TextBoxFor(model => model.Weight)
+
+  @Html.TextBoxFor(model => model.TollKubun)
+  @Html.TextBoxFor(model => model.SeikyuKubun)
+  @Html.TextBoxFor(model => model.AnkenStatus)
+  @Html.TextBoxFor(model => model.SelectPointTab)
+  @Html.TextBoxFor(model => model.NumberCommLimitKubun)
+  @Html.TextBoxFor(model => model.WebViewFlg)
+  @Html.TextBoxFor(model => model.HaisyaPlanKubun)
+  @Html.TextBoxFor(model => model.Anken_Kubun)
+  @Html.TextBoxFor(model => model.SyasyuDisplay)
+  @Html.TextBoxFor(model => Model.RegKubun)
+  @Html.TextBoxFor(model => Model.Anken_ID_KakoSelect)
+  
+  <input hidden id="SetAddressItem" />
+</div>
+
+  <div>
+    <div role="document">
+      <div class="">
+        <div id="divJisya">
+          <div id="divDetaiHeader" class="modal-header" style="width: 100%;">
+            <table class="ex_TableBackgroundNone" width="100%" height="100%">
+              @{
+                if (Model.Title != null && Model.Title.Length > 0)
+                {
+                  <tr>
+                    <th colspan="4">
+                      <h5 style="color:mediumblue">@(Model.Title)</h5>
+                    </th>
+
+                  </tr>
+                }
+              }
+            <tr>
+              <td width="20%">
+                <h3 id="labelTitle" class="heading-40">@(Model.Anken_ID > 0 ? "案件変更登録" : "案件新規登録")</h3>
+              </td>
+              <td width="30%" style="padding: 0 20px;">
+                <div style="display: inline-flex; height: 100%; width: 100%; padding: 0;">
+                  <input type="text" name="dummy" style="display:none;">
+                  @if (Model.Anken_ID > 0)
+                  {
+                    <button id="btnAnkenCopy" class="btn btn-outline-info" style="margin: 5px 0 5px 0; width: 38%; margin-left: 5px;" onclick="BtnAnkenCopyOnClick(); return false;">コピー</button>
+                  }
+                  else
+                  {
+                    <button id="btnSerchKakoAnken" class="btn btn-outline-dark" style="margin: 5px 0 5px 0; width: 60%; " onclick="btnSelectKakoAnkenDisplayOnClick(); return false;">過去案件検索機能</button>
+                  }
+                  <div id="boxEmailSettings"></div>
+                </div>
+              </td>
+              <td width="40%" style="padding: 0 20px;">
+                <div style="display: inline-flex; height: 100%; width: 100%; padding: 0;">
+                  @if (Model.Anken_ID > 0)
+                  {
+                    <button id="btnRegExec" name="btnRegExec" value="Update" class="btn btn-outline-danger" style="margin: 5px 0 5px 0; width: 30%;" onclick="btnRegExecOnclick('Update'); return false;">更新</button>
+                    <button id="btnRegExec" name="btnRegExec" value="AddNew" class="btn btn-outline-primary" style="margin: 5px 0 5px 0; width: 30%; margin-left: 5px;" onclick="btnRegExecOnclick('AddNew'); return false;">履歴登録</button>
+                    <button id="btnAnkneRireki" name="btnRegExec" class="btn btn-outline-success" style="margin: 5px 0 5px 0; width: 30%; margin-left: 5px;" onclick="btnShowAnkenRirekiOnclick(); return false;">変更履歴</button>
+                  }
+                  else
+                  {
+                    <button id="btnRegExec" name="btnRegExec" value="AddNew" class="btn btn-outline-success" style=" margin: 5px 0 5px 0; width: 80%;" onclick="btnRegExecOnclick('AddNew'); return false;">登録</button>
+                  }
+                </div>
+              </td>
+              <td width="10%" style="">
+                <div style="display: inline-flex; height: 100%; width: 100%; padding: 0;">
+                  <button name="btnClose" value="Close" class="btn btn-outline-warning" style="margin: 5px 0 5px -10px; width: 100%;" onclick="btnCloseOnClick(); return false;">閉じる</button>
+                </div>
+              </td>
+            </tr>
+            </table>
+          </div>
+          <div id="divDetail" class="model-body">
+            <div class="row">
+              <div id="div-body-main" class="col-sm-10" style="padding:0;">
+                <div class="row">
+                  <div id="div-body-left" class="col-sm-6 border">
+                    <div class="item">
+                      @Html.LabelFor(model => model.Anken_No, htmlAttributes: new { @class = "label required", @style = "" })
+                      <div class="" style="display: flex;">
+                        @Html.TextBoxFor(model => model.Anken_No, null, new { @readonly = "readonly", @class = "control-label align-self-center align-middle text-end", @style = "border: none; text-align-last: start;width: 200px;" })
+                        @Html.HiddenFor(model => model.BackMenuAction, new { @style = "width:50px;padding:0;" })
+                        @Html.HiddenFor(model => model.BackMenuAction2, new { @style = "width:50px;padding:0;" })
+
+                      </div>
+                    </div>
+                    <div class="item">
+                      @Html.LabelFor(model => model.WorkName, htmlAttributes: new { @class = "label", @style = "" })
+                      @Html.TextBoxFor(model => model.WorkName, null, new { @class = "form-control", @style = "ime-mode: active; width: calc(100% - (130px));" })
+                    </div>
+                    <div class="item">
+                      <label class="label required" style="">案件状況</label>
+                      <div class="radio-group" style="">
+                        <input type="radio" class="btn-check" name="num_of_AnkenStatus" id="optAnkenStatus0" value="0" style=""><label class="btn btn-outline-secondary" for="optAnkenStatus0">確定</label>
+                        <input type="radio" class="btn-check" name="num_of_AnkenStatus" id="optAnkenStatus1" value="1" style="margin-left: 1em;"><label class="btn btn-outline-secondary" for="optAnkenStatus1">暫定(配車必要)</label>
+                        <input type="radio" class="btn-check" name="num_of_AnkenStatus" id="optAnkenStatus2" value="2" style="margin-left: 1em;"><label class="btn btn-outline-secondary" for="optAnkenStatus2">暫定(配車不要)</label>
+                      </div>
+                    </div>
+                    <div class="item">
+                      <label class="label required " for="KokyakuId" style="">@Html.LabelFor(model => model.KokyakuId)<span class="kakoSerch"></span></label>
+                      @if (Model.SenzokuID == 0)
+                      {
+                        <button id="btnKokyaku" class="btn btn-anken select-button" style="" onclick="return false;">選択</button>
+                      }
+                      @Html.TextBoxFor(model => model.KokyakuCode, null, new { @readonly = "readonly", @class = "form-control input-anken", @style = "width:120px; text-align: center;" })
+                      @Html.TextBoxFor(model => model.KokyakuName, null, new { @readonly = "readonly", @class = "form-control input-anken", @style = "width: calc(100% - 340px);" })
+                      @Html.TextBoxFor(model => model.KokyakuId, null, new { @hidden = "true", @class = "form-control input-anken search", @style = "width: auto;" })
+                    </div>
+                    <div class="item">
+                      @Html.LabelFor(model => model.KokyakuTantouId, htmlAttributes: new { @class = "label required", @style = "" })
+                      @if (Model.SenzokuID == 0)
+                      {
+                        <button id="btnKokyakuTantou" class="btn btn-anken select-button" style="" onclick="return false;">選択</button>
+                      }
+                      @Html.TextBoxFor(model => model.KokyakuTantouName, null, new { @readonly = "readonly", @class = "form-control input-anken", @style = "width: calc(100% - 230px);" })
+                      @*@Html.TextBoxFor(model => model.KokyakuTantouPhone, null, new { @readonly = "readonly", @class = "form-control input-anken", @style = "width: 180px;;" })*@
+                      @Html.TextBoxFor(model => model.KokyakuTantouId, null, new { @hidden = "true", @class = "form-control input-anken search", @style = "width: auto;" })
+                    </div>
+                    <div class="item">
+                      <label class="label required " for="SyasyuID" style="">@Html.LabelFor(model => model.SyasyuID)<span class="kakoSerch"></span></label>
+                      <div class="" style="display: inline-flex;">
+                        <div class="" style="padding: 0; min-width: 250px;">
+                          @Html.DropDownListFor(model => model.SyasyuID, new SelectList(Model.SyasyuSelectList, "Value", "Text", "Selected"), "車種を選択", new { @class = "form-control list dropDownList search", @style = "" })
+                          @Html.ValidationMessageFor(model => model.SyasyuID, "", new { id = "SelectSyasyu", @class = "text-danger align-middle" })
+                        </div>
+                        <div class="">
+                          @Html.LabelFor(model => model.Daisuu, htmlAttributes: new { @class = "label text-end", @style = "width: auto;" })
+                          @Html.DropDownListFor(model => model.Daisuu, new SelectList(Model.DaisuuSelectList, "Value", "Text", "Selected"), "台数", new { @class = "form-control list dropDownList text-center", @style = "" })
+                          @Html.ValidationMessageFor(model => model.Daisuu, "", new { id = "SelectDaisuu", @class = "text-danger align-middle" })
+                        </div>
+                      </div>
+                    </div>
+                    <div class="item">
+                      <div class="row">
+                        <div class="col-6" style="padding: 0; white-space: nowrap">
+                          @Html.LabelFor(model => model.TantouID, htmlAttributes: new { @class = "label required", @style = "" })
+                          @Html.DropDownListFor(model => model.TantouID, new SelectList(Model.TantouSelectList, "Value", "Text", "Selected"), "配車担当を選択", new { @class = "form-control list dropDownList", @style = "" })
+                          @Html.ValidationMessageFor(model => model.TantouID, "", new { id = "SelectTantou", @class = "text-danger align-middle" })
+                        </div>
+                        <div class="col-5" style="padding: 0; white-space: nowrap">
+                          @Html.LabelFor(model => model.EigyoID, htmlAttributes: new { @class = "label", @style = "text-align: end; width: 70px; min-width: 0px;" })
+                          @Html.DropDownListFor(model => model.EigyoID, new SelectList(Model.EigyoSelectList, "Value", "Text", "Selected"), "営業担当を選択", new { @class = "form-control list dropDownList", @style = "" })
+                          @Html.ValidationMessageFor(model => model.EigyoID, "", new { id = "SelectTantou", @class = "text-danger align-middle" })
+                        </div>
+                      </div>
+                    </div>
+                    <div class="item">
+                      <label class="label required" style="">配車予定</label>
+                      <div class="radio-group" style="">
+                        <input type="radio" class="btn-check" name="num_of_NumberHaisyaPlanKubun" id="optHaisyaPlanKubun0" value="0"><label class="btn btn-outline-warning" for="optHaisyaPlanKubun0">未定</label>
+                        <input type="radio" class="btn-check" name="num_of_NumberHaisyaPlanKubun" id="optHaisyaPlanKubun1" value="1"><label class="btn btn-outline-warning" for="optHaisyaPlanKubun1">自車</label>
+                        <input type="radio" class="btn-check" name="num_of_NumberHaisyaPlanKubun" id="optHaisyaPlanKubun2" value="2"><label class="btn btn-outline-warning" for="optHaisyaPlanKubun2">傭車</label>
+                        @*<input type="radio" class="btn-check" name="num_of_NumberHaisyaPlanKubun" id="optHaisyaPlanKubun3" value="3"><label class="btn btn-outline-warning" for="optHaisyaPlanKubun3">専属庸車</label>*@
+                        <input type="radio" class="btn-check" name="num_of_NumberHaisyaPlanKubun" id="optHaisyaPlanKubun4" value="4"><label class="btn btn-outline-warning" for="optHaisyaPlanKubun4">専属</label>
+                        <input type="radio" class="btn-check" name="num_of_NumberHaisyaPlanKubun" id="optHaisyaPlanKubun5" value="5"><label class="btn btn-outline-warning" for="optHaisyaPlanKubun5">自車専任</label>
+                      </div>
+                      </div>
+                    <div class="item" id="HaisyaPlanKubun_SelectDriver">
+                      <label class="label required" style="">専任乗務員</label>
+                      <div class="row" style="display: block;">
+                        <button id="btnKokyaku" class="btn btn-anken select-button" style="" onclick="SelectCompanyDriverOnClick(); return false;">選択</button>
+                        @Html.TextBoxFor(model => model.HaisyaDriverDisplay, null, new { @readonly = "readonly", @class = "form-control input-anken", @style = "width: calc(100% - 230px);" })
+                        @Html.TextBoxFor(model => model.HaisyaDriverId, null, new { @hidden = "true", @class = "form-control input-anken search", @style = "width: auto;" })
+                        @Html.TextBoxFor(model => model.HaisyaDriverSyaryoId, null, new { @hidden = "true", @class = "form-control input-anken search", @style = "width: auto;" })
+                      </div>
+
+                    </div>
+                    <div class="item" hidden>
+                      @if (Model.SenzokuID == 0)
+                      {
+                        @Html.LabelFor(model => model.PublishGroup, htmlAttributes: new { @class = "label", @style = "" })
+                        @Html.DropDownListFor(model => model.PublishGroup, new SelectList(Model.PublishGroupSelectList, "Value", "Text", "Selected"), "公開グループを選択", new { @class = "form-control list dropDownList", @style = "" })
+                        @Html.ValidationMessageFor(model => model.PublishGroup, "", new { id = "SelectPublishGroup", @class = "text-danger align-middle" })
+                      }
+                    </div>
+                    <div class="item">
+                      @Html.LabelFor(model => model.NumberCommLimitKubun, htmlAttributes: new { @class = "label", @style = "" })
+                      <div class="row">
+                        <div class="" style="padding: 0; min-width: 180px;width: auto;">
+                          <div class="radio-group" style="">
+                            <input type="radio" class="btn-check" name="num_of_NumberCommLimitKubun" id="optCommLimitKubun0" value="0"><label class="btn btn-outline-primary" for="optCommLimitKubun0">要</label>
+                            <input type="radio" class="btn-check" name="num_of_NumberCommLimitKubun" id="optCommLimitKubun1" value="1"><label class="btn btn-outline-primary" for="optCommLimitKubun1">不要</label>
+                          </div>
+                        </div>
+                        <div class="" id="tdNumberCommLimitDateTimeLavel" style="width: auto;">
+                          <label class="control-label align-self-center align-middle text-end" style="margin: 0; padding: 0; line-height: 15px;">希望<br />期日</label>
+                          @*@Html.LabelFor(model => model.NumberCommLimitDateTime, htmlAttributes: new { @class = "label text-end", @style = "width: auto;" })*@
+                          @Html.EditorFor(model => model.NumberCommLimitDateTime, null, null, new { htmlAttributes = new { @Class = "form-control txt-time", @Style = "width: 230px;" }, })
+                        </div>
+                      </div>
+                    </div>
+                    <div class="item">
+                      <label class="label" style="">荷待ち時間</label>
+                      <div class="row" style="">
+                        <div class="col-sm-6" style="padding: 0; white-space: nowrap">
+                          <label class="control-label align-self-center align-middle text-end" style="margin: 0; padding: 0; line-height: 15px;">積み<br />時間</label>
+                          @Html.TextBoxFor(model => model.TsumiTaskTime, null, new { @readonly = "readonly", @class = "form-control txt-time", @style = "width: 80px;" })
+                          <button name="TsumiTaskTimeP" value="tsumi" class="btn btnCircle" style="width: 15%; max-width:45px; vertical-align: baseline;" onclick="return false;">+</button>
+                          <button name="TsumiTaskTimeM" value="tsumi" class="btn btnCircle" style="width: 15%; max-width: 45px; vertical-align: baseline; " onclick="return false;">-</button>
+                        </div>
+                        <div class="col-sm-6" style="padding: 0; white-space: nowrap">
+                          <label class="control-label align-self-center align-middle text-end" style="margin: 0; padding: 0; line-height: 15px;">卸し<br />時間</label>
+                          @Html.TextBoxFor(model => model.OroshiTaskTime, null, new { @readonly = "readonly", @class = "form-control txt-time", @style = "width: 80px;" })
+                          <button name="TsumiTaskTimeP" value="oroshi" class="btn btnCircle" style="width: 15%; max-width: 45px; vertical-align: baseline; " onclick="return false;">+</button>
+                          <button name="TsumiTaskTimeM" value="oroshi" class="btn btnCircle" style="width: 15%; max-width: 45px; vertical-align: baseline; " onclick="return false;">-</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="item">
+                      <label class="label required" style="">走行条件</label>
+                      <div class="row" style="white-space: nowrap">
+                        <div class="col-4" style="padding: 0;">
+                          @Html.LabelFor(model => model.Ferry, htmlAttributes: new { @class = "label", @style = "font-size: 12px; padding: 0;" })<br />
+                          @Html.DropDownListFor(model => model.Ferry, new SelectList(Model.FerrySelectList, "Value", "Text", "Selected"), new { @class = "form-control list dropDownList", @style = "" })
+                          @Html.ValidationMessageFor(model => model.Ferry, "", new { id = "SelectFerry", @class = "text-danger align-middle" })
+                        </div>
+                        <div class="col-4" style="padding: 0;">
+                          @Html.LabelFor(model => model.TimeRestriction, htmlAttributes: new { @class = "label", @style = "font-size: 12px; padding: 0;" })<br />
+                          @Html.DropDownListFor(model => model.TimeRestriction, new SelectList(Model.TimeRestrictionSelectList, "Value", "Text", "Selected"), new { @class = "form-control list dropDownList", @style = "" })
+                          @Html.ValidationMessageFor(model => model.TimeRestriction, "", new { id = "SelectRegulation", @class = "text-danger align-middle" })
+                        </div>
+                        <div class="col-4" style="padding: 0;">
+                          @Html.LabelFor(model => model.Twouturn, htmlAttributes: new { @class = "label", @style = "font-size: 12px; padding: 0;" })<br />
+                          @Html.DropDownListFor(model => model.Twouturn, new SelectList(Model.TwouturnSelectList, "Value", "Text", "Selected"), new { @class = "form-control list dropDownList", @style = "" })
+                          @Html.ValidationMessageFor(model => model.Twouturn, "", new { id = "SelectTwouturn", @class = "text-danger align-middle" })
+                        </div>
+                      </div>
+                    </div>
+                    <div class="item">
+                      <div class="row" style="white-space: nowrap">
+                        <div class="col-5" style="align-content: center; padding: 0;">
+                          <label class="label required" style="line-height: 17px;width: 120px;">労務費<br />計算区分</label>
+                          @Html.DropDownListFor(model => model.DriverGrossCalc, new SelectList(Model.DriverGrossCalcSelectList, "Value", "Text", "Selected"), new { @class = "form-control list dropDownList", @style = "text-align: center;" })
+                          @Html.ValidationMessageFor(model => model.DriverGrossCalc, "", new { id = "SelectDriverGrossCalc", @class = "text-danger align-middle" })
+                        </div>
+                        <div class="col-3" style="align-content: center; padding: 0;">
+                          <label class="control-label align-self-center align-middle text-end" style="margin: 0; padding: 0; line-height: 17px;">運賃<br />エリア</label>
+                          @Html.DropDownListFor(model => model.Area, new SelectList(Model.AreaSelectList, "Value", "Text", "Selected"), new { @class = "form-control list dropDownList", @style = "text-align: center;" })
+                          @Html.ValidationMessageFor(model => model.Area, "", new { id = "SelectArea", @class = "text-danger align-middle" })
+                        </div>
+                        <div class="col-4" style="align-content: center; padding: 0;">
+
+                        </div>
+                      </div>
+                    </div>
+                    <div hidden>
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.BreakTime)
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.RestTime)
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.FuelConsume)
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.RestTimeDisplay)
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.StdFreight)
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.StdExcharge)
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.StdTotalFreight)
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.GrossAmountForLaborCost)
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.GrossAmountForFuelCost)
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.GrossAmountForSyaryoCost)
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.GrossAmountForLuggage)
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.GrossAmountForExcharge)
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.GrossAmount)
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.TotalDays)
+
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.Syasyu)
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.Kata)
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.SyasyuSize)
+
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.Height)
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.Width)
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.Weight)
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.Nenpi)
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.RouteTitleStyle)
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.RouteTypeClass)
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.RestTimeDisplay)
+                      @Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.BreakTimeDisplay)
+
+                    </div>
+                  </div>
+
+                  <div id="div-body-right" class="col-sm-6 border">
+
+                    <div class="item" style="margin-top: 5px;">
+                      <table class="table table-HaisyaWeb table-anekn" style="width: 100%; margin: 0; padding: 0; margin: 0; " border="1">
+                        <thead>
+                          <tr style="">
+                            <th hidden></th>
+                            <th hidden></th>
+                            <th>@Html.LabelFor(model => model.SelectedDriveRouteDisplay.RouteTypeDisplay, htmlAttributes: new { @class = "col-form-label2", @style = "" })</th>
+                            <th>@Html.LabelFor(model => model.SelectedDriveRouteDisplay.TotalTime, htmlAttributes: new { @class = "col-form-label2", @style = "" })</th>
+                            <th>@Html.LabelFor(model => model.SelectedDriveRouteDisplay.TotalDistance, htmlAttributes: new { @class = "col-form-label2", @style = "" })</th>
+                            <th>@Html.LabelFor(model => model.SelectedDriveRouteDisplay.Totaltoll, htmlAttributes: new { @class = "col-form-label2", @style = "" })</th>
+                            <th>@Html.LabelFor(model => model.SelectedDriveRouteDisplay.GrossAmountTotal, htmlAttributes: new { @class = "col-form-label2", @style = "" })</th>
+                            <th>@Html.LabelFor(model => model.SelectedDriveRouteDisplay.StdALLFreight, htmlAttributes: new { @class = "col-form-label2", @style = "" })</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr style="padding: 0; margin: 0;">
+                            <td hidden>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.routeID, null, new { @readonly = "readonly", @class = "form-control2 text-center form-control routedisplay", @style = "margin-left: 0;" })</td>
+                            <td hidden>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.routeType, null, new { @readonly = "readonly", @class = "form-control2 form-control routedisplay", @style = "margin-left: 0;" })</td>
+                            <td>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.RouteTypeDisplay, null, new { @readonly = "readonly", @class = "text-center form-control routedisplay", @style = "margin-left: 0;" })</td>
+                            <td>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.TotalTime, null, new { @readonly = "readonly", @class = "text-center form-control routedisplay", @style = "margin-left: 0;" })</td>
+                            <td>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.TotalDistance, "{0:N2}", new { @readonly = "readonly", @class = "text-end form-control routedisplay", @style = "margin-left: 0;", @onblur = "kanmaChange(this);" })</td>
+                            <td>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.Totaltoll, "{0:N0}", new { @readonly = "readonly", @class = "text-end form-control routedisplay", @style = "margin-left: 0;", @onblur = "kanmaChange(this);" })</td>
+                            <td>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.GrossAmountTotal, "{0:N0}", new { @readonly = "readonly", @class = "text-end form-control routedisplay", @style = "margin-left: 0;", @onblur = "kanmaChange(this);" })</td>
+                            <td>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.StdALLFreight, "{0:N0}", new { @readonly = "readonly", @class = "text-end form-control routedisplay", @style = "margin-left: 0;", @onblur = "kanmaChange(this);" })</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="item">
+                      <div class="row">
+                        <div class="col">
+                          @Html.LabelFor(model => model.SeikyuKubun, htmlAttributes: new { @class = "label required", @style = "width: 120px;" })
+                          <div class="radio-group" style="">
+                            <input type="radio" class="btn-check" name="num_of_SeikyuKubun" id="optSeikyuKubun0" value="0"><label class="btn btn-outline-danger" for="optSeikyuKubun0">確定運賃</label>
+                            <input type="radio" class="btn-check" name="num_of_SeikyuKubun" id="optSeikyuKubun1" value="1"><label class="btn btn-outline-danger" for="optSeikyuKubun1">暫定運賃</label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="item">
+                      <table class="table table-HaisyaWeb table-anekn" style="width: 100%; margin: 0; padding: 0; margin: 0;" border="1">
+                        <thead>
+                          <tr style="padding: 0; margin: 0; background: #66FF33; text-align: center; ">
+                            <th>@Html.LabelFor(model => model.BaseFee, htmlAttributes: new { @class = "col-form-label2", @style = "" })</th>
+                            <th>@Html.LabelFor(model => model.ExtraCharge, htmlAttributes: new { @class = "col-form-label2", @style = "" })</th>
+                            <th>@Html.LabelFor(model => model.Toll, htmlAttributes: new { @class = "col-form-label2", @style = "" })</th>
+                            <th>@Html.LabelFor(model => model.Discount, htmlAttributes: new { @class = "col-form-label2", @style = "color: red;" })</th>
+                            <th>@Html.LabelFor(model => model.GrossAmount, htmlAttributes: new { @class = "col-form-label2", @style = "" })</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr style="padding: 0; margin: 0;">
+                            <td>@Html.TextBoxFor(model => model.BaseFee, "{0:N0}", new { @class = "form-control text-end inputbox seikyu", @style = "margin-left: 0;", @onblur = "kanmaChange(this);" })</td>
+                            <td>@Html.TextBoxFor(model => model.ExtraCharge, "{0:N0}", new { @class = "form-control text-end inputbox seikyu", @style = "margin-left: 0;", @onblur = "kanmaChange(this);" })</td>
+                            <td>@Html.TextBoxFor(model => model.Toll, "{0:N0}", new { @class = "form-control text-end inputbox seikyu", @style = "margin-left: 0;", @onblur = "kanmaChange(this);" })</td>
+                            <td>@Html.TextBoxFor(model => model.Discount, "{0:N0}", new { @class = "form-control text-end inputbox seikyu", @style = "margin-left: 0; color: red;", @onblur = "kanmaChange(this);" })</td>
+                            <td>@Html.TextBoxFor(model => model.GrossAmount, "{0:N0}", new { @class = "form-control text-end inputbox", @style = "margin-left: 0;", @onblur = "kanmaChange(this);" })</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="item">
+                      @Html.LabelFor(model => model.TollKubun, htmlAttributes: new { @class = "label required", @style = "width: 120px;" })
+                      <div class="radio-group" style="">
+                        <input type="radio" class="btn-check" name="num_of_TollKubun" id="optTollKubun0" value="4"><label class="btn btn-outline-success" for="optTollKubun0">無し</label>
+                        <input type="radio" class="btn-check" name="num_of_TollKubun" id="optTollKubun1" value="1"><label class="btn btn-outline-success" for="optTollKubun1">全高</label>
+                        <input type="radio" class="btn-check" name="num_of_TollKubun" id="optTollKubun2" value="2"><label class="btn btn-outline-success" for="optTollKubun2">一部</label>
+                        <input type="radio" class="btn-check" name="num_of_TollKubun" id="optTollKubun3" value="3"><label class="btn btn-outline-success" for="optTollKubun3">金額</label>
+                        @*<input type="radio" class="btn-check" name="num_of_TollKubun" id="optTollKubun4" value="5"><label class="btn btn-outline-success" for="optTollKubun5">実費精算</label>*@
+                        <input type="radio" class="btn-check" name="num_of_TollKubun" id="optTollKubun5" value="9"><label class="btn btn-outline-success" for="optTollKubun4">他</label>
+                      </div>
+                      <br />
+                      <div id="divTollKubun-TollMoney" class="row">
+                        <label class="label required" style="">金額を指定</label>
+                        @Html.TextBoxFor(model => model.TollMoney, "{0:N0}", new { @class = "form-control text-end inputbox", @style = "margin-left: 0; width: 100px;", @onblur = "kanmaChange(this);" })
+                      </div>
+                      <div id="divTollKubun-TollRemarks" class="row">
+                        <label class="label required" style="">高速備考</label>
+                        @Html.EditorFor(model => model.TollRemarks, new { htmlAttributes = new { @class = "form-control", @rows = "2", @style = "ime-mode: active; width: calc(100% - (150px));" } })
+                      </div>
+                    </div>
+                    <div class="item">
+                      @Html.LabelFor(model => model.LuggageWeight, htmlAttributes: new { @class = "label", @style = "" })
+                      @Html.TextBoxFor(model => model.LuggageWeight, "{0:0.0}", new { @class = "form-control text-end inputbox", @style = "margin-left: 0; width: 100px;", @onblur = "kanmaChange(this);" }) <label style="margin-left: 5px;">t</label>
+                    </div>
+                    <div class="item">
+                      <label class="label " for="LuggageDisplay" style="">@Html.LabelFor(model => model.LuggageDisplay)<br /><span class="kakoSerch"></span></label>
+                      <button id="btnSelectLuggage" class="btn btn-anken select-button" style="vertical-align: top" onclick="btnSelectLuggageOnClick(); return false;">選択</button>
+                      @Html.EditorFor(model => model.LuggageDisplay, new { htmlAttributes = new { @readonly = "readonly", @class = "form-control serch", @rows = "2", @style = "width: calc(100% - (87px + 130px));" } })
+
+                      <div id="divLuggageList" hidden>
+                        <table id="tableLuggageList">
+                          <tbody id="tableLuggageList-body">
+                            @{
+                              if (Model.AnkenLuggageList != null)
+                              {
+                                var LuggageList = Model.AnkenLuggageList.OrderBy(m => m.Insert_Datetime).ToList();
+                                for (int i = 0; i < LuggageList.Count; i++)
+                                {
+                                  <tr>
+                                    <td>@Html.TextBoxFor(model => model.AnkenLuggageList[i].Anken_ID, null, new { @readonly = "readonly", })</td>
+                                    <td>@Html.TextBoxFor(model => model.AnkenLuggageList[i].Anken_Order, null, new { @readonly = "readonly", })</td>
+                                    <td>@Html.TextBoxFor(model => model.AnkenLuggageList[i].Luggage_ID, null, new { @readonly = "readonly", @type = "number" })</td>
+                                    <td>@Html.TextBoxFor(model => model.AnkenLuggageList[i].Luggage_Count, null, new { @readonly = "readonly", @type = "number" })</td>
+                                    <td>@Html.TextBoxFor(model => model.AnkenLuggageList[i].Remarks, null, new { @readonly = "readonly" })</td>
+                                  </tr>
+                                }
+                              }
+                            }
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="item">
+                      @Html.LabelFor(model => model.EquipmentDisplay, htmlAttributes: new { @class = "label", @style = "" })
+
+                      <button id="btnSelectEquipment" class="btn btn-anken select-button" style="vertical-align: top;" onclick="btnSelectEquipmentOnClick(); return false;">選択</button>
+                      @Html.EditorFor(model => model.EquipmentDisplay, new { htmlAttributes = new { @readonly = "readonly", @class = "form-control", @rows = "2", @style = "width: calc(100% - (87px + 130px));" } })
+
+                      <div id="divEquipmentList" hidden>
+                        <table id="tableEquipmentList">
+                          <tbody id="tableEquipmentList-body">
+                            @{
+                              if (Model.AnkenEquipmentList != null)
+                              {
+                                var EquipmentList = Model.AnkenEquipmentList.OrderBy(m => m.Insert_Datetime).ToList();
+                                for (int i = 0; i < EquipmentList.Count; i++)
+                                {
+                                  <tr>
+                                    <td>@Html.TextBoxFor(model => model.AnkenEquipmentList[i].Anken_ID, null, new { @readonly = "readonly", })</td>
+                                    <td>@Html.TextBoxFor(model => model.AnkenEquipmentList[i].Anken_Order, null, new { @readonly = "readonly", })</td>
+                                    <td>@Html.TextBoxFor(model => model.AnkenEquipmentList[i].Equipment_ID, null, new { @readonly = "readonly", @type = "number" })</td>
+                                    <td>@Html.TextBoxFor(model => model.AnkenEquipmentList[i].Equipment_Count, null, new { @readonly = "readonly", @type = "number" })</td>
+                                    <td>@Html.TextBoxFor(model => model.AnkenEquipmentList[i].Remarks, null, new { @readonly = "readonly" })</td>
+                                  </tr>
+                                }
+                              }
+                            }
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    <div class="item">
+                      @Html.LabelFor(model => model.SyabanRenrakuRemarks, htmlAttributes: new { @class = "label", @style = "" })
+                      @Html.EditorFor(model => model.SyabanRenrakuRemarks, new { htmlAttributes = new { @class = "form-control", @rows = "2", @style = "ime-mode: active; width: calc(100% - (130px));" } })
+                    </div>
+                    <div class="item">
+                      @Html.LabelFor(model => model.Notice, htmlAttributes: new { @class = "label", @style = "" })
+                      @Html.EditorFor(model => model.Notice, new { htmlAttributes = new { @class = "form-control", @rows = "2", @style = "ime-mode: active; width: calc(100% - (130px));" } })
+                    </div>
+                    <div class="item">
+                      @Html.LabelFor(model => model.KokyakuInfoDisplay, htmlAttributes: new { @class = "label display-text", @style = "" })
+                      @Html.EditorFor(model => model.KokyakuInfoDisplay, new { htmlAttributes = new { @class = "form-control", @rows = "2", @style = "color: gray; ime-mode: active; width: calc(100% - (130px));" } })
+                    </div>
+                    <div class="item" style="display: flex;">
+                      <div></div>
+                      <div>
+                        <label class="label display-text" style="">顧客担当電話</label>
+                      </div>
+                      <div class="" style="font-size: 10px;">
+                        <div class="abc" style="display: flex; padding: 0;">
+                          @Html.LabelFor(model => model.KokyakuTantouCellPhone, htmlAttributes: new { @class = "label display-text", @style = "" })
+                          @Html.TextBoxFor(model => model.KokyakuTantouCellPhone, new { @readonly = "readonly", @class = "form-control", @style = "color: gray; ime-mode: active; width: calc(100% - (130px)); border: none;" })
+                          @Html.LabelFor(model => model.KokyakuTantouPhone1, htmlAttributes: new { @class = "label display-text", @style = "" })
+                          @Html.TextBoxFor(model => model.KokyakuTantouPhone1, new { @readonly = "readonly", @class = "form-control", @style = "color: gray; ime-mode: active; width: calc(100% - (130px)); border: none;" })
+                          @Html.LabelFor(model => model.KokyakuTantouFax1, htmlAttributes: new { @class = "label display-text", @style = "" })
+                          @Html.TextBoxFor(model => model.KokyakuTantouFax1, new { @readonly = "readonly", @class = "form-control", @style = "color: gray; ime-mode: active; width: calc(100% - (130px)); border: none;" })
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+
+              <div id="divSerchMain" class="col-sm-2 border">
+                <h6 class="heading-pagetitle">過去案件一覧</h6>
+                <div style="overflow-x: hidden;">
+                  <div id="divSerch" class="" style="background-color: antiquewhite;">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            @await Html.PartialAsync("RegisterMap", Model)
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+  <table width="100%">
+    <tr>
+      <td>
+      </td>
+    </tr>
+  </table>
+}
+<div id="div1"></div>
+
+<div id="ModalAnkenRireki"></div>
+
+<script>
+
+  window.onload = function () {
+
+    // 実行したい処理を書く
+    //alert("window.onload");
+
+    if ($('#btnAnkneRireki').length) {
+      $('#btnAnkneRireki').prop('disabled', true);
+    }
+
+    if ($('#Anken_Latest_Order').val() > 1) {
+      GetAnkenRireki();
+    };
+
+    /**　高速区分の入力項目を非表示にする */
+    TollKubunInputHidden($('#TollKubun').val());
+
+    /////修正画面時には
+    if (document.getElementById("Anken_ID").value != "0" &&
+      document.getElementById("SelectedDriveRouteDisplay_routeID").value.length > 0) {
+      SerchDriveRoot("2");
+    }
+
+  };
+
+
+  $(function () {
+
+    $(document).ready(function () {
+
+      window.scroll({ top: 0 });
+
+      ///処理中ダイアログ
+      Swal.fire({
+        title: 'データ読込中'
+        , html: '表示されるまでそのままお待ちください。'
+        , allowOutsideClick: true     //枠外をクリックしても画面を閉じない
+        , showConfirmButton: false
+        , didOpen: () => {
+          Swal.showLoading();
+        }
+      });
+
+
+
+
+      //TollKubunInputHidden(0);
+      /** 過去案件検索一覧を非表示に設定する */
+      ChangeBodyDispaly(0);
+
+      var radio = document.getElementsByName('num_of_AnkenStatus');
+      for (let i = 0; i < radio.length; i++) {
+        if (radio.item(i).value == $('#AnkenStatus').val()) {
+          radio.item(i).checked = true;
+        }
+      };
+
+      var radio = document.getElementsByName('num_of_SeikyuKubun');
+      for (let i = 0; i < radio.length; i++) {
+        if (radio.item(i).value == $('#SeikyuKubun').val()) {
+          radio.item(i).checked = true;
+        }
+      };
+
+      var radio = document.getElementsByName('num_of_NumberHaisyaPlanKubun');
+      for (let i = 0; i < radio.length; i++) {
+        if (radio.item(i).value == $('#HaisyaPlanKubun').val()) {
+          radio.item(i).checked = true;
+        }
+      };
+
+      var radio = document.getElementsByName('num_of_TollKubun');
+      for (let i = 0; i < radio.length; i++) {
+        if (radio.item(i).value == $('#TollKubun').val()) {
+          radio.item(i).checked = true;
+        }
+      };
+
+      var radio = document.getElementsByName('num_of_NumberCommLimitKubun');
+      for (let i = 0; i < radio.length; i++) {
+        if (radio.item(i).value == $('#NumberCommLimitKubun').val()) {
+          radio.item(i).checked = true;
+        }
+      };
+      num_of_NumberCommLimitKubunOnChecnge($('#NumberCommLimitKubun').val());
+
+      var radio = document.getElementsByName('num_of_PointTab');
+      for (let i = 0; i < radio.length; i++) {
+        if (radio.item(i).value == $('#SelectPointTab').val()) {
+          radio.item(i).checked = true;
+        }
+      };
+
+      var radio = document.getElementsByName('num_of_NumberHaisyaPla nKubun');
+      for (let i = 0; i < radio.length; i++) {
+        if (radio.item(i).value == $('#HaisyaPlanKubun').val()) {
+          radio.item(i).checked = true;
+        }
+      };
+      haisyaPlanKubunOnChanged($('#HaisyaPlanKubun').val());
+
+
+      $('.map-container').height($('#divRootDisplay').height());
+      $('.map-container2').height($('#divRootDisplay').height() - 60);
+
+      /////積卸選択時のchangeイベントを設定
+      var elements = document.querySelectorAll('[name$="].Kubun"]');
+      //elements.addEventListener('change', PointListDisplayChange);
+      elements.forEach((inputObj) => {
+        inputObj.addEventListener('change', PointListDisplayChange);
+      });
+
+
+    });
+
+
+    $(window).resize(function (event) {
+      divSerchResize();
+    });
+
+    $('button[name="TsumiTaskTimeP"]').on('click', function () {
+      let button = this;
+      let val = $(button).val();
+      let data = $('#TsumiTaskTime').val();
+      if ("oroshi" == val) { data = $('#OroshiTaskTime').val(); }
+      let sDatetime = '1900/01/01 ' + data + ':00';
+      //alert(sDatetime);
+      let dateVal = new Date(sDatetime);
+      let dateVal2 = new Date(dateVal.setMinutes(dateVal.getMinutes() + 30));
+      //alert(dateVal2);
+      let mm = ('00' + (dateVal2.getHours())).slice(-2);
+      let nn = ('00' + (dateVal2.getMinutes())).slice(-2);
+      let s = mm + ':' + nn;
+      if ("tsumi" == val) { data = $('#TsumiTaskTime').val(s); }
+      if ("oroshi" == val) { data = $('#OroshiTaskTime').val(s); }
+    });
+
+    $('button[name="TsumiTaskTimeM"]').on('click', function () {
+      let button = this;
+      let val = $(button).val();
+      let data = $('#TsumiTaskTime').val();
+      if ("oroshi" == val) { data = $('#OroshiTaskTime').val(); }
+      let sDatetime = '1900/01/01 ' + data + ':00';
+      //alert(sDatetime);
+      let dateVal = new Date(sDatetime);
+      let dateVal2 = new Date(dateVal.setMinutes(dateVal.getMinutes() - 30));
+      //alert(dateVal2);
+      let mm = ('00' + (dateVal2.getHours())).slice(-2);
+      let nn = ('00' + (dateVal2.getMinutes())).slice(-2);
+      let s = mm + ':' + nn;
+      if ("tsumi" == val) { data = $('#TsumiTaskTime').val(s); }
+      if ("oroshi" == val) { data = $('#OroshiTaskTime').val(s); }
+
+
+    });
+
+    $('input[name="num_of_NumberCommLimitKubun"]').on('change', function () {
+      let val = $(this).val();
+      num_of_NumberCommLimitKubunOnChecnge(val);
+    });
+
+    $('#txtAddress').on('keydown ', function (event) {
+      if (event.key === 'Enter') {
+        //alert('keydown ');
+        GetlatlonFromAddress();
+      }
+      //return false;
+    });
+
+    $('input[name="num_of_AnkenStatus"]').on('change', function () {
+      let val = $(this).val();
+      $('#AnkenStatus').val(val);
+    });
+
+    $('input[name="num_of_SeikyuKubun"]').on('change', function () {
+      let val = $(this).val();
+      $('#SeikyuKubun').val(val);
+    });
+
+    $('input[name="num_of_TollKubun"]').on('change', function () {
+      let val = $(this).val();
+      $('#TollKubun').val(val);
+      TollKubunInputHidden(val);
+
+    });
+
+    $('input[name="num_of_NumberCommLimitKubun"]').on('change', function () {
+      let val = $(this).val();
+      $('#NumberCommLimitKubun').val(val);
+    });
+
+    $('input[name="num_of_NumberHaisyaPlanKubun"]').on('change', function () {
+      let val = $(this).val();
+      $('#HaisyaPlanKubun').val(val);
+      haisyaPlanKubunOnChanged(val);
+    });
+
+    $('#SyasyuID').on('change', function () {
+      let val = $(this).children(':selected').text();
+      $('#SyasyuDisplay').val(val);
+    });
+
+
+    $('#btnKokyaku').on('click', function (event) {
+      openCommonDialogForCustomer($('#Company_ID').val(), $('#UserID').val(), $('#KokyakuId').val());
+      return false;
+    });
+
+    $('#btnKokyakuTantou').on('click', function (event) {
+
+      let KokyakuId = $('#KokyakuId').val();
+      if (KokyakuId == 0) {
+        alertInputError("まず顧客を選択してください。");
+        return false;
+      }
+
+      openCommonDialogForCustomerTantou($('#Company_ID').val(), $('#UserID').val(), KokyakuId, $('#KokyakuTantouId').val());
+      return false;
+
+    });
+
+    $('button[name="btnAnkenKubun"]').on('click', function (event) {
+      let val = $(this).val();
+      $('#Anken_Kubun').val(val);
+      $('#divAnkenSelectKubun').hide();
+
+      if (val == '0') {
+        //自動車運送画面
+        $('#divJisya').show();
+      } else {
+        //利用運送画面
+        RiyoUnsoTrans();
+      }
+      MapPreview();
+    });
+
+    $('#btnSelectAddress').on('click', function (event) {
+      CommonWaitStart();
+      event.preventDefault();
+      let $form = $('#frmMain');
+
+      $.ajax({
+          url: '@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "SelectAddressModal" })',
+          type: 'post',
+          data: $form.serialize(),
+        }).done(function (response) {
+          if (response.message != null) {
+              alertError(`【エラー】${response.errorMessage}`);
+              return false;
+          } else {
+            //alert("【done】" + response.partialView);
+            $("#ModalHere").html(response.partialView);
+            $("#ModalHere").find('.modal').modal('show');
+            return;
+          }
+        }).fail(function (xhr) {
+          alertError(xhr, "【ネットワークエラー】");
+          console.log(xhr);
+          return false;
+        }).always(function (xhr, msg) {
+          CommonWaitEnd();
+        });
+
+    });
+
+    /** ポイントリストの表示設定切替（経由地の場合は日時を非活性等） **/
+    PointListDisplayChange();
+
+
+    $(".search").on("change", function () {
+      //alert("ボタンがクリックされました");
+      let isHidden = $("#divSerchMain").is(":hidden");
+      //alert(isHidden);
+      if (!isHidden) {
+        SetSelectKakoAnkenList();
+      };
+
+    });
+
+    $(".seikyu").on("change", function () {
+      //alert("seikyuがchangeされました");
+      //$(".seikyu").filter(function () {
+      //  alert($(this).attr('name'));
+
+      //});
+
+      var total = kanmaChangeRevert($('#BaseFee').val()) + kanmaChangeRevert($('#ExtraCharge').val()) + kanmaChangeRevert($('#Toll').val()) - kanmaChangeRevert($('#Discount').val());
+      $('#GrossAmount').val(total).blur();
+  });
+
+
+
+  });
+
+  /** 過去検索一覧のdivの高さを左の入力項目の高さに合わせる（スクロールのため） */
+  function divSerchResize() {
+    //alert("resize");
+    $("#divSerchMain").height($("#div-body-left").height());
+
+  };
+
+  /**　高速区分の入力項目を非表示にする */
+  function TollKubunInputHidden(val) {
+    $('#divTollKubun-TollMoney').hide();
+    $('#divTollKubun-TollRemarks').hide();
+
+    if (val == 2) { $('#divTollKubun-TollMoney').show(); }
+    if (val == 3) { $('#divTollKubun-TollMoney').show(); }
+    if (val == 9) { $('#divTollKubun-TollRemarks').show(); }
+  };
+
+  /**　登録・更新ボタン押下 */
+  async function btnRegExecOnclick(val) {
+    event.preventDefault();
+    //let val = $(this).val();
+    //alert("btnRegExecOnclick");
+
+
+    if (VaridationCheckForDriveRoute()) {
+      return false;
+    }
+    if (VaridationCheckForReg()) {
+      return false;
+    }
+
+    //logout();
+
+    $('#ExecType').val(val);
+
+    let sMessage = "";
+
+    if ($('#Anken_ID').val() != null && $('#Anken_ID').val() > 0) {
+      if ("Update" == val) {
+        sMessage = "更新しますか？";
+      } else {
+        sMessage = "履歴登録しますか？";
+      }
+    } else {
+      sMessage = "新規登録しますか？";
+    }
+
+    let resultMsg = await alertYesNoMsg("登録更新確認", sMessage, "warning");
+    if (resultMsg == false) { return false; }
+
+    //通常のアクションをキャンセルする
+    event.preventDefault();
+
+    //Formの参照を取る
+    let $form = $('#frmMain');
+
+    //alert($('#Anken_ID').val());
+    //alert($form.serialize());
+
+    let flgResult = await ajaxRegExec($form);
+
+    if (flgResult) {
+      let result = await alertYesNoMsg("確認", "登録処理が完了しました。前の画面に戻りますか？", "warning", "戻る");
+      if (!result) { return false; } else { BackMenuOnClick(); }
+    }
+
+    return;
+  };
+
+  /**
+   * 登録処理のインターフェースを返却する
+   * @@param $form
+   */
+  function ajaxRegExec($form) {
+    CommonWaitStart();
+    event.preventDefault();
+    return new Promise((resolve, reject) => {
+      $.ajax({
+        url: '@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "RegExec2" })',
+        type: 'post',
+        data: $form.serialize(),
+      }).done(function (response) {
+        if (response.errorMessage != null) {
+            alertError(`【エラー】${response.errorMessage}`);
+          // エラー
+          reject();
+        } else {
+          let obj = response.t_Anken;
+          //alert("【done】" + obj["anken_No"]);
+          $('#Anken_ID').val(obj["anken_ID"]);
+          $('#Anken_No').val(obj["anken_No"]);
+          $('#Anken_Latest_Order').val(obj["anken_Latest_Order"]);
+
+          if ($('#AnkenID_Before').val() == "0") {
+            $('#btnRegExec').text("更新");
+            $('#btnRegExec').val("Update");
+          }
+
+          // 正常終了
+          resolve(true);
+
+        }
+      }).fail(function (xhr) {
+        alertError(xhr, "【ネットワークエラー】");
+        console.log(xhr);
+        // エラー
+        reject();
+      }).always(function (xhr, msg) {
+        CommonWaitEnd();
+      });
+
+    })
+
+  };
+
+
+  /***　ルート検索ボタン押下 */
+  async function btnSerchRootOnclick() {
+
+    //alert("btnSerchRoot");
+
+    if (VaridationCheckForDriveRoute()) {
+      return false;
+    }
+
+    //通常のアクションをキャンセルする
+    event.preventDefault();
+
+    await SerchDriveRoot("1");
+
+  };
+
+  /**
+   * ルート検索処理
+   * @@param syoriFlg
+   */
+  async function SerchDriveRoot(syoriFlg) {
+    CommonWaitStart();
+    event.preventDefault();
+    //logout();
+    $('#ExecType').val("DriveRoot");
+
+    //Formの参照を取る
+    let $form = $('#frmMain');
+
+    $.ajax({
+        url: '@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "RegExec2" })',
+        type: 'post',
+        data: $form.serialize(),
+      }).done(function (response) {
+        if (response.errorMessage != null) {
+            alertError(`【エラー】${response.errorMessage}`);
+            return false;
+        } else {
+          //alert("【done】" + response.model);
+          CreateDriveRouteArray(response.model);
+          if (syoriFlg == "2") {
+            DriveRouteDisplayForMap();
+          } else {
+            //$('#ZMap').hide();
+            $("#ModalHere").html(response.partialView);
+            $("#ModalHere").find('.modal').modal('show');
+            return;
+          }
+        }
+      }).fail(function (xhr) {
+        alertError(xhr, "【ネットワークエラー】");
+        console.log(xhr);
+        return false;
+      }).always(function (xhr, msg) {
+        CommonWaitEnd();
+      });
+
+  };
+
+
+  /**閉じるボタン押下 */
+  async function btnCloseOnClick() {
+    let msg = "登録処理を中断して前の画面に戻りますか？";
+    let resultMsg = await alertYesNoMsg("確認", msg, "warning", "戻る");
+    if (resultMsg == false) { return false; }
+    BackMenuOnClick();
+    return false;
+  };
+
+  /** 荷物情報ボタン押下 */
+  function btnSelectLuggageOnClick() {
+    CommonWaitStart();
+    event.preventDefault();
+    let htmlStr = '';
+    let tableElem = document.getElementById("divLuggageList");
+    htmlStr = tableElem.innerHTML;
+
+    let html = "";
+    html += "<form id='sortData'>";
+    html += "<div hidden>";
+    html += "  <input name='Company_ID' value='" + $('#Company_ID').val() + "' />";
+    html += "  <input name='Anken_ID' value='" + $('#Anken_ID').val() + "' />";
+    html += "</div >";
+    html += "<table>";
+    html += "  <tbody>";
+    html += htmlStr;
+    html += "  </tbody>";
+    html += "</table>";
+    html += "</form >";
+
+    //alert(html);
+
+    $("#SortHere").html(html);
+
+    //Formの参照を取る
+    let $form = $('#sortData');
+
+    $.ajax({
+          url: '@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "SelectLuggageModal" })',
+          type: 'post',
+          data: $form.serialize(),
+        }).done(function (response) {
+          if (response.errorMessage != null) {
+              alertError(`【エラー】${response.errorMessage}`);
+              return false;
+          } else {
+            //alert(response.partialView);
+            $("#ModalHere").html(response.partialView);
+            $("#ModalHere").find('.modal').modal('show', { backdrop: "static", });
+            return false;
+
+          }
+        }).fail(function (xhr) {
+          alertError(xhr, "【ネットワークエラー】");
+            console.log(xhr);
+            return false;
+        }).always(function (xhr, msg) {
+          CommonWaitEnd();
+        });
+
+    return false;
+
+
+
+  };
+
+  /** 装備品情報ボタン押下 */
+  function btnSelectEquipmentOnClick() {
+    CommonWaitStart();
+    event.preventDefault();
+    let htmlStr = '';
+    let tableElem = document.getElementById("divEquipmentList");
+    htmlStr = tableElem.innerHTML;
+
+    let html = "";
+    html += "<form id='sortData'>";
+    html += "<div hidden>";
+    html += "  <input name='Company_ID' value='" + $('#Company_ID').val() + "' />";
+    html += "  <input name='Anken_ID' value='" + $('#Anken_ID').val() + "' />";
+    html += "</div >";
+    html += "<table>";
+    html += "  <tbody>";
+    html += htmlStr;
+    html += "  </tbody>";
+    html += "</table>";
+    html += "</form >";
+
+    //alert(html);
+
+    $("#SortHere").html(html);
+
+    //Formの参照を取る
+    let $form = $('#sortData');
+
+    $.ajax({
+          url: '@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "SelectEquipmentModal" })',
+          type: 'post',
+          data: $form.serialize(),
+        }).done(function (response) {
+          if (response.errorMessage != null) {
+              alertError(`【エラー】${response.errorMessage}`);
+              return false;
+          } else {
+            //alert(response.partialView);
+            $("#ModalHere").html(response.partialView);
+            $("#ModalHere").find('.modal').modal('show', { backdrop: "static", });
+            return false;
+
+          }
+        }).fail(function (xhr) {
+          alertError(xhr, "【ネットワークエラー】");
+            console.log(xhr);
+            return false;
+        }).always(function (xhr, msg) {
+          CommonWaitEnd();
+        });
+
+    return false;
+
+  };
+
+  /**
+   * 案件入力項目bodyに対する過去案件要素の表示切替
+   * @@param param 1：過去検索要素を追加、以外：0：過去検索要素を削除
+   */
+  function ChangeBodyDispaly(param) {
+
+    if (param == 1) {
+      $("#divSerchMain").fadeIn();
+      //$('#div-body-left').removeClass('col-sm-6');
+      //$('#div-body-left').addClass('col-sm-5');
+      //$('#div-body-right').removeClass('col-sm-6');
+      //$('#div-body-right').addClass('col-sm-5');
+      $('#div-body-main').removeClass('col-sm-12');
+      $('#div-body-main').addClass('col-sm-10');
+    } else {
+      $("#divSerchMain").fadeOut();
+      //$('#div-body-left').removeClass('col-sm-5');
+      //$('#div-body-left').addClass('col-sm-6');
+      //$('#div-body-right').removeClass('col-sm-5');
+      //$('#div-body-right').addClass('col-sm-6');
+      $('#div-body-main').removeClass('col-sm-10');
+      $('#div-body-main').addClass('col-sm-12');
+    }
+    divSerchResize();
+  }
+
+  /** 過去案件検索ボタン押下 */
+  function btnSelectKakoAnkenDisplayOnClick() {
+
+    let isHidden = $("#divSerchMain").is(":hidden");
+    //alert(isHidden);
+    if (isHidden) {
+      ChangeBodyDispaly(1);
+      //alert($('#KokyakuId').val());
+      if ($('#KokyakuId').val() != null && $('#KokyakuId').val() > 0 ) {
+        SetSelectKakoAnkenList();
+      }
+    } else {
+      ChangeBodyDispaly(0);
+    }
+
+  };
+
+
+
+  /** 過去案件一覧を取得する（画面の値全て送る）　 */
+  function SetSelectKakoAnkenList() {
+    CommonWaitStart();
+    event.preventDefault();
+    //Formの参照を取る
+    let $form = $('#frmMain');
+
+    $.ajax({
+          url: '@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "GetKakoAnkenList" })',
+          type: 'post',
+          data: $form.serialize(),
+        }).done(function (response) {
+          if (response.errorMessage != null) {
+              alertError(`【エラー】${response.errorMessage}`);
+              return false;
+          } else {
+            //alert(response.partialView);
+            $("#divSerch").html(response.partialView);
+            return false;
+
+          }
+        }).fail(function (xhr) {
+          alertError(xhr, "【ネットワークエラー】");
+          console.log(xhr);
+          return false;
+        }).always(function (xhr, msg) {
+          CommonWaitEnd();
+        });
+
+    return false;
+
+  };
+
+
+  /**
+   *  案件コピーボタンクリック処理
+   * */
+  async function BtnAnkenCopyOnClick() {
+    event.preventDefault();
+    var sMessage = "現在の情報をコピーして新規作成しますか？　「はい」を選択すると、新規登録用に画面を開き直します。";
+
+    let resultMsg = await alertYesNoMsg("コピー確認", sMessage, "warning");
+    if (resultMsg == false) { return false; }
+
+    logout();
+
+    var form = document.getElementById('frmMain');
+    form.action = '@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "ExecCopyAnken" })';
+    form.method = 'POST';
+    form.submit();
+
+    return false;
+
+  };
+
+  /** 案件履歴画面をhiddenに設定  */
+  function btnShowAnkenRirekiOnclick() {
+
+    //alert($("#ModalAnkenRireki").html());
+    $("#ModalAnkenRireki").find('.modal').modal('show');
+  };
+
+
+  /**
+    * 案件履歴変更画面をhidden項目にセットする
+    * */
+  function GetAnkenRireki() {
+    CommonWaitStart();
+    event.preventDefault();
+    $.post('@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "GetAnkenRirekiModal" })',
+      {
+        ankenID: $('#Anken_ID').val(),
+      })
+      .done(function (response) {
+
+        if (response.message != null) {
+            alertError(`【エラー】${response.errorMessage}`);
+            return false;
+        } else {
+          //alert(response.partialView);
+          $("#ModalAnkenRireki").html(response.partialView);
+          /*            $("#ModalAnkenRireki").find('.modal').modal('show');*/
+
+          $('#btnAnkneRireki').prop('disabled', false);
+
+          return;
+        }
+      })
+      .fail(function (xhr) {
+        alertError(xhr, "【ネットワークエラー】");
+        console.log(xhr);
+        return false;
+      })
+      .always(function (xhr, msg) {
+        CommonWaitEnd();
+      });
+    return false;
+  };
+
+
+
+  /**
+   *　車番連絡の選択変更処理
+   * @@param val
+   */
+  function num_of_NumberCommLimitKubunOnChecnge(val) {
+    if (val == 0) {
+      $('#tdNumberCommLimitDateTimeLavel').show();
+      $('#tdNumberCommLimitDateTime').show();
+    } else {
+      $('#tdNumberCommLimitDateTimeLavel').hide();
+      $('#tdNumberCommLimitDateTime').hide();
+    }
+  };
+
+
+  function haisyaPlanKubunOnChanged(val) {
+    if (val == 5) {
+      $('#HaisyaPlanKubun_SelectDriver').show();
+    } else {
+      $('#HaisyaPlanKubun_SelectDriver').hide();
+    }
+  };
+
+  /**
+   *　地点登録処理
+   * @@param key
+   */
+  function btnPointRegister_Click(key) {
+    CommonWaitStart();
+
+    event.preventDefault();
+    const elements = document.body.querySelectorAll("input[name^='" + key + "']");
+    let len = elements.length;
+
+    if (document.getElementById(key.replace('[', '_').replace(']', '__') + "Lat").value.length == 0) {
+      alertInputError('地図ポイントが選択されていません');
+      return false;
+    };
+
+    let htmlStr = '';
+    for (let i = 0; i < len; i++) {
+      let inputName = elements.item(i).name.replace(key, 'PointData');
+      htmlStr += "    <tr>";
+      htmlStr += "      <td>" + elements.item(i).name + "</td>";
+      htmlStr += "      <td><input name='" + inputName + "' value='" + elements.item(i).value + "' /></td>";
+      htmlStr += "    </tr>";
+    }
+
+    let html = "";
+    html += "<form id='sortData'>";
+    html += "<div hidden>";
+    html += "  <input name='CompanyID' value='" + $('#Company_ID').val() + "' />";
+    html += "  <input name='UserID' value='" + $('#UserID').val() + "' />";
+    html += "</div >";
+    html += "<table>";
+    html += "  <tbody>";
+    html += htmlStr;
+    html += "  </tbody>";
+    html += "</table>";
+    html += "</form >";
+
+/*    alert(html);*/
+
+    $("#SortHere").html(html);
+
+    //Formの参照を取る
+    let $form = $('#sortData');
+
+    $.ajax({
+          url: '@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "PointRegisterModal" })',
+          type: 'post',
+          data: $form.serialize(),
+        }).done(function (response) {
+          if (response.errorMessage != null) {
+              alertError(`【エラー】${response.errorMessage}`);
+              return false;
+          } else {
+            //alert(response.partialView);
+            $("#ModalHere").html(response.partialView);
+            $("#ModalHere").find('.modal').modal('show', { backdrop: "static", });
+            return false;
+
+          }
+        }).fail(function (xhr) {
+          alertError(xhr, "【ネットワークエラー】");
+            console.log(xhr);
+            return false;
+        }).always(function (xhr, msg) {
+          CommonWaitEnd();
+        });
+
+    return false;
+  }
+
+
+  ///ドライブルートリスト
+  let DriveRouteList = [];
+
+  /**
+   * ドライブルートリストの作成処理
+   * @@param modelVal
+   */
+  function CreateDriveRouteArray(modelVal) {
+
+    let i = 0;
+    modelVal.driveRouteListData.forEach(function (object) {
+      DriveRouteList[i] = [];
+      DriveRouteList[i][0] = object["routeID"];
+      DriveRouteList[i][1] = [];
+      DriveRouteList[i][1] = object;
+      DriveRouteList[i][2] = [];
+      DriveRouteList[i][2] = object["routeType"];
+      i++;
+    });
+
+  };
+
+  function login() {
+      const obj = {
+          uid: "@(Model.MapApiSettings.AuthAid.Uid)"
+          , pwd: "@(Model.MapApiSettings.AuthAid.Pwd)"
+          , sid: "@(Model.MapApiSettings.AuthAid.Sid)"
+          , device_flag: 1
+      }
+    ZisAuth.login(obj);
+
+  }
+
+  function logout() {
+      ZisAuth.logout();
+      alert("logout");
+  };
+
+  function SetWindowSize() {
+
+    // ウィンドウの高さ
+    w_height = $('#maptd').height();
+    //ウィンドウ幅の高さをw_heightに取得
+    w_width = $('#maptd').width();
+    if (w_height < 0) { w_height = 50; }
+    if (w_width < 0) { w_width = 50; }
+
+    //要素MapContainerをdiv_targetに取得
+    let div_target = document.getElementById("MapContainer");
+    //div_targetの高さをw_heightに書き換え
+    div_target.style.height = w_height + 'px';
+    div_target.style.width = w_width + 'px';
+
+    //$('#ZMap').height(div_target.style.height - 0);
+    $('#ZMap').width(div_target.style.width - 0);
+  };
+
+
+  // 地図オブジェクト
+  let map = null;
+  // 地図ポリライン
+  let pl = null;
+
+  ZisAuth.addEventListener("load", function (e) {
+    login();
+    window.scroll({ top: 0 });
+  });
+
+  ZisAuth.addEventListener("loaded", function (e) {
+    window.scroll({ top: 0 });
+    //alert("loaded");
+  });
+
+  // failedイベントリスナー設定
+  // 認証クラスでエラーが発生した場合にfailedが発行される
+  ZisAuth.addEventListener("failed", function (e) {
+      alert("エラーが発生しました。(" + e.status.code + ")");
+  });
+
+  // readyイベントリスナー設定
+  // 認証クラスで地図が利用可能な場合にreadyが発行される
+  ZisAuth.addEventListener("ready", function (e) {
+    //alert("ready");
+    MapPreview();
+  });
+
+  // clickイベントリスナー設定
+  // 認証クラスで地図が利用可能な場合にclickが発行される
+  ZisAuth.addEventListener('click', function (map) {
+      alert("aaa");
+  });
+
+  /** 地図を表示する */
+  function MapPreview() {
+    // マップエレメント要素を取得する
+    let mapElement = document.getElementById("ZMap");
+
+    // MapOptionsをデフォルト値から変更する場合各パラメータに値を設定
+    let mapOptions = ZisAuth.getMapOption();
+    mapOptions.zipsMapType = "kP8KjZdn";
+    mapOptions.center = new ZDC.LatLng(34.35132785373264, 132.35272922092014);
+
+    mapOptions.zoom = 10; // ★ズームレベルを設定
+    mapOptions.minZoom = 3
+    mapOptions.maxZoom = 22;
+    mapOptions.touchOperation = true;
+
+    // 地図を生成
+    map = new ZDC.Map(
+      mapElement,
+      mapOptions,
+      function () {
+        // Success callback
+        // コントロールを追加する
+        // コンパスの表示
+        map.addControl(new ZDC.Compass('top-right'));
+        // ズームボタンの表示
+        map.addControl(new ZDC.ZoomButton('bottom-right'));
+        // スケールバーの表示
+        map.addControl(new ZDC.ScaleBar('bottom-left'));
+        // 中心マーカーを作成します
+        map.addControl(new ZDC.CenterMarker());
+
+        window.scroll({ top: 0 });
+
+        divSerchResize();
+
+        //完了ダイアログ
+        Swal.fire({
+          title: '処理終了'
+          , html: '処理を終了しました。'
+          , type: 'info'
+          , timer: 1
+        });
+      },
+      function () {
+        // Failure callback
+      }
+    );
+
+  }
+
+    /**
+     * 地図のセンターの住所情報をゼンリンAPIより取得
+     * @@param s
+     * @@param i
+     */
+  function GetAddress(s, i) {
+
+    if (map == null || map.getCenter() == null) { return false; }
+
+    let sId = s + '_' + i;
+    $('#SetAddressItem').val(sId);
+
+    let latLng = map.getCenter();
+    $('#' + sId + '__Lat').val(latLng.lat);
+    $('#' + sId + '__Lng').val(latLng.lng);
+
+
+    ///処理中ダイアログ
+    Swal.fire({
+      title: '住所データ読込中'
+      , html: 'ゼンリン地図APIで住所情報取得中です。<br /> 表示されるまでそのままお待ちください。<br /> 場所が密集地の場合、読み込みに時間がかかります。'
+      , allowOutsideClick: false     //枠外をクリックしても画面を閉じない
+      , showConfirmButton: false
+      , didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+
+    let slatlon = String(latLng.lng) + ',' + String(latLng.lat);
+    //alert(slatlon);
+
+    $.post('@Url.RouteUrl("Default", new { controller = "Map", Action = "MapGetAddressFromPosition" })',
+      {
+        position: String(slatlon),
+        modal_flg: 1,
+        range: 10,
+      })
+      .done(function (response) {
+
+          if (response.errorMessage != null) {
+              alertError(`【エラー】${response.errorMessage}`);
+              return false;
+          } else {
+            $("#ModalHere").html(response.partialView);
+            $("#ModalHere").find('.modal').modal('show');
+
+            //完了ダイアログ
+            Swal.fire({
+              title: '処理終了'
+              , html: '処理を終了しました。'
+              , type: 'info'
+              , timer: 1
+            });
+
+            return;
+          }
+      })
+      .fail(function (xhr) {
+        alertError(xhr, "【ネットワークエラー】");
+          console.log(xhr);
+        return false;
+      })
+      .always(function (xhr, msg) {
+      /*    console.log(xhr, msg);*/
+      });
+    return false;
+  };
+
+  function ModalClose() {
+    $('#ModalHere').find('.modal').modal('hide');
+    $('#ModalHere').html('');
+  };
+
+  /**
+    *
+    * @@param routeID
+    * @@param routeType
+    */
+  function OnClickDriveRouteDetail(routeID, routeType) {
+    CommonWaitStart();
+    let url = '/RouteDetail?routeID=' + routeID + '&routeType=' + routeType + '';
+    window.open(url);
+    CommonWaitEnd();
+  };
+
+  /**
+   * 地図に表示されているドライブルートを削除する
+   * */
+  function driveListClose() {
+    if (pl != null) { map.removeWidget(pl); }
+  };
+
+
+
+  /***
+   *　ドライブルート検索の為の入力チェック
+   * */
+  function VaridationCheckForDriveRoute() {
+
+    if (!($('#SyasyuID').val() != null && $('#SyasyuID').val().length > 0 && $('#SyasyuID').val() != '0') ) {
+      alertInputError("車種が選択されていません");
+      $('#SyasyuID').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#SyasyuID').css('background-color', 'white');
+    }
+
+    if (!($('#Ferry').val() != null && $('#Ferry').val().length > 0)) {
+      alertInputError("フェリー考慮指定が選択されていません");
+      $('#Ferry').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#Ferry').css('background-color', 'white');
+    }
+
+    if (!($('#TimeRestriction').val() != null && $('#TimeRestriction').val().length > 0)) {
+      alertInputError("規制考慮が選択されていません");
+      $('#TimeRestriction').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#TimeRestriction').css('background-color', 'white');
+    }
+
+    if (!($('#Twouturn').val() != null && $('#Twouturn').val().length > 0)) {
+      alertInputError("2段階Uターン回避指定が選択されていません");
+      $('#Twouturn').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#Twouturn').css('background-color', 'white');
+    }
+
+    if (!($('#Area').val() != null && $('#Area').val().length > 0)) {
+      alertInputError("標準運賃計算エリアが選択されていません");
+      $('#Area').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#Area').css('background-color', 'white');
+    }
+
+    let flgResult = false;
+    let text = document.querySelectorAll(".pointInputCheck");
+    text.forEach(function (inputObj) {
+      let inputObjID = inputObj.id.substring(0, inputObj.id.indexOf('__')) + '__Address';
+      let doc = document.getElementById(inputObjID);
+      if (!(doc.value != null && doc.value.length > 0)) {
+        alertInputError("ルート場所が指定されていません");
+        doc.style.backgroundColor = 'lightcoral'
+        flgResult = true;
+        return;
+      } else {
+        doc.style.backgroundColor = 'white'
+      }
+
+      inputObjID = inputObj.id.substring(0, inputObj.id.indexOf('__')) + '__Kubun';
+      doc = document.getElementById(inputObjID);
+      if (!(doc.value != null && doc.value.length > 0)) {
+        alertInputError("積み卸しが選択されていません");
+        doc.style.backgroundColor = 'lightcoral'
+        flgResult = true;
+        return;
+      } else {
+        doc.style.backgroundColor = 'white'
+      }
+
+    });
+
+    if (flgResult) { return true; }
+
+    return false;
+  };
+
+  /**
+   * 画面登録用の入力チェック
+   */
+  function VaridationCheckForReg() {
+
+    let flgResult = false;
+
+    // table要素を取得
+    let tableElem = document.getElementById('tablePointList');
+    // 行（tr要素）を取得
+    let rowElems = tableElem.rows;
+
+    // 取得した行（tr要素）を繰り返しHTMLを取得;
+    for (i = 0, len = rowElems.length; i < len; i++) {
+
+      var id = rowElems[i].id;
+
+      let elements = rowElems[i].querySelectorAll('[name$="].Kubun"]');
+      elements.forEach((inputObj) => {
+        kubun = inputObj.value;
+      });
+
+      if (kubun != 2) {
+        elements = rowElems[i].querySelectorAll('[Name^="PointList["]');
+        elements.forEach((inputObj) => {
+          if (inputObj.name.indexOf("PointDateTime") > 0) {
+            var pointDateTime = inputObj.value;
+
+            if (!(pointDateTime != null && pointDateTime.length > 0)) {
+              alertInputError("日時が指定されていません");
+              $('#' + inputObj.id + '').css('background-color', 'lightcoral');
+              flgResult = true;
+              return true;
+            } else {
+              let datetime = new Date(pointDateTime);
+              if (datetime.getFullYear() > 2000) {
+                $('#' + inputObj.id + '').css('background-color', 'white');
+
+                //// 積みだけは時間を指定
+                //if (kubun == 1 && datetime.getHours() == 0) {
+                //  alertInputError("積みにおいては暫定でも時間まで指定してください");
+                //  $('#' + inputObj.id + '').css('background-color', 'lightcoral');
+                //  flgResult = true;
+                //  return true;
+                //}
+
+              } else {
+                alertInputError("日時が選択されていません");
+                $('#' + inputObj.id + '').css('background-color', 'lightcoral');
+                flgResult = true;
+                return true;
+
+              }
+            }
+
+          };
+        });
+      }
+
+    }
+    if (flgResult) { return true; }
+
+    if (!($('#Daisuu').val() != null && $('#Daisuu').val().length > 0)) {
+      alertInputError("台数が選択されていません");
+      $('#Daisuu').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#Daisuu').css('background-color', 'white');
+    }
+
+    if (!($('#TantouID').val() != null && $('#TantouID').val().length > 0)) {
+      alertInputError("配車担当が選択されていません");
+      $('#TantouID').css('background-color', 'lightcoral');
+      return true;
+    } else {
+      $('#TantouID').css('background-color', 'white');
+    }
+
+    //if ($('#NumberCommLimitKubun').val() == "0") {
+    //  if (!($('#NumberCommLimitDateTime').val() != null && $('#NumberCommLimitDateTime').val().length > 0)) {
+    //    alert("車番連絡希望期日が入力されていません");
+    //    $('#NumberCommLimitDateTime').css('background-color', 'lightcoral');
+    //    return true;
+    //  } else {
+    //    $('#NumberCommLimitDateTime').css('background-color', 'white');
+    //  }
+    //} else {
+    //  $('#NumberCommLimitDateTime').css('background-color', 'white');
+    //}
+
+    return false;
+  };
+
+  /// <summary>
+  /// 住所から緯度経度を算出して地図に反映
+  /// </summary>
+  function GetlatlonFromAddress() {
+
+    CommonWaitStart();
+
+    let addressVal = $('#txtAddress').val();
+    //alert(addressVal);
+    if (addressVal == "") { return false; }
+
+    $.post('@Url.RouteUrl("Default", new { controller = "Map", Action = "GetlatlonFromAddress" })',
+    {
+      address: String(addressVal),
+
+    })
+    .done(function (response) {
+
+      if (response.errorMessage != null) {
+          alertError(`【エラー】${response.errorMessage}`);
+          return false;
+      } else {
+        //alert(response.latlon_lat + ";;;" + response.latlon_lng);
+        map.setCenter(new ZDC.LatLng(Number(response.latlon_lat), Number(response.latlon_lng)));
+        //map.setZoom(Number(15));
+        //return false;
+      }
+    })
+    .fail(function (xhr) {
+      alert('fail:' + xhr);
+      console.log(xhr);
+      return false;
+    })
+    .always(function (xhr, msg) {
+      CommonWaitEnd();
+    });
+
+  };
+
+  /**
+   *　住所検索用画面（モーダル）からの選択時処理
+   * @@param address_code
+   * @@param BuildingZid
+   * @@param BuildingZid_Attr
+   * @@param buildingName
+   * @@param address
+   * @@param post_code
+   * @@param address_level
+   * @@param address2
+   * @@param address3
+   * @@param address4
+   */
+  function SetAddressData(address_code, BuildingZid, BuildingZid_Attr, buildingName, address, post_code, address_level, address2, address3, address4) {
+
+    let sId = $('#SetAddressItem').val();
+
+    $('#ModalHere').find('.modal').modal('hide');
+    $('#ModalHere').html('');
+
+    $('#' + sId + '__BuildingName').val(buildingName);
+    $('#' + sId + '__Address').val(address);
+    $('#' + sId + '__Post_code').val(post_code);
+    $('#' + sId + '__Address_Code').val(address_code);
+    $('#' + sId + '__BuildingZid').val(BuildingZid);
+    $('#' + sId + '__BuildingZid_Attr').val(BuildingZid_Attr);
+    $('#' + sId + '__Address_Level').val(address_level);
+    $('#' + sId + '__Address2').val(address2);
+    $('#' + sId + '__Address3').val(address3);
+    $('#' + sId + '__Address4').val(address4);
+  };
+
+  /**
+   *　ドライブルート選択一覧用画面（モーダル）から選択後の処理
+   * @@param routeID
+   */
+  function SelectRouteList(routeID) {
+
+    $('#ModalHere').find('.modal').modal('hide');
+    $('#ModalHere').html('');
+    $('#ZMap').show();
+    driveListClose();
+
+    for (let i = 0; i < DriveRouteList.length; i++) {
+
+      if (routeID == DriveRouteList[i][0]) {
+        let obj = DriveRouteList[i][1];
+        //alert(obj["routeID"]);
+        $('#SelectedDriveRouteDisplay_routeID').val(obj["routeID"]);
+        $('#SelectedDriveRouteDisplay_routeType').val(obj["routeType"]);
+        $('#SelectedDriveRouteDisplay_RouteTypeDisplay').val(obj["routeTypeDisplay"]);
+        $('#SelectedDriveRouteDisplay_TotalTime').val(obj["totalTime"].trim());
+        $('#SelectedDriveRouteDisplay_TotalDistance').val(obj["totalDistance"]);
+        $('#SelectedDriveRouteDisplay_Totaltoll').val(obj["totaltoll"].toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,'));
+        $('#SelectedDriveRouteDisplay_GrossAmountTotal').val(obj["grossAmountTotal"].toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,'));
+        $('#SelectedDriveRouteDisplay_StdALLFreight').val(obj["stdALLFreight"].toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,'));
+
+        if ($('#BaseFee').val() != null && $('#BaseFee').val() == "0") {
+          $('#BaseFee').val(obj["stdFreight"].toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,'));
+          $('#ExtraCharge').val(obj["stdExcharge"].toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,'));
+          $('#Toll').val(obj["totaltoll"].toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,'));
+          $('#GrossAmount').val(obj["stdALLFreight"].toString().replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,'));
+        }
+
+        $('#SelectedDriveRouteDisplay_BreakTime').val(obj["breakTime"]);
+        $('#SelectedDriveRouteDisplay_RestTime').val(obj["restTime"]);
+        $('#SelectedDriveRouteDisplay_FuelConsume').val(obj["fuelConsume"]);
+        $('#SelectedDriveRouteDisplay_RestTimeDisplay').val(obj["restTimeDisplay"]);
+        $('#SelectedDriveRouteDisplay_StdFreight').val(obj["stdFreight"]);
+        $('#SelectedDriveRouteDisplay_StdExcharge').val(obj["stdExcharge"]);
+        $('#SelectedDriveRouteDisplay_StdTotalFreight').val(obj["stdTotalFreight"]);
+        $('#SelectedDriveRouteDisplay_GrossAmountForLaborCost').val(obj["grossAmountForLaborCost"]);
+        $('#SelectedDriveRouteDisplay_GrossAmountForFuelCost').val(obj["grossAmountForFuelCost"]);
+        $('#SelectedDriveRouteDisplay_GrossAmountForSyaryoCost').val(obj["grossAmountForSyaryoCost"]);
+        $('#SelectedDriveRouteDisplay_GrossAmountForLuggage').val(obj["grossAmountForLuggage"]);
+        $('#SelectedDriveRouteDisplay_GrossAmountForExcharge').val(obj["grossAmountForExcharge"]);
+        $('#SelectedDriveRouteDisplay_GrossAmount').val(obj["grossAmount"]);
+        $('#SelectedDriveRouteDisplay_TotalDays').val(obj["totalDays"]);
+
+
+        $('#SelectedDriveRouteDisplay_Height').val(obj["height"]);
+        $('#SelectedDriveRouteDisplay_Width').val(obj["width"]);
+        $('#SelectedDriveRouteDisplay_Weight').val(obj["weight"]);
+        $('#SelectedDriveRouteDisplay_Nenpi').val(obj["nenpi"]);
+        $('#SelectedDriveRouteDisplay_RouteTitleStyle').val(obj["routeTitleStyle"]);
+        $('#SelectedDriveRouteDisplay_RouteTypeClass').val(obj["routeTypeClass"]);
+        $('#SelectedDriveRouteDisplay_RestTimeDisplay').val(obj["restTimeDisplay"]);
+        $('#SelectedDriveRouteDisplay_BreakTimeDisplay').val(obj["breakTimeDisplay"]);
+
+
+        $('#SelectedDriveRouteDisplay_Syasyu').val(obj["syasyu"]);
+        $('#SelectedDriveRouteDisplay_Kata').val(obj["kata"]);
+        $('#SelectedDriveRouteDisplay_SyasyuSize').val(obj["syasyuSize"]);
+        setPolyline(obj);
+      }
+    };
+
+    window.scroll({ top: 0 });
+
+
+  };
+
+
+  /**
+   * ポリラインを地図オブジェクト(map)に追加
+   * @@param model
+   */
+  function setPolyline(obj) {
+
+    let latlons = [];
+
+    let line = obj["line"];
+
+    line.forEach(point => {
+      latlons.push(new ZDC.LatLng(point["lat"], point["lng"]));
+    });
+
+    // ポリラインを地図オブジェクト(map)に追加
+    pl = new ZDC.Polyline(latlons, { color: '#ff0000', width: 5, pattern: 'solid', opacity: 1.0 });
+    map.addWidget(pl);
+  };
+
+
+
+  /**
+   * ドライブルートの表示（修正画面用）
+   * @@param routeID
+   * @@param routeType
+   */
+  function DriveRouteDisplayForMap() {
+    var routeType = document.getElementById("SelectedDriveRouteDisplay_routeType").value;
+    for (let i = 0; i < DriveRouteList.length; i++) {
+      if (routeType == DriveRouteList[i][2]) {
+        let obj = DriveRouteList[i][1];
+        setPolyline(obj);
+        return;
+      }
+    }
+  }
+
+  /**
+   *
+   * @@param routeID
+   * @@param routeType
+   */
+  function DriveRouteDetail(routeID, routeType) {
+    window.open('./DriveRouteDetail?routeID=' + routeID + '&routeType=' + routeType + '');
+  }
+
+  /**
+   *　戻るボタン押下時
+   * */
+  function BackMenuOnClick() {
+    event.preventDefault();
+    if ($('#WebViewFlg').val() == 0) {
+      logout();
+    }
+
+    let form = document.createElement('form');
+    form.id = "formBackMenu";
+
+
+    form.action = '@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "BackMenu" })';
+    form.method = 'POST';
+
+    // body に追加
+    document.body.appendChild(form);
+
+    let html = '';
+    html += '            <input type="hidden" id="SelectDay" name="SelectDay" value="' + $('#SelectDay').val() + '" />';
+    html += '            <input type="hidden" id="SelectTantou" name="SelectTantou" value="' + $('#SelectTantou').val() + '" />';
+    html += '            <input type="hidden" id="SelectSyasyu" name="SelectSyasyu" value="' + $('#SelectSyasyu').val() + '" />';
+    html += '            <input type="hidden" id="SelectKata" name="SelectKata" value="' + $('#SelectKata').val() + '" />';
+    html += '            <input type="hidden" id="SelectGroup" name="SelectGroup" value="' + $('#SelectGroup').val() + '" />';
+    html += '            <input type="hidden" id="SelectMonth" name="SelectMonth" value="' + $('#SelectMonth').val() + '" />';
+    html += '            <input type="hidden" id="BackMenuAction" name="BackMenuAction" value="' + $('#BackMenuAction2').val() + '" />';
+    html += '            <input type="hidden" id="SenzokuID" name="SenzokuID" value="' + $('#SenzokuID').val() + '" />';
+    html += '            <input type="hidden" id="SenzokuDriverID" name="SenzokuDriverID" value="' + $('#SenzokuDriverID').val() + '" />';
+
+    form.innerHTML = html;
+    form.submit();
+
+
+  };
+
+
+  /**
+   *　顧客選択ボタン押下時
+   * @@param CustomerID
+   * @@param CustomerName
+   */
+  function selectCustomerSelectedCallBack(obj) {
+    $('#KokyakuId').val(obj["Customer_Branch_ID"]).change();
+    $('#KokyakuCode').val(obj["Customer_Branch_Code"]);
+    $('#KokyakuName').val(obj["Customer_Branch_Name_Abbr"]);
+  };
+
+  /**
+   *　顧客担当選択ボタン押下時
+   * @@param CustomerID
+   * @@param TantouID
+   * @@param TantouName
+   */
+  function selectCustomerTantouSelectedCallBack(obj) {
+    $('#KokyakuTantouId').val(obj["Tantou_ID"]).change();
+    $('#KokyakuTantouName').val(obj["Tantou_Name_Abbr"]);
+
+    $('#KokyakuTantouCellPhone').val(obj["Cell_Phone"]);
+    $('#KokyakuTantouPhone1').val(obj["Phone1"]);
+    $('#KokyakuTantouFax1').val(obj["Fax1"]);
+
+  };
+
+  /**
+   *　住所検索画面（モーダル）で住所選択時の処理
+   * @@param ken
+   * @@param shiku
+   * @@param choiki
+   */
+  function SeachAddressModalOnSelectedAddress(ken, shiku, choiki) {
+
+    let addressVal = ken + shiku + choiki;
+    if (choiki != '') { addressVal += choiki; }
+    $('#txtAddress').val(addressVal);
+
+    GetlatlonFromAddress();
+
+  };
+
+  /**
+   *　住所検索画面（モーダル）で登録ポイント選択時の処理
+   * @@param latlon_lat
+   * @@param latlon_lng
+   * @@param address
+   */
+  function SeachAddressModalOnSelectedPoint(latlon_lat, latlon_lng, address) {
+    let addressVal = address;
+    $('#txtAddress').val(addressVal);
+    map.setCenter(new ZDC.LatLng(Number(latlon_lat), Number(latlon_lng)));
+  };
+
+
+
+
+
+
+  /**
+   * 地図のりサイズ処理
+   * */
+  function MapResize() {
+    //要素MapContainerをdiv_targetに取得
+    let div_target = document.getElementById("MapContainer");
+    //alert(div_target.offsetHeight);
+    $('#ZMap').height(div_target.style.height - 0);
+  };
+
+
+  /**
+   * 過去案件リストの案件ボタンクリック
+   * @@param obj
+   */
+  async function btnSelectKakoAnkenOnClick(obj) {
+    event.preventDefault();
+    var ankenId = obj["Anken_ID"];
+    //alert(ankenId);
+
+    $('#Anken_ID_KakoSelect').val(ankenId);
+
+    var amount = Number(obj["GrossAmount"]);
+    if (!isNaN(amount)) {
+      amount = amount.toLocaleString();
+    }
+    //num.toLocaleString() // => "12,345"
+
+    var sMessage = "下記案件情報をコピーして新規作成しますか？　<br/>「はい」を選択すると、新規登録用に画面を開き直します。<br/>";
+    sMessage += "<div style='text-align: left; padding-left: 2rem;'>";
+    sMessage += "顧客名：" + obj["KokyakuName"] + "<br/>";
+    sMessage += "車種：" + obj["SyasyuDisplay2"] + "<br/>";
+    sMessage += "積み：" + obj["StartAddressDisplay3"] + "<br/>";
+    sMessage += "卸し：" + obj["EndAddressDisplay3"] + "<br/>";
+    sMessage += "荷物：" + obj["Luggage"] + "<br/>";
+    sMessage += "請求額：" + amount + "円<br/>";
+    sMessage += "</div>";
+
+    let resultMsg = await alertYesNoMsg("流用確認", null, "warning", "流用", null, sMessage);
+    if (resultMsg == false) { return false; }
+
+    logout();
+
+    var form = document.getElementById('frmMain');
+    form.action = '@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "ExecCopyAnkenForKako" })';
+    form.method = 'POST';
+    form.submit();
+
+    return false;
+
+
+  };
+
+  /**
+   * 配車予定が専任の場合、乗務員を共通乗務員選択ダイアログから選択
+   * */
+  function SelectCompanyDriverOnClick() {
+    openCommonDialogForCompanyDriver($('#Company_ID').val(), $('#User_ID').val(), $('#DriverID').val());
+  };
+
+  /**
+* 共通乗務員選択ダイアログで一覧選択されたときのCallBack関数
+* */
+  function selectCompanyDriverSelectedCallBack(obj) {
+    $('#HaisyaDriverId').val(obj["Driver_ID"]);
+    $('#HaisyaDriverSyaryoId').val(obj["DriverSyaryo_ID"]);
+    $('#HaisyaDriverDisplay').val(obj["Employee_Number"] + ";" + obj["Display_Name"]);
+
+
+  };
+
+
+</script>
+<script src="~/js/EnterKeyCancel.js"></script>

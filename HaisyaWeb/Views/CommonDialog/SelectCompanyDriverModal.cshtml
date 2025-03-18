@@ -1,0 +1,227 @@
+﻿@model CommonDialogModel.SelectCompanyDriverModel
+
+
+
+<style>
+  .div-area-company-driver-dialog {
+    margin: auto;
+    flex-wrap: wrap;
+    display: flex;
+    padding: 0 5px 0 5px
+  }
+
+  .table-CompanyDriverListDataModal {
+    overflow: auto;
+    width: 100%;
+    max-height: 700px;
+  }
+
+    .table-CompanyDriverListDataModal table {
+      margin: 0;
+      border-spacing: 0;
+      width: 100%;
+      font-size: 12px;
+    }
+
+    .table-CompanyDriverListDataModal th {
+      white-space: nowrap;
+      position: sticky;
+      top: -1px;
+      left: 0;
+      border-right: 1px solid #999;
+      border-bottom: 1px solid #999;
+      background-color: lemonchiffon;
+      text-align: center;
+      padding: 0.2rem 0 0.2rem 0;
+    }
+
+    .table-CompanyDriverListDataModal td {
+      white-space: nowrap;
+      padding: 2px;
+      border-right: 1px solid #999;
+      border-bottom: 1px solid #999;
+    }
+
+    .table-CompanyDriverListDataModal tr:first-child th {
+      border-top: 1px solid #999;
+    }
+
+    .table-CompanyDriverListDataModal th:first-child {
+      border-left: 1px solid #999;
+    }
+
+    .table-CompanyDriverListDataModal tr:first-child th:first-child {
+      z-index: 1;
+    }
+</style>
+
+
+<div id="hiddenItem" hidden>
+  @Html.HiddenFor(Model => Model.CompanyID)
+  @Html.HiddenFor(Model => Model.SelectedID)
+  @Html.HiddenFor(Model => Model.UserID)
+  @*@Html.HiddenFor(Model => Model.MyTantouOnlyFlg)
+  @Html.HiddenFor(Model => Model.NowUsingSyaryoFlg)*@
+</div>
+
+
+<div class="modal-dialog container" role="document" style="">
+  <div class="modal-content">
+    <div class="model-body">
+      <div class="div-area-company-driver-dialog">
+        <table class="table jbc-table table-borderless" style="padding: 0; background-color: whitesmoke;" border="1">
+          <tbody>
+            <tr style="vertical-align: middle;">
+              @*<td width="20px"></td>*@
+              <td class="col-sm-2">
+                <label class="control-label align-self-center align-middle text-end" style="padding:0;">車番：</label>
+                @Html.TextBoxFor(model => Model.Syaban, null, new { @class = "text", @style = "width:90px;" })
+              </td>
+              <td class="col-sm-3">
+                @Html.LabelFor(model => model.SelectSyasyuID, htmlAttributes: new { @class = "control-label align-self-center align-middle text-end", @style = "padding: 0;" })
+                <div class="" style="display: inline-block; _display: inline; padding: 0; width: 80%;">
+                  @Html.DropDownListFor(model => model.SelectSyasyuID, new SelectList(Model.SyasyuSelectList, "Value", "Text", "Selected"), "車種を選択", new { @class = "form-control", @style = "padding: 0;" })
+                  @Html.ValidationMessageFor(model => model.SelectSyasyuID, "", new { id = "SelectDriverKubun", @class = "text-danger align-middle" })
+                </div>
+              </td>
+              @*<td class="col-sm-3">
+                  @Html.LabelFor(model => model.SelectKata, htmlAttributes: new { @class = "control-label align-self-center align-middle text-end", @style = "padding: 0;" })
+                  <div class="2" style="display: inline-block; _display: inline; padding: 0; width: 80%;">
+                    @Html.DropDownListFor(model => model.SelectKata, new SelectList(Model.KataSelectList, "Value", "Text", "Selected"), "型を選択", new { @class = "form-control", @style = "padding: 0;" })
+                    @Html.ValidationMessageFor(model => model.SelectKata, "", new { id = "SelectMonth", @class = "text-danger align-middle" })
+                  </div>
+                </td>*@
+              <td class="col-sm-2">
+                @Html.CheckBoxFor(model => model.MyTantouOnlyFlg, new { })
+                @Html.LabelFor(model => model.MyTantouOnlyFlg, htmlAttributes: new { @class = "control-label align-self-center align-middle", @style = "padding: 0; margin-right: 1rem;" })
+              </td>
+              <td class="col-sm-2">
+                @Html.CheckBoxFor(model => model.NowUsingSyaryoFlg, new { })
+                @Html.LabelFor(model => model.NowUsingSyaryoFlg, htmlAttributes: new { @class = "control-label align-self-center align-middle", @style = "padding: 0; margin-right: 1rem;" })
+              </td>
+              <td class="col-sm-1">
+                <button style="width: 100px; float: right;" class="btn btn-primary align-items-end" onclick="listDisplay();return false;">検索</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div id="alertTop" style="vertical-align: middle; margin-top: 1px;">
+          @*<label>※Top100件を抽出</label>*@
+        </div>
+
+        <div id="DataList" class="table-CompanyDriverListDataModal dataList" style="height:500px; margin: 0;">
+
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+
+  <script>
+
+    $(function () {
+
+      ///担当者チェックフラグの条件変更時
+      $('#MyTantouOnlyFlg').on('change', function () {
+        listDisplay();
+        return false;
+      });
+
+      ///使用中チェックフラグの条件変更時
+      $('#NowUsingSyaryoFlg').on('change', function () {
+        listDisplay();
+        return false;
+      });
+
+    ///車番コードの条件変更時
+      $('#Syaban').on('change', function () {
+      listDisplay();
+      return false;
+    });
+
+    ///車種の条件変更時
+      $('#SelectSyasyuID').on('change', function () {
+      listDisplay();
+      return false;
+    });
+
+    /////型の条件変更時
+    //  $('#SelectKata').on('change', function () {
+    //  listDisplay();
+    //  return false;
+    //});
+
+      listDisplay();
+
+  });
+
+  /**
+   * 画面を閉じる
+   * selectSyaryoModalCloseCallBack
+   * */
+    function ModalCommonDialogClose() {
+
+      $('#ModalCommonDialog').html('');
+
+    if (typeof selectCompanyDriverModalCloseCallBack == 'function') {
+      // 関数があった場合の処理内容
+      selectCompanyDriverModalCloseCallBack();
+    }
+  };
+
+  /**
+   * 一覧データ選択時の処理
+   * selectSyaryoModalCloseCallBack
+   * @@param data
+   */
+    function selectOnClick(data) {
+
+      $('#ModalCommonDialog').html('');
+      $('#ModalCommonDialog').dialog("close");
+
+    //コールバック関数チェック
+    if (typeof selectCompanyDriverSelectedCallBack == 'function') {
+      // 関数があった場合の処理内容
+      selectCompanyDriverSelectedCallBack(data);
+    }
+
+  };
+
+  /**
+   * 車輌検索一覧の表示
+   * */
+  function listDisplay() {
+
+    var selectTab = $('input[name="num_of_inq"]:checked').val();
+    $('#MyTantouOnlyFlg').val(selectTab);
+
+
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "JsonGetCompanyDriverDataList" })',
+      {
+        Syaban: $("#Syaban").val(),
+        SelectSyasyuID: $("#SelectSyasyuID").val(),
+/*        SelectKata: $("#SelectKata").val(),*/
+        MyTantouOnlyFlg: $("#MyTantouOnlyFlg").prop('checked'),
+        NowUsingSyaryoFlg: $("#NowUsingSyaryoFlg").prop('checked'),
+
+      },
+      function (data) {
+          if (data.message != null) {
+              alertError(`【エラー】${data.message}`);
+          }
+          else {
+              $('#alertTop').hide();
+              $('#DataList').html(data.partialView);
+          }
+      }
+    );
+
+  };
+
+
+  </script>
+  <script src="~/js/EnterKeyCancel.js"></script>
