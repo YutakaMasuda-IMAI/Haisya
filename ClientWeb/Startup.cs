@@ -1,5 +1,5 @@
 using ClientWeb.Data;
-using DriverAttendance.Service;
+using ClientWeb.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;

@@ -1,4 +1,4 @@
-﻿using HaisyaDesktop.Behavior;
+﻿using HaisyaDesktop.Behavior.DragAndDrop;
 using HaisyaDesktop.Models;
 using Reactive.Bindings;
 using System;

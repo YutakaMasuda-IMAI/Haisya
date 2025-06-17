@@ -1,7 +1,7 @@
 ﻿
-namespace HaisyaDesktop.Behavior
+namespace HaisyaDesktop.Behavior.DragAndDrop
 {
-    using HaisyaDesktop.Utility;
+    using HaisyaDesktop.Utils;
     using Microsoft.Xaml.Behaviors;
     using System;
     using System.Collections.Generic;
@@ -33,7 +33,7 @@ namespace HaisyaDesktop.Behavior
             get { return _leftOffset; }
             set
             {
-                _leftOffset = value - this.XCenter;
+                _leftOffset = value - XCenter;
                 UpdatePosition();
             }
         }
@@ -43,7 +43,7 @@ namespace HaisyaDesktop.Behavior
             get { return _topOffset; }
             set
             {
-                _topOffset = value - this.YCenter;
+                _topOffset = value - YCenter;
                 UpdatePosition();
             }
         }
@@ -58,11 +58,11 @@ namespace HaisyaDesktop.Behavior
             var b = VisualTreeHelper.GetDescendantBounds(adornElement);
             var r = new Rectangle() { Width = b.Width, Height = b.Height };
 
-            this.XCenter = dragPos.X;
-            this.YCenter = dragPos.Y;
+            XCenter = dragPos.X;
+            YCenter = dragPos.Y;
 
             r.Fill = _brush;
-            this.child = r;
+            child = r;
         }
 #endregion Construct
 #region Methods
@@ -76,7 +76,7 @@ namespace HaisyaDesktop.Behavior
 
         protected override Visual GetVisualChild(int index)
         {
-            return this.child;
+            return child;
         }
 
         protected override int VisualChildrenCount
@@ -86,23 +86,23 @@ namespace HaisyaDesktop.Behavior
 
         protected override Size MeasureOverride(Size finalSize)
         {
-            this.child.Measure(finalSize);
-            return this.child.DesiredSize;
+            child.Measure(finalSize);
+            return child.DesiredSize;
         }
         
         protected override Size ArrangeOverride(Size finalSize)
         {
 
-            this.child.Arrange(new Rect(this.child.DesiredSize));
+            child.Arrange(new Rect(child.DesiredSize));
             return finalSize;
         }
 
         private void UpdatePosition()
         {
-            var adorner = this.Parent as AdornerLayer;
+            var adorner = Parent as AdornerLayer;
             if (adorner != null)
             {
-                adorner.Update(this.AdornedElement);
+                adorner.Update(AdornedElement);
             }
         }
 #endregion Method
@@ -156,10 +156,10 @@ namespace HaisyaDesktop.Behavior
         /// </summary>
         protected override void OnAttached()
         {
-            this.AssociatedObject.PreviewMouseDown += PreviewMouseDownHandler;
-            this.AssociatedObject.PreviewMouseMove += PreviewMouseMoveHandler;
-            this.AssociatedObject.PreviewMouseUp += PreviewMouseUpHandler;
-            this.AssociatedObject.QueryContinueDrag += QueryContinueDragHandler;
+            AssociatedObject.PreviewMouseDown += PreviewMouseDownHandler;
+            AssociatedObject.PreviewMouseMove += PreviewMouseMoveHandler;
+            AssociatedObject.PreviewMouseUp += PreviewMouseUpHandler;
+            AssociatedObject.QueryContinueDrag += QueryContinueDragHandler;
             base.OnAttached();
         }
 
@@ -168,10 +168,10 @@ namespace HaisyaDesktop.Behavior
         /// </summary>
         protected override void OnDetaching()
         {
-            this.AssociatedObject.PreviewMouseDown -= PreviewMouseDownHandler;
-            this.AssociatedObject.PreviewMouseMove -= PreviewMouseMoveHandler;
-            this.AssociatedObject.PreviewMouseUp -= PreviewMouseUpHandler;
-            this.AssociatedObject.QueryContinueDrag -= QueryContinueDragHandler;
+            AssociatedObject.PreviewMouseDown -= PreviewMouseDownHandler;
+            AssociatedObject.PreviewMouseMove -= PreviewMouseMoveHandler;
+            AssociatedObject.PreviewMouseUp -= PreviewMouseUpHandler;
+            AssociatedObject.QueryContinueDrag -= QueryContinueDragHandler;
             base.OnDetaching();
         }
 
@@ -182,19 +182,19 @@ namespace HaisyaDesktop.Behavior
         /// <param name="e"></param>
         private void PreviewMouseDownHandler(object sender, MouseButtonEventArgs e)
         {
-            if(!this.IsDragEnable)
+            if(!IsDragEnable)
             {
                 return;
             }
-            this.origin = e.GetPosition(this.AssociatedObject);
-            this.isButtonDown = true;
+            origin = e.GetPosition(AssociatedObject);
+            isButtonDown = true;
 
             if (sender is IInputElement)
             {
                 // マウスダウンされたアイテムを記憶
-                this.dragItem = sender as IInputElement;
+                dragItem = sender as IInputElement;
                 // マウスダウン時の座標を取得
-                this.dragStartPos = e.GetPosition(this.dragItem);
+                dragStartPos = e.GetPosition(dragItem);
             }
         }
 
@@ -205,17 +205,17 @@ namespace HaisyaDesktop.Behavior
         /// <param name="e"></param>
         private void PreviewMouseMoveHandler(object sender, MouseEventArgs e)
         {
-            if (!this.IsDragEnable)
+            if (!IsDragEnable)
             {
                 return;
             }
-            if (e.LeftButton != MouseButtonState.Pressed || !this.isButtonDown)
+            if (e.LeftButton != MouseButtonState.Pressed || !isButtonDown)
             {
                 return;
             }
-            var point = e.GetPosition(this.AssociatedObject);
+            var point = e.GetPosition(AssociatedObject);
 
-            if (CheckDistance(point, this.origin))
+            if (CheckDistance(point, origin))
             {
                 // アクティブWindowの直下のContentに対して、Adornerを付加する
                 var window = Application.Current.Windows.OfType<Window>().FirstOrDefault(w => w.IsActive);
@@ -224,19 +224,19 @@ namespace HaisyaDesktop.Behavior
                 {
                     var root = window.Content as UIElement;
                     var layer = AdornerLayer.GetAdornerLayer(root);
-                    this.dragGhost = new DragAdorner(root, (UIElement)sender, 0.5, this.dragStartPos);
-                    layer.Add(this.dragGhost);
-                    DragDrop.DoDragDrop(this.AssociatedObject, this.DragDropData, this.AllowedEffects);
-                    layer.Remove(this.dragGhost);
+                    dragGhost = new DragAdorner(root, (UIElement)sender, 0.5, dragStartPos);
+                    layer.Add(dragGhost);
+                    DragDrop.DoDragDrop(AssociatedObject, DragDropData, AllowedEffects);
+                    layer.Remove(dragGhost);
                 }
                 else
                 {
-                    DragDrop.DoDragDrop(this.AssociatedObject, this.DragDropData, this.AllowedEffects);
+                    DragDrop.DoDragDrop(AssociatedObject, DragDropData, AllowedEffects);
                 }
-                this.isButtonDown = false;
+                isButtonDown = false;
                 e.Handled = true;
-                this.dragGhost = null;
-                this.dragItem = null;
+                dragGhost = null;
+                dragItem = null;
             }
         }
 
@@ -247,7 +247,7 @@ namespace HaisyaDesktop.Behavior
         /// <param name="e"></param>
         private void PreviewMouseUpHandler(object sender, MouseButtonEventArgs e)
         {
-            this.isButtonDown = false;
+            isButtonDown = false;
         }
 
         /// <summary>
@@ -270,15 +270,15 @@ namespace HaisyaDesktop.Behavior
         /// <param name="e"></param>
         private void QueryContinueDragHandler(object sender, QueryContinueDragEventArgs e)
         {
-            if (!this.IsDragEnable)
+            if (!IsDragEnable)
             {
                 return;
             }
-            if (this.dragGhost != null)
+            if (dragGhost != null)
             {
-                var p = CursorInfo.GetNowPosition((Visual)this.dragItem);
-                this.dragGhost.LeftOffset = p.X;
-                this.dragGhost.TopOffset = p.Y - 32;
+                var p = CursorInfo.GetNowPosition((Visual)dragItem);
+                dragGhost.LeftOffset = p.X;
+                dragGhost.TopOffset = p.Y - 32;
             }
         }
 #endregion Methods

@@ -1,5 +1,4 @@
-﻿
-namespace HaisyaDesktop.Utility
+﻿namespace HaisyaDesktop.Utils
 {
     using System;
     using System.Runtime.InteropServices;
@@ -13,12 +12,12 @@ namespace HaisyaDesktop.Utility
         private static extern void GetCursorPos(out POINT pt);
 
         [DllImport("user32.dll")]
-        private static extern int ScreenToClient(IntPtr hwnd, ref POINT pt);
+        private static extern int ScreenToClient(nint hwnd, ref POINT pt);
 
         private struct POINT
         {
-            public UInt32 X;
-            public UInt32 Y;
+            public uint X;
+            public uint Y;
         }
 
         public static Point GetNowPosition(Visual v)
@@ -26,7 +25,7 @@ namespace HaisyaDesktop.Utility
             POINT p;
             GetCursorPos(out p);
 
-            var source = HwndSource.FromVisual(v) as HwndSource;
+            var source = PresentationSource.FromVisual(v) as HwndSource;
             var hwnd = source.Handle;
 
             ScreenToClient(hwnd, ref p);

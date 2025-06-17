@@ -1,5 +1,5 @@
 ﻿
-namespace HaisyaDesktop.Behavior
+namespace HaisyaDesktop.Behavior.DragAndDrop
 {
     using Microsoft.Xaml.Behaviors;
     using System;
@@ -34,7 +34,7 @@ namespace HaisyaDesktop.Behavior
         /// <param name="dragEventArgs"></param>
         public void OnDragOver(DragEventArgs dragEventArgs)
         {
-            var handler = this.DragOver;
+            var handler = DragOver;
             if (handler != null)
             {
                 handler(dragEventArgs);
@@ -47,7 +47,7 @@ namespace HaisyaDesktop.Behavior
         /// <param name="dragEventArgs"></param>
         public void OnDrop(DragEventArgs dragEventArgs)
         {
-            var handler = this.DragDrop;
+            var handler = DragDrop;
             if (handler != null)
             {
                 handler(dragEventArgs);
@@ -80,8 +80,8 @@ namespace HaisyaDesktop.Behavior
         /// </summary>
         protected override void OnAttached()
         {
-            this.AssociatedObject.PreviewDragOver += DragOverHandler;
-            this.AssociatedObject.PreviewDrop += DropHandler;
+            AssociatedObject.PreviewDragOver += DragOverHandler;
+            AssociatedObject.PreviewDrop += DropHandler;
             base.OnAttached();
         }
         
@@ -90,8 +90,8 @@ namespace HaisyaDesktop.Behavior
         /// </summary>
         protected override void OnDetaching()
         {
-            this.AssociatedObject.PreviewDragOver -= DragOverHandler;
-            this.AssociatedObject.PreviewDrop -= DropHandler;
+            AssociatedObject.PreviewDragOver -= DragOverHandler;
+            AssociatedObject.PreviewDrop -= DropHandler;
             base.OnDetaching();
         }
 
@@ -102,7 +102,7 @@ namespace HaisyaDesktop.Behavior
         /// <param name="e"></param>
         private void DragOverHandler(object sender, DragEventArgs e)
         {
-            var desc = this.Description;
+            var desc = Description;
             if (desc == null)
             {
                 e.Effects = DragDropEffects.None;
@@ -120,7 +120,7 @@ namespace HaisyaDesktop.Behavior
         /// <param name="e"></param>
         private void DropHandler(object sender, DragEventArgs e)
         {
-            var desc = this.Description;
+            var desc = Description;
             if (desc == null)
             {
                 e.Effects = DragDropEffects.None;

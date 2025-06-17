@@ -11,7 +11,7 @@ using System.Text.Json;
 using System.Text.Unicode;
 using System.Threading.Tasks;
 
-namespace HaisyaWeb.API
+namespace HaisyaDesktop.API
 {
     /// <summary>
     /// HTTPクライアント
@@ -34,10 +34,10 @@ namespace HaisyaWeb.API
         private WebAppHttpClient()
         {
 
-            this.baseUrl = "";
+            baseUrl = "";
             // 通信するメソッドでその都度HttpClientをnewすると毎回ソケットを開いてリソースを消費するため、
             // メンバ変数で使い回す手法を取っています。
-            this.httpClient = new HttpClient();
+            httpClient = new HttpClient();
 
         }
 
@@ -52,7 +52,7 @@ namespace HaisyaWeb.API
             this.baseUrl = baseUrl;
             // 通信するメソッドでその都度HttpClientをnewすると毎回ソケットを開いてリソースを消費するため、
             // メンバ変数で使い回す手法を取っています。
-            this.httpClient = new HttpClient();
+            httpClient = new HttpClient();
         }
 
 
@@ -64,8 +64,8 @@ namespace HaisyaWeb.API
         /// <returns>正常：レスポンスのボディ / 異常：null</returns>
         public string GetSample(string someId)
         {
-            String requestEndPoint = this.baseUrl + "/some/search/?someId=" + someId;
-            HttpRequestMessage request = this.CreateRequest(HttpMethod.Get, requestEndPoint);
+            string requestEndPoint = baseUrl + "/some/search/?someId=" + someId;
+            HttpRequestMessage request = CreateRequest(HttpMethod.Get, requestEndPoint);
 
             string resBodyStr;
             HttpStatusCode resStatusCoode = HttpStatusCode.NotFound;
@@ -90,7 +90,7 @@ namespace HaisyaWeb.API
                 // UNDONE: レスポンスが200 OK以外の場合のエラー処理
                 return resBodyStr;
             }
-            if (String.IsNullOrEmpty(resBodyStr))
+            if (string.IsNullOrEmpty(resBodyStr))
             {
                 // UNDONE: レスポンスのボディが空の場合のエラー処理
                 return null;
@@ -106,12 +106,12 @@ namespace HaisyaWeb.API
         /// <returns>正常：固定文字列 / 異常：null</returns>
         public string DeleteSample(string someId)
         {
-            String requestEndPoint = this.baseUrl + "some/" + someId;
-            HttpRequestMessage request = this.CreateRequest(HttpMethod.Delete, requestEndPoint);
+            string requestEndPoint = baseUrl + "some/" + someId;
+            HttpRequestMessage request = CreateRequest(HttpMethod.Delete, requestEndPoint);
 
             HttpStatusCode resStatusCoode = HttpStatusCode.NotFound;
             Task<HttpResponseMessage> response;
-            String resBodyStr;
+            string resBodyStr;
 
             try
             {
@@ -130,7 +130,7 @@ namespace HaisyaWeb.API
                 // UNDONE: レスポンスが200 OK以外の場合のエラー処理
                 return null;
             }
-            if (String.IsNullOrEmpty(resBodyStr))
+            if (string.IsNullOrEmpty(resBodyStr))
             {
                 // UNDONE: レスポンスのボディが空の場合のエラー処理
                 return null;
@@ -145,13 +145,13 @@ namespace HaisyaWeb.API
         /// <returns>正常：レスポンスのボディ / 異常：null</returns>
         public string PostWithStringBodySample(string someKey)
         {
-            String requestEndPoint = this.baseUrl + "some/post";
-            var request = this.CreateRequest(HttpMethod.Post, requestEndPoint);
+            string requestEndPoint = baseUrl + "some/post";
+            var request = CreateRequest(HttpMethod.Post, requestEndPoint);
             var jsonDict = new Dictionary<string, string>()
                 {
                     {"someKey", someKey},
                 };
-            string reqBodyJson = JsonSerializer.Serialize(jsonDict, this.GetJsonOption());
+            string reqBodyJson = JsonSerializer.Serialize(jsonDict, GetJsonOption());
             var content = new StringContent(reqBodyJson, Encoding.UTF8, @"application/json");
             request.Content = content;
 
@@ -175,7 +175,7 @@ namespace HaisyaWeb.API
                 // UNDONE: レスポンスが200 OK以外の場合のエラー処理
                 return resBodyStr;
             }
-            if (String.IsNullOrEmpty(resBodyStr))
+            if (string.IsNullOrEmpty(resBodyStr))
             {
                 // UNDONE: レスポンスのボディが空の場合のエラー処理
                 return null;
@@ -206,8 +206,8 @@ namespace HaisyaWeb.API
         /// <returns>正常：レスポンスのボディ / 異常：null</returns>
         public string PostWithPdfFileBodySample(string filePath)
         {
-            String requestEndPoint = this.baseUrl + "resume/upload";
-            HttpRequestMessage request = this.CreateRequest(HttpMethod.Post, requestEndPoint);
+            string requestEndPoint = baseUrl + "resume/upload";
+            HttpRequestMessage request = CreateRequest(HttpMethod.Post, requestEndPoint);
             // こうした場合、Accept: multipart/form-data を指定となっていることが多いです。
             request.Headers.Remove("Accept");
             request.Headers.Add("Accept", "multipart/form-data");
@@ -231,7 +231,7 @@ namespace HaisyaWeb.API
 
             HttpStatusCode resStatusCoode = HttpStatusCode.NotFound;
             Task<HttpResponseMessage> response;
-            String resBodyStr;
+            string resBodyStr;
 
             using (var fileStream = File.OpenRead(filePath))
             {
@@ -288,7 +288,7 @@ namespace HaisyaWeb.API
                 // UNDONE: レスポンスが200 OK以外の場合のエラー処理
                 return resBodyStr;
             }
-            if (String.IsNullOrEmpty(resBodyStr))
+            if (string.IsNullOrEmpty(resBodyStr))
             {
                 // UNDONE: レスポンスのボディが空の場合のエラー処理
                 return null;
@@ -306,7 +306,7 @@ namespace HaisyaWeb.API
         private HttpRequestMessage CreateRequest(HttpMethod httpMethod, string requestEndPoint)
         {
             var request = new HttpRequestMessage(httpMethod, requestEndPoint);
-            return this.AddHeaders(request);
+            return AddHeaders(request);
         }
 
         /// <summary>
