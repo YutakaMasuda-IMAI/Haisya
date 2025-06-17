@@ -1,15 +1,18 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using WebApplication.Common;
 using WebApplication.Data;
 using WebApplication.Model;
 using WebApplication.Services;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace WebApplication.Controllers.DB
 {
@@ -59,6 +62,7 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
+                await HttpContext.Response.WriteAsync(ex.Message);
                 throw;
             }
             finally
@@ -88,6 +92,7 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
+                await HttpContext.Response.WriteAsync(ex.Message);
                 resultVal.ErrrMessage = ex.Message;
                 throw;
             }
@@ -124,6 +129,7 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
+                await HttpContext.Response.WriteAsync(ex.Message);
                 throw;
             }
             finally
@@ -140,35 +146,40 @@ namespace WebApplication.Controllers.DB
         [HttpGet("GetAnkenData")]
         public async Task<AnkenDataModelDto> GetAnkenData(int AnkenId)
         {
-            AnkenDataModelDto dto = new()
-            {
-                T_Anken = new(),
-                T_Anken_Publish = new(),
-                T_Anken_Detail = new(),
-                T_Anken_PointList = new(),
-                T_Anken_Remarks = new(),
-                T_Anken_ExchargeList = new(),
-                T_Anken_LuggageList = new(),
-                T_Anken_Riyounso = new(),
-                T_Anken_Riyounso_PointList = new(),
-                M_Customer_Tantou = new(),
-            };
+            AnkenDataModelDto dto = new();
+
+
+            //{
+            //    T_Anken = new(),
+            //    T_Anken_Publish = new(),
+            //    T_Anken_Detail = new(),
+            //    T_Anken_PointList = new(),
+            //    T_Anken_Remarks = new(),
+            //    T_Anken_ExchargeList = new(),
+            //    T_Anken_LuggageList = new(),
+            //    T_Anken_Riyounso = new(),
+            //    T_Anken_Riyounso_PointList = new(),
+            //    M_Customer_Tantou = new(),
+            //};
 
             try
             {
-                dto.T_Anken = await _context.T_Ankens.FirstOrDefaultAsync(m => m.Anken_ID == AnkenId);
-                dto.T_Anken_Publish = await _context.T_Anken_Publishes.FirstOrDefaultAsync(m => m.Anken_ID == AnkenId);
-                dto.T_Anken_Detail = await _context.T_Anken_Details.FirstOrDefaultAsync(m => m.Anken_ID == AnkenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order);
-                dto.T_Anken_Remarks = await _context.T_Anken_Remarks.FirstOrDefaultAsync(m => m.Anken_ID == AnkenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order);
-                dto.T_Anken_LuggageList = await _context.T_Anken_Luggages.Where(m => m.Anken_ID == AnkenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order).ToListAsync();
-                dto.T_Anken_EquipmentList = await _context.T_Anken_Equipments.Where(m => m.Anken_ID == AnkenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order).ToListAsync();
-                dto.T_Anken_PointList = await _context.T_Anken_Points.Where(m => m.Anken_ID == AnkenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order).
-                                                                OrderBy(m => m.Kubun).ThenBy(m => m.Point_Order).ToListAsync();
-                dto.T_Anken_ExchargeList = await _context.T_Anken_Excharges.Where(m => m.Anken_ID == AnkenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order).
-                                                                OrderBy(m => m.Komoku_ID).ToListAsync();
-                dto.T_Anken_Riyounso = await _context.T_Anken_Riyounsos.FirstOrDefaultAsync(m => m.Anken_ID == AnkenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order);
-                dto.T_Anken_Riyounso_PointList = await _context.T_Anken_Riyounso_Points.Where(m => m.Anken_ID == AnkenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order).
-                                                                OrderBy(m => m.Point_Order).ToListAsync();
+                dto = await GetAnkenDataDto(AnkenId);
+
+
+                //dto.T_Anken = await _context.T_Ankens.FirstOrDefaultAsync(m => m.Anken_ID == AnkenId);
+                //dto.T_Anken_Publish = await _context.T_Anken_Publishes.FirstOrDefaultAsync(m => m.Anken_ID == AnkenId);
+                //dto.T_Anken_Detail = await _context.T_Anken_Details.FirstOrDefaultAsync(m => m.Anken_ID == AnkenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order);
+                //dto.T_Anken_Remarks = await _context.T_Anken_Remarks.FirstOrDefaultAsync(m => m.Anken_ID == AnkenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order);
+                //dto.T_Anken_LuggageList = await _context.T_Anken_Luggages.Where(m => m.Anken_ID == AnkenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order).ToListAsync();
+                //dto.T_Anken_EquipmentList = await _context.T_Anken_Equipments.Where(m => m.Anken_ID == AnkenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order).ToListAsync();
+                //dto.T_Anken_PointList = await _context.T_Anken_Points.Where(m => m.Anken_ID == AnkenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order).
+                //                                                OrderBy(m => m.Kubun).ThenBy(m => m.Point_Order).ToListAsync();
+                //dto.T_Anken_ExchargeList = await _context.T_Anken_Excharges.Where(m => m.Anken_ID == AnkenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order).
+                //                                                OrderBy(m => m.Komoku_ID).ToListAsync();
+                //dto.T_Anken_Riyounso = await _context.T_Anken_Riyounsos.FirstOrDefaultAsync(m => m.Anken_ID == AnkenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order);
+                //dto.T_Anken_Riyounso_PointList = await _context.T_Anken_Riyounso_Points.Where(m => m.Anken_ID == AnkenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order).
+                //                                                OrderBy(m => m.Point_Order).ToListAsync();
 
                 List<T_Anken_OyaKokyaku> t_Anken_OyaKokyakus = new();
                 t_Anken_OyaKokyakus = await _context.T_Anken_OyaKokyakus.Where(m => m.Anken_ID == AnkenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order).OrderBy(m => m.Kokyaku_Order).ToListAsync();
@@ -186,11 +197,217 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
+                await HttpContext.Response.WriteAsync(ex.Message);
                 return null;
             }
             finally { }
             return dto;
         }
+
+        /// <summary>
+        /// 指定案件を別日にコピーする
+        /// </summary>
+        /// <param name="companyID"></param>
+        /// <param name="targetDate"></param>
+        /// <param name="senzokuID"></param>
+        /// <param name="senzokuDriverID"></param>
+        /// <param name="ankenId"></param>
+        /// <param name="copyDay"></param>
+        /// <returns></returns>
+        [HttpPost("CopyAnkenData")]
+        public async Task<List<Data.T_Anken>> CopyAnkenData()
+        {
+            try
+            {
+
+                // パラメーターの取得
+                AnkenCopyDataDto dataDto = GetMultipartFormDataContentData<AnkenCopyDataDto>("name");
+
+                //AnkenDataの取得
+                AnkenDataModelDto ankenDto = await GetAnkenDataDto(dataDto.ankenId);
+
+                AnkenDataModelDto cloneDto = new()
+                {
+                    T_Anken = new(),
+                    T_Anken_Publish = new(),
+                    T_Anken_Detail = new(),
+                    T_Anken_PointList = [],
+                    T_Anken_Remarks = new(),
+                    T_Anken_ExchargeList = [],
+                    T_Anken_LuggageList = [],
+                    T_Anken_Riyounso = new(),
+                    T_Anken_Riyounso_PointList = [],
+                    T_Anken_DisplayList = [],
+                    T_Anken_EquipmentList = [],
+                    T_Anken_OyaKokyakuList = [],
+                };
+
+                CopyProperty(cloneDto.T_Anken, ankenDto.T_Anken);
+                CopyProperty(cloneDto.T_Anken_Detail, ankenDto.T_Anken_Detail);
+                CopyProperty(cloneDto.T_Anken_Publish, ankenDto.T_Anken_Publish);
+                if (ankenDto.T_Anken_Remarks == null) { cloneDto.T_Anken_Remarks = null; } else { CopyProperty(cloneDto.T_Anken_Remarks, ankenDto.T_Anken_Remarks); }
+
+                foreach (var item in ankenDto.T_Anken_PointList) { Data.T_Anken_Point target = new(); CopyProperty(target, item); cloneDto.T_Anken_PointList.Add(target); }
+
+                if (ankenDto.T_Anken_ExchargeList == null) { cloneDto.T_Anken_ExchargeList = null; }
+                else
+                {
+                    foreach (var item in ankenDto.T_Anken_ExchargeList) { Data.T_Anken_Excharge target = new(); CopyProperty(target, item); cloneDto.T_Anken_ExchargeList.Add(target); }
+                }
+
+                if (ankenDto.T_Anken_LuggageList == null) { cloneDto.T_Anken_LuggageList = null; }
+                else
+                {
+                    foreach (var item in ankenDto.T_Anken_LuggageList) { Data.T_Anken_Luggage target = new(); CopyProperty(target, item); cloneDto.T_Anken_LuggageList.Add(target); }
+                }
+
+                if (ankenDto.T_Anken_Riyounso == null) { cloneDto.T_Anken_Riyounso = null; }
+                else
+                {
+                    CopyProperty(cloneDto.T_Anken_Riyounso, ankenDto.T_Anken_Riyounso);
+                }
+
+                if (ankenDto.T_Anken_Riyounso_PointList == null) { cloneDto.T_Anken_Riyounso_PointList = null; }
+                else
+                {
+                    foreach (var item in ankenDto.T_Anken_Riyounso_PointList) { Data.T_Anken_Riyounso_Point target = new(); CopyProperty(target, item); cloneDto.T_Anken_Riyounso_PointList.Add(target); }
+                }
+
+                if (ankenDto.T_Anken_DisplayList == null) { cloneDto.T_Anken_DisplayList = null; }
+                else
+                {
+                    foreach (var item in ankenDto.T_Anken_DisplayList) { Data.T_Anken_Display target = new(); CopyProperty(target, item); cloneDto.T_Anken_DisplayList.Add(target); }
+                }
+
+                if (ankenDto.T_Anken_EquipmentList == null) { cloneDto.T_Anken_EquipmentList = null; }
+                else
+                {
+                    foreach (var item in ankenDto.T_Anken_EquipmentList) { Data.T_Anken_Equipment target = new(); CopyProperty(target, item); cloneDto.T_Anken_EquipmentList.Add(target); }
+                }
+
+                if (ankenDto.T_Anken_OyaKokyakuList == null) { cloneDto.T_Anken_OyaKokyakuList = null; }
+                else
+                {
+                    foreach (var item in ankenDto.T_Anken_OyaKokyakuList) { Data.T_Anken_OyaKokyaku target = new(); CopyProperty(target, item); cloneDto.T_Anken_OyaKokyakuList.Add(target); }
+                }
+
+
+
+                //登録者、登録日の変更
+                DateTime now = DateTime.Now;
+
+                cloneDto.T_Anken_Detail.Insert_User = dataDto.V_LoginUser.User_ID;
+                cloneDto.T_Anken_Detail.Insert_Datetime = now;
+                cloneDto.T_Anken_Detail.Update_User = dataDto.V_LoginUser.User_ID;
+                cloneDto.T_Anken_Detail.Update_Datetime = now;
+
+                foreach (var item in cloneDto.T_Anken_PointList)
+                {
+                    item.Insert_User = dataDto.V_LoginUser.User_ID;
+                    item.Insert_Datetime = now;
+                    item.Update_User = dataDto.V_LoginUser.User_ID;
+                    item.Update_Datetime = now;
+                }
+                foreach (var item in cloneDto.T_Anken_LuggageList)
+                {
+                    item.Insert_User = dataDto.V_LoginUser.User_ID;
+                    item.Insert_Datetime = now;
+                    item.Update_User = dataDto.V_LoginUser.User_ID;
+                    item.Update_Datetime = now;
+                }
+
+                if (cloneDto.T_Anken_Riyounso != null)
+                {
+                    cloneDto.T_Anken_Riyounso.Insert_User = dataDto.V_LoginUser.User_ID;
+                    cloneDto.T_Anken_Riyounso.Insert_Datetime = now;
+                    cloneDto.T_Anken_Riyounso.Update_User = dataDto.V_LoginUser.User_ID;
+                    cloneDto.T_Anken_Riyounso.Update_Datetime = now;
+                }
+
+                foreach (var item in cloneDto.T_Anken_Riyounso_PointList)
+                {
+                    item.Insert_User = dataDto.V_LoginUser.User_ID;
+                    item.Insert_Datetime = now;
+                    item.Update_User = dataDto.V_LoginUser.User_ID;
+                    item.Update_Datetime = now;
+                }
+                foreach (var item in cloneDto.T_Anken_DisplayList)
+                {
+                    item.Insert_User = dataDto.V_LoginUser.User_ID;
+                    item.Insert_Datetime = now;
+                    item.Update_User = dataDto.V_LoginUser.User_ID;
+                    item.Update_Datetime = now;
+                }
+                foreach (var item in cloneDto.T_Anken_EquipmentList)
+                {
+                    item.Insert_User = dataDto.V_LoginUser.User_ID;
+                    item.Insert_Datetime = now;
+                    item.Update_User = dataDto.V_LoginUser.User_ID;
+                    item.Update_Datetime = now;
+                }
+
+
+                AnkenDataModel model = new(_context);
+                List<T_Anken> result = await model.CopyAnkenData(dataDto, cloneDto);
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await HttpContext.Response.WriteAsync(ex.Message);
+                return null;
+            }
+            finally { }
+
+
+        }
+
+        /// <summary>
+        /// AnkenDataModelDtoの各種データを取得して返却
+        /// </summary>
+        /// <param name="ankenId"></param>
+        /// <returns></returns>
+        private async Task<AnkenDataModelDto> GetAnkenDataDto(int ankenId)
+        {
+            AnkenDataModelDto dto = new()
+            {
+                T_Anken = new(),
+                T_Anken_Publish = new(),
+                T_Anken_Detail = new(),
+                T_Anken_PointList = new(),
+                T_Anken_Remarks = new(),
+                T_Anken_ExchargeList = new(),
+                T_Anken_LuggageList = new(),
+                T_Anken_Riyounso = new(),
+                T_Anken_Riyounso_PointList = new(),
+                T_Anken_DisplayList = new(),
+                T_Anken_EquipmentList = new(),
+                T_Anken_OyaKokyakuList = new(),
+                M_Customer_Tantou = new(),
+            };
+
+            dto.T_Anken = await _context.T_Ankens.FirstOrDefaultAsync(m => m.Anken_ID == ankenId);
+            dto.T_Anken_Publish = await _context.T_Anken_Publishes.FirstOrDefaultAsync(m => m.Anken_ID == ankenId);
+            dto.T_Anken_Detail = await _context.T_Anken_Details.FirstOrDefaultAsync(m => m.Anken_ID == ankenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order);
+            dto.T_Anken_Remarks = await _context.T_Anken_Remarks.FirstOrDefaultAsync(m => m.Anken_ID == ankenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order);
+            dto.T_Anken_LuggageList = await _context.T_Anken_Luggages.Where(m => m.Anken_ID == ankenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order).ToListAsync();
+            dto.T_Anken_EquipmentList = await _context.T_Anken_Equipments.Where(m => m.Anken_ID == ankenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order).ToListAsync();
+            dto.T_Anken_PointList = await _context.T_Anken_Points.Where(m => m.Anken_ID == ankenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order).
+                                                            OrderBy(m => m.Kubun).ThenBy(m => m.Point_Order).ToListAsync();
+            dto.T_Anken_ExchargeList = await _context.T_Anken_Excharges.Where(m => m.Anken_ID == ankenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order).
+                                                            OrderBy(m => m.Komoku_ID).ToListAsync();
+            dto.T_Anken_Riyounso = await _context.T_Anken_Riyounsos.FirstOrDefaultAsync(m => m.Anken_ID == ankenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order);
+            dto.T_Anken_Riyounso_PointList = await _context.T_Anken_Riyounso_Points.Where(m => m.Anken_ID == ankenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order).
+                                                            OrderBy(m => m.Point_Order).ToListAsync();
+            dto.T_Anken_DisplayList = await _context.T_Anken_Displays.Where(m => m.Anken_ID == ankenId).ToListAsync();
+            dto.T_Anken_EquipmentList = await _context.T_Anken_Equipments.Where(m => m.Anken_ID == ankenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order).ToListAsync();
+            dto.T_Anken_OyaKokyakuList = await _context.T_Anken_OyaKokyakus.Where(m => m.Anken_ID == ankenId && m.Anken_Order == dto.T_Anken.Anken_Latest_Order).ToListAsync();
+
+            return dto;
+        }
+
         #endregion AnkenData
 
         #region T_Point
@@ -246,6 +463,7 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 throw;
             }
             finally
@@ -261,20 +479,33 @@ namespace WebApplication.Controllers.DB
         /// <param name="groupId">グループID</param>
         /// <returns>T_Pointデータのリスト</returns>
         [HttpGet("T_PointListFromUserId")]
-        public async Task<List<Data.T_Point>> T_PointListFromUserId(int userId, int groupId)
+        public async Task<List<Data.T_Point>> T_PointListFromUserId(int userId, int groupKubun)
         {
             List<Data.T_Point> data = null;
 
-            if (userId == 0 && groupId == 0) { return null; }
+            if (userId == 0) { return null; }
 
             try
             {
-                data = await _context.T_Points.Where(m => m.User_ID == userId || _context.M_CompanyUser_GroupUsers.Where(m => m.User_ID == userId).Select(m => m.Group_ID).Contains(m.Group_ID)).ToListAsync();
+                if (groupKubun == 9)
+                {
+                    data = await _context.T_Points.Where(m => m.User_ID == userId || _context.M_CompanyUser_GroupUsers.Where(m => m.User_ID == userId).Select(m => m.Group_ID).Contains(m.Group_ID)).ToListAsync();
+                }
+                else if (groupKubun == 2)
+                {
+                    data = await _context.T_Points.Where(m => m.User_ID == 0 || _context.M_CompanyUser_GroupUsers.Where(m => m.User_ID == userId).Select(m => m.Group_ID).Contains(m.Group_ID)).ToListAsync();
+                }
+                else
+                {
+                    data = await _context.T_Points.Where(m => m.User_ID == userId).ToListAsync();
+                }
+
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return null;
             }
             finally { }
@@ -307,6 +538,7 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return null;
             }
         }
@@ -340,6 +572,7 @@ namespace WebApplication.Controllers.DB
         }
         #endregion T_Anken_Display
 
+        #region View
         /// <summary>
         /// 住所検索使用率TOP30
         /// </summary>
@@ -416,9 +649,11 @@ namespace WebApplication.Controllers.DB
                 List<T_Anken_Point> result = await _context.T_Anken_Points.FromSqlRaw(sql, userId).ToListAsync();
                 return result;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e.ToString());
+                Console.WriteLine(ex.ToString());
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 throw;
             }
         }
@@ -544,9 +779,11 @@ namespace WebApplication.Controllers.DB
                 List<T_Anken_Point> result = await _context.T_Anken_Points.FromSqlRaw(sql, userId).ToListAsync();
                 return result;
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e.ToString());
+                Console.WriteLine(ex.ToString());
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 throw;
             }
         }
@@ -569,8 +806,16 @@ namespace WebApplication.Controllers.DB
             // 例外処理
             catch (Exception ex)
             {
-                return CommonHelper.HandleError(ex);
+                Console.WriteLine(ex.ToString());
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
         }
+        #endregion View
+
+
+
+
     }
 }

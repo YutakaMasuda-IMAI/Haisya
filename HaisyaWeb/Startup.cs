@@ -2,7 +2,6 @@ using DinkToPdf;
 using DinkToPdf.Contracts;
 using HaisyaWeb.Context;
 using HaisyaWeb.Models;
-using HaisyaWeb.Models.DB;
 using HaisyaWeb.Service;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
@@ -43,17 +42,17 @@ namespace HaisyaWeb
             services.Configure<MapApiSettings>(Configuration.GetSection(MapApiSettings.MapApiSetting));
 
             //// セッションを使う
-            services.AddSession(options => { options.Cookie.Name = "HaisyaSession"; options.IdleTimeout = TimeSpan.FromMinutes(120); });
+            services.AddSession(options => { options.Cookie.Name = "HaisyaSession"; options.IdleTimeout = TimeSpan.FromMinutes(5); });
 
             services.AddRazorPages();
             services.AddRazorPages().AddRazorRuntimeCompilation();
 
             string[] allowedOrigins = Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
-            if(allowedOrigins == null)
+            if (allowedOrigins == null)
             {
-                allowedOrigins = new string[] { "*"};
+                allowedOrigins = new string[] { "*" };
             }
-            
+
             services.AddCors(options =>
             {
                 options.AddPolicy("AllowSpecificOrigin",
@@ -81,7 +80,7 @@ namespace HaisyaWeb
                     //該当スキームのCookie名、デフォルトは.AspNetCore.Cookies
                     option.Cookie.Name = "HaisyaWeb";
                     //Cookieの中に保存されている認証データの有効期限、ここでは5分以内にサーバーへアクセスがないと認証タイムアウトが発生する
-                    option.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+                    option.ExpireTimeSpan = TimeSpan.FromMinutes(5);
                     //その他の設定に関しては省略する
                 });
 
@@ -102,10 +101,10 @@ namespace HaisyaWeb
             {
                 throw new PlatformNotSupportedException("This platform is not supported");
             }
-			services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
-			
-			services.Configure<IdentityOptions>(options =>
-			{
+            services.AddSingleton(typeof(IConverter), new SynchronizedConverter(new PdfTools()));
+
+            services.Configure<IdentityOptions>(options =>
+            {
                 // Password settings.
                 options.Password.RequireDigit = true;
                 options.Password.RequireLowercase = true;
@@ -115,7 +114,7 @@ namespace HaisyaWeb
                 options.Password.RequiredUniqueChars = 1;
 
                 // Lockout settings.
-                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(120);
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.AllowedForNewUsers = true;
 
@@ -132,7 +131,7 @@ namespace HaisyaWeb
                 options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
 
                 options.LoginPath = "/Account/Login";
-                options.AccessDeniedPath = "/Account/AccessDenied";
+                //options.AccessDeniedPath = "/Account/AccessDenied";
                 options.SlidingExpiration = true;
             });
         }

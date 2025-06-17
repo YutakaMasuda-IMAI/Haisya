@@ -50,7 +50,7 @@
       </div>
       <div class="modal-header">
         <h3>会社負担選択</h3>
-        <button type="button" class="btn btn-secondary" onclick="ModalClose(); return false;">閉じる</button>
+        <button type="button" type="button" class="btn btn-secondary" onclick="ModalClose(); return false;">閉じる</button>
       </div>
 
       <div class="model-body">
@@ -72,7 +72,7 @@
                     {
                     <tr>
                       <td>
-                        <button class="btn btn-dark" onclick="onClickBurdenGroup(@(item.Burden_Group_ID)); return false;">@(item.Burden_GroupName)</button>
+                        <button type="button" class="btn btn-dark" onclick="onClickBurdenGroup(@(item.Burden_Group_ID)); return false;">@(item.Burden_GroupName)</button>
                       </td>
                     </tr>
                     }
@@ -152,10 +152,10 @@
               <input id="addLuggageUnit" type="text" class="form-control" style="width:60px;" value="" />
             </td>
             <td>
-              <button id="btnModelCancel" class="btn btn-secondary" data-dismiss="modal" onclick="addLuggageMaster(); return false;">負担詳細追加</button>
+              <button type="button" id="btnModelCancel" class="btn btn-secondary" data-dismiss="modal" onclick="addLuggageMaster(); return false;">負担詳細追加</button>
             </td>
             <td width="100px">
-              <button id="btnModelHolidayReister" class="btn btn-success" style="width:100px;" onclick="SelectLuggageRegExec(); return false;">登録</button>
+              <button type="button" id="btnModelHolidayReister" class="btn btn-success" style="width:100px;" onclick="SelectLuggageRegExec(); return false;">登録</button>
             </td>
           </tr>
         </table>
@@ -295,7 +295,7 @@ function onClickBurdenGroup(paramGroupID) {
 
       var row = tbody.insertRow(-1);
       var cell1 = row.insertCell(-1);
-      cell1.innerHTML = '<button class="btn btn-dark" ondblclick="ondblclickLuggage(\'' + id + '\'); return false;">' + name + '(' + unit + ')</button>';
+      cell1.innerHTML = '<button type="button" class="btn btn-dark" ondblclick="ondblclickLuggage(\'' + id + '\'); return false;">' + name + '(' + unit + ')</button>';
     }
   }
 };
@@ -431,7 +431,7 @@ function repalceidName(row_len, html) {
       <input type="hidden" name="UriageFutan[].futan_Kubun" value="${kubun}" />
       <td>${name}</td>
       <td><input type="text" class="form-control inputtable" style="text-align:right;" value="0" name=".FutanPrice" onblur = "kanmaChange(this);" /></td>
-      <td  style="border:none;"><button type="button" class="btn btn-danger btn-sm" onclick="deleteFutanRow(this)">削除</button></td>
+      <td  style="border:none;"><button type="button" type="button" class="btn btn-danger btn-sm" onclick="deleteFutanRow(this)">削除</button></td>
       `;
   }
 

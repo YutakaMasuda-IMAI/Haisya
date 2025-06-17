@@ -75,7 +75,7 @@ else
     var color = i % 2 == 1 ? "row-even" : "row-odd";
     <tr>
       <td class="@(color)">
-        <button class="btn btn-outline-success" style="width: 100%; padding:0;" onclick="submitEdit('@(item.Check_Seikyu_ID)', @(i-1))">選択</button>
+        <button type="button" class="btn btn-outline-success" style="width: 100%; padding:0;" onclick="submitEdit('@(item.Check_Seikyu_ID)', @(i-1))">選択</button>
       </td>
       <td class="@(color)" align="center">
         @{

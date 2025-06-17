@@ -65,7 +65,7 @@ else
     var color = i % 2 == 1 ? "row-even" : "row-odd";
     <tr class="@(color)">
       <td align="center">
-        <button class="btn btn-info" style="width: 100%; padding:0;" onclick="submitEdit(@(item.Jiko_ID))">詳細</button>
+        <button type="button" class="btn btn-info" style="width: 100%; padding:0;" onclick="submitEdit(@(item.Jiko_ID))">詳細</button>
       </td>
       <td align="center">
         @Html.DisplayFor(modelItem => item.Jiko_No)

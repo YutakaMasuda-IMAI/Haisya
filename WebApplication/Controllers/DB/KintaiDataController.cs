@@ -12,7 +12,7 @@ using WebApplication.Data.Kintai;
 using WebApplication.Model;
 using WebApplication.Services;
 
-namespace WebApplication.Controllers
+namespace WebApplication.Controllers.DB
 {
     /// <summary>
     /// 勤怠データを管理するコントローラー
@@ -22,7 +22,7 @@ namespace WebApplication.Controllers
     public class KintaiDataController : MyBaseController
     {
         private readonly ILogger<KintaiDataController> _logger;
-        private readonly IAttendanceService _attendanceService; 
+        private readonly IAttendanceService _attendanceService;
 
         /// <summary>
         /// KintaiDataControllerのコンストラクタ
@@ -39,6 +39,15 @@ namespace WebApplication.Controllers
             _contextKintai = contextKintai;
             _attendanceService = attendanceService;
         }
+
+        [HttpGet("GetKintaiTest")]
+        public string GetKintaiTest()
+        {
+            return _contextKintai.Database.GetConnectionString();
+
+
+        }
+
 
         #region T_Kintai
         /// <summary>
@@ -62,7 +71,8 @@ namespace WebApplication.Controllers
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
         }
         #endregion T_Kintai
@@ -93,7 +103,8 @@ namespace WebApplication.Controllers
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
         }
         #endregion T_Leave_Summary
@@ -131,7 +142,8 @@ namespace WebApplication.Controllers
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
         }
         #endregion T_Kintai_Commit
@@ -161,6 +173,9 @@ namespace WebApplication.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -184,6 +199,9 @@ namespace WebApplication.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -206,6 +224,9 @@ namespace WebApplication.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -242,7 +263,8 @@ namespace WebApplication.Controllers
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
         }
 
@@ -265,7 +287,8 @@ namespace WebApplication.Controllers
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
         }
         #endregion M_Holiday
@@ -286,7 +309,7 @@ namespace WebApplication.Controllers
                 if (CompanyId == 0) { return null; }
 
                 IEnumerable<V_TOTAL_WORKING_TIME> resultData = await _contextKintai.V_TOTAL_WORKING_TIMEs.FromSqlRaw("EXECUTE [dbo].[PROC_V_TOTAL_WORKING_TIME] " +
-                             "@COMPANY_ID = {0}, @NENGETSU = {1}, @DRIVER_ID = {2}", CompanyId, nengetu, driverId).AsNoTracking().ToListAsync();
+                             "@COMPANY_ID = {0}, @NENGETSU = {1}, @DRIVER_ID = {2}", CompanyId, nengetu.Replace("/", "-"), driverId).AsNoTracking().ToListAsync();
 
                 return resultData;
             }
@@ -294,10 +317,41 @@ namespace WebApplication.Controllers
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
         }
         #endregion V_TOTAL_WORKING_TIME
+
+
+        //#region V_TOTAL_WORKING_TIME
+        ///// <summary>
+        ///// 月次の乗務員毎の走行距離、総労働時間を取得します。
+        ///// </summary>
+        ///// <param name="CompanyId">会社ID</param>
+        ///// <param name="nengetu">年月</param>
+        ///// <param name="driverId">ドライバーID</param>
+        ///// <returns>総労働時間リスト</returns>
+        //[HttpGet("GetKintaiTotalWorkingTimeList")]
+        //public async Task<string> GetKintaiTotalWorkingTimeList(int CompanyId, string nengetu, int driverId = 0)
+        //{
+        //    try
+        //    {
+        //        if (CompanyId == 0) { return null; }
+
+        //        IEnumerable<V_TOTAL_WORKING_TIME> resultData = await _contextKintai.V_TOTAL_WORKING_TIMEs.FromSqlRaw("EXECUTE [dbo].[PROC_V_TOTAL_WORKING_TIME] " +
+        //                     "@COMPANY_ID = {0}, @NENGETSU = {1}, @DRIVER_ID = {2}", CompanyId, nengetu, driverId).AsNoTracking().ToListAsync();
+
+        //        return "成功";
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine("Exception: " + ex.Message);
+        //        Response.StatusCode = StatusCodes.Status400BadRequest;
+        //        return ex.Message;
+        //    }
+        //}
+        //#endregion V_TOTAL_WORKING_TIME
 
         #region PostRegisterHoliday
         /// <summary>
@@ -319,6 +373,7 @@ namespace WebApplication.Controllers
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 resultVal.ErrrMessage = ex.Message;
             }
             finally

@@ -59,20 +59,20 @@
                     <h2 style="padding: 1rem 0 0 0;">まずは、登録する案件の種類を選択してください。</h2>
                     @if (Model.BackMenuAction == "Home") { }
                     else
-                    {<button name="btnClose" value="Close" class="btn btn-outline-success" style="width: 200px; margin: 5px; margin-left: 50px;" onclick="BackMenu(); return false;">閉じる</button>}
+                    {<button type="button" name="btnClose" value="Close" class="btn btn-outline-success" style="width: 200px; margin: 5px; margin-left: 50px;" onclick="BackMenu(); return false;">閉じる</button>}
                   </div>
                   <div style="display: inline-flex; width: 90%; height: calc(100% - 90px); margin-top: 1rem;" class="center">
                     <div class="row" style="padding: 0 1em; border: .3em solid #00FF00; border-radius: 5px; margin: 0; font-size: 20px; width: 100%; vertical-align: middle; display: inline-flex; ">
                       <div class="col-4" style="">
-                        <button id="btnAnkenKubun1" name="btnAnkenKubun" value="0" class="btn btn-outline-primary button-30" style="" onclick="return false;">自動車運送</button>
-                        @*<button id="btnAnkenKubun2" name="btnAnkenKubun" value="1" class="btn btn-outline-primary button-30" style="" onclick="return false;">自動車運送<br />(過去案件から)</button>*@
+                        <button type="button" id="btnAnkenKubun1" name="btnAnkenKubun" value="0" class="btn btn-outline-primary button-30" style="" onclick="return false;">自動車運送</button>
+                        @*<button type="button" id="btnAnkenKubun2" name="btnAnkenKubun" value="1" class="btn btn-outline-primary button-30" style="" onclick="return false;">自動車運送<br />(過去案件から)</button>*@
                       </div>
                       <div class="col-4" style="border-left: .1em solid #00FF00; ">
-                        <button id="btnAnkenKubun3" name="btnAnkenKubun" value="2" class="btn btn-outline-warning button-30" style="margin-left: 10px; " onclick="return false;">利用運送</button>
-                        @*<button id="btnAnkenKubun4" name="btnAnkenKubun" value="3" class="btn btn-outline-warning button-30" style="margin-left: 10px; " onclick="return false;">利用運送<br />(過去案件から)</button>*@
+                        <button type="button" id="btnAnkenKubun3" name="btnAnkenKubun" value="2" class="btn btn-outline-warning button-30" style="margin-left: 10px; " onclick="return false;">利用運送</button>
+                        @*<button type="button" id="btnAnkenKubun4" name="btnAnkenKubun" value="3" class="btn btn-outline-warning button-30" style="margin-left: 10px; " onclick="return false;">利用運送<br />(過去案件から)</button>*@
                       </div>
                       <div class="col-4" style="border-left: .1em solid #00FF00; ">
-                        <button id="btnAnkenKubun5" name="btnAnkenKubun" value="4" class="btn btn-outline-danger button-30" style="margin-left: 20px; " onclick="return false;">専属</button>
+                        <button type="button" id="btnAnkenKubun5" name="btnAnkenKubun" value="4" class="btn btn-outline-danger button-30" style="margin-left: 20px; " onclick="return false;">専属</button>
                       </div>
                     </div>
                   </div>

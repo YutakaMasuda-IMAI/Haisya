@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using WebApplication.Data;
-using static WebApplication.Models.AccidentListModel;
+using static WebApplication.Model.AccidentListModel;
 
-namespace WebApplication.Models
+namespace WebApplication.Model
 {
     /// <summary>
     /// 事故リストモデルクラス

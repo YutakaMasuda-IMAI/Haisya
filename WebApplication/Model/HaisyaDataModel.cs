@@ -208,7 +208,7 @@ namespace WebApplication.Model
 
             //割当て済みの該当ドライバーの各案件のStartDatetimeとEndDatetimeを取得
             List<T_Anken_Display> haisyaDisplays = _context.T_Anken_Displays
-                .Where(h => ankenIds.Contains(h.Anken_ID) &&
+                .Where(h => ankenIds.AsQueryable().Contains(h.Anken_ID) &&
                             (timeStart <= h.StartDatetime && timeEnd >= h.StartDatetime ||
                             timeStart <= h.EndDatetime && timeEnd >= h.EndDatetime ||
                             timeStart >= h.StartDatetime && timeEnd <= h.EndDatetime))

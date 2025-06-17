@@ -51,7 +51,7 @@
                     <input id="TargetMonthLavel" type="text" readonly style="width: 150px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
                     <input id="TargetMonthInput" class="calender" type="text" readonly style="width: 0px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
                     <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer;" onclick="ChangeMonth(1); return false;" onselectstart="return false;" alt=">>" tooltip="翌月">&gt;&gt;</span>
-                    <button class="btn btn-outline-info" style="width: 70px; vertical-align: text-bottom; margin: 0; padding: 0; font-size: 16px; " onclick="LocationReload(); return false;">再描画</button>
+                    <button type="button" class="btn btn-outline-info" style="width: 70px; vertical-align: text-bottom; margin: 0; padding: 0; font-size: 16px; " onclick="LocationReload(); return false;">再描画</button>
                   </div>
                 </th>
                 <th style="width:400px;">
@@ -76,7 +76,7 @@
                       </th>
                       <th>
                         @Html.LabelFor(model => model.Search.SelectTokuisakiID, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "width: 100px;" })
-                        <button id="btnTokuisakiFrom" class="btn btn-info btn-sm btn-select" style="width:80px;" onclick="return false;">選択</button>
+                        <button type="button" id="btnTokuisakiFrom" class="btn btn-info btn-sm btn-select" style="width:80px;" onclick="return false;">選択</button>
                         @Html.TextBoxFor(model => model.Search.SelectTokuisakiID, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 100px; display: inline-block;" })
                         @Html.TextBoxFor(model => model.Search.SelectTokuisakiName, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 300px; display: inline-block;" })
                       </th>
@@ -84,7 +84,7 @@
                         <div id="tokuisakiTo" style="display: inline-block; _display: inline; padding: 0; ">
               　            〜
                         @Html.LabelFor(model => model.Search.SelectTokuisakiID, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "" })
-                        <button id="btnTokuisakiTo" class="btn btn-info btn-sm btn-select" style="width:80px;" onclick="return false;">選択</button>
+                        <button type="button" id="btnTokuisakiTo" class="btn btn-info btn-sm btn-select" style="width:80px;" onclick="return false;">選択</button>
                         @Html.TextBoxFor(model => model.Search.SelectTokuisakiIDTo, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 100px; display: inline-block;" })
                         @Html.TextBoxFor(model => model.Search.SelectTokuisakiNameTo, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 300px; display: inline-block;" })
                         </div>
@@ -94,7 +94,7 @@
                   </table>
                 </td>
                 <th style="width:140px;">
-                  <button class="btn btn-info btn-sm" onclick="openFileDialog(); return false;">CSV一括取込み</button>
+                  <button type="button" class="btn btn-info btn-sm" onclick="openFileDialog(); return false;">CSV一括取込み</button>
                 </th>
               </tr>
             </tbody>

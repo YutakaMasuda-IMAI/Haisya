@@ -60,12 +60,12 @@
       <label class="font-weight-bolder control-label" style="font-size: 30px;">まずは、利用運送情報を登録する方法を選択してください。。</label>
       @if (Model.BackMenuAction == "Home") { }
       else
-      {<button name="btnClose" value="Close" class="btn btn-secondary right-item" style="width: 200px; margin: 5px; margin-left: 50px; background-color: lightgray" onclick="return false;">閉じる</button>}
+      {<button type="button" name="btnClose" value="Close" class="btn btn-secondary right-item" style="width: 200px; margin: 5px; margin-left: 50px; background-color: lightgray" onclick="return false;">閉じる</button>}
     </div>
     <div style="display: inline-flex; width: 90%; height: 60%;" class="center">
       <div style="padding: 0 1em; border: .3em solid #00FF00; border-radius: 5px; margin: 0; font-size: 20px; width: 100%; vertical-align: middle; display: inline-flex;">
-        <button id="btnRegKubun" name="btnRegKubun" value="0" class="btn btn-secondary" style="height: 85%; width: 45%; margin-top: 0.8%; font-size: 30px; background-color: yellowgreen" onclick="return false;">都度運行</button>
-        <button id="btnRegKubun" name="btnRegKubun" value="1" class="btn btn-info" style="height: 85%; width: 45%; margin-top: 0.8%; font-size: 30px; background-color: aqua; margin-left: 60px; " onclick="return false;">固定運行</button>
+        <button type="button" id="btnRegKubun" name="btnRegKubun" value="0" class="btn btn-secondary" style="height: 85%; width: 45%; margin-top: 0.8%; font-size: 30px; background-color: yellowgreen" onclick="return false;">都度運行</button>
+        <button type="button" id="btnRegKubun" name="btnRegKubun" value="1" class="btn btn-info" style="height: 85%; width: 45%; margin-top: 0.8%; font-size: 30px; background-color: aqua; margin-left: 60px; " onclick="return false;">固定運行</button>
       </div>
     </div>
     <label class="font-weight-bolder control-label" style="font-size: 20px; color: red;">※「都度運行」は都度輸送場所を指定するような登録画面です。</label>

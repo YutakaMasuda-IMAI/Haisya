@@ -8,7 +8,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace RenkeiDB.Service
+namespace RenkeiDB.Services
 {
     public interface IViewRenderService
     {

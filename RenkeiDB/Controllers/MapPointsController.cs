@@ -6,14 +6,14 @@ using RenkeiDB.Common;
 using RenkeiDB.Data;
 using RenkeiDB.Dto;
 using RenkeiDB.Dto.MapPointDto;
-using RenkeiDB.Services;
+using RenkeiDB.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace RenkeiDB.Controllers.DB
+namespace RenkeiDB.Controllers
 {
     /// <summary>
     /// 地図ポイントに関する操作を提供するコントローラー

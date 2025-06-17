@@ -47,7 +47,7 @@ namespace HaisyaWeb.Models
             public string AnkenRemarks { get; set; }
         }
 
-        
+
         /// <summary>
         /// 案件データ登録時の返却用DTO
         /// </summary>
@@ -59,6 +59,13 @@ namespace HaisyaWeb.Models
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        public class AnkenCopyDataDto_Local : WebApplication.Model.AnkenCopyDataDto;
+
+
+
+        /// <summary>
         /// 住所検索画面DTO（モーダル）
         /// </summary>
         public class SelectAddressModalDto
@@ -68,6 +75,11 @@ namespace HaisyaWeb.Models
             public int UserID { set; get; }
 
             public List<Dto.M_Area_Local> AreaList { set; get; }
+
+            /// <summary>
+            /// 登録ポイントの表示区分
+            /// </summary>
+            public int SelectPointKubun { set; get; }
 
             public IEnumerable<SelectListItem> GroupSelectList { get; set; }
         }
@@ -273,14 +285,14 @@ namespace HaisyaWeb.Models
             public IEnumerable<SelectListItem> DaisuuSelectList { set; get; }
 
             /// <summary>案件担当</summary>
-            [Display(Name = "配車担当")]
-            public int TantouID { get; set; }
-            public string TantouName { get; set; }
+            [Display(Name = "配車")]
+            public string HaisyaTantouID { get; set; }
+            //public string HaisyaTantouName { get; set; }
 
             /// <summary>案件営業担当</summary>
             [Display(Name = "営業")]
             public int EigyoID { get; set; }
-            public string EigyoName { get; set; }
+            //public string EigyoName { get; set; }
             public IEnumerable<SelectListItem> EigyoSelectList { set; get; }
 
             /// <summary>案件公開グループ</summary>
@@ -546,6 +558,11 @@ namespace HaisyaWeb.Models
             /// </summary>
             public int Company_ID { get; set; }
 
+            /// <summary>
+            /// ログインユーザーID
+            /// </summary>
+            public int User_ID { set; get; }
+
             // <summary>
             /// 選択された日付
             /// </summary>
@@ -598,7 +615,7 @@ namespace HaisyaWeb.Models
 
             public M_CompanyDriver_Local CompanyDriverData { get; set; }
 
-            public IEnumerable<Dto.V_AnkenDataList_Local> AnkenDataList  { get; set; }
+            public IEnumerable<Dto.V_AnkenDataList_Local> AnkenDataList { get; set; }
 
             public List<Dto.V_HaisyaDataList_Local> haisyaList { get; set; }
         }
@@ -660,7 +677,7 @@ namespace HaisyaWeb.Models
             public List<Dto.V_HaisyaDataList_Local> HaisyaDataList { set; get; }
 
             public IEnumerable<SelectListItem> HaisyaKubunSelectList { set; get; }
-            
+
             public int AnkenDisplayID { get; set; }
 
             public M_Report_Serch_Kubun_Local Report_Serch_Kubun { get; internal set; }
@@ -686,7 +703,7 @@ namespace HaisyaWeb.Models
             public string BtnCaption { set; get; }
 
             /// <summary> 選択されたAnkenDisplayID </summary>
-            public int  AnkenDisplayID { set; get; }
+            public int AnkenDisplayID { set; get; }
 
             public Dto.V_AnkenDataList_Local AnkenData { set; get; }
 

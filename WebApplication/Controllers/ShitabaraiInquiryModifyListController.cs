@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -59,6 +60,9 @@ namespace WebApplication.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
         }

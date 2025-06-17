@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using RenkeiDB.Common;
 using RenkeiDB.Dto;
 using RenkeiDB.Dto.LuggageDto;
-using RenkeiDB.Service;
+using RenkeiDB.Services;
 using RenkeiDB.Services.Interfaces;
 using System;
 using System.Collections.Generic;

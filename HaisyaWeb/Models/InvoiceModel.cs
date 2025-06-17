@@ -1,4 +1,5 @@
-﻿using HaisyaWeb.Controllers;
+﻿using HaisyaWeb.Common;
+using HaisyaWeb.Controllers;
 using HaisyaWeb.Dto;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;

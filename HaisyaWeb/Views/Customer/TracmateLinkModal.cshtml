@@ -67,7 +67,7 @@
                 <div style="display: flex">
                   @Html.TextBoxFor(model => Model.CustomerData.Customer_ID, null, new { @readonly = "readonly", @class = "form-control text-left readonly", @onblur = "", @style = "width: 50px; padding: 0;" })
                   <span style="width:2rem;"></span>
-                  <button class="btn btn-success" onclick="openCommonDialogForCustomer(); return false;">親の付替え</button>
+                  <button type="button" class="btn btn-success" onclick="openCommonDialogForCustomer(); return false;">親の付替え</button>
                 </div>
               </td>
               <td></td>
@@ -544,8 +544,6 @@
 
     //Formの参照を取る
     var $form = $('#form1');
-
-    //alert($form.serialize());
 
     $.ajax({
           url: '@Url.RouteUrl("Default", new { controller = "Customer", Action = "TracmateLinkRegExec" })',

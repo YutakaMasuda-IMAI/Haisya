@@ -1,31 +1,44 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <UserSecretsId>aspnet-HaisyaWeb-2574B8E5-DDB1-404E-80E4-46FB4DFCE48C</UserSecretsId>
     <ApplicationIcon>favicon.ico</ApplicationIcon>
+    <ValidateExecutableReferencesMatchSelfContained>false</ValidateExecutableReferencesMatchSelfContained>
+    <PackageProjectUrl>$(AssemblyName)</PackageProjectUrl>
+    <RepositoryUrl>$(AssemblyName)</RepositoryUrl>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <Optimize>False</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <Optimize>True</Optimize>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Bootstrap.Datepicker" Version="1.8.0.1" />
     <PackageReference Include="DinkToPdf" Version="1.0.8" />
     <PackageReference Include="DinkToPdfIncludesDependencies" Version="1.0.8" />
-    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="5.2.8" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="5.0.17" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="5.0.17" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="5.0.17" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.17" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
+    <PackageReference Include="Microsoft.AspNet.WebApi.Client" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.15" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.15" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="8.0.15" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="8.0.15" />
+    <PackageReference Include="Microsoft.QualityTools.Testing.Fakes" Version="17.12.0" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
     <PackageReference Include="Select.HtmlToPdf.NetCore" Version="24.1.0" />
+    <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
+    <PackageReference Include="System.Net.Primitives" Version="4.3.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\WebApplication\WebApplication.csproj">
-      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
-    </ProjectReference>
-  </ItemGroup>
-
-  <ItemGroup>
+    <Content Update="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Update="C:\Users\masuda_y\.nuget\packages\bootstrap\5.2.3\contentFiles\any\any\wwwroot\css\bootstrap.css">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Content>
@@ -63,7 +76,6 @@
     <Content Remove="Views\AnkenReference\Index.cshtml" />
     <Content Remove="Views\AnkenReference\YosyaRegModal.cshtml" />
     <Content Remove="Views\AnkenRegister\AnkenReferenceModal.cshtml" />
-    <Content Remove="Views\Haisya\ModalStatusHaisya.cshtml" />
     <Content Remove="Views\Report\PDFReportList.cshtml" />
     <Content Remove="Views\Setting\SenzokuDriverRegModal.cshtml" />
     <Content Remove="Views\Setting\SenzokuIndex.cshtml" />
@@ -116,7 +128,6 @@
     <None Include="Views\AnkenReference\Index.cshtml" />
     <None Include="Views\AnkenReference\AnkenReferenceModal_old.cshtml" />
     <None Include="Views\AnkenReference\YosyaRegModal.cshtml" />
-    <None Include="Views\Haisya\ModalStatusHaisya.cshtml" />
     <None Include="Views\Report\PDFReportList.cshtml" />
     <None Include="Views\Setting\SenzokuDriverRegModal.cshtml" />
     <None Include="Views\Setting\SenzokuIndex.cshtml" />
@@ -136,6 +147,25 @@
 	
   <ItemGroup>
     <AdditionalDesignTimeBuildInput Remove="FakesAssemblies\**" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <ProjectReference Include="..\WebApplication\WebApplication.csproj" />
+  </ItemGroup>
+	
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+	
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

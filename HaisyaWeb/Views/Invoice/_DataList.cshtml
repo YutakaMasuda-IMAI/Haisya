@@ -11,7 +11,7 @@ else
 <table class="table ex_DataList search-list" width="100%" border="1">
   <tr>
     <th style="width:80px;">
-        <button id="chk-all" class="btn btn-info" style="width: 100%; padding:0;" value="1" onclick="CheckAll()">全選択</button>
+        <button type="button" id="chk-all" class="btn btn-info" style="width: 100%; padding:0;" value="1" onclick="CheckAll()">全選択</button>
     </th>
     <th style="width:80px;">
       <a href="#" onclick="dataListSort('Status_label')" style="">状態</a>
@@ -82,13 +82,13 @@ else
       @if (Model.Controller == "InvoiceInquiry" || invoice.Meisai_Count == invoice.Kakutei_Count)
       {
       <td align="center">
-        <button class="btn btn-success" style="width: 96%; padding: 0; background-color: #b27aab;" onclick="PublishInvoice(@(i - 1), @(invoice.Order), @((int)ConfirmationViews.MAIL));">メール</button>
+        <button type="button" class="btn btn-success" style="width: 96%; padding: 0; background-color: #b27aab;" onclick="PublishInvoice(@(i - 1), @(invoice.Order), @((int)ConfirmationViews.MAIL));">メール</button>
       </td>
       <td align="center">
-        <button class="btn btn-success" style="width: 96%; padding: 0; background-color: #84e291;" onclick="PublishInvoice(@(i - 1), @(invoice.Order), @((int)ConfirmationViews.PRINT));">印刷</button>
+        <button type="button" class="btn btn-success" style="width: 96%; padding: 0; background-color: #84e291;" onclick="PublishInvoice(@(i - 1), @(invoice.Order), @((int)ConfirmationViews.PRINT));">印刷</button>
       </td>
       <td align="center">
-        <button class="btn btn-success" style="width: 96%; padding: 0; background-color: #ffc000;" onclick="PublishInvoice(@(i - 1), @(invoice.Order), @((int)ConfirmationViews.PREVIEW));">プレビュー</button>
+        <button type="button" class="btn btn-success" style="width: 96%; padding: 0; background-color: #ffc000;" onclick="PublishInvoice(@(i - 1), @(invoice.Order), @((int)ConfirmationViews.PREVIEW));">プレビュー</button>
       </td>
       }
       else

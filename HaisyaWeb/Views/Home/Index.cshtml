@@ -15,7 +15,7 @@
       <div style="width: 100%;">
         <div class="row-cols-auto" style="margin-top: 10px;">
           <div class="row" style="margin: 0.01rem;">
-            <h5 class="col-10 heading-40" style="width: 300px;"><span class="glyphicon glyphicon-info-sign"></span>お知らせ</h5>
+            <h5 class="col-10 heading-40" style="width: 300px;"><span class="bi bi-info-square-fill"></span>お知らせ</h5>
           </div>
           <div id="SystemInfo" class="table-info" style="border: 1px solid; height: 400px;">
             <div id="SystemInfoLoading" style="margin-left: 10rem;">
@@ -28,7 +28,7 @@
       <div style="width: 100%;">
         <div class="row-cols-auto" style="margin-top: 0px;">
           <div class="row" style="margin: 0.01rem;">
-            <h5 class="col-10 heading-40" style="width: 300px;"><span class="glyphicon glyphicon-tags"></span>日次業務</h5>
+            <h5 class="col-10 heading-40" style="width: 300px;"><span class="bi bi-tags-fill"></span>日次業務</h5>
           </div>
           <div class="table-info" style="border: 1px solid; height: 400px;">
             <div class="" style="display: flex; height: 100%; ">
@@ -37,8 +37,8 @@
                 <input type="hidden" id="monthVal" />
                 <input type="hidden" id="dateVal" />
                 <div class="button-container-calendar">
-                  <button id="previous" style="float: left;" onclick="previousMonth()">‹</button>
-                  <button id="next" style="float: right;" onclick="nextMonth()">›</button>
+                  <button type="button" id="previous" style="float: left;" onclick="previousMonth()">‹</button>
+                  <button type="button" id="next" style="float: right;" onclick="nextMonth()">›</button>
                 </div>
                 <table class="calendar">
                   <thead>
@@ -196,7 +196,7 @@
       return false;
     }).always(function (xhr, msg) {
       $('#DigiTachoLinkLoading').hide();
-      console.log(xhr, msg);
+      // console.log(xhr, msg);
     });
 
   };

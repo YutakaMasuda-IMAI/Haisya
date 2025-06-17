@@ -41,6 +41,24 @@ namespace HaisyaWeb.Models
         }
 
         /// <summary>
+        /// 共通親顧客選択画面用model
+        /// </summary>
+        public class SelectCustomerOyaModel : CommonDialogBase
+        {
+
+            public List<Dto.M_Customer_Local> CustomerList { set; get; }
+
+            /// <summary>HTMLのList表示用DivのID名 </summary>
+            public string ListIdName { set; get; }
+
+            /// <summary>
+            /// 検索用顧客コード
+            /// </summary>
+            public string SearchCustomerCd {  set; get; }
+
+        }
+
+        /// <summary>
         /// 共通顧客選択画面用モデルクラス
         /// </summary>
         public class SelectCustomerModel : CommonDialogBase
@@ -52,20 +70,6 @@ namespace HaisyaWeb.Models
             public string ListIdName { set; get; }
 
         }
-
-        /// <summary>
-        /// 共通顧客選択画面用model
-        /// </summary>
-        public class SelectCustomerOyaModel : CommonDialogBase
-        {
-
-            public List<Dto.M_Customer_Local> CustomerList { set; get; }
-
-            /// <summary>HTMLのList表示用DivのID名 </summary>
-            public string ListIdName { set; get; }
-
-        }
-
 
         /// <summary>
         /// 共通顧客担当選択画面用model

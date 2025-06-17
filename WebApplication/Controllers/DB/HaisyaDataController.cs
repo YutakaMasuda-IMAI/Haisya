@@ -34,8 +34,8 @@ namespace WebApplication.Controllers.DB
         /// <param name="contextKintai">勤怠データベースコンテキスト</param>
         /// <param name="syabanRenrakuService">車番連絡サービス</param>
         /// <param name="operationInstructionsService">運行指示サービス</param>
-        public HaisyaDataController(ILogger<HaisyaDataController> logger, ApplicationDbContext context, 
-            ApplicationDbContextKintai contextKintai, ISyabanRenrakuService syabanRenrakuService, 
+        public HaisyaDataController(ILogger<HaisyaDataController> logger, ApplicationDbContext context,
+            ApplicationDbContextKintai contextKintai, ISyabanRenrakuService syabanRenrakuService,
             IOperationInstructionsService operationInstructionsService)
         {
             _logger = logger;
@@ -55,7 +55,7 @@ namespace WebApplication.Controllers.DB
         /// <param name="companyId">会社ID</param>
         /// <returns>配車表示リスト</returns>
         [HttpGet("GetHaisyaDisplayList")]
-        public IActionResult GetHaisyaDisplayList(string targetDateFrom, string targetDateTo, int companyId = 0)
+        public async Task<IActionResult> GetHaisyaDisplayList(string targetDateFrom, string targetDateTo, int companyId = 0)
         {
             IEnumerable<T_Anken_Display> resultVal = null;
 
@@ -66,6 +66,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -91,6 +94,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -115,8 +121,8 @@ namespace WebApplication.Controllers.DB
         /// <param name="targetDateUnderLastest">指定日以下で指定日以降終了の最新</param>
         /// <returns>配車データリスト</returns>
         [HttpGet("GetHaisyaDataList")]
-        public async Task<IActionResult> GetHaisyaDataList(int companyId, string targetDate, 
-                                            string targetDateFrom, string targetDateTo, int customerId, 
+        public async Task<IActionResult> GetHaisyaDataList(int companyId, string targetDate,
+                                            string targetDateFrom, string targetDateTo, int customerId,
                                             int ankenId = 0, int senzokuId = 0, int driverId = 0, int ankenDisplayId = 0,
                                             string targetDateUnderLastest = null)
         {
@@ -125,11 +131,14 @@ namespace WebApplication.Controllers.DB
             try
             {
                 HaisyaDataModel model = new(_context);
-                resultVal = await model.GetHaisyaDataList(companyId, customerId, 0, 0, 
+                resultVal = await model.GetHaisyaDataList(companyId, customerId, 0, 0,
                                         targetDate, targetDateFrom, targetDateTo, senzokuId, ankenId, 0, 0, driverId, ankenDisplayId, null, targetDateUnderLastest);
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -149,7 +158,7 @@ namespace WebApplication.Controllers.DB
         /// <param name="Ids">IDリスト</param>
         /// <returns>車番連絡リスト</returns>
         [HttpGet("GetSyabanRenrakuList")]
-        public async Task<IActionResult> GetSyabanRenrakuList(int companyId, int customerId, 
+        public async Task<IActionResult> GetSyabanRenrakuList(int companyId, int customerId,
                                                                         int customerTantouId, String targetDate, int groupID, int Ids)
         {
             IEnumerable<V_HaisyaDataList> resultVal = null;
@@ -167,6 +176,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -195,6 +207,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
 
@@ -222,6 +237,7 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 resultVal.ErrrMessage = ex.Message;
             }
             finally
@@ -252,6 +268,7 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 resultVal.ErrrMessage = ex.Message;
             }
             finally
@@ -283,6 +300,7 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 resultVal.ErrrMessage = ex.Message;
             }
             finally
@@ -313,6 +331,7 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 resultVal.ErrrMessage = ex.Message;
             }
             finally
@@ -341,6 +360,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -368,6 +390,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -394,6 +419,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -417,7 +445,7 @@ namespace WebApplication.Controllers.DB
         public async Task<IActionResult> GetSyabanRenraku(int companyID, int selectTantou, DateTime selectedDate, DateTime selectedEndDate, int filter)
         {
             List<SyabanRenrakuModel> resultVal;
-            
+
             try
             {
                 resultVal = await _syabanRenrakuService.GetSyabanRenrakuAsync(companyID, selectTantou, selectedDate, selectedEndDate, filter);
@@ -425,6 +453,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -458,7 +489,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
         }
 
@@ -484,6 +516,7 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 resultVal.ErrrMessage = ex.Message;
             }
             return resultVal;
@@ -504,6 +537,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
         }

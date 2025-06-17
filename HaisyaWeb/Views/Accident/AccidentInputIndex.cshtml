@@ -59,10 +59,10 @@
       <table class="head-button">
         <tr>
           <td><h3 id="labelTitle" class="heading-40">事故入力・修正・照会</h3></td>
-          <td style="text-align:right;"><button id="draftingButton" class="btn btn-outline-dark" style="width:100px;" onClick="DraftingButton();">起案</button></td>
-          <td style="text-align:right;"><button id="submitButton" class="btn btn-outline-success" style="width:120px;" onClick="SubmitButton();">承認</button></td>
-          <td style="text-align:right;"><button id="sendBackButton" class="btn btn-outline-info" style="width:120px;" onClick="SendBackButton();">差戻し</button></td>
-          <td style="text-align:right;"><button id="cancelButton" class="btn btn-outline-warning" style="width:100px;" onClick="CancelButton();">キャンセル</button></td>
+          <td style="text-align:right;"><button type="button" id="draftingButton" class="btn btn-outline-dark" style="width:100px;" onClick="DraftingButton();">起案</button></td>
+          <td style="text-align:right;"><button type="button" id="submitButton" class="btn btn-outline-success" style="width:120px;" onClick="SubmitButton();">承認</button></td>
+          <td style="text-align:right;"><button type="button" id="sendBackButton" class="btn btn-outline-info" style="width:120px;" onClick="SendBackButton();">差戻し</button></td>
+          <td style="text-align:right;"><button type="button" id="cancelButton" class="btn btn-outline-warning" style="width:100px;" onClick="CancelButton();">キャンセル</button></td>
         </tr>
       </table>
     </div>
@@ -74,17 +74,17 @@
     </span>
   </div>
   <div class="approval-buttons">
-    <button id="step1" onClick="ChangeStatus(1)">発生</button>
+    <button type="button" id="step1" onClick="ChangeStatus(1)">発生</button>
     <div></div>
-    <button id="step2" onClick="ChangeStatus(2)">荷主<br>対応</button>
+    <button type="button" id="step2" onClick="ChangeStatus(2)">荷主<br>対応</button>
     <div></div>
-    <button id="step3" onClick="ChangeStatus(3)">事故<br>報告</button>
+    <button type="button" id="step3" onClick="ChangeStatus(3)">事故<br>報告</button>
     <div></div>
-    <button id="step4" onClick="ChangeStatus(4)">保険（相手）<br>対応</button>
+    <button type="button" id="step4" onClick="ChangeStatus(4)">保険（相手）<br>対応</button>
     <div></div>
-    <button id="step5" onClick="ChangeStatus(5)">修理・経費</button>
+    <button type="button" id="step5" onClick="ChangeStatus(5)">修理・経費</button>
     <div></div>
-    <button id="step6" onClick="ChangeStatus(6)">完了</button>
+    <button type="button" id="step6" onClick="ChangeStatus(6)">完了</button>
   </div>
 
   @if (Model.Jiko.Jiko_ID != 0)
@@ -212,7 +212,7 @@
             <th><span class="required">当事者</span></th>
             <td>
               <div style="display: flex;">
-                <button class="blue-button" onClick="DriverDialog()">設定</button>
+                <button type="button" class="blue-button" onClick="DriverDialog()">設定</button>
                 @Html.TextBoxFor(model => model.Driver_Display_Name, new { @class = "form-control", @style = "width:200px;margin-left:5px;", @readonly = "readonly" })
                 @Html.HiddenFor(model => model.Jiko.Driver_ID)
               </div>
@@ -222,12 +222,12 @@
             <th style="vertical-align: top;">車輌</th>
             <td>
               <div style="display: flex;">
-                <button class="blue-button" onClick="SayryoDialog(0)">設定</button>
+                <button type="button" class="blue-button" onClick="SayryoDialog(0)">設定</button>
                 @Html.TextBoxFor(model => model.SyaryoManagement_Number, new { @class = "form-control", @style = "width:80px;margin-left:5px;margin-bottom:5px;", @readonly = "readonly" })
                 @Html.HiddenFor(model => model.Jiko.SyaryoManagement_ID)
               </div>
               <div style="display: flex;">
-                <button class="blue-button" style="margin-top: 0.5px;" onClick="SayryoDialog(1)">設定</button>
+                <button type="button" class="blue-button" style="margin-top: 0.5px;" onClick="SayryoDialog(1)">設定</button>
                 @Html.TextBoxFor(model => model.SyaryoManagement_Number1, new { @class = "form-control", @style = "width:80px;margin-left:5px;", @readonly = "readonly" })
                 @Html.HiddenFor(model => model.Jiko.SyaryoManagement_ID1)
                 <span style="width:150px">後ろがある場合</span>
@@ -238,7 +238,7 @@
             <th style="vertical-align: top;">発生場所<br>（詳細）</th>
             <td>
               <div style="display: flex;">
-                <button class="blue-button" onClick="AddressDialog()">設定</button>
+                <button type="button" class="blue-button" onClick="AddressDialog()">設定</button>
                 @Html.TextBox("Address", addressValue, new { @class = "form-control", @style = "width:600px;margin-left:5px;", @readonly = "readonly" })
               </div>
               <textarea id="Address_Remarks" name="" class="form-control textareas" style="width:100%;height:60px;margin-top:5px;">@Html.Raw(addressRemarksValue)</textarea>
@@ -370,7 +370,7 @@
       </table>
 
       <div class="category-title">事故種類</div>
-      <div style="text-align:right;margin:10px 0 10px 0;"><button class="blue-button" onClick="addRow()">追加</button></div>
+      <div style="text-align:right;margin:10px 0 10px 0;"><button type="button" class="blue-button" onClick="addRow()">追加</button></div>
 
       <table class="list" style="">
         <tr>
@@ -426,7 +426,7 @@
           <th>荷主</th>
           <td style="width:300px;">
             <div style="display: flex;">
-              <button class="blue-button" onClick="CustomerDialog()">設定</button>
+              <button type="button" class="blue-button" onClick="CustomerDialog()">設定</button>
               @Html.TextBoxFor(model => model.CustomerData.Customer_Name, new { @class = "form-control", @style = "width:250px;margin-left:5px;", @readonly = "readonly" })
               @Html.HiddenFor(model => model.CustomerData.Customer_ID, new { id = "KokyakuId" })
             </div>

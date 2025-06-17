@@ -11,7 +11,9 @@ export const defaultParams = {
   iconHtml: undefined,
   template: undefined,
   toast: false,
+  draggable: false,
   animation: true,
+  theme: 'light',
   showClass: {
     popup: 'swal2-show',
     backdrop: 'swal2-backdrop-show',
@@ -113,6 +115,7 @@ export const updatableParams = [
   'denyButtonText',
   'didClose',
   'didDestroy',
+  'draggable',
   'footer',
   'hideClass',
   'html',
@@ -135,16 +138,20 @@ export const updatableParams = [
   'text',
   'title',
   'titleText',
+  'theme',
   'willClose',
 ]
 
-/** @type {Record<string, string>} */
-export const deprecatedParams = {}
+/** @type {Record<string, string | undefined>} */
+export const deprecatedParams = {
+  allowEnterKey: undefined,
+}
 
 const toastIncompatibleParams = [
   'allowOutsideClick',
   'allowEnterKey',
   'backdrop',
+  'draggable',
   'focusConfirm',
   'focusDeny',
   'focusCancel',
@@ -219,6 +226,10 @@ const checkIfParamIsDeprecated = (param) => {
 export const showWarningsForParams = (params) => {
   if (params.backdrop === false && params.allowOutsideClick) {
     warn('"allowOutsideClick" parameter requires `backdrop` parameter to be set to `true`')
+  }
+
+  if (params.theme && !['light', 'dark', 'auto', 'borderless'].includes(params.theme)) {
+    warn(`Invalid theme "${params.theme}". Expected "light", "dark", "auto", or "borderless"`)
   }
 
   for (const param in params) {

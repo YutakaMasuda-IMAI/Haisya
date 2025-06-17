@@ -1,9 +1,5 @@
 ﻿@model HaisyaWeb.Models.YosyaModel.YosyaModalDto
 
-@{
-  Layout = "_ModalLayout";
-
-}
 
 <style>
   /*  .float-left {
@@ -44,10 +40,10 @@
         <h1 class="modal-title fs-3" id="exampleModalLabel">@(Model.Title)</h1>
         @if (Model.EditEnabled)
         {
-          <button type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
+          <button type="button" type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
         }
 
-        <button type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
+        <button type="button" type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
       </div>
       <div class="model-body">
         @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmMain", @class = "contact-form", @style = "padding: 0;", @onsubmit = "return false;" }))

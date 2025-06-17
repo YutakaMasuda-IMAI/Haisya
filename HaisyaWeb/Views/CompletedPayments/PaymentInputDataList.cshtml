@@ -62,7 +62,7 @@
     <table class="no-line" style="">
       <tr>
         <td style="vertical-align:bottom;">入金情報</td>
-        <td style="text-align:right;"><button class="btn btn-outline-success" onclick="addRow('paymentTable')" style="width:100px;">行追加</button></td>
+        <td style="text-align:right;"><button type="button" class="btn btn-outline-success" onclick="addRow('paymentTable')" style="width:100px;">行追加</button></td>
       </tr>
     </table>
   </div>
@@ -120,7 +120,7 @@
             <td style="text-align:center;">
               @if (i != 0)
               {
-                <button class="red-button" onclick="deleteRow(this)">削除</button>
+                <button type="button" class="red-button" onclick="deleteRow(this)">削除</button>
               }
             </td>
           </tr>
@@ -133,7 +133,7 @@
     <table class="no-line" style="">
       <tr>
         <td style="vertical-align:bottom;">返金情報</td>
-        <td style="text-align:right;"><button class="btn btn-outline-success" onclick="addRow('repaymentTable')" style="width:100px;">行追加</button></td>
+        <td style="text-align:right;"><button type="button" class="btn btn-outline-success" onclick="addRow('repaymentTable')" style="width:100px;">行追加</button></td>
       </tr>
     </table>
   </div>
@@ -191,7 +191,7 @@
             <td style="text-align:center;">
               @if (i != 0)
               {
-                <button class="red-button" onclick="deleteRow(this)">削除</button>
+                <button type="button" class="red-button" onclick="deleteRow(this)">削除</button>
               }
             </td>
           </tr>
@@ -282,7 +282,7 @@
       <td style="background-color: rgba(224, 234, 246, 1);"><input type="text" name="RepaymentNyukinList[${newIndex}].Adjustment_Amount" class="editable-field amount-input" style="width:100%;text-align:right;" onchange="updateTotal(this)"/></td>
       <td class="total-amount" style="text-align:right;">0</td>
       <td style="background-color: rgba(224, 234, 246, 1);"><input type="text" name="RepaymentNyukinList[${newIndex}].Remarks" class="editable-field" style="width:100%;" /></td>
-      <td style="text-align:center;"><button class="red-button" onclick="deleteRow(this)">削除</button></td>
+      <td style="text-align:center;"><button type="button" class="red-button" onclick="deleteRow(this)">削除</button></td>
     `;
 
     $newRow.html(cellsHtml);

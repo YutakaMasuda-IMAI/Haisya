@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 
-namespace DriverAttendance.Service
+namespace PartnerWeb.Service
 {
     public interface IViewRenderService
     {

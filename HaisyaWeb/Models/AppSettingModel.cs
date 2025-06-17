@@ -18,6 +18,11 @@
         public AuthAidSetting AuthAid { set; get; }
 
         /// <summary>
+        /// 環境区分
+        /// </summary>
+        public string EnvKubun { set; get; }
+
+        /// <summary>
         /// API設定
         /// </summary>
         public ApiSetting Api { set; get; }
@@ -80,4 +85,6 @@
         /// </summary>
         public string WebAPIHosts { set; get; }
     }
+
+
 }

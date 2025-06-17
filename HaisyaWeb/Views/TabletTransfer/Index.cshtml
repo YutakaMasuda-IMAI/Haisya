@@ -1,12 +1,6 @@
 ﻿@model HaisyaWeb.Models.TabletTransferModel
 
 
-@{
-  Layout = "_ModalLayout";
-}
-
-
-
 
 <head>
   <meta charset="UTF-8">
@@ -26,7 +20,7 @@
   <div class="modal-content">
     @*<div class="modal-header">
       <h1 class="modal-title fs-3" id="exampleModalLabel">タブレット連携</h1>
-      <button id="btnClose" type="button" class="btn btn-secondary">閉じる</button>
+      <button type="button" id="btnClose" type="button" class="btn btn-secondary">閉じる</button>
     </div>*@
     <div class="model-body">
       <form id="form1" class="" style="">
@@ -66,7 +60,7 @@
                 @Html.TextAreaFor(model => model.SendMessage, 3, 0, new { @class = "", @Style = "padding: 0px 0px 0px 2px; width: 100%;" })
               </div>
               <div class="col-12">
-                <button type="button" class="btn btn-success" id="btnSendTablet">タブレット送信</button>
+                <button type="button" type="button" class="btn btn-success" id="btnSendTablet">タブレット送信</button>
               </div>
             </div>
           </div>
@@ -78,7 +72,7 @@
                   <label class="label-Title-Required control-label align-self-center align-middle text-end" style="padding: 0; color: #ff00dc;">住所<br />検索</label>
                 </th>
                 <td width="100px">
-                  <button id="btnSelectAddress" style="border-radius: 10%; width: 100px; font-size: 20px; padding: 0; " onclick="return false;">住所検索</button>
+                  <button type="button" id="btnSelectAddress" style="border-radius: 10%; width: 100px; font-size: 20px; padding: 0; " onclick="return false;">住所検索</button>
                 </td>
                 <td>
                   <input type="text" id="txtAddress" class="form-control" />
@@ -89,8 +83,8 @@
             {
               <div id="mapHead">
                 <!-- ログイン認証の場合 -->
-                <button onclick="logout(); return false;" style="width: 100px;height:30px;font-size:12px;">logout</button>
-                @*<button onclick="aaaTest(); return false;" style="width: 100px; height: 30px; font-size: 12px; ">aaaa</button>*@
+                <button type="button" onclick="logout(); return false;" style="width: 100px;height:30px;font-size:12px;">logout</button>
+                @*<button type="button" onclick="aaaTest(); return false;" style="width: 100px; height: 30px; font-size: 12px; ">aaaa</button>*@
               </div>
             }
             <div id="MapContainer" class="" style="margin:0;padding:0;">

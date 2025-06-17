@@ -1,6 +1,4 @@
-﻿using DriverAttendance.Service;
-using PartnerWeb.Models;
-using PartnerWeb.Models.DB;
+﻿using PartnerWeb.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using System;
@@ -8,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using PartnerWeb.Service;
 
 
 namespace PartnerWeb.Controllers

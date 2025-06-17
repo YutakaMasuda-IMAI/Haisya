@@ -4,7 +4,7 @@ using RenkeiDB.Dto.MasterDto;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace RenkeiDB.Services
+namespace RenkeiDB.Services.Interfaces
 {
     /// <summary>
     /// マスターデータサービスインターフェース

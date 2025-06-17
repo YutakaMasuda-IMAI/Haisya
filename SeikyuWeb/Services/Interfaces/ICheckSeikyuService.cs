@@ -1,8 +1,8 @@
 ﻿using SeikyuWeb.Dto.Seikyu;
 using SeikyuWeb.Dto;
-using SeikyuWeb.Dto.CheckShiharaisDto;
 using System.Threading.Tasks;
 using SeikyuWeb.Dto.ReportDto;
+using SeikyuWeb.Dto.CheckseikyusDto;
 
 namespace SeikyuWeb.Services.Interfaces
 {

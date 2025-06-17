@@ -29,7 +29,7 @@
         <tr align="center">
 
           <th class="ex-table-th" style="width: 200px; vertical-align: middle; background-color: white; border-left: hidden; border-bottom: hidden; border-top: hidden;">
-            <button class="btn btn-warning btnAddNew" style="padding:0;width: 90%;" date-id="@(group.Customer_Branch_ID)" onclick="submitModal('@(group.Customer_Branch_ID)','0', '0'); return false;">乗務員追加</button>
+            <button type="button" class="btn btn-warning btnAddNew" style="padding:0;width: 90%;" date-id="@(group.Customer_Branch_ID)" onclick="submitModal('@(group.Customer_Branch_ID)','0', '0'); return false;">乗務員追加</button>
           </th>
 
           <th class="ex-table-th" style="width: 200px; vertical-align: middle;">選択</th>
@@ -70,8 +70,8 @@
           <tr style="font-weight: bold; height: 20px;">
             <td style="border-left: hidden; border-bottom: hidden;"></td>
             <td style="vertical-align: middle; padding: 0.2rem 1rem; display: flex;">
-              <button class="btn btn-success" style="width: 50%; padding:0;" onclick="submitModal('@(item.Customer_Branch_ID)','@(item.Customer_Driver_ID)', '@(item.Customer_DriverSyaryo_ID)'); return false;">修正</button>
-              <button class="btn btn-info" style="width: 50%; padding:0;margin-left: 0.5rem;" onclick="submitModal('@(item.Customer_Branch_ID)','@(item.Customer_Driver_ID)', '0'); return false;">車輌追加</button>
+              <button type="button" class="btn btn-success" style="width: 50%; padding:0;" onclick="submitModal('@(item.Customer_Branch_ID)','@(item.Customer_Driver_ID)', '@(item.Customer_DriverSyaryo_ID)'); return false;">修正</button>
+              <button type="button" class="btn btn-info" style="width: 50%; padding:0;margin-left: 0.5rem;" onclick="submitModal('@(item.Customer_Branch_ID)','@(item.Customer_Driver_ID)', '0'); return false;">車輌追加</button>
             </td>
 
             <td style="text-align: center;">@(item.Employee_Number)</td>

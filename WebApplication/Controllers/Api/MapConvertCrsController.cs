@@ -5,7 +5,7 @@ using System;
 using System.Threading.Tasks;
 using WebApplication.Model;
 
-namespace WebApplication.Controllers
+namespace WebApplication.Controllers.Api
 {
     /// <summary>
     /// 座標変換を管理するコントローラー

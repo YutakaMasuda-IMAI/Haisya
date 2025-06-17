@@ -56,11 +56,11 @@
 <div class="table-div" style="text-align:left;margin-top:5px;">
 @if (Model.CheckShitabarai.Check_Kubun != 1 || (Model.CheckShitabarai.Check_Kubun == 1 && Model.CheckShitabarai.Check_Status != 1))
 {
-  <button id="bulkApprovalBtn" type="button" class="btn btn-primary btn-sm" style="width: 80px;margin-bottom:5px;">一括確定</button>
+  <button type="button" id="bulkApprovalBtn" type="button" class="btn btn-primary btn-sm" style="width: 80px;margin-bottom:5px;">一括確定</button>
 }
 else
 {
-  <button type="button" class="btn btn-primary btn-sm" style="width: 80px; margin-bottom: 5px;" disabled>一括確定</button>
+  <button type="button" type="button" class="btn btn-primary btn-sm" style="width: 80px; margin-bottom: 5px;" disabled>一括確定</button>
 }
 </div>
 
@@ -206,14 +206,14 @@ else
               {
                 @if (item.Down.Check_Shitabarai_ID != 0 || item.Down.Uriage_Shiharai_ID != 0)
                 {
-                  <button id="btnTokuisakiFrom" class="btn btn-info btn-sm" onclick="openIndexModal(@item.Down.Check_Shitabarai_ID, @item.Down.Uriage_Shiharai_ID); return false;" style="padding:0;">
+                  <button type="button" id="btnTokuisakiFrom" class="btn btn-info btn-sm" onclick="openIndexModal(@item.Down.Check_Shitabarai_ID, @item.Down.Uriage_Shiharai_ID); return false;" style="padding:0;">
                     @(isUnapproved ? "未承認" : "承認済み")
                   </button>
                 }
               }
               else
               {
-                <button class="btn btn-info btn-sm" style="padding:0;" onclick="return false;" disabled>
+                <button type="button" class="btn btn-info btn-sm" style="padding:0;" onclick="return false;" disabled>
                   @(isUnapproved ? "未承認" : "承認済み")
                 </button>
               }

@@ -1,16 +1,16 @@
 /**
- * Minified by jsDelivr using clean-css v5.3.0.
- * Original file: /npm/jquery-ui@1.13.2/themes/base/selectable.css
+ * Minified by jsDelivr using clean-css v5.3.2.
+ * Original file: /npm/jquery-ui@1.14.1/themes/base/selectable.css
  *
  * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
  */
 /*!
- * jQuery UI Selectable 1.13.2
- * http://jqueryui.com
+ * jQuery UI Selectable 1.14.1
+ * https://jqueryui.com
  *
- * Copyright jQuery Foundation and other contributors
+ * Copyright OpenJS Foundation and other contributors
  * Released under the MIT license.
- * http://jquery.org/license
+ * https://jquery.org/license
  */
-.ui-selectable{-ms-touch-action:none;touch-action:none}.ui-selectable-helper{position:absolute;z-index:100;border:1px dotted #000}
-/*# sourceMappingURL=/sm/39688635f165948def9a064796f8f5b81f03e54a1b9182a9d0709ca242a2faa3.map */
+.ui-selectable{touch-action:none}.ui-selectable-helper{position:absolute;z-index:100;border:1px dotted #000}
+/*# sourceMappingURL=/sm/49dca0bd3cf2e109689c78e87c3a22c2ceb6d2e784a497afc88741ab1fc64bc7.map */

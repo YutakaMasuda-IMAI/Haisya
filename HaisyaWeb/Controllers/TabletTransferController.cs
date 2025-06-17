@@ -1,6 +1,5 @@
 ﻿using HaisyaWeb.API.WebApp;
 using HaisyaWeb.Models;
-using HaisyaWeb.Models.DB;
 using HaisyaWeb.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;

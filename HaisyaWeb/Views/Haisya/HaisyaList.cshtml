@@ -138,7 +138,7 @@
                             <td class="stn2 bdr bdb" style="width: 70px; max-width: 70px; overflow: hidden; background-color: rgba(202, 227, 255, 1); text-align: center; white-space: nowrap; ">
                               <label>@(drivers.ElementAt(i).Syasyu + drivers.ElementAt(i).Kata)</label><br />
                               <label>@(drivers.ElementAt(i).Syaban_Number)</label><br />
-                              <button class="btn btn-warning" style="padding: 0; font-size: 10px; width: 80%;" onclick="tableTransfer(@(drivers.ElementAt(i).Driver_ID),@(drivers.ElementAt(i).SyaryoManagement_ID)); return false;">ナビ連携</button>
+                              <button type="button" class="btn btn-warning" style="padding: 0; font-size: 10px; width: 80%;" onclick="tableTransfer(@(drivers.ElementAt(i).Driver_ID),@(drivers.ElementAt(i).SyaryoManagement_ID)); return false;">ナビ連携</button>
                             </td>
                             @*<td class="stn2 bdr bdb" style="width: 70px; max-width: 70px; overflow: hidden; background-color: rgba(202, 227, 255, 1); padding-left: 0.1rem; ">
                               @if (drivers.ElementAt(i).JISYA_YOSYA_KUBUN != 3)
@@ -149,7 +149,7 @@
                               {
                                 <label>連続：@(drivers.ElementAt(i).RenzokuWorkDays)日</label>
                               }
-                              <button class="btn btn-warning" style="padding: 0; font-size: 10px; width: 80%;" onclick="tableTransfer(@(drivers.ElementAt(i).Driver_ID),@(drivers.ElementAt(i).SyaryoManagement_ID)); return false;">ナビ連携</button>
+                              <button type="button" class="btn btn-warning" style="padding: 0; font-size: 10px; width: 80%;" onclick="tableTransfer(@(drivers.ElementAt(i).Driver_ID),@(drivers.ElementAt(i).SyaryoManagement_ID)); return false;">ナビ連携</button>
                             </td>*@
                             <td id="driver-row-@(drivers.ElementAt(i).Driver_ID)-drag-area" class="bdb drag-area" style="">
                               @{
@@ -210,7 +210,9 @@
                                data-jisyayosyakubun="@(HaisyaDisplay.Haisya_Kubun)"
                                data-group-index="@groupIndex"
                                style="left: @(left)px; top: @(top)px; width: @(width)px;">
-                            <div class="table-schedule-item position-relative" border="1" ondblclick="@(!drivers.ElementAt(i).EditFlg ? $"AnkenRefenceModal({HaisyaDisplay.Anken_ID},{HaisyaDisplay.AnkenDisplay_ID})": $"AnkenRefenceModal({HaisyaDisplay.Anken_ID}, {HaisyaDisplay.AnkenDisplay_ID}, {HaisyaDisplay.Driver_ID}, {HaisyaDisplay.SyaryoManagement_ID}, {HaisyaDisplay.Haisya_Kubun})")">
+                            <div class="table-schedule-item position-relative" border="1" 
+                            ondblclick="@(!drivers.ElementAt(i).EditFlg ? $"AnkenRefenceModal({HaisyaDisplay.Anken_ID},{HaisyaDisplay.AnkenDisplay_ID})": 
+                            $"AnkenRefenceModal({HaisyaDisplay.Anken_ID}, {HaisyaDisplay.AnkenDisplay_ID}, {HaisyaDisplay.Driver_ID}, {HaisyaDisplay.SyaryoManagement_ID}, {HaisyaDisplay.Haisya_Kubun})")">
                               <i class="btn-remove-anken fa-solid fa-xmark  @(drivers.ElementAt(i).EditFlg? "": "")">✖️</i>
                               <table class="table-schedule-item">
                                 <tbody>
@@ -292,23 +294,23 @@
                                           if (!Model.Search.SelectStatus.Contains(a.Anken_Status)) return false;
                                           return true;
                                         }).GroupBy(a => Tuple.Create<string, string>(
-            Model.Search.SelectGroup switch
-            {
-              0 => "全て",
-              1 => a.KokyakuName,
-              2 => a.TantouID.ToString(),
-              3 => a.SyasyuDisplay,
-              _ => "全て"
-            },
-            Model.Search.SelectGroup switch
-            {
-              0 => "全て",
-              1 => a.KokyakuName,
-              2 => a.Tantou_Name,
-              3 => a.SyasyuDisplay,
-              _ => "全て"
-            }
-          )).OrderBy(h => h.Key.Item2);
+                                            Model.Search.SelectGroup switch
+                                            {
+                                              0 => "全て",
+                                              1 => a.KokyakuName,
+                                              2 => a.TantouID.ToString(),
+                                              3 => a.SyasyuDisplay,
+                                              _ => "全て"
+                                            },
+                                            Model.Search.SelectGroup switch
+                                            {
+                                              0 => "全て",
+                                              1 => a.KokyakuName,
+                                              2 => a.Tantou_Name,
+                                              3 => a.SyasyuDisplay,
+                                              _ => "全て"
+                                            }
+                                          )).OrderBy(h => h.Key.Item2);
 
 
           foreach (var ankens in ankenGroup)

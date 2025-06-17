@@ -1,6 +1,5 @@
 ﻿using HaisyaWeb.API.Map;
 using HaisyaWeb.Models;
-using HaisyaWeb.Models.DB;
 using HaisyaWeb.Service;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -103,8 +102,8 @@ namespace HaisyaWeb.Controllers
                 AddressApi getAddress = new(_mapApiSettiong);
                 MapAddress_Local address = await getAddress.GetAddressDataAsync(position, range, datum);
 
-                if (address == null) { return Json(new { partialView = "", message = "ネットワーク接続エラー" }); }
-                if (address.ErrrMessage != null) { return Json(new { partialView = "", message = "住所検索に失敗しました：" + address.ErrrMessage }); }
+                if (address == null) { return Json(new { partialView = "", errorMessage = "ネットワーク接続エラー" }); }
+                if (address.ErrrMessage != null) { return Json(new { partialView = "", errorMessage = "住所検索に失敗しました：" + address.ErrrMessage }); }
 
                 model.Addresslist = address.item;
 

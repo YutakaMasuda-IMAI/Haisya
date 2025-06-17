@@ -80,6 +80,7 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine(x.Message);
                 Response.StatusCode = x is BadHttpRequestException ? StatusCodes.Status400BadRequest : StatusCodes.Status500InternalServerError;
+                await Response.WriteAsync(x.Message);
                 r.ErrrMessage = x.Message;
             }
             finally
@@ -129,9 +130,12 @@ namespace WebApplication.Controllers.DB
                 return new OkObjectResult(r);
             }
             // エラーが発生した場合
-            catch (Exception x)
+            catch (Exception ex)
             {
-                return CommonHelper.HandleError(x);
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
+                return CommonHelper.HandleError(ex);
             }
         }
 
@@ -175,9 +179,12 @@ namespace WebApplication.Controllers.DB
                 return new OkObjectResult(r);
             }
             // エラーが発生した場合
-            catch (Exception x)
+            catch (Exception ex)
             {
-                return CommonHelper.HandleError(x);
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
+                return CommonHelper.HandleError(ex);
             }
         }
 

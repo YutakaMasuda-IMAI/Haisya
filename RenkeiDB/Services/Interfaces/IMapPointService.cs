@@ -4,7 +4,7 @@ using RenkeiDB.Dto.MapPointDto;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace RenkeiDB.Services
+namespace RenkeiDB.Services.Interfaces
 {
     /// <summary>
     /// マップポイントサービスインターフェース

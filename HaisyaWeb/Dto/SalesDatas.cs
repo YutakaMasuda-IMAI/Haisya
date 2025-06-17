@@ -160,7 +160,7 @@ namespace HaisyaWeb.Dto
         public bool IsUnderlingReadOnly { get; set; } = false;
         public int ShimeDay { get; set; } = 1;
         public bool IsDeletable { get; set; } = true;
-        public M_Customer_Uriage_Calc_Local CustomerUriageCalcData {  set; get; }
+        public M_Customer_Uriage_Calc_Local CustomerUriageCalcData { set; get; }
         /// <summary>
         /// 売上負担一覧
         /// </summary>
@@ -233,7 +233,7 @@ namespace HaisyaWeb.Dto
         public int Del_Flg { get; set; }
     }
 
-    public class ExtraChargeDto_Local : AnkenModel.ExtraChargeDto { }
+    public class ExtraChargeDto_Local : WebApplication.Model.AnkenModel.ExtraChargeDto { }
 
     /// <summary>
     /// ドライブルートリスト
@@ -298,7 +298,7 @@ namespace HaisyaWeb.Dto
         public int CustomerID { get; set; }
         public bool IsCreditSlip { get; set; }
         public bool IsFirstItem { get; set; }
-        public int ShimeDay {  get; set; }
+        public int ShimeDay { get; set; }
         public DateTime? SeikyuDate { get; set; }
         public string CustomerUriageCalcData { get; set; }
     }

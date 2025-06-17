@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using WebApplication.Data;
 using WebApplication.Model;
 
-namespace WebApplication.Controllers
+namespace WebApplication.Controllers.Api
 {
     /// <summary>
     /// 自動車ルート候補一覧を管理するコントローラー

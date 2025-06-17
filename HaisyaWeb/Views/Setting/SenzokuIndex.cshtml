@@ -27,7 +27,7 @@
 
 <div id="SenzokuCommonDialog" style="font-size: 14px;">
   <h2>
-    <span class="glyphicon glyphicon-chevron-right"></span>専属マスタ登録画面
+    <span class="bi bi-chevron-right"></span>専属マスタ登録画面
   </h2>
   <div id="contents">
 
@@ -39,7 +39,7 @@
     @foreach (var item in senzokus)
     {
       <div id="@(item.SenzokuID)" class="clearfix">
-        <div class="setting-separator">(@(item.Customer_Branch_Code))　@(item.Customer_Branch_Name_Abbr)<span style="margin-left: 3rem;font-size: 14px;">専属名：@(item.Senzoku_Name_Abbr)</span><span style="font-size: 12px; color: red; float: right;"><button class="btn btn-primary btn-senzoku-new" style="" onclick="SenzokuDriverRegModal('@(item.SenzokuID)','0'); return false;">乗務員追加</button></span></div>
+        <div class="setting-separator">(@(item.Customer_Branch_Code))　@(item.Customer_Branch_Name_Abbr)<span style="margin-left: 3rem;font-size: 14px;">専属名：@(item.Senzoku_Name_Abbr)</span><span style="font-size: 12px; color: red; float: right;"><button type="button" class="btn btn-primary btn-senzoku-new" style="" onclick="SenzokuDriverRegModal('@(item.SenzokuID)','0'); return false;">乗務員追加</button></span></div>
         <div id="option_attendance_setting" class="sight-settings">
           <table class="table table-senzoku" >
             <thead class="table-info">
@@ -61,7 +61,7 @@
               @foreach (var driver in drivers)
               {
               <tr>
-                <td><button class="btn btn-success btn-senzoku-edit" onclick="SenzokuDriverRegModal('@(item.SenzokuID)','@(driver.Senzoku_Driver_ID)'); return false;">選択</button></td>
+                <td><button type="button" class="btn btn-success btn-senzoku-edit" onclick="SenzokuDriverRegModal('@(item.SenzokuID)','@(driver.Senzoku_Driver_ID)'); return false;">選択</button></td>
                 <td>@(driver.Employee_Number)</td>
                 <td>@(driver.Display_Name)</td>
                 <td>@(driver.Syasyu)@(driver.Kata)</td>
@@ -174,7 +174,8 @@
   }
 
   async function closeModelAndRefresh() {
-    $('#ModalHere').dialog('close');
+    // $('#ModalHere').dialog('close');
+    $("#btnDialogClose").trigger("click");
     $('#ModalHere').html('');
     await alertInfo("登録が完了しました。");
     // reloadメソッドによりページをリロード

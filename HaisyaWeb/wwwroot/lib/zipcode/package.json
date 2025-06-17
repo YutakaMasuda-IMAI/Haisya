@@ -1,68 +1,24 @@
 {
-  "name": "zipcode-ja",
-  "version": "0.0.7",
-  "description": "zipcodes of japanpost.jp as static properties",
-  "main": "lib/zipcode-ja.js",
-  "files": [
-    "lib/zipcode-ja.js",
-    "lib/zipcode-ja.js.map",
-    "lib/zipcode-ja.min.js",
-    "lib/zipcode-ja.min.js.map",
-    "lib/zipcode-ja.json",
-    "lib/zipcode-ja.json.gz"
-  ],
+  "name": "zipcode",
+  "version": "0.1.1",
+  "description": "Easily lookup city and state for a US zipcode",
   "scripts": {
-    "prebuild": "node update.js && ls -lah lib",
-    "build": "browserify -t brfs shim.js -s zipcodeJa --debug | exorcist lib/zipcode-ja.js.map -b lib > lib/zipcode-ja.js",
-    "postbuild": "uglifyjs lib/zipcode-ja.js --in-source-map lib/zipcode-ja.js.map --mangle --compress --output lib/zipcode-ja.min.js --source-map",
-    "start": "mocha test.js --watch",
-    "test": "mocha test.js",
-    "lint": "xo '*.js'",
-    "test-cloud": "zuul test.js",
-    "test-local": "zuul test.js --local --ui mocha-bdd --local 59798 --open",
-    "postversion": "git push --follow-tags && conventional-github-releaser -p atom -r 0"
+    "test": "node test.js"
   },
-  "devDependencies": {
-    "brfs": "^2.0.2",
-    "browserify": "^16.2.3",
-    "conventional-github-releaser": "^3.1.3",
-    "exorcist": "^1.0.1",
-    "fast-csv": "^3.0.1",
-    "hanzen": "^0.0.0",
-    "iconv-lite": "^0.5.0",
-    "japanese": "^1.2.0",
-    "mkdirp": "^0.5.1",
-    "mocha": "^6.1.4",
-    "moment": "^2.24.0",
-    "npm-statement": "^0.0.0",
-    "pako": "^1.0.10",
-    "request": "^2.88.0",
-    "uglifyjs": "^2.4.11",
-    "unzip": "^0.1.11",
-    "xo": "^0.24.0",
-    "zuul": "^3.12.0"
-  },
-  "xo": {
-    "env": "mocha",
-    "space": 2,
-    "rules": {
-      "no-path-concat": 0
-    }
-  },
-  "keywords": [
-    "japanese",
-    "zipcode",
-    "postalcode",
-    "ajaxzip"
-  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/59naga/zipcode-ja.git"
+    "url": "https://github.com/devongovett/zipcode.git"
   },
-  "author": "59naga <i59naga@icloud.com> (http://berabou.me/)",
+  "keywords": [
+    "zip",
+    "usps",
+    "city",
+    "state"
+  ],
+  "author": "Devon Govett <devongovett@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/59naga/zipcode-ja/issues"
+    "url": "https://github.com/devongovett/zipcode/issues"
   },
-  "homepage": "https://github.com/59naga/zipcode-ja#readme"
+  "homepage": "https://github.com/devongovett/zipcode"
 }

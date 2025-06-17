@@ -34,7 +34,7 @@
               string startDate = Convert.ToDateTime(item.StartDatetime).ToString("yy/MM/dd");
                 <tr>
                   <td style="padding: 0.1rem;">
-                    <button class="btn btn-dark" style="width: 99%;">
+                    <button type="button" class="btn btn-dark" style="width: 99%;">
                       <div style="padding: 0px 0px 0px 2px; margin: 0; background: none; width: 100%; line-height: initial; text-align: left; font-size: x-small; ">
                         @Html.DisplayFor(modelItem => item.KokyakuName) : @Convert.ToDouble(item.GrossAmount).ToString("#,##0円")
                         <br>

@@ -15,7 +15,7 @@
               {
                 case 1:
                   <div class="report-item report-item-search d-flex flex-wrap" style="@(item.Inputbox_Width == 0 ? "flex: 1" :"") ">
-                    <button class="btn btn-info btn-sm" type="button" onclick="setFieldSearch('@(item.Model_Prooerty)'); @(item.SelectBtnOnClick)()">
+                    <button type="button" class="btn btn-info btn-sm" type="button" onclick="setFieldSearch('@(item.Model_Prooerty)'); @(item.SelectBtnOnClick)()">
                       設定
                     </button>
                     <div class="group-input-search" style="flex: 1;">
@@ -29,7 +29,7 @@
                              name="@(item.Model_Prooerty)Text"
                              readonly
                              style="@(item.Inputbox_Width > 0 ? "width:" + item.Inputbox_Width + "px" : "")" />
-                      <span class="icon-clear glyphicon glyphicon-remove"></span>
+                      <span class="icon-clear bi bi-x-square-fill"></span>
                     </div>
                   </div>
                   break;
@@ -71,7 +71,7 @@
                            data-default_value="@item.Default_Val"
                            data-format="@item.Inputbox_Formart"
                     @(item.NotNull_Flg == 1 ? "required" : "") />
-                    <span class="icon-clear glyphicon glyphicon-remove"></span>
+                    <span class="icon-clear bi bi-x-square-fill"></span>
                   </div>
                   break;
               }

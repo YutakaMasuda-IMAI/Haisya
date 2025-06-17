@@ -1,6 +1,4 @@
 ﻿@using Microsoft.AspNetCore.Identity
-@using HaisyaWeb.Models.DB
-
 @inject SignInManager<ApplicationUser> SignInManager
 @inject UserManager<ApplicationUser> UserManager
 
@@ -47,7 +45,7 @@
         padding: 10px;
       }
 
-    #user-header .glyphicon {
+    #user-header .icons {
       margin-right: 6px;
     }
 
@@ -110,20 +108,20 @@
       </li>
       <li class="nav-item">
         <form class="form-inline" asp-area="" asp-controller="Account" asp-action="LogoutExec" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
-          <button type="submit" class="btn-logout nav-link btn btn-link text-dark">Logout</button>
+          <button type="button" type="submit" class="btn-logout nav-link btn btn-link text-dark">Logout</button>
         </form>
       </li>*@
     <div hidden>
       <input type="hidden" id="loginId_Partial" value="@(User.Claims.ToList()[0].Value)" />
     </div>
 
-    <div id="header-user-info" style="height:63px; position: relative; margin-top: 0px; vertical-align:middle;">
+    <div id="header-user-info mt-0" style="height:63px; position: relative; vertical-align:middle;">
       <div id="company-name" style="margin-top: 15px;display: inline;">
-        <span class="glyphicon glyphicon-home" aria-hidden="true"></span><input type="text" id="CompanyName" style="border: none;" />
+        <span class="bi bi-house-fill" ></span><input type="text" id="CompanyName" style="border: none;" />
       </div>
       <div id="manager-name" style="display: inline-block; padding-bottom: 5px;" onmouseout="rollout()" onmouseover="rollover()">
         <a href="#">
-          <span class="glyphicon glyphicon-user"></span>
+          <span class="bi bi-people-fill"></span>
           @User.Identity.Name 様                <span class="caret"></span>
         </a>
         <ul id="rollover-menu" style="display: none;z-index: 1000;">
@@ -172,7 +170,7 @@
           type: 'post',
         }).done(function (response) {
           if (response.errorMessage != null) {
-              alertError(`【エラー】${response.errorMessage}`);
+              // alertError(`【エラー】${response.errorMessage}`);
               return false;
           } else {
             var obj = response.result;
@@ -180,11 +178,11 @@
             return;
           }
         }).fail(function (xhr) {
-          alertError(xhr, "【ネットワークエラー】");
+          // alertError(xhr, "【ネットワークエラー】");
           console.log(xhr);
           return false;
         }).always(function (xhr, msg) {
-            console.log(xhr, msg);
+            // console.log(xhr, msg);
         });
 
     });

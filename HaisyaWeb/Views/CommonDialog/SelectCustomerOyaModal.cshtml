@@ -100,83 +100,22 @@
     <div class="model-body">
       <div class="div-area-customer-dialog">
         <div class="content_class-customer-dialog">
-          <div id="CommonDialogToCustomerList" class="table-CustomerListDataModal dataList" style="height:500px; margin: 0;">
-            <table id="myTable" class="ex_table-tokuisaki table-bordered border-info" width="100%" border="1">
-              <thead style="background-color: chartreuse;  ">
-                <tr align="center">
-                  <th class="ex-table-th" style="vertical-align: middle;">選択</th>
-                  <th class="ex-table-th" style="width: 50px;">
-                    <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Customer_Code')" style="">顧客<br />コード</a>
-                  </th>
-                  <th class="ex-table-th" style="width: 170px;">
-                    <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Customer_Name')" style="">顧客名</a>
-                  </th>
-                  <th class="ex-table-th" style="width: 100px;">
-                    <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Customer_Name_Abbr')" style="">表示名</a>
-                  </th>
-                  <th class="ex-table-th" style="width: 80px;">
-                    <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Customer_Name_Kana')" style="">検索カナ</a>
-                  </th>
-                  <th class="ex-table-th" style="width: 50px;">
-                    <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Phone1')" style="">電話番号1</a>
-                  </th>
-                  <th class="ex-table-th" style="width: 50px;">
-                    <a data-koumoku="Kubun_Sort" href="#" onclick="dataListFirstSortChange('Fax1')" style="">FAX番号1</a>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                @{
-                  int i = 1;
-                }
-                @foreach (var item in Model.CustomerList.OrderBy(m => m.Customer_Code).Take(100).ToList())
-                {
-                  int rem;
-                  int div = Math.DivRem(i, 2, out rem);
-                  string color = rem == 0 ? "khaki" : "	whitesmoke";
-                <tr style="font-size: 12px; font-weight: bold; background-color: @(color); height: 20px;">
-                  <td width="50px" style="vertical-align: middle;">
-                    <button name="btntokuisakiList" class="btn btn-success" style="width: 100%; padding:0;">選択</button>
-                  </td>
+          <table class="table jbc-table table-borderless" style="padding: 0; background-color: whitesmoke;" border="1">
+            <tbody>
+              <tr style="vertical-align: middle;">
+                <td class="col-sm-10">
+                  <label class="control-label align-self-center align-middle text-end" style="padding:0;">顧客コード（前方一致）：</label>
+                  @Html.TextBoxFor(model => Model.SearchCustomerCd, null, new { @class = "text", @style = "width:100px;" })
+                </td>
 
-                  <td hidden style="vertical-align: middle;" align="center">
-                    @(item.Customer_ID)
-                  </td>
-                  <td style="vertical-align: middle;" align="center">
-                    @(item.Customer_Code)
-                  </td>
-                  <td>
-                    @(item.Customer_Name)
-                  </td>
-                  <td>
-                    @(item.Customer_Name_Abbr)
-                  </td>
-                  <td>
-                    @(item.Customer_Name_Kana)
-                  </td>
-                  <td align="center">
-                    @(item.Phone1)
-                  </td>
-                  <td align="center">
-                    @(item.Fax1)
-                  </td>
-                  <td hidden>@Html.TextBoxFor(modelItem => item.Customer_ID, null, new { @readonly = "readonly", })</td>
-                  <td hidden>@Html.TextBoxFor(modelItem => item.Yosya_Flg, null, new { @readonly = "readonly", })</td>
-                  <td hidden>@Html.TextBoxFor(modelItem => item.Customer_Code, null, new { @readonly = "readonly", @class = "table-tokuisakilist-input" })</td>
-                  <td hidden>@Html.TextBoxFor(modelItem => item.Customer_Name, null, new { @readonly = "readonly", @class = "table-tokuisakilist-input" })</td>
-                  <td hidden>@Html.TextBoxFor(modelItem => item.Customer_Name_Abbr, null, new { @readonly = "readonly", @class = "table-tokuisakilist-input" })</td>
-                  <td hidden>@Html.TextBoxFor(modelItem => item.Customer_Name_Kana, null, new { @readonly = "readonly", @class = "table-tokuisakilist-input" })</td>
-                  <td hidden>@Html.TextBoxFor(modelItem => item.Phone1, null, new { @readonly = "readonly", @class = "table-tokuisakilist-input" })</td>
-                  <td hidden>@Html.TextBoxFor(modelItem => item.Fax1, null, new { @readonly = "readonly", @class = "table-tokuisakilist-input" })</td>
-                  <td hidden>@Html.TextBoxFor(modelItem => item.PostCode, null, new { @readonly = "readonly", @class = "table-tokuisakilist-input" })</td>
-                  <td hidden>@Html.TextBoxFor(modelItem => item.Address1, null, new { @readonly = "readonly", @class = "table-tokuisakilist-input" })</td>
-                  <td hidden>@Html.TextBoxFor(modelItem => item.Address2, null, new { @readonly = "readonly", @class = "table-tokuisakilist-input" })</td>
-                  <td hidden>@Html.TextBoxFor(modelItem => item.Address3, null, new { @readonly = "readonly", @class = "table-tokuisakilist-input" })</td>
-                </tr>
-                  i++;
-                }
-              </tbody>
-            </table>
+                <td class="col-sm-1">
+                  <button type="button" style="width: 100px; float: right;" class="btn btn-primary align-items-end" onclick="listDisplay();return false;">検索</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div id="CommonDialogToCustomerList" class="table-CustomerListDataModal dataList" style="height:500px; margin: 0;">
           </div>
         </div>
       </div>
@@ -198,15 +137,14 @@
     const _sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
     $('.content_class-customer-dialog').show();
 
-    $('button[name="btntokuisakiList"]').on('click', function () {
-
-      let result = SelectCommonDialog($(this));
-      //alert(data);
-
-      selectOnClick(result);
-
+    $("#SearchCustomerCd").keypress(function(e) {
+        if (e.keyCode == 13) {
+          listDisplay();
+          return false;
+        }
     });
 
+    listDisplay();
   });
 
 
@@ -221,7 +159,7 @@
     if (typeof selectCustomerOyaModalCloseCallBack == 'function') {
       // 関数があった場合の処理内容
       selectCustomerOyaModalCloseCallBack();
-    }    
+    }
   };
 
   /**
@@ -233,7 +171,7 @@
 
     $('#ModalCommonDialog').html('');
     $('#ModalCommonDialog').dialog("close");
-    
+
 
     //コールバック関数チェック
     if (typeof selectCustomerOyaSelectedCallBack == 'function') {
@@ -243,6 +181,23 @@
 
   };
 
+  function listDisplay() {
+
+    $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "JsonGetSelectCustomerOyaDataList" })',
+    {
+        SearchCustomerCd: $("#SearchCustomerCd").val(),
+    },
+    function (data) {
+        if (data.message != null) {
+            alertError(`【エラー】${data.message}`);
+        }
+        else {
+            $('#CommonDialogToCustomerList').html(data.partialView);
+        }
+    }
+    );
+
+    };
 
 </script>
 <script src="~/js/EnterKeyCancel.js"></script>

@@ -3,38 +3,71 @@
   "defaultProvider": "jsdelivr",
   "libraries": [
     {
-      "library": "bootstrap@5.2.3",
+      "library": "bootstrap@5.3.4",
       "destination": "wwwroot/lib/bootstrap/"
     },
     {
-      "library": "jquery@3.6.3",
+      "library": "bootstrap-icons@1.11.3",
+      "provider": "cdnjs",
+      "destination": "wwwroot/lib/bootstrap-icons/"
+    },
+    {
+      "library": "jquery@3.7.1",
       "destination": "wwwroot/lib/jquery/"
     },
     {
-      "library": "jquery-ui@1.13.2",
+      "library": "jquery-ui@1.14.1",
       "destination": "wwwroot/lib/jquery-ui/"
     },
     {
-      "library": "jquery-validation@1.19.5",
+      "library": "jquery-validation@1.21.0",
       "destination": "wwwroot/lib/jquery-validation/"
-      //},
-      //{
-      //  "library": "tablesorter@2.31.3",
-      //  "destination": "wwwroot/lib/tablesorter/"
-      //},
-      //{
-      //  "library": "fullcalendar@2.9.0",
-      //  "destination": "wwwroot/lib/fullcalendar/"
-      //},
-      //{
-      //  "library": "jquery"
-      //  "destination": "wwwroot/lib/jquery-easing/"
     },
+    {
+      "library": "jquery-validation-unobtrusive@4.0.0",
+      "destination": "wwwroot/lib/jquery-validation-unobtrusive/"
+    },
+    {
+      "library": "swagger-ui@5.20.5",
+      "destination": "wwwroot/lib/swagger-ui/",
+      "provider": "cdnjs"
+    },
+    {
+      "library": "zipcode@0.1.1",
+      "destination": "wwwroot/lib/zipcode/"
+    },
+    //},
+    //{
+    //  "library": "tablesorter@2.31.3",
+    //  "destination": "wwwroot/lib/tablesorter/"
+    //},
+    //{
+    //  "library": "fullcalendar@2.9.0",
+    //  "destination": "wwwroot/lib/fullcalendar/"
+    //},
+    //{
+    //  "library": "jquery"
+    //  "destination": "wwwroot/lib/jquery-easing/"
+
     {
       "library": "add-clear@2.0.7",
       "destination": "wwwroot/lib/add-clear/"
+    },
+    {
+      "library": "sweetalert2@11.17.2",
+      "destination": "wwwroot/lib/sweetalert2/"
+    },
+    //{
+    //  "library": "glyphicons@0.2.0",
+    //  "destination": "wwwroot/lib/glyphicons/"
+    //},
+    {
+      "library": "japanpost-zipcode@0.3.0",
+      "destination": "wwwroot/lib/japanpost-zipcode/"
     }
-    
+
+
+
 
   ]
 }

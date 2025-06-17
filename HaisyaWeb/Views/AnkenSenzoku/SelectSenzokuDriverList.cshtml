@@ -33,6 +33,12 @@
               KokyakuId
             </th>
             <th>
+              担当乗務員
+            </th>
+            <th>
+              車番
+            </th>
+            <th>
               顧客CD
             </th>
             <th>
@@ -45,13 +51,7 @@
               専属名
             </th>
             <th>
-              担当乗務員
-            </th>
-            <th>
               車種型
-            </th>
-            <th>
-              車番
             </th>
             <th>
               開始
@@ -70,7 +70,7 @@
           {
             <tr align="center">
               <td>
-                <button class="btn btn-outline-primary" style="width: 100%; padding: 0; font-size: 12px; " onclick="SelectedDriverOnClick(@(item.SenzokuID),@(item.Senzoku_Driver_ID))">選択</button>
+                <button type="button" class="btn btn-outline-primary" style="width: 100%; padding: 0; font-size: 12px; " onclick="SelectedDriverOnClick(@(item.SenzokuID),@(item.Senzoku_Driver_ID))">選択</button>
               </td>
               <td hidden>
                 @Html.DisplayFor(modelItem => item.SenzokuID)
@@ -80,6 +80,12 @@
               </td>
               <td hidden>
                 @Html.DisplayFor(modelItem => item.Customer_Branch_ID)
+              </td>
+              <td align="center">
+                @Html.DisplayFor(modelItem => item.Display_Name)
+              </td>
+              <td align="center">
+                @Html.DisplayFor(modelItem => item.SYABAN)
               </td>
               <td align="center">
                 @Html.DisplayFor(modelItem => item.Customer_Branch_Code)
@@ -94,14 +100,8 @@
                 @Html.DisplayFor(modelItem => item.Senzoku_Name_Abbr)
               </td>
               <td align="center">
-                @Html.DisplayFor(modelItem => item.Display_Name)
-              </td>
-              <td align="center">
                 @Html.DisplayFor(modelItem => item.Syasyu)
                 @Html.DisplayFor(modelItem => item.Kata)
-              </td>
-              <td align="center">
-                @Html.DisplayFor(modelItem => item.SYABAN)
               </td>
               <td align="center">
                 @Convert.ToDateTime(item.From_Date).ToString("yyyy/MM/dd")

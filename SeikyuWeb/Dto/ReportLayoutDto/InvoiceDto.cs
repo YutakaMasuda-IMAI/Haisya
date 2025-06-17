@@ -1,6 +1,6 @@
 ﻿using SeikyuWeb.Models;
 
-namespace SeikyuWeb.Dto.Seikyu
+namespace SeikyuWeb.Dto.ReportLayoutDto
 {
     /// <summary>
     /// TReportLayoutのためのDTOクラス

@@ -100,7 +100,7 @@
                 @Html.LabelFor(model => model.NowUsingSyaryoFlg, htmlAttributes: new { @class = "control-label align-self-center align-middle", @style = "padding: 0; margin-right: 1rem;" })
               </td>
               <td class="col-sm-1">
-                <button style="width: 100px; float: right;" class="btn btn-primary align-items-end" onclick="listDisplay();return false;">検索</button>
+                <button type="button" style="width: 100px; float: right;" class="btn btn-primary align-items-end" onclick="listDisplay();return false;">検索</button>
               </td>
             </tr>
           </tbody>
@@ -109,7 +109,7 @@
           @*<label>※Top100件を抽出</label>*@
         </div>
 
-        <div id="DataList" class="table-CompanyDriverListDataModal dataList" style="height:500px; margin: 0;">
+        <div id="DataList-CompanyDriverListDataModal" class="table-CompanyDriverListDataModal dataList" style="height:500px; margin: 0;">
 
         </div>
 
@@ -215,7 +215,7 @@
           }
           else {
               $('#alertTop').hide();
-              $('#DataList').html(data.partialView);
+              $('#DataList-CompanyDriverListDataModal').html(data.partialView);
           }
       }
     );

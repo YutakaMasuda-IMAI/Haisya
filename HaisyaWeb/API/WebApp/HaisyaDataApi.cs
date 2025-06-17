@@ -55,7 +55,7 @@ namespace HaisyaWeb.API.WebApp
         public async Task<T_Haisya_Local> GetHaisyaData(int haisyaId)
         {
             string url = string.Format("HaisyaData/GetHaisyaData?haisyaId={0}", haisyaId);
-
+            //データ取得
             return await GetHttpData<T_Haisya_Local>(url);
         }
 
@@ -138,11 +138,9 @@ namespace HaisyaWeb.API.WebApp
         /// <param name="YosyaDriverID"></param>
         /// <param name="YosyaDriverSyaryoID"></param>
         /// <returns></returns>
-        public async Task<MsterDataCommonResultValDto_Local> RegisterYosyaDriver(
-                                                HaisyaModel.HaisyaYosyaDriverRegisterDto dto)
+        public async Task<MsterDataCommonResultValDto_Local> RegisterYosyaDriver(HaisyaModel.HaisyaYosyaDriverRegisterDto dto)
         {
             string url = string.Format("HaisyaData/RegisterYosyaDriver");
-
             //データ更新
             return await ExecHttpData<HaisyaModel.HaisyaYosyaDriverRegisterDto>(dto, url);
         }
@@ -169,7 +167,6 @@ namespace HaisyaWeb.API.WebApp
         /// <returns>担当者別配車連絡データの取得</returns>
         public async Task<List<SyabanRenrakuModel>> GetSyabanRenraku(int companyID, int selectTantou, DateTime selectedDate, DateTime selectedEndDate, int filter)
         {
-
             string url = _baseUrl + string.Format("HaisyaData/GetSyabanRenraku?companyId={0}&selectTantou={1}&selectedDate={2}&selectedEndDate={3}&filter={4}", companyID, selectTantou, selectedDate, selectedEndDate, filter);
             //データ取得 
             return await GetHttpData<List<SyabanRenrakuModel>>(url);

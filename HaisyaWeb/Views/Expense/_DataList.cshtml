@@ -51,7 +51,7 @@ else
     var color = i % 2 == 1 ? "row-even" : "row-odd";
     <tr>
       <td class="@(color)">
-        <button class="btn btn-success" style="width: 100%; padding:0;"
+        <button type="button" class="btn btn-success" style="width: 100%; padding:0;"
                 onclick="openEditView(@Model.Search.Expense_category, '@item.Expense_ID'); return false;">
           選択
         </button>

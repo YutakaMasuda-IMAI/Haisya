@@ -5,6 +5,7 @@ using RenkeiDB.Data;
 using RenkeiDB.Dto;
 using RenkeiDB.Dto.MapPointDto;
 using RenkeiDB.Repositories.Interfaces;
+using RenkeiDB.Services.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

@@ -36,7 +36,9 @@
   <div class="container">
     <div hidden>
       @Html.HiddenFor(model => Model.Company_ID)
+      @Html.HiddenFor(model => Model.User_ID)
       @Html.HiddenFor(model => Model.SelectDay)
+      @Html.HiddenFor(model => Model.TargetDate)
       @Html.HiddenFor(model => Model.SelectTantou)
       @Html.HiddenFor(model => Model.SelectSyasyu)
       @Html.HiddenFor(model => Model.SelectKata)
@@ -47,6 +49,9 @@
       @Html.HiddenFor(model => Model.SenzokuID)
       @Html.HiddenFor(model => Model.SenzokuDriverID)
       @Html.HiddenFor(model => Model.SenzokuData.Haisya_Group_ID)
+      <input data-val="true" id="paramAnkenId" name="paramAnkenId" type="hidden" value="">
+      <input data-val="true" id="paramNowDriverId" name="paramNowDriverId" type="hidden" value="">
+      <input data-val="true" id="paramHaisyaId" name="paramNowDriverId" type="hidden" value="">
     </div>
 
     <div id="divTitle" style="height: 40px; padding: 0; margin: 0 0 5px 0; width: 100%; ">
@@ -56,7 +61,7 @@
             <h3 class="heading-40">専属乗務員月次案件一覧</h3>
           </td>
           <td width="20%" style="">
-            <button id="btnBackMenu" class="btn btn-outline-success" style="padding: 0px; width: 100%; border-radius: 5px;">戻る</button>
+            <button type="button" id="btnBackMenu" class="btn btn-outline-success" style="padding: 0px; width: 100%; border-radius: 5px;">戻る</button>
           </td>
         </tr>
       </table>
@@ -71,7 +76,7 @@
               <input id="TargetMonthLavel" type="text" readonly style="width: 150px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
               <input id="TargetMonthInput" class="calender" type="text" readonly style="width: 0px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
               <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer;" onclick="ChangeMonth(1); return false;" onselectstart="return false;" alt=">>" tooltip="翌月">>></span>
-              <button class="btn btn-outline-info" style="width: 70px; vertical-align: text-bottom; margin: 0; padding: 0; font-size: 16px; " onclick="LocationReload(); return false;">再描画</button>
+              <button type="button" class="btn btn-outline-info" style="width: 70px; vertical-align: text-bottom; margin: 0; padding: 0; font-size: 16px; " onclick="LocationReload(); return false;">再描画</button>
             </div>
           </th>
           <th>
@@ -124,182 +129,297 @@
 
 <script>
 
-  $(window).on('load', function () {
+    $(window).on('load', function () {
 
-    var selectMonth = new Date($("#SelectMonth").val());
-    var disp = MonthToString(selectMonth);
-    $("#TargetMonthLavel").val(disp);
+      var selectMonth = new Date($("#SelectMonth").val());
+      var disp = MonthToString(selectMonth);
+      $("#TargetMonthLavel").val(disp);
 
-    $("#TargetMonthInput").val($("#SelectMonth").val());
+      $("#TargetMonthInput").val($("#SelectMonth").val());
 
-    DataListDisplay();
-  });
-
-  $(function () {
-
-    $('#btnBackMenu').on('click', function () {
-      BackDriverList();
+      DataListDisplay();
     });
 
-    $("input#TargetMonthInput").on('change', function () {
-      var val = $(this).val();
-      $("#SelectMonth").val(val);
+    $(function () {
+
+      $('#btnBackMenu').on('click', function () {
+        BackDriverList();
+      });
+
+      $("input#TargetMonthInput").on('change', function () {
+        var val = $(this).val();
+        $("#SelectMonth").val(val);
+        ChangeTargetMonth();
+      });
+
+      $("#TargetMonthInput").ympicker({
+        changeYear: true,
+        altField: '#TargetMonth',  // 入力結果の表示箇所
+        altFormat: "yy/mm/01",  // 入力結果の表示方法 Dは曜日の省略形、DDは省略なし
+      });
+    });
+
+    /**
+      * 指定年月変更後処理
+      * */
+    function ChangeTargetMonth() {
+
+      var val = $("#SelectMonth").val();
+      var dateVal = new Date(val);
+      var disp = MonthToString(dateVal);
+      $("#TargetMonthLavel").val(disp);
+
+      DataListDisplay();
+    };
+
+    /**
+      * 指定年月変更処理
+      * @@param move
+      */
+    function ChangeMonth(move) {
+
+      var selectMonth = new Date($("#SelectMonth").val());
+
+      var changeMonth = new Date(selectMonth.setMonth(selectMonth.getMonth() + move));
+
+      $("#SelectMonth").val(formatMonth(changeMonth, "/"));
+      $("#TargetMonthInput").val($("#SelectMonth").val());
+
       ChangeTargetMonth();
-    });
 
-    $("#TargetMonthInput").ympicker({
-      changeYear: true,
-      altField: '#TargetMonth',  // 入力結果の表示箇所
-      altFormat: "yy/mm/01",  // 入力結果の表示方法 Dは曜日の省略形、DDは省略なし
-    });
-  });
+    };
 
-  /**
-* 指定年月変更後処理
-* */
-  function ChangeTargetMonth() {
+    /**
+    * 一覧画面に戻る
+    * */
+    function BackDriverList() {
+      var form = document.createElement('form');
+      form.action = '@Url.RouteUrl("Default", new { controller = "AnkenSenzoku", Action = "SelectSenzokuDriver" })';
+      form.method = 'POST';
 
-    var val = $("#SelectMonth").val();
-    var dateVal = new Date(val);
-    var disp = MonthToString(dateVal);
-    $("#TargetMonthLavel").val(disp);
+      // body に追加
+      document.body.appendChild(form);
 
-    DataListDisplay();
-  };
+      var html = '';
+      html += '            <input type="hidden" id="SelectDay" name="SelectDay" value="' + $('#SelectDay').val() + '" />';
+      html += '            <input type="hidden" id="SelectTantou" name="SelectTantou" value="' + $('#SelectTantou').val() + '" />';
+      html += '            <input type="hidden" id="SelectSyasyu" name="SelectSyasyu" value="' + $('#SelectSyasyu').val() + '" />';
+      html += '            <input type="hidden" id="SelectKata" name="SelectKata" value="' + $('#SelectKata').val() + '" />';
+      html += '            <input type="hidden" id="SelectGroup" name="SelectGroup" value="' + $('#SelectGroup').val() + '" />';
+      html += '            <input type="hidden" id="BackDriverListAction" name="BackMenuAction" value="' + $('#BackMenuAction2').val() + '" />';
+      html += '            <input type="hidden" id="SelectMonth" name="SelectMonth" value="' + $('#SelectMonth').val() + '" />';
 
-  /**
-* 指定年月変更処理
-* @@param move
-*/
-  function ChangeMonth(move) {
-
-    var selectMonth = new Date($("#SelectMonth").val());
-
-    var changeMonth = new Date(selectMonth.setMonth(selectMonth.getMonth() + move));
-
-    $("#SelectMonth").val(formatMonth(changeMonth, "/"));
-    $("#TargetMonthInput").val($("#SelectMonth").val());
-
-    ChangeTargetMonth();
-
-  };
-
-  /**
-  * 一覧画面に戻る
-  * */
-  function BackDriverList() {
-    var form = document.createElement('form');
-    form.action = '@Url.RouteUrl("Default", new { controller = "AnkenSenzoku", Action = "SelectSenzokuDriver" })';
-    form.method = 'POST';
-
-    // body に追加
-    document.body.appendChild(form);
-
-    var html = '';
-    html += '            <input type="hidden" id="SelectDay" name="SelectDay" value="' + $('#SelectDay').val() + '" />';
-    html += '            <input type="hidden" id="SelectTantou" name="SelectTantou" value="' + $('#SelectTantou').val() + '" />';
-    html += '            <input type="hidden" id="SelectSyasyu" name="SelectSyasyu" value="' + $('#SelectSyasyu').val() + '" />';
-    html += '            <input type="hidden" id="SelectKata" name="SelectKata" value="' + $('#SelectKata').val() + '" />';
-    html += '            <input type="hidden" id="SelectGroup" name="SelectGroup" value="' + $('#SelectGroup').val() + '" />';
-    html += '            <input type="hidden" id="BackDriverListAction" name="BackMenuAction" value="' + $('#BackMenuAction2').val() + '" />';
-    html += '            <input type="hidden" id="SelectMonth" name="SelectMonth" value="' + $('#SelectMonth').val() + '" />';
-
-    form.innerHTML = html;
-    form.submit();
-  };
+      form.innerHTML = html;
+      form.submit();
+    };
 
     /**
     * 乗務員の月別勤怠一覧データを表示
     * */
-  function DataListDisplay() {
+    function DataListDisplay() {
 
-    ///処理中ダイアログ
-    Swal.fire({
-      title: 'データ取得中'
-      , html: 'このデータ抽出には時間がかかります。<br />処理終了まで画面はそのままにしてください。'
-      , allowOutsideClick: false     //枠外をクリックしても画面を閉じない
-      , showConfirmButton: false
-      , didOpen: () => {
-        Swal.showLoading();
-      }
-    });
-
-    $.post('@Url.RouteUrl("Default", new { controller = "AnkenSenzoku", Action = "JsonGetSenzokuAnkenList" })',
-      {
-        SelectMonth: $('#SelectMonth').val(), SenzokuID: $('#SenzokuID').val(), SenzokuDriverID: $('#SenzokuDriverID').val(),
-      },
-      function (data) {
-        $('#DataList').html(data.partialView);
-      }
-    ).always(function () {
-      //完了ダイアログ
+      ///処理中ダイアログ
       Swal.fire({
-        title: '処理終了'
-        , html: '処理を終了しました。'
-        , type: 'info'
-        , timer: 1
+        title: 'データ取得中'
+        , html: 'このデータ抽出には時間がかかります。<br />処理終了まで画面はそのままにしてください。'
+        , allowOutsideClick: false     //枠外をクリックしても画面を閉じない
+        , showConfirmButton: false
+        , didOpen: () => {
+          Swal.showLoading();
+        }
       });
-    });
-  };
 
+      $.post('@Url.RouteUrl("Default", new { controller = "AnkenSenzoku", Action = "JsonGetSenzokuAnkenList" })',
+        {
+          SelectMonth: $('#SelectMonth').val(), SenzokuID: $('#SenzokuID').val(), SenzokuDriverID: $('#SenzokuDriverID').val(),
+        },
+        function (data) {
+          $('#DataList').html(data.partialView);
+        }
+      ).always(function () {
+        //完了ダイアログ
+        Swal.fire({
+          title: '処理終了'
+          , html: '処理を終了しました。'
+          , type: 'info'
+          , timer: 1
+        });
+      });
+    };
 
-  /**
-    * 専属ドライバーの選択処理
+    /**
+      * 専属ドライバーの選択処理
+      * */
+    function SelectedDriverOnClick(paramSenzokuID, paramSenzokuDriverID) {
+
+      var form = document.createElement('form');
+      form.action = '@Url.RouteUrl("Default", new { controller = "AnkenSenzoku", Action = "SenzokuRegIndex" })';
+      form.method = 'POST';
+
+      // body に追加
+      document.body.appendChild(form);
+
+      var html = '';
+      html += '            <input type="hidden" id="SelectDay" name="SelectDay" value="' + $('#SelectDay').val() + '" />';
+      html += '            <input type="hidden" id="SelectTantou" name="SelectTantou" value="' + $('#SelectTantou').val() + '" />';
+      html += '            <input type="hidden" id="SelectSyasyu" name="SelectSyasyu" value="' + $('#SelectSyasyu').val() + '" />';
+      html += '            <input type="hidden" id="SelectKata" name="SelectKata" value="' + $('#SelectKata').val() + '" />';
+      html += '            <input type="hidden" id="SelectGroup" name="SelectGroup" value="' + $('#SelectGroup').val() + '" />';
+      html += '            <input type="hidden" id="BackMenuAction" name="BackMenuAction" value="' + $('#BackMenuAction2').val() + '" />';
+      html += '            <input type="hidden" id="SelectMonth" name="SelectMonth" value="' + $('#SelectMonth').val() + '" />';
+      html += '            <input type="hidden" id="SenzokuID" name="SenzokuID" value="' + paramSenzokuID + '" />';
+      html += '            <input type="hidden" id="SenzokuDriverID" name="SenzokuDriverID" value="' + paramSenzokuDriverID + '" />';
+      html += '            <input type="hidden" id="TantouID" name="TantouID" value="' + $('#SenzokuData_Haisya_Group_ID').val() + '" />';
+
+      form.innerHTML = html;
+      form.submit(); SenzokuDriverID
+    };
+
+    /**
+    * 専属案件の新規登録
     * */
-  function SelectedDriverOnClick(paramSenzokuID, paramSenzokuDriverID) {
+    function SelectedAnkenRegister(paramTargetDate, paramSenzokuID, paramSenzokuDriverID, paramAnkenID) {
 
-    var form = document.createElement('form');
-    form.action = '@Url.RouteUrl("Default", new { controller = "AnkenSenzoku", Action = "SenzokuRegIndex" })';
-    form.method = 'POST';
+      var form = document.createElement('form');
+      form.action = '@Url.RouteUrl("Default", new { controller = "AnkenSenzoku", Action = "AnkenRegisterIndex" })';
+      form.method = 'POST';
 
-    // body に追加
-    document.body.appendChild(form);
+      // body に追加
+      document.body.appendChild(form);
 
-    var html = '';
-    html += '            <input type="hidden" id="SelectDay" name="SelectDay" value="' + $('#SelectDay').val() + '" />';
-    html += '            <input type="hidden" id="SelectTantou" name="SelectTantou" value="' + $('#SelectTantou').val() + '" />';
-    html += '            <input type="hidden" id="SelectSyasyu" name="SelectSyasyu" value="' + $('#SelectSyasyu').val() + '" />';
-    html += '            <input type="hidden" id="SelectKata" name="SelectKata" value="' + $('#SelectKata').val() + '" />';
-    html += '            <input type="hidden" id="SelectGroup" name="SelectGroup" value="' + $('#SelectGroup').val() + '" />';
-    html += '            <input type="hidden" id="BackMenuAction" name="BackMenuAction" value="' + $('#BackMenuAction2').val() + '" />';
-    html += '            <input type="hidden" id="SelectMonth" name="SelectMonth" value="' + $('#SelectMonth').val() + '" />';
-    html += '            <input type="hidden" id="SenzokuID" name="SenzokuID" value="' + paramSenzokuID + '" />';
-    html += '            <input type="hidden" id="SenzokuDriverID" name="SenzokuDriverID" value="' + paramSenzokuDriverID + '" />';
-    html += '            <input type="hidden" id="TantouID" name="TantouID" value="' + $('#SenzokuData_Haisya_Group_ID').val() + '" />';
-    
-    form.innerHTML = html;
-    form.submit(); SenzokuDriverID
-  };
+      var html = '';
+      html += '            <input type="hidden" id="SelectDay" name="SelectDay" value="' + $('#SelectDay').val() + '" />';
+      html += '            <input type="hidden" id="SelectTantou" name="SelectTantou" value="' + $('#SelectTantou').val() + '" />';
+      html += '            <input type="hidden" id="SelectSyasyu" name="SelectSyasyu" value="' + $('#SelectSyasyu').val() + '" />';
+      html += '            <input type="hidden" id="SelectKata" name="SelectKata" value="' + $('#SelectKata').val() + '" />';
+      html += '            <input type="hidden" id="SelectGroup" name="SelectGroup" value="' + $('#SelectGroup').val() + '" />';
+      html += '            <input type="hidden" id="BackMenuAction" name="BackMenuAction" value="' + $('#BackMenuAction2').val() + '" />';
+      html += '            <input type="hidden" id="SelectMonth" name="SelectMonth" value="' + $('#SelectMonth').val() + '" />';
+      html += '            <input type="hidden" id="SenzokuID" name="SenzokuID" value="' + paramSenzokuID + '" />';
+      html += '            <input type="hidden" id="SenzokuDriverID" name="SenzokuDriverID" value="' + paramSenzokuDriverID + '" />';
+      html += '            <input type="hidden" id="TargetDate" name="TargetDate" value="' + paramTargetDate + '" />';
+      html += '            <input type="hidden" id="AnkenId" name="AnkenId" value="' + paramAnkenID + '" />';
+      html += '            <input type="hidden" id="TantouID" name="TantouID" value="' + $('#SenzokuData_Haisya_Group_ID').val() + '" />';
 
-  /**
-  * 専属案件の新規登録
-  * */
-  function SelectedAnkenRegister(paramTargetDate, paramSenzokuID, paramSenzokuDriverID, paramAnkenID) {
+      form.innerHTML = html;
+      form.submit();
+    };
 
-    var form = document.createElement('form');
-    form.action = '@Url.RouteUrl("Default", new { controller = "AnkenSenzoku", Action = "AnkenRegisterIndex" })';
-    form.method = 'POST';
+    /**
+     * 案件コピー
+     */
+    async function CopyAnkenOnClick(paramDay, paramSenzokuID, paramSenzokuDriverID, paramAnkenId) {
 
-    // body に追加
-    document.body.appendChild(form);
+        var sMessage = "コピーする日付を選択していますか？";
 
-    var html = '';
-    html += '            <input type="hidden" id="SelectDay" name="SelectDay" value="' + $('#SelectDay').val() + '" />';
-    html += '            <input type="hidden" id="SelectTantou" name="SelectTantou" value="' + $('#SelectTantou').val() + '" />';
-    html += '            <input type="hidden" id="SelectSyasyu" name="SelectSyasyu" value="' + $('#SelectSyasyu').val() + '" />';
-    html += '            <input type="hidden" id="SelectKata" name="SelectKata" value="' + $('#SelectKata').val() + '" />';
-    html += '            <input type="hidden" id="SelectGroup" name="SelectGroup" value="' + $('#SelectGroup').val() + '" />';
-    html += '            <input type="hidden" id="BackMenuAction" name="BackMenuAction" value="' + $('#BackMenuAction2').val() + '" />';
-    html += '            <input type="hidden" id="SelectMonth" name="SelectMonth" value="' + $('#SelectMonth').val() + '" />';
-    html += '            <input type="hidden" id="SenzokuID" name="SenzokuID" value="' + paramSenzokuID + '" />';
-    html += '            <input type="hidden" id="SenzokuDriverID" name="SenzokuDriverID" value="' + paramSenzokuDriverID + '" />';
-    html += '            <input type="hidden" id="TargetDate" name="TargetDate" value="' + paramTargetDate + '" />';
-    html += '            <input type="hidden" id="AnkenId" name="AnkenId" value="' + paramAnkenID + '" />';
-    html += '            <input type="hidden" id="TantouID" name="TantouID" value="' + $('#SenzokuData_Haisya_Group_ID').val() + '" />';
-
-    form.innerHTML = html;
-    form.submit();
-  };
+        let resultMsg = await alertYesNoMsg("案件コピー", null, "warning", "コピー実行", null, sMessage);
+        if (resultMsg == false) {
+          return false;
+        }
 
 
+        if ($("#DataList-senzokuAnkenList .form-check-input:checked").length < 1) {
+          alertError("コピーする日付が選択されていません。", "選択エラー");
+          return false;
+        }
+
+        $objData= [];
+        let m = 0;
+
+        // 各行について処理を行う
+        $("#DataList-senzokuAnkenList tbody tr").each(function(index) {
+          var row = $(this);
+          var id = row.data('index');
+
+          // switchボタンがオンになっている場合
+          if (row.find(".form-check-input").is(":checked")) {
+            // そのインデックスを記録
+            if (id != paramDay) {
+                $objData[m] = id;
+                m++;
+            }
+          }
+        });
+
+        sMessage = "下記日付にコピーを実施します。よろしいでしょうか？<br />";
+        for(var n = 0; n < $objData.length; n++ ) {
+            sMessage += $objData[n] + '<br />'
+        }
+
+        resultMsg = await alertYesNoMsg("案件コピー", null, "warning", "コピー実行", null, sMessage);
+        if (resultMsg == false) {
+          return false;
+        }
+
+        $.post(
+        '@Url.RouteUrl("Default", new { controller = "AnkenSenzoku", Action = "CopyAnkenExec" })', {
+           targetDate: paramDay,
+           senzokuID: paramSenzokuID,
+           senzokuDriverID: paramSenzokuDriverID,
+           ankenId: paramAnkenId,
+           copyDay: $objData,
+        })
+        .done(function(response) {
+            if (!response.retrunFlg) {
+                alertError(`【エラー】${response.errorMessage}`);
+                return false;
+            } else {
+              alertInfo("処理が正常に終了しました","案件コピー", 2);
+            }
+        })
+        .fail(function(xhr) {
+            alertError('fail:' + xhr);
+            console.log(xhr);
+            return false;
+        })
+        .always(function(xhr, msg) {
+            DataListDisplay();
+        });
+
+
+
+      }
+
+
+    function SelectedDriverChange(paramDay, paramSenzokuID, paramSenzokuDriverID, paramAnkenId, paramDriverId, paramHaisyaId) {
+        $('#TargetDate').val(paramDay);
+        $('#paramAnkenId').val(paramAnkenId);
+        $('#paramNowDriverId').val(paramDriverId);
+        $('#paramHaisyaId').val(paramHaisyaId);
+        openCommonDialogForCompanyDriver($('#Company_ID').val(), $('#User_ID').val(), paramDriverId);
+    }
+
+    /**
+    * 共通乗務員選択ダイアログで一覧選択されたときのCallBack関数
+    * */
+    function selectCompanyDriverSelectedCallBack(obj) {
+
+        $.post(
+        '@Url.RouteUrl("Default", new { controller = "AnkenSenzoku", Action = "ChangeDriverExec" })', {
+            ankenId: $('#paramAnkenId').val(),
+            nowDriverId: $('#paramNowDriverId').val(),
+            changeDriverId: obj["Driver_ID"],
+            haisyaId:$('#paramHaisyaId').val(),
+            driverSyaryoId:obj["DriverSyaryo_ID"],
+            syaryoManagementId:obj["SyaryoManagement_ID"],
+            syaryoManagementId1:obj["SyaryoManagement_ID1"],
+        })
+        .done(function(response) {
+            if (!response.retrunFlg) {
+                alertError(`【エラー】${response.errorMessage}`);
+                return false;
+            } else {
+                alertInfo("処理が正常に終了しました","乗務員変更", 2);
+            }
+        })
+        .fail(function(xhr) {
+            alertError('fail:' + xhr);
+            console.log(xhr);
+            return false;
+        })
+        .always(function(xhr, msg) {
+            DataListDisplay();
+        });
+
+    };
 </script>

@@ -43,7 +43,7 @@
       <td style="text-align:right;">
         @if (Model.ProcessingCategory == "直接入力")
         {
-          <button class="btn btn-outline-danger delete-row-under">削除</button>
+          <button type="button" class="btn btn-outline-danger delete-row-under">削除</button>
         }
         else
         {
@@ -52,7 +52,7 @@
           }
           else if (Model.IsDeletable)
           {
-            <button class="btn btn-outline-danger delete-row-under">削除</button>
+            <button type="button" class="btn btn-outline-danger delete-row-under">削除</button>
           }
         }
       </td>
@@ -88,7 +88,7 @@
       <th>下払先会社</th>
       <td style="width:120px;"><input type="text" class="form-control inputtable" id="KokyakuCode3" style="background-color: white" value="@kokyakuCode" readonly /></td>
       <td style="width:auto;"><input type="text" class="form-control inputtable" id="KokyakuName3" style="background-color: white" value="@kokyakuName" readonly /></td>
-      <td style="width:100px;"><button class="btn btn-outline-primary btnKokyaku" id="btnKokyaku3" data-index="@Model.RowCount">変更</button></td>
+      <td style="width:100px;"><button type="button" class="btn btn-outline-primary btnKokyaku" id="btnKokyaku3" data-index="@Model.RowCount">変更</button></td>
       <td style="width:1px;"><input type="text" class="form-control" id="KokyakuId3" readonly value="@kokyakuId"hidden /></td>
     </tr>
   </table>

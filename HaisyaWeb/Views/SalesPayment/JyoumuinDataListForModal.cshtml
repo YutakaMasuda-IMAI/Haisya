@@ -48,7 +48,7 @@ else
     var color = i % 2 == 1 ? "row-even" : "row-odd";
     <tr>
       <td class="@(color)" align="center">
-        <button class="btn btn-success" style="width: 100%; padding:0;" onclick="submitJyoumuinData('@(item.Driver_ID)','@(item.Display_Name)'); return false;">選択</button>
+        <button type="button" class="btn btn-success" style="width: 100%; padding:0;" onclick="submitJyoumuinData('@(item.Driver_ID)','@(item.Display_Name)'); return false;">選択</button>
       </td>
       <td class="@(color)" align="center">
         @Html.DisplayFor(modelItem => item.Driver_ID)

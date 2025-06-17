@@ -141,7 +141,7 @@
           </td>
 
           <td rowspan="2" width="70px" style="padding: 0.2rem;">
-            <button class="btn btn-outline-success" style="width: 100%; padding:0;" onclick="submitAnkenEdit(@(item.Anken_ID))">選択</button>
+            <button type="button" class="btn btn-outline-success" style="width: 100%; padding:0;" onclick="submitAnkenEdit(@(item.Anken_ID))">選択</button>
           </td>
           <td rowspan="2" align="center" style="white-space: normal;">
             @Html.DisplayFor(modelItem => item.Anken_No)
@@ -151,7 +151,7 @@
               @{
                 V_HaisyaDataList_Local haisyaData = Model.HaisyaDataLists.FirstOrDefault(m => m.Anken_ID == item.Anken_ID);
               }
-              <button class="btn btn-outline-info" style="width: 50px; padding: 0;" onclick="AnkenRefenceModal(@(item.Anken_ID), @(haisyaData.AnkenDisplay_ID))">選択</button>
+              <button type="button" class="btn btn-outline-info" style="width: 50px; padding: 0;" onclick="AnkenRefenceModal(@(item.Anken_ID), @(haisyaData.AnkenDisplay_ID))">選択</button>
               @*<label style="width: calc(100% - 55px); text-align: center; writing-mode: vertical-lr; vertical-align: middle;">なし</label>*@
             </div>
           </td>

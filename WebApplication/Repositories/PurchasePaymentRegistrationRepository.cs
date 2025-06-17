@@ -8,7 +8,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebApplication.Data;
 using WebApplication.Data.Kintai;
-using WebApplication.Models;
+using WebApplication.Model;
 
 namespace WebApplication.Repositories
 {

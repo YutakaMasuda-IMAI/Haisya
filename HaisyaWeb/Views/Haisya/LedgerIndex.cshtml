@@ -88,7 +88,7 @@
       <div id="successToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">
           <strong class="me-auto">Success</strong>
-          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+          <button type="button" type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         <div class="toast-body">
           Success message goes here.
@@ -99,7 +99,7 @@
       <div id="errorToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="toast-header">
           <strong class="me-auto">Error</strong>
-          <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+          <button type="button" type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         <div class="toast-body">
           Error message goes here.
@@ -137,12 +137,12 @@
               </div>
             </div>
 
-            <button type="button" class="btn btn-secondary btn-sm" style="width: 110%; padding: 0;" onClick="UpdateColapse()">▼詳細検索</button>
+            <button type="button" type="button" class="btn btn-secondary btn-sm" style="width: 110%; padding: 0;" onClick="UpdateColapse()">▼詳細検索</button>
             <div id="tblCollapseSearch" class="collapse" style="width: 110%; padding: 0.2rem 0 0 0; border-collapse: collapse; ">
               <div class="row ledger-row">
                 <div class="col-sm-6" style="display: flex;">
                   @Html.LabelFor(model => model.Search.SelectTokuisakiID, htmlAttributes: new { @class = "control-label align-self-center align-middle text-end", @style = "padding: 0; font-weight: bold; white-space: nowrap;" })
-                  <button id="btnKokyaku" class="btn btn-info btn-sm" onclick="return false;" style="white-space: nowrap;">選択</button>
+                  <button type="button" id="btnKokyaku" class="btn btn-info btn-sm" onclick="return false;" style="white-space: nowrap;">選択</button>
                   @Html.HiddenFor(model => Model.Search.SelectTokuisakiID)
                   @Html.TextBoxFor(model => model.Search.SelectTokuisakiName, null, new { @readonly = "readonly", @class = "form-control", @style = "font-size: 12px; padding: 2px;" })
                   <div class="icon_clear_kokyaku" onclick="clearKokyaku()"><i class="fa-solid fa-xmark"></i></div>

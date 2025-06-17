@@ -2,7 +2,6 @@
 using HaisyaWeb.API.WebApp;
 using HaisyaWeb.Dto;
 using HaisyaWeb.Models;
-using HaisyaWeb.Models.DB;
 using HaisyaWeb.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -63,7 +62,7 @@ namespace HaisyaWeb.Controllers.Anken
                         model.SenzokuDriverID = param.SenzokuDriverID;
                         model.TargetDate = param.TargetDate;
                         model.SelectMonth = param.SelectMonth;
-                        model.TantouID = param.TantouID;
+                        //model.HaisyaTantouID = param.HaisyaTantouID;
                         model.HaisyaPlanKubun = 4;
                     }
                 }
@@ -101,7 +100,7 @@ namespace HaisyaWeb.Controllers.Anken
             }
             catch (Exception ex)
             {
-                 return Error(ex, Layout.MainLayout);
+                return Error(ex, Layout.MainLayout);
             }
         }
 
@@ -352,7 +351,7 @@ namespace HaisyaWeb.Controllers.Anken
                 PublishGroup = 0,
                 PublishFlg = false,
                 HaisyaPlanKubun = 0,
-                TantouID = loguinUser.DefaultGroup,
+                HaisyaTantouID = loguinUser.DefaultGroup.ToString(),
                 TsumiTaskTime = "00:30",
                 OroshiTaskTime = "00:30",
                 Area = (int)loguinUser.Area_ID,
@@ -668,13 +667,15 @@ namespace HaisyaWeb.Controllers.Anken
             {
                 if (data.TotalDistance > 0) { data.TotalDistance = Math.Round(data.TotalDistance, 1); }
                 returnVal.DriveRouteListData.Add(data);
-            };
+            }
+            ;
 
             //追加費用リスト
             foreach (ExtraChargeDto_Local data in driveListtEx.ExchargeDataList)
             {
                 returnVal.ExtraChargeList.Add(data);
-            };
+            }
+            ;
 
             // セッションに文字列を書き込む
             HttpContext.Session.SetString("SyasyuID", param.SyasyuID.ToString());
@@ -725,7 +726,7 @@ namespace HaisyaWeb.Controllers.Anken
                 /////////////////////////T_Anken_Detail//////////////////////////////
                 ankenDataModelDto.T_Anken_Detail.Anken_ID = ankenDataModelDto.T_Anken.Anken_ID;
                 ankenDataModelDto.T_Anken_Detail.Anken_Order = ankenDataModelDto.T_Anken.Anken_Latest_Order;
-                ankenDataModelDto.T_Anken_Detail.TantouID = param.TantouID;
+                ankenDataModelDto.T_Anken_Detail.TantouID = int.Parse(param.HaisyaTantouID);
                 ankenDataModelDto.T_Anken_Detail.EigyoID = param.EigyoID;
                 ankenDataModelDto.T_Anken_Detail.HaisyaPlanKubun = param.HaisyaPlanKubun;
                 ankenDataModelDto.T_Anken_Detail.HaisyaDriverID = param.HaisyaDriverId;
@@ -880,7 +881,7 @@ namespace HaisyaWeb.Controllers.Anken
                 }
 
                 /////////////////////////////////T_Anken_OyaKokyakuList///////////////////////////////////
-                if (param.OyaKokyakuListData != null && param.OyaKokyakuListData.Count > 1)
+                if (param.OyaKokyakuListData != null && param.OyaKokyakuListData.Count > 0)
                 {
                     ankenDataModelDto.T_Anken_OyaKokyakuList = new();
                     int i = 1;
@@ -897,7 +898,7 @@ namespace HaisyaWeb.Controllers.Anken
                 }
 
                 /////////////////////////////////T_Anken_Luggage///////////////////////////////////
-                if (param.AnkenLuggageList != null && param.AnkenLuggageList.Count > 1)
+                if (param.AnkenLuggageList != null && param.AnkenLuggageList.Count > 0)
                 {
                     ankenDataModelDto.T_Anken_LuggageList = new();
                     int i = 1;
@@ -921,7 +922,7 @@ namespace HaisyaWeb.Controllers.Anken
                 }
 
                 /////////////////////////////////T_Anken_Equipment///////////////////////////////////
-                if (param.AnkenEquipmentList != null && param.AnkenEquipmentList.Count > 1)
+                if (param.AnkenEquipmentList != null && param.AnkenEquipmentList.Count > 0)
                 {
                     ankenDataModelDto.T_Anken_EquipmentList = new();
                     int i = 1;
@@ -1118,7 +1119,7 @@ namespace HaisyaWeb.Controllers.Anken
 
                 /////////////////////////T_Anken_Detail//////////////////////////////
                 #region T_Anken_Detail
-                model.TantouID = dto.T_Anken_Detail.TantouID;
+                model.HaisyaTantouID = dto.T_Anken_Detail.TantouID.ToString();
                 model.EigyoID = dto.T_Anken_Detail.EigyoID;
                 model.HaisyaPlanKubun = dto.T_Anken_Detail.HaisyaPlanKubun;
                 model.HaisyaDriverId = dto.T_Anken_Detail.HaisyaDriverID;
@@ -1384,6 +1385,7 @@ namespace HaisyaWeb.Controllers.Anken
                 {
                     CompanyID = data.Company_ID,
                     UserID = data.UserID,
+                    SelectPointKubun = 9,
                 };
 
                 API.WebApp.MasterDataApi apiM = new(_mapApiSettiong);
@@ -1479,7 +1481,7 @@ namespace HaisyaWeb.Controllers.Anken
         /// <param name="UserID"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> JsonGetSavePointList(int CompanyID, int UserID)
+        public async Task<IActionResult> JsonGetSavePointList(SelectAddressModalDto param)
         {
             string exceptionMessage = null;
             try
@@ -1489,7 +1491,7 @@ namespace HaisyaWeb.Controllers.Anken
 
                 List<Dto.T_Point_Local> PointList = new();
                 API.WebApp.AnkenDataApi api = new(_mapApiSettiong);
-                List<Dto.T_Point_Local> dataList = await api.GetPointListFromUserId(loguinUser.User_ID, 0);
+                List<Dto.T_Point_Local> dataList = await api.GetPointListFromUserId(loguinUser.User_ID, param.SelectPointKubun);
                 foreach (Dto.T_Point_Local item in dataList)
                 {
                     Dto.T_Point_Local data = new();
@@ -1529,6 +1531,7 @@ namespace HaisyaWeb.Controllers.Anken
                 CopyProperty(model.PointData, data.PointData);
                 model.PointData.User_ID = data.UserID;
                 model.GroupSelectList = await Service.SearchCommonService.GetUserGroupSelect(_mapApiSettiong, model.CompanyID, UserGroupLists.Haisya);
+                model.SelectGroupID = 0;
 
                 return await PartialViewAsJson("PointRegisterModal", model, true);
             }
@@ -1557,7 +1560,7 @@ namespace HaisyaWeb.Controllers.Anken
                 int SarchUserID = 0;
                 int SarchGroupID = 0;
                 if (data.SelectPointKubun == 1) SarchUserID = data.UserID;
-                if (data.SelectPointKubun == 2) SarchGroupID = data.PointData.Group_ID;
+                if (data.SelectPointKubun == 2) SarchGroupID = data.SelectGroupID;
                 data.PointData.Insert_User = loguinUser.User_ID;
 
                 API.WebApp.AnkenDataApi api = new(_mapApiSettiong);
@@ -1622,7 +1625,7 @@ namespace HaisyaWeb.Controllers.Anken
         {
             if (dto.SelectPointKubun == 2)
             {
-                if (dto.PointData.Group_ID == 0) { errorMessage = "入力エラー。配車グループがが未選択です。"; return true; }
+                if (dto.SelectPointKubun == 0) { errorMessage = "入力エラー。配車グループがが未選択です。"; return true; }
             }
 
             if (dto.PointData.BuildingName == null) { errorMessage = "入力エラー。ポイント名が空白です。"; return true; }

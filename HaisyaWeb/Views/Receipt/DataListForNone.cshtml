@@ -111,8 +111,8 @@ p {
     <p>コメント登録</p>
     <textarea id="comment" rows="5" style="width: 100%;"></textarea>
     <div>
-      <button id="saveComment" class="btn btn-outline-success" style="margin-top: 10px; width: 180px;;" type="button">登録</button>
-      <button id="closeButton" class="btn btn-outline-warning" style="margin-top: 10px; width: 180px; float: right;" type="button">閉じる</button>
+      <button type="button" id="saveComment" class="btn btn-outline-success" style="margin-top: 10px; width: 180px;;" type="button">登録</button>
+      <button type="button" id="closeButton" class="btn btn-outline-warning" style="margin-top: 10px; width: 180px; float: right;" type="button">閉じる</button>
     </div>
   </div>
 </div>
@@ -184,7 +184,7 @@ p {
         </label>
       </td>
       <td class="@(color)" rowspan="2" align="center">
-        <button class="btn-select btn btn-info btn-sm openmyModal" style="display: inline-block; height: 50%; background-color: transparent; color: #0dcaf0;" type="button"
+        <button type="button" class="btn-select btn btn-info btn-sm openmyModal" style="display: inline-block; height: 50%; background-color: transparent; color: #0dcaf0;" type="button"
             data-comment="@item?.TNippou?.Commnet" data-receipt_date="@item?.TNippou?.Receipt_Date" data-id="@item.Anken_ID" data-display_id="@item.TNippou?.AnkenDisplay_ID">
           選択
         </button>

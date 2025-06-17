@@ -9,6 +9,7 @@ using RenkeiDB.Dto.EquipmentDto;
 using RenkeiDB.Dto.MasterDto;
 using RenkeiDB.Repositories;
 using RenkeiDB.Repositories.Interfaces;
+using RenkeiDB.Services.Interfaces;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;

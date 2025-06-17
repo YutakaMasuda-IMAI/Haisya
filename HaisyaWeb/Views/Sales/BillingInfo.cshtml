@@ -59,13 +59,13 @@
       </td>
       @if (Model.ProcessingCategory == "直接入力")
       {
-        <td style="text-align:right;" width="300px"><button class="btn btn-outline-danger delete-row">削除</button></td>
+        <td style="text-align:right;" width="300px"><button type="button" class="btn btn-outline-danger delete-row">削除</button></td>
       }
       else
       {
           @if (Model.Uriage?.Uriage_ID == null && Model.IsDeletable)
           {
-            <td style="text-align:right;" width="300px"><button class="btn btn-outline-danger delete-row">削除</button></td>
+            <td style="text-align:right;" width="300px"><button type="button" class="btn btn-outline-danger delete-row">削除</button></td>
           }
           else
           {
@@ -75,7 +75,7 @@
             }
             else if (Model.IsDeletable)
             {
-              <td style="text-align:right;" width="300px"><button class="btn btn-outline-danger delete-row">削除</button></td>
+              <td style="text-align:right;" width="300px"><button type="button" class="btn btn-outline-danger delete-row">削除</button></td>
             }
           }
       }
@@ -107,7 +107,7 @@
       <td style="width:100px;">
         @if (!Model.IsRequestReadOnly)
         {
-          <button class="btn btn-outline-primary btnKokyaku" id="btnKokyaku" data-index="@Model.RowCount">選択</button>
+          <button type="button" class="btn btn-outline-primary btnKokyaku" id="btnKokyaku" data-index="@Model.RowCount">選択</button>
         }
       </td>
       <td style="width:1px;"><input type="text" class="form-control" id="KokyakuId" readonly hidden value="@kokyakuId"/></td>

@@ -94,7 +94,7 @@ else
         var color = i % 2 == 1 ? "row-even" : "row-odd";
         <tr>
           <td class="@(color)" align="center" rowspan="2">
-            <button class="btn btn-outline-success" style="width: 100%; padding:0;" onclick="submitAnkenEdit(@(item.AnkenDisplay_ID),@(item.Anken_ID), @(item.KokyakuId))">選択</button>
+            <button type="button" class="btn btn-outline-success" style="width: 100%; padding:0;" onclick="submitAnkenEdit(@(item.AnkenDisplay_ID),@(item.Anken_ID), @(item.KokyakuId))">選択</button>
           </td>
           <td class="@(color)" hidden rowspan="2">
             @Html.DisplayFor(modelItem => item.TantouID)

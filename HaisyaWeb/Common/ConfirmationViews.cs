@@ -1,4 +1,4 @@
-﻿namespace HaisyaWeb
+﻿namespace HaisyaWeb.Common
 {
     /// <summary>
     /// 確認モーダル定数

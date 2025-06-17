@@ -1,9 +1,6 @@
 ﻿@model AnkenModel.AnkenReferenceYosyaRegModel
 
 
-@{
-  Layout = "_ModalLayout";
-}
 
 
 <style>
@@ -51,7 +48,7 @@
               </div>
             </div>
             <div>
-              <button class="btn btn-primary" style="float:right;" onclick="YosyaRegExec(); return false;">@(Model.BtnCaption)</button>
+              <button type="button" class="btn btn-primary" style="float:right;" onclick="YosyaRegExec(); return false;">@(Model.BtnCaption)</button>
             </div>
           </div>
 
@@ -99,7 +96,7 @@
                 <tr id="trDriver">
                   <th style="">第１傭車乗務員</th>
                   <td style="display:flex;">
-                    <button id="btnYosya" class="btn btn-success" style="width: 100px;">傭車選択</button>
+                    <button type="button" id="btnYosya" class="btn btn-success" style="width: 100px;">傭車選択</button>
                     @Html.TextBoxFor(model => Model.Yosya.YosyaDriver_ID, null, new { @class = "form-control", @style = "width: 0px; padding: 0;" })
                     @Html.TextBoxFor(model => Model.YosyaDriverName, null, new { @readonly = "readonly", @class = "form-control", @style = "width: 60%;" })
                   </td>
@@ -109,7 +106,7 @@
                 <tr>
                   <th>第１傭車会社</th>
                   <td style="display:flex;">
-                    <button id="btnCustomerBranch" class="btn btn-success" style="width: 100px;">傭車選択</button>
+                    <button type="button" id="btnCustomerBranch" class="btn btn-success" style="width: 100px;">傭車選択</button>
                     @Html.TextBoxFor(model => Model.Yosya.Yosya_Branch_ID, null, new { @class = "form-control", @style = "width: 0px; padding: 0;" })
                     @Html.TextBoxFor(model => Model.YosyaBranchName, null, new { @readonly = "readonly", @class = "form-control", @style = "width: 60%;" })
                   </td>
@@ -118,7 +115,7 @@
                 <tr id="trTantou">
                   <th>第１傭車担当</th>
                   <td style="display:flex;">
-                    <button id="btnCustomerTantou" class="btn btn-success" style="width: 100px;">傭車選択</button>
+                    <button type="button" id="btnCustomerTantou" class="btn btn-success" style="width: 100px;">傭車選択</button>
                     @Html.TextBoxFor(model => Model.Yosya.Yosya_Tantou_ID, null, new { @class = "form-control", @style = "width: 0px; padding: 0;" })
                     @Html.TextBoxFor(model => Model.YosyaTantouName, null, new { @readonly = "readonly", @class = "form-control", @style = "width: 60%;" })
                   </td>

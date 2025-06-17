@@ -53,6 +53,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
         }
@@ -76,6 +79,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -132,7 +138,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
         }
 
@@ -153,7 +160,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
         }
 
@@ -184,6 +192,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -223,6 +234,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
         }
@@ -247,6 +261,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -271,6 +288,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -300,6 +320,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -329,6 +352,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -362,6 +388,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -403,6 +432,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
 
@@ -425,7 +457,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
         }
 
@@ -448,6 +481,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -483,9 +519,12 @@ namespace WebApplication.Controllers.DB
 
                 return new OkObjectResult(list);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return CommonHelper.HandleError(e);
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
+                return CommonHelper.HandleError(ex);
             }
         }
         #endregion V_CompanyDriver
@@ -513,6 +552,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -542,7 +584,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -565,7 +608,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -597,6 +641,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -633,6 +680,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -664,6 +714,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -696,6 +749,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -732,6 +788,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -773,6 +832,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -806,6 +868,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -842,6 +907,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -891,11 +959,14 @@ namespace WebApplication.Controllers.DB
                     data = data.Where(m => m.Syaryo_ID == SyaryoID).OrderBy(m => m.SortOrder);
                 }
 
-                IEnumerable <Data.M_Syaryo> res = await data.ToListAsync();
+                IEnumerable<Data.M_Syaryo> res = await data.ToListAsync();
                 return new OkObjectResult(res);
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -927,6 +998,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -963,6 +1037,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -999,6 +1076,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -1039,6 +1119,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -1070,6 +1153,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -1120,7 +1206,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -1152,6 +1239,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -1185,6 +1275,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -1226,7 +1319,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -1257,6 +1351,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -1308,7 +1405,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
 
@@ -1340,6 +1438,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -1385,6 +1486,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -1417,6 +1521,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -1449,6 +1556,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -1480,6 +1590,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -1511,6 +1624,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -1527,7 +1643,7 @@ namespace WebApplication.Controllers.DB
         /// <param name="iArea">エリア</param>
         /// <returns>住所リスト</returns>
         [HttpGet("GetAddressList")]
-        public List<Data.M_PostCode> GetAddressList(Dto.AddressArea iArea)
+        public async Task<List<Data.M_PostCode>> GetAddressList(Dto.AddressArea iArea)
         {
             try
             {
@@ -1578,7 +1694,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -1606,6 +1723,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -1642,6 +1762,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -1677,6 +1800,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -1727,6 +1853,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -1757,6 +1886,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -1790,6 +1922,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -1859,6 +1994,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -1882,6 +2020,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -1906,6 +2047,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -1963,7 +2107,9 @@ namespace WebApplication.Controllers.DB
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
-                return null;
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(e.Message);
+                throw;
             }
 
 
@@ -2031,9 +2177,12 @@ namespace WebApplication.Controllers.DB
                 List<M_Customer_Branch> result = await _context.M_Customer_Branches.FromSqlRaw(sql, userId, CompanyID).ToListAsync();
                 return new OkObjectResult(result);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                return CommonHelper.HandleError(e);
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
+                return CommonHelper.HandleError(ex);
             }
         }
 
@@ -2064,7 +2213,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
 
@@ -2101,7 +2251,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -2133,6 +2284,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -2170,7 +2324,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -2194,6 +2349,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -2236,7 +2394,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -2268,6 +2427,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -2310,7 +2472,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -2342,6 +2505,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -2381,7 +2547,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -2415,7 +2582,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -2439,6 +2607,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -2477,7 +2648,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -2501,6 +2673,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -2537,7 +2712,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -2561,6 +2737,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -2597,7 +2776,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -2621,6 +2801,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -2652,6 +2835,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -2684,7 +2870,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -2717,7 +2904,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -2738,7 +2926,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -2771,7 +2960,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -2808,7 +2998,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -2840,6 +3031,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -2876,6 +3070,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -2907,7 +3104,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -2930,7 +3128,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -2962,6 +3161,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -2993,7 +3195,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -3025,6 +3228,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -3061,6 +3267,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -3142,6 +3351,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -3162,7 +3374,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -3195,6 +3408,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -3241,7 +3457,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -3258,7 +3475,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -3291,6 +3509,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -3328,7 +3549,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -3356,7 +3578,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -3390,6 +3613,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -3435,6 +3661,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -3467,6 +3696,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -3500,6 +3732,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -3536,6 +3771,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -3568,7 +3806,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -3591,7 +3830,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -3616,6 +3856,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -3658,7 +3901,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -3698,7 +3942,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -3723,6 +3968,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -3756,7 +4004,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -3784,7 +4033,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -3816,6 +4066,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -3850,7 +4103,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -3862,7 +4116,7 @@ namespace WebApplication.Controllers.DB
         /// <param name="jsonString"></param>
         /// <returns></returns>
         [HttpPost("UpdateLuggageSortOrder")]
-        public IActionResult UpdateLuggageSortOrder()
+        public async Task<IActionResult> UpdateLuggageSortOrder()
         {
             Dto.MsterDataCommonResultValDto resultVal = new();
             try
@@ -3883,6 +4137,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -3919,6 +4176,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -3951,6 +4211,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -3974,6 +4237,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -3999,6 +4265,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -4028,6 +4297,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -4055,6 +4327,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -4066,7 +4341,7 @@ namespace WebApplication.Controllers.DB
         /// <param name="jsonString"></param>
         /// <returns>MsterDataCommonResultValDto</returns>
         [HttpPost("UpdateEquipmentSortOrder")]
-        public IActionResult UpdateEquipmentSortOrder()
+        public async Task<IActionResult> UpdateEquipmentSortOrder()
         {
             Dto.MsterDataCommonResultValDto resultVal = new();
             try
@@ -4087,6 +4362,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -4122,6 +4400,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -4153,6 +4434,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -4176,6 +4460,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -4201,6 +4488,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -4240,7 +4530,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -4274,7 +4565,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -4318,7 +4610,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -4350,6 +4643,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -4406,6 +4702,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -4429,6 +4728,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally { }
@@ -4461,6 +4763,9 @@ namespace WebApplication.Controllers.DB
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
             finally
@@ -4600,7 +4905,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -4628,7 +4934,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -4663,7 +4970,8 @@ namespace WebApplication.Controllers.DB
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }

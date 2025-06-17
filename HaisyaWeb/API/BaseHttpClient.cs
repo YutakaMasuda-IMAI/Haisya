@@ -96,7 +96,8 @@ namespace HaisyaWeb.API
                     if (resStatusCoode.Equals(HttpStatusCode.NoContent))
                     {
                         result = JsonConvert.DeserializeObject<T>(resBodyStr);
-                    } else
+                    }
+                    else
                     {
                         if (resStatusCoode == System.Net.HttpStatusCode.InternalServerError) throw new HttpRequestException(resBodyStr);
                         if (resStatusCoode == HttpStatusCode.BadRequest) throw new HttpRequestException(resBodyStr);
@@ -105,13 +106,14 @@ namespace HaisyaWeb.API
                         result = JsonConvert.DeserializeObject<T>(resBodyStr);
                     }
 
-                } else
+                }
+                else
                 {
                     resBodyStr = response.Content.ReadAsStringAsync().Result.Trim('\"');
                     Console.WriteLine("Error: " + response.StatusCode);
                     throw new HttpRequestException(resBodyStr);
                 }
-                
+
 
             }
             catch (HttpRequestException ex)
@@ -160,7 +162,8 @@ namespace HaisyaWeb.API
             {
                 response = await httpClient.PostAsync(request.RequestUri, multiContent);
                 // リクエストが成功したかどうかを確認する
-               if (response.IsSuccessStatusCode) { 
+                if (response.IsSuccessStatusCode)
+                {
                     resBodyStr = response.Content.ReadAsStringAsync().Result;
                     resStatusCoode = response.StatusCode;
 
@@ -179,9 +182,10 @@ namespace HaisyaWeb.API
                         result = JsonConvert.DeserializeObject<Dto.MsterDataCommonResultValDto_Local>(resBodyStr);
                         Console.WriteLine("Error: " + response.StatusCode + ":::" + result);
                         return result;
-                    } else
+                    }
+                    else
                     {
-                        Console.WriteLine("Error: " + response.StatusCode );
+                        Console.WriteLine("Error: " + response.StatusCode);
                         throw new HttpRequestException(resStatusCoode.ToString());
                     }
                 }
@@ -250,8 +254,9 @@ namespace HaisyaWeb.API
                 }
                 else
                 {
-                    Console.WriteLine("Error: " + response.StatusCode);
-                    throw new HttpRequestException(resStatusCoode.ToString());
+                    resBodyStr = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine("Error: " + response.StatusCode + "   Message:" + resBodyStr);
+                    throw new HttpRequestException(resBodyStr);
                 }
             }
             catch (HttpRequestException ex)
@@ -298,7 +303,9 @@ namespace HaisyaWeb.API
                     }
                     else
                     {
-                        Console.WriteLine("Error: " + response.StatusCode);
+                        string resBodyStr = await response.Content.ReadAsStringAsync();
+                        Console.WriteLine("Error: " + response.StatusCode + "   Message:" + resBodyStr);
+                        throw new HttpRequestException(resBodyStr);
                     }
                 }
                 catch (Exception ex)

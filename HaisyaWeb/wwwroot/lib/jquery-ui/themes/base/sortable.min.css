@@ -1,16 +1,16 @@
 /**
- * Minified by jsDelivr using clean-css v5.3.0.
- * Original file: /npm/jquery-ui@1.13.2/themes/base/sortable.css
+ * Minified by jsDelivr using clean-css v5.3.2.
+ * Original file: /npm/jquery-ui@1.14.1/themes/base/sortable.css
  *
  * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
  */
 /*!
- * jQuery UI Sortable 1.13.2
- * http://jqueryui.com
+ * jQuery UI Sortable 1.14.1
+ * https://jqueryui.com
  *
- * Copyright jQuery Foundation and other contributors
+ * Copyright OpenJS Foundation and other contributors
  * Released under the MIT license.
- * http://jquery.org/license
+ * https://jquery.org/license
  */
-.ui-sortable-handle{-ms-touch-action:none;touch-action:none}
-/*# sourceMappingURL=/sm/942924087841c0116feef2e5afad52f3cb5ab50f760c330de89391cd3bbc2a60.map */
+.ui-sortable-handle{touch-action:none}
+/*# sourceMappingURL=/sm/f47044a0d58d383f4717d7692667471de4901f97e2d6e0878ca7e1723fbc1453.map */

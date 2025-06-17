@@ -1,7 +1,6 @@
 ﻿using HaisyaWeb.Common;
 using HaisyaWeb.Dto;
 using HaisyaWeb.Models;
-using HaisyaWeb.Models.DB;
 using HaisyaWeb.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -214,7 +213,7 @@ namespace HaisyaWeb.Controllers
                 //総労働時間取得
                 model.KintaiTotalWorkingTimeLists = await GetKintaiTotalWorkingTimeList(loguinUser.Company_ID, DateTime.Parse(strDateFrom).ToString("yyyy/MM/01"));
                 //勤怠確定情報取得
-                model.KintaiCommitLists = await GetKintaiCommitLists(loguinUser.Company_ID, strDateFrom, DateTime.Parse(strDateTo).AddSeconds(1).ToString("yyyy/MM/dd"));
+                model.KintaiCommitLists = await GetKintaiCommitLists(loguinUser.Company_ID, param.SelectDay, DateTime.Parse(strDateTo).AddSeconds(1).ToString("yyyy/MM/dd"));
                 // 休暇マスタ
                 model.LeaveList = await GetLeaveLists(loguinUser.Company_ID);
                 //休日情報の取得
@@ -223,6 +222,10 @@ namespace HaisyaWeb.Controllers
                 List<T_Leave_Summary_Local> kintaiLeaveSumList = await GetKintaiLeaveLists(loguinUser.Company_ID, 0);
                 //勤怠情報取得
                 List<T_Kintai_Local> kintai = await GetKintaiLists(strDateFrom, 0);
+
+                // ログイン者の権限のある配車グループを設定
+                List<Dto.M_CompanyUser_Group_Local> groupUserList = await GetCompanyUserGroupList(loguinUser.User_ID);
+                model.GroupUserList = groupUserList.Where(m => m.Group_Kubun == 1).ToList();
 
                 //var beforeDay = DateTime.Parse(param.SelectDay).AddDays(-1).ToString("yyyy/MM/dd");
                 //List<Dto.M_CompanyUser_Group_Local> listGroupOfUser = await GetCompanyUserGroupList(loguinUser.User_ID);
@@ -281,7 +284,7 @@ namespace HaisyaWeb.Controllers
                 //案件情報を画面の抽出条件に合わせてフィルター
                 model.HaisyaDataLists = model.HaisyaDataLists.Where(a =>
                 {
-                    if (model.Search.SelectTantou != "ALL" && model.Search.SelectTantou != null && a.TantouID != int.Parse(model.Search.SelectTantou)) return false;    /*&& !listGroupSearch.Any(g => g.Group_ID == a.TantouID)*/
+                    if (model.Search.SelectTantou != "ALL" && model.Search.SelectTantou != null && a.TantouID != int.Parse(model.Search.SelectTantou)) return false;    /*&& !listGroupSearch.Any(g => g.Group_ID == a.HaisyaTantouID)*/
                     if (param.SelectTokuisakiID != null && a.KokyakuId != int.Parse(param.SelectTokuisakiID)) return false;
                     if (param.SelectSyasyu != null && a.Syaryo_ID.ToString() != param.SelectSyasyu) return false;
                     if (param.SelectKata != null && a.Kata != param.SelectKata) return false;
@@ -558,7 +561,7 @@ namespace HaisyaWeb.Controllers
 
                 List<Dto.V_HaisyaDataList_Local> haisyaList = await GetHaisyaDataLists(loguinUser.Company_ID, null, strDateFrom, strDateTo);
                 //指定日以前開始の案件データを
-                List<Dto.V_HaisyaDataList_Local> haisyaUnderList =  await GetHaisyaDataLists(loguinUser.Company_ID, null, null, null, strDateFrom);
+                List<Dto.V_HaisyaDataList_Local> haisyaUnderList = await GetHaisyaDataLists(loguinUser.Company_ID, null, null, null, strDateFrom);
 
                 //勤怠データ
                 List<Dto.T_Kintai_Commit_Local> kintaiDataList = await GetKintaiCommitLists(loguinUser.Company_ID, strDateFrom, strDateTo);
@@ -603,7 +606,7 @@ namespace HaisyaWeb.Controllers
                     //var driver = item.V_Drivers.Count > 0 ? item.V_Drivers[0] : null;
                     //item.haisyaKubunDisplay = item.Anken_Kubun == 1 ? "利用" : driver == null ? "" : driver?.DriverSyaryo_ID != 0 ? "自車" : driver?.YosyaKubun == 1 ? "専属" : "庸車";
 
-                    //if (param.SelectTantou != null && param.SelectTantou != "ALL" && !groupUserList.Any(g => g.Group_ID == item.TantouID)) return false;
+                    //if (param.SelectTantou != null && param.SelectTantou != "ALL" && !groupUserList.Any(g => g.Group_ID == item.HaisyaTantouID)) return false;
                     if (param.SelectTantou != null && param.SelectTantou != "ALL" && int.Parse(param.SelectTantou) != item.TantouID) return false;
 
                     /*Dto.M_Syaryo_Local syasyu = syasyuList.Find(item => param.SelectSyasyu == item.Syaryo_ID.ToString());
@@ -652,7 +655,7 @@ namespace HaisyaWeb.Controllers
                 // Check dragable
                 List<Dto.M_CompanyUser_Group_Local> groupUsers = await GetCompanyUserGroupList(loguinUser.User_ID);
 
-                //model.AnkenLists?.ForEach(a => a.EditFlg = model.EditEnabled && a.Anken_Status != 2 && groupUsers.Any(g => g.Group_ID == a.TantouID) && a.Anken_Kubun == 0);
+                //model.AnkenLists?.ForEach(a => a.EditFlg = model.EditEnabled && a.Anken_Status != 2 && groupUsers.Any(g => g.Group_ID == a.HaisyaTantouID) && a.Anken_Kubun == 0);
                 model.DriverDataLists?.ForEach(d => d.EditFlg = model.EditEnabled && d.HolidayKubun != "休" && groupUsers.Any(g => g.Group_ID == d.Group_ID));
 
                 ViewData.Model = model;

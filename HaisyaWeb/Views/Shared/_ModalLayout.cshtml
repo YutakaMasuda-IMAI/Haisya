@@ -8,9 +8,10 @@
   <link href="~/lib/jquery-ui/dist/themes/base/jquery-ui.css" rel="stylesheet" />
   <link href="~/lib/jquery-ui/dist/themes/base/theme.css" rel="stylesheet" />
   <link href="~/lib/bootstrap/dist/css/bootstrap.css" rel="stylesheet" />
-  <link href="~/lib/glyphicons/css/bootstrap.css" rel="stylesheet" />
+  <link href="~/lib/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet" />
   <link href="~/lib/sweetalert2/dist/sweetalert2.css" rel="stylesheet" />
   @*<link href="~/lib/tablesorter/dist/css/theme.default.min.css" rel="stylesheet" />*@
+  <link href="~/css/bootstrap2.css" rel="stylesheet" asp-append-version="true" />
 
   <script src="~/lib/jquery/dist/jquery.js" charset="utf-8"></script>
   <script src="~/lib/jquery-ui/dist/jquery-ui.js" charset="utf-8"></script>
@@ -76,7 +77,8 @@
   };
 
   function DialogClose(key) {
-    $('#' + key).dialog('close');
+    // $('#' + key).dialog('close');
+    $('#' + key + " #btnDialogClose").trigger("click");
     $('#' + key).html('');
   };
 

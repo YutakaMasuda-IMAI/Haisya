@@ -5,14 +5,14 @@ using Newtonsoft.Json;
 using RenkeiDB.Common;
 using RenkeiDB.Dto;
 using RenkeiDB.Dto.MasterDto;
-using RenkeiDB.Services;
+using RenkeiDB.Services.Interfaces;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace RenkeiDB.Controllers.DB
+namespace RenkeiDB.Controllers
 {
     /// <summary>
     /// マスターに関する操作を提供するコントローラー

@@ -3,7 +3,7 @@
 <div class="information-from-admin">
 
 
-  <h5 class="heading-40" style="width:100%;"><span class="glyphicon glyphicon-bullhorn"></span>管理者からのお知らせ</h5>
+  <h5 class="heading-40" style="width:100%;"><span class="bi bi-megaphone-fill"></span>管理者からのお知らせ</h5>
 
   @{
       var list = Model.AdminInfos.OrderByDescending(m => m.Info_Datetime).ToList();

@@ -93,7 +93,7 @@
               }
               else if (Model.IsDeletable)
               {
-                <td style="text-align:right;" width="300px"><button class="btn btn-outline-danger delete-row">削除</button></td>
+                <td style="text-align:right;" width="300px"><button type="button" class="btn btn-outline-danger delete-row">削除</button></td>
               }
             </tr>
           </table>
@@ -285,7 +285,7 @@
             }
             else if (Model.IsDeletable)
             {
-              <td style="text-align:right;" width="300px"><button class="btn btn-outline-danger delete-row" id="deleteButton">削除</button></td>
+              <td style="text-align:right;" width="300px"><button type="button" class="btn btn-outline-danger delete-row" id="deleteButton">削除</button></td>
             }
           </tr>
         </table>
@@ -296,7 +296,7 @@
             <td style="width:120px;"><input type="text" class="form-control" id="KokyakuCode" value="@kokyakuCode" readonly /></td>
             <td style="width:auto;"><input type="text" class="form-control" id="KokyakuName" value="@kokyakuName" readonly /></td>
             <td style="width:100px;">
-              <button class="btn btn-outline-primary btnKokyaku" id="btnKokyaku" data-index="@BillingInfoIndex">選択</button>
+              <button type="button" class="btn btn-outline-primary btnKokyaku" id="btnKokyaku" data-index="@BillingInfoIndex">選択</button>
             </td>
             <td style="width:1px;"><input type="text" class="form-control" id="KokyakuId" value="@uriageUnchin.Customer_Branch_ID" readonly hidden /></td>
           </tr>

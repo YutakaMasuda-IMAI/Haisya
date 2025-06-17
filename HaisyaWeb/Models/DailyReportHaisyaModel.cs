@@ -111,8 +111,8 @@
 
 //            /// <summary>案件担当</summary>
 //            [Display(Name = "請求担当")]
-//            public int TantouID { get; set; }
-//            public string TantouName { get; set; }
+//            public int HaisyaTantouID { get; set; }
+//            public string HaisyaTantouName { get; set; }
 
 //            public string SelectTantou2 { get; set; }
 

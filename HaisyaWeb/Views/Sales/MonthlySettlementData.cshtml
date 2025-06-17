@@ -59,7 +59,7 @@
     <table class="no-line">
       <tr>
         <td style="width:120px;">
-          <button class="blue-button" style="margin-right:150px;" onClick="kakuteiRegistrationButton()">一括確定登録</button>
+          <button type="button" class="blue-button" style="margin-right:150px;" onClick="kakuteiRegistrationButton()">一括確定登録</button>
         </td>
         @if (Model.Senzoku.Calc_Kubun == 0)
         {
@@ -114,7 +114,7 @@
             })
         </td>
         <td>
-          <button class="blue-button" onClick="RegistrationButton()">一括設定</button>
+          <button type="button" class="blue-button" onClick="RegistrationButton()">一括設定</button>
         </td>
       </tr>
       <tr>
@@ -263,7 +263,7 @@
               </td>
               <td align="right">@(item.UriageUnchin?.SeikyuTotal.ToString("#,0") ?? "0")</td>
               <td align="right">@(item.UriageUnsyu?.Seisan.ToString("#,0") ?? "0")</td>
-              <td align="center"><button class="blue-button" onclick="sendInputIndexForm(@item.AnkenData?.Anken_ID, @item.Uriage?.Reg_Kubun)">選択</button></td>
+              <td align="center"><button type="button" class="blue-button" onclick="sendInputIndexForm(@item.AnkenData?.Anken_ID, @item.Uriage?.Reg_Kubun)">選択</button></td>
             </tr>
           }
         }

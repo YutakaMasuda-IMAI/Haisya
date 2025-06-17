@@ -28,13 +28,13 @@ else
 {
 
 <div>
-  <button class="btn btn-primary btn-sm" style="width:150px; margin-bottom: 5px;" onclick="callHaisya2(1, null)">一括送信</button>
+  <button type="button" class="btn btn-primary btn-sm" style="width:150px; margin-bottom: 5px;" onclick="callHaisya2(1, null)">一括送信</button>
 </div>
 
 <table id="myTable" class="table ex_DataList search-list" style="" border="1">
   <tr>
     <th width="80px">
-      <button id="chk-all" class="btn btn-info" style="width: 100%; padding:0;" value="1" onclick="CheckAll()">全選択</button>
+      <button type="button" id="chk-all" class="btn btn-info" style="width: 100%; padding:0;" value="1" onclick="CheckAll()">全選択</button>
     </th>
     <th width="60px">印刷</th>
     <th width="60px">個別送信</th>
@@ -61,10 +61,10 @@ else
         <input type="checkbox" name="Target" value="0" style="@(item.Not_Dispatched + item.Temporary_Dispatch > 0 ? "opacity: 0;" : "")" @(item.Not_Dispatched + item.Temporary_Dispatch > 0 ? "disabled" : "")>
       </td>
       <td align="center">
-        <button class="btn btn-success" style="width: 70px; padding:0; @(item.Not_Dispatched + item.Temporary_Dispatch > 0 ? "opacity: 0;" : "")" @(item.Not_Dispatched + item.Temporary_Dispatch > 0 ? "disabled" : "") onclick="callHaisya2(2, @i)">印刷</button>
+        <button type="button" class="btn btn-success" style="width: 70px; padding:0; @(item.Not_Dispatched + item.Temporary_Dispatch > 0 ? "opacity: 0;" : "")" @(item.Not_Dispatched + item.Temporary_Dispatch > 0 ? "disabled" : "") onclick="callHaisya2(2, @i)">印刷</button>
       </td>
       <td align="center">
-        <button class="btn btn-success" style="width: 70px; padding:0; @(item.Not_Dispatched + item.Temporary_Dispatch > 0 ? "opacity: 0;" : "")" @(item.Not_Dispatched + item.Temporary_Dispatch > 0 ? "disabled" : "") onclick="carNumberModal(@i)">送信</button>
+        <button type="button" class="btn btn-success" style="width: 70px; padding:0; @(item.Not_Dispatched + item.Temporary_Dispatch > 0 ? "opacity: 0;" : "")" @(item.Not_Dispatched + item.Temporary_Dispatch > 0 ? "disabled" : "") onclick="carNumberModal(@i)">送信</button>
       </td>
       <td align="center">
         @Html.DisplayFor(modelItem => item.Status)

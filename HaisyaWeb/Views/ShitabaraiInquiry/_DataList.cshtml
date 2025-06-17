@@ -12,7 +12,7 @@ else
   <table id="myTable" class="table ex_DataList  search-list" style="width: 100%;" border="1">
     <tr>
       <th style="width:80px;">
-        <button id="chk-all" class="btn btn-info" style="width: 100%; padding:0;" value="1" onclick="CheckAll()">全選択</button>
+        <button type="button" id="chk-all" class="btn btn-info" style="width: 100%; padding:0;" value="1" onclick="CheckAll()">全選択</button>
       </th>
       <th style="width:60px;">
         <a href="#" onclick="dataListFirstSortChange('Inquiry_Status_String')">状態</a>
@@ -78,13 +78,13 @@ else
           </td>
           <td class="@(color)" align="center">@Html.DisplayFor(m => item.Inquiry_Status_String)</td>
           <td class="@(color)" align="center">
-            <button class="btn btn-success" style="width: 96%; padding: 0; background-color: #b27aab;" onclick="PublishShitabarai(@i, @((int)ConfirmationViews.MAIL));">メール</button>
+            <button type="button" class="btn btn-success" style="width: 96%; padding: 0; background-color: #b27aab;" onclick="PublishShitabarai(@i, @((int)ConfirmationViews.MAIL));">メール</button>
           </td>
           <td class="@(color)" align="center">
-            <button class="btn btn-success" style="width: 96%; padding: 0; background-color: #84e291;" onclick="PublishShitabarai(@i, @((int)ConfirmationViews.PRINT));">印刷</button>
+            <button type="button" class="btn btn-success" style="width: 96%; padding: 0; background-color: #84e291;" onclick="PublishShitabarai(@i, @((int)ConfirmationViews.PRINT));">印刷</button>
           </td>
           <td class="@(color)" align="center">
-            <button class="btn btn-success" style="width: 96%; padding: 0; background-color: #ffc000;" onclick="PublishShitabarai(@i, @((int)ConfirmationViews.PREVIEW));">プレビュー</button>
+            <button type="button" class="btn btn-success" style="width: 96%; padding: 0; background-color: #ffc000;" onclick="PublishShitabarai(@i, @((int)ConfirmationViews.PREVIEW));">プレビュー</button>
           </td>
           <td class="@(color)">@Html.DisplayFor(m => item.SHIHARAI_TANTOU)</td>
           <td class="@(color)">@Html.DisplayFor(m => item.Yosya_Name)</td>

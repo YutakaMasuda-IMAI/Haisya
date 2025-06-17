@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SeikyuWeb.Common;
 using SeikyuWeb.Dto;
-using SeikyuWeb.Dto.CheckShiharaisDto;
+using SeikyuWeb.Dto.CheckseikyusDto;
 using SeikyuWeb.Dto.ReportDto;
 using SeikyuWeb.Dto.Seikyu;
 using SeikyuWeb.Models;

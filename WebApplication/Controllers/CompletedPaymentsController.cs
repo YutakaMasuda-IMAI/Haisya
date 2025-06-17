@@ -53,6 +53,7 @@ namespace WebApplication.Controllers
             {
                 Console.WriteLine(ex.Message);
                 Response.StatusCode = ex is BadHttpRequestException ? StatusCodes.Status400BadRequest : StatusCodes.Status500InternalServerError;
+                await Response.WriteAsync(ex.Message);
                 resultVal.ErrrMessage = ex.Message;
             }
             finally
@@ -90,6 +91,7 @@ namespace WebApplication.Controllers
             {
                 Console.WriteLine(ex.Message);
                 Response.StatusCode = ex is BadHttpRequestException ? StatusCodes.Status400BadRequest : StatusCodes.Status500InternalServerError;
+                await Response.WriteAsync(ex.Message);
                 resultVal.ErrrMessage = ex.Message;
             }
             finally
@@ -114,6 +116,9 @@ namespace WebApplication.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
         }
@@ -146,6 +151,7 @@ namespace WebApplication.Controllers
             {
                 Console.WriteLine(ex.Message);
                 Response.StatusCode = ex is BadHttpRequestException ? StatusCodes.Status400BadRequest : StatusCodes.Status500InternalServerError;
+                await Response.WriteAsync(ex.Message);
                 resultVal.ErrrMessage = ex.Message;
             }
             finally

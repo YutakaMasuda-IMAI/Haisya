@@ -57,7 +57,7 @@
                     <th>
                       <div style="display: inline-block; _display: inline; padding: 0;" class="div-search-customer">
                         @Html.LabelFor(m => m.Search.Customer1, htmlAttributes: new { @class = "label search-label2" })
-                        <button id="btnCustomer1" class="btn btn-info btn-sm btn-select" style="width:80px;">選択</button>
+                        <button type="button" id="btnCustomer1" class="btn btn-info btn-sm btn-select" style="width:80px;">選択</button>
                         @Html.TextBoxFor(m => m.Search.Customer1, htmlAttributes: new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 100px; display: inline-block;", @id = "Search_Customer1" })
                         @Html.TextBoxFor(m => m.Search.Customer_name1, htmlAttributes: new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 300px; display: inline-block;", @id = "Search_Customer_name1" })
                         @Html.Hidden("Customer_ID", "", new { @id = "hiddenCustomerID" })
@@ -67,7 +67,7 @@
                     <th>
                       <div style="display: inline-block; _display: inline; padding: 0;">
                         @Html.LabelFor(m => m.Search.Customer2, htmlAttributes: new { @id = "lbl-search-customer2", @class = "label search-label2", @style = "visibility: hidden;" })
-                        <button id="btnCustomer2" class="btn btn-info btn-sm btn-select" style="width:80px;visibility: hidden; ">選択</button>
+                        <button type="button" id="btnCustomer2" class="btn btn-info btn-sm btn-select" style="width:80px;visibility: hidden; ">選択</button>
                         @Html.TextBoxFor(m => m.Search.Customer2, htmlAttributes: new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 100px;visibility: hidden;", @id = "Search_Customer2" })
                         @Html.TextBoxFor(m => m.Search.Customer_name2, htmlAttributes: new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 300px;visibility: hidden;", @id = "Search_Customer_name2" })
                         @Html.Hidden("Customer_IDTo", "", new { @id = "hiddenCustomerIDTo" })

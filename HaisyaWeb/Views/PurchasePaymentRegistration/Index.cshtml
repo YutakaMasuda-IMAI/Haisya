@@ -35,8 +35,8 @@
         {
           <td><h3 id="labelTitle" class="heading-40">事故経費</h3></td>
         }
-        <td style="width:400px;text-align:right;"><button class="btn btn-outline-success" style="width:200px;" onClick="registerExpenses(event); return false;">登録</button></td>
-        <td style="width:200px; text-align: right;"><button class="btn btn-outline-warning" style="width:100px;" onClick="cancelFunction(event); return false;">キャンセル</button></td>
+        <td style="width:400px;text-align:right;"><button type="button" class="btn btn-outline-success" style="width:200px;" onClick="registerExpenses(event); return false;">登録</button></td>
+        <td style="width:200px; text-align: right;"><button type="button" class="btn btn-outline-warning" style="width:100px;" onClick="cancelFunction(event); return false;">キャンセル</button></td>
       </tr>
     </table>
 
@@ -50,7 +50,7 @@
               <tr>
                 <th style="width:60px">乗務員</th>
                 <td width="80px" align="center">
-                  <button class="btn btn-primary btn-sm" onclick="openDriverDialog(); return false;" style="width: 75px;" @(Model.IsNewExpense ? "" : "disabled")>設定</button>
+                  <button type="button" class="btn btn-primary btn-sm" onclick="openDriverDialog(); return false;" style="width: 75px;" @(Model.IsNewExpense ? "" : "disabled")>設定</button>
                 </td>
                 <td width="420px">
                   <input class="form-control" type="text" style="width: 400px" id="companyDriverNameInput" value="@Model?.CompanyDriver?.Display_Name" readonly />
@@ -68,7 +68,7 @@
               <tr>
                 <th style="width:60px">車輌</th>
                 <td width="80px" align="center">
-                  <button class="btn btn-primary btn-sm" onclick="openSyaryoDialog(); return false;" style="width: 75px;" @(Model.IsNewExpense ? "" : "disabled")>設定</button>
+                  <button type="button" class="btn btn-primary btn-sm" onclick="openSyaryoDialog(); return false;" style="width: 75px;" @(Model.IsNewExpense ? "" : "disabled")>設定</button>
                 </td>
                 <td width="420px">
                   <input style="width: 400px" id="syaryo" value="@Model?.Syaryo?.SyasyuDisplay" readonly />
@@ -86,7 +86,7 @@
               <tr>
                 <th style="width:80px;vertical-align:top;">事故情報</th>
                 <td style="width:80px;vertical-align:top;" align="center">
-                  <button class="btn btn-primary btn-sm" onclick="openAccidentListModal(); return false;" style="width: 75px;" @(Model.IsNewExpense ? "" : "disabled")>設定</button>
+                  <button type="button" class="btn btn-primary btn-sm" onclick="openAccidentListModal(); return false;" style="width: 75px;" @(Model.IsNewExpense ? "" : "disabled")>設定</button>
                 </td>
                 <td width="50px">&nbsp;</td>
                 <td>
@@ -123,7 +123,7 @@
       <table class="no-line">
         <tr>
           <td style="text-align:right;">
-            <button class="btn btn-outline-success" style="width: 100px;" onclick="addButtonFunction();">追加</button>
+            <button type="button" class="btn btn-outline-success" style="width: 100px;" onclick="addButtonFunction();">追加</button>
           </td>
         </tr>
       </table>
@@ -388,7 +388,7 @@
           </td>
           <th>仕入業者</th>
           <td style="width:80px;text-align:center;">
-            <button id="venderButton-${index}" class="btn btn-primary btn-sm" onclick="openVenderDialog(${index}); return false;" style="width: 75px;">設定</button>
+            <button type="button" id="venderButton-${index}" class="btn btn-primary btn-sm" onclick="openVenderDialog(${index}); return false;" style="width: 75px;">設定</button>
           </td>
           <td width="350px">
             <input class="form-control" id="venderNameInput-${index}" style="width:300px;" readonly />
@@ -420,7 +420,7 @@
             <input class="table-data-cell-children" style="text-align:center;width:100px;" type="month" id="sCalendar-${index}" name="shibaraiCalendar" oninput="handleShibaraiCalendarChange(${index});" />
           </td>
           <td align="center" style="width:80px;border-right:#fff 1px solid;">
-            <button class="btn btn-primary btn-sm" id="remarksButton-${index}" onClick="openRemarksModal(${index}); return false;" style="">入力</button>
+            <button type="button" class="btn btn-primary btn-sm" id="remarksButton-${index}" onClick="openRemarksModal(${index}); return false;" style="">入力</button>
           </td>
           <td align="center" style="width:80px;">
             <div id="remarksDiv-${index}" style="vertical-align:middle;"></div>

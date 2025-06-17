@@ -26,7 +26,7 @@
     @Html.HiddenFor(model => Model.CompanyID)
   </div>
   <h2>
-    <span class="glyphicon glyphicon-chevron-right"></span>運輸局別待機時間料設定
+    <span class="bi bi-chevron-right"></span>運輸局別待機時間料設定
   </h2>
 
   <div id="main">
@@ -43,7 +43,7 @@
     <div class="contents-wrap-middle">
       @if (Model.EditEnabled)
       {
-        <button class="btn btn-primary" style="width: 200px;margin: 2px;" onclick="DefaultMoneyWaitTimeForAreaRegExec(); return false;">登録/修正</button>
+        <button type="button" class="btn btn-primary" style="width: 200px;margin: 2px;" onclick="DefaultMoneyWaitTimeForAreaRegExec(); return false;">登録/修正</button>
       }
     </div>
 

@@ -2,7 +2,7 @@
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
-namespace SeikyuWeb.Dto.CheckShiharaisDto
+namespace SeikyuWeb.Dto.CheckseikyusDto
 {
     /// <summary>
     /// 変更内容入力のためのDTOクラス

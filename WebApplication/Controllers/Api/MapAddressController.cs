@@ -6,7 +6,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WebApplication.Controllers
+namespace WebApplication.Controllers.Api
 {
     /// <summary>
     /// 住所検索を管理するコントローラー
@@ -37,9 +37,9 @@ namespace WebApplication.Controllers
         /// <param name="datum">入出力座標の測地系を指定</param>
         /// <returns>住所検索結果</returns>
         [HttpGet]
-        public async Task<ActionResult<WebApplication.Model.MapAddress>> Get(string position, int range, string datum)
+        public async Task<ActionResult<MapAddress>> Get(string position, int range, string datum)
         {
-            WebApplication.Model.MapAddress address = new();
+            MapAddress address = new();
 
             if (position == null)
             {
@@ -56,18 +56,24 @@ namespace WebApplication.Controllers
 
                 for (int i = 0; i < 10; i++)
                 {
-                    string positionEx = position + ',' + (range + (100 * i));
+                    string positionEx = position + ',' + (range + 50 * i);
 
                     address = await api.GetMapAddress(null, 3, null, 1, positionEx, null, null, null, null, datum);
 
                     MapAddressItem check = address.item.FirstOrDefault(m => m.address_level == "TBN");
                     
                     if (check != null) { break; }
+
+                  
                 }
 
                 if (address.ErrrMessage != null)
                 {
                     address.ErrrMessage = "住所検索に失敗しました：" + address.ErrrMessage;
+                    return address;
+                } else if (address.item.Count == 0)
+                {
+                    address.ErrrMessage = "選択箇所の住所が見つかりませんでした";
                     return address;
                 }
                 else
@@ -98,9 +104,9 @@ namespace WebApplication.Controllers
         /// <param name="address">住所</param>
         /// <returns>住所検索結果</returns>
         [HttpGet("Getlatlon")]
-        public async Task<ActionResult<WebApplication.Model.MapAddress>> Getlatlon(string address)
+        public async Task<ActionResult<MapAddress>> Getlatlon(string address)
         {
-            WebApplication.Model.MapAddress mapAddress = new();
+            MapAddress mapAddress = new();
 
             if (address == null)
             {
@@ -150,9 +156,9 @@ namespace WebApplication.Controllers
         /// <param name="word">検索ワード</param>
         /// <returns>建物・テナント名称検索結果</returns>
         [HttpGet("GetBuildingName")]
-        public async Task<ActionResult<WebApplication.Model.Map_Building_Name>> GetBuildingName(string address_code, string word)
+        public async Task<ActionResult<Map_Building_Name>> GetBuildingName(string address_code, string word)
         {
-            WebApplication.Model.Map_Building_Name result = new();
+            Map_Building_Name result = new();
 
             if (address_code == null && word == null)
             {

@@ -3,7 +3,7 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace HaisyaWeb.Models.DB
+namespace HaisyaWeb.Models
 {
     /// <summary>
     /// アプリケーションユーザーを表します。

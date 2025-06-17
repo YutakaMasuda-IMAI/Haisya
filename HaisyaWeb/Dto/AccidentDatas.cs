@@ -71,7 +71,7 @@ namespace HaisyaWeb.Dto
     {
     }
 
-    public class AccidentListItem_Local : WebApplication.Models.AccidentListModel.AccidentListItem
+    public class AccidentListItem_Local : WebApplication.Model.AccidentListModel.AccidentListItem
     {
     }
 }

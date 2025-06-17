@@ -1,6 +1,5 @@
 ﻿using HaisyaWeb.API.WebApp;
 using HaisyaWeb.Models;
-using HaisyaWeb.Models.DB;
 using HaisyaWeb.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -9,7 +8,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using static HaisyaWeb.Common.SystemConstants;
 using static HaisyaWeb.Models.AnkenModel;
@@ -69,6 +70,7 @@ namespace HaisyaWeb.Controllers.Anken
                     SenzokuID = param.SenzokuID,
                     SenzokuDriverID = param.SenzokuDriverID,
                     TantouID = param.TantouID,
+                    User_ID = loguinUser.User_ID,
                 };
 
                 MasterDataApi masterDataApi = new(_mapApiSettiong);
@@ -148,7 +150,7 @@ namespace HaisyaWeb.Controllers.Anken
                     BackMenuAction = "Home",
                 };
 
-                if (param != null && param.SelectDay != null )
+                if (param != null && param.SelectDay != null)
                 {
                     if (param.SelectMonth.Year > 2000) model.SelectMonth = param.SelectMonth;
                     if (param.SelectMonth.Year <= 2000) model.SelectMonth = DateTime.Parse(DateTime.Parse(param.SelectDay).ToString("yyyy/MM/01"));
@@ -221,5 +223,107 @@ namespace HaisyaWeb.Controllers.Anken
                 return Error(ex);
             }
         }
+
+        /// <summary>
+        /// ドライバー交代処理
+        /// </summary>
+        /// <param name="ankenId"></param>
+        /// <param name="nowDriverId"></param>
+        /// <param name="changeDriverId"></param>
+        /// <param name="haisyaId"></param>
+        /// <param name="driverSyaryoId"></param>
+        /// <param name="syaryoManagementId"></param>
+        /// <param name="syaryoManagementId1"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> ChangeDriverExec(int ankenId, int nowDriverId, int changeDriverId, int haisyaId,
+                                                          int driverSyaryoId, int syaryoManagementId, int syaryoManagementId1)
+        {
+
+            try
+            {
+
+                //ログイン情報取得
+                Dto.V_LoginUser_Local loguinUser = await GetLoginUser();
+
+                API.WebApp.MasterDataApi api = new(_mapApiSettiong);
+
+                // データ登録
+                API.WebApp.HaisyaDataApi haisyaDataApi = new(_mapApiSettiong);
+
+                HaisyaModel.HaisyaDataModelDto dto = new()
+                {
+                    //AnkenDataList = new(),
+                    Haisya = new(),
+                    Haisya_Detail = new(),
+                    Haisya_Del = new(),
+                };
+
+                dto.Haisya_Del = await haisyaDataApi.GetHaisyaData(haisyaId);
+                CopyProperty(dto.Haisya, dto.Haisya_Del);
+
+                dto.Haisya.Driver_ID = changeDriverId;
+                dto.Haisya.DriverSyaryo_ID = driverSyaryoId;
+                dto.Haisya.SyaryoManagement_ID = syaryoManagementId;
+                dto.Haisya.SyaryoManagement_ID1 = syaryoManagementId1;
+                dto.Haisya.Insert_User = loguinUser.LoginUser_ID;
+                dto.Haisya.Update_User = loguinUser.LoginUser_ID;
+
+
+                Dto.MsterDataCommonResultValDto_Local result = null;
+                result = await haisyaDataApi.MoveHaisyaData(dto);
+
+                return Json(new { retrunFlg = true, result = result, message = "" });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception: " + ex.Message);
+                return Json(new { retrunFlg = false, errorMessage = ex.Message });
+            }
+
+
+        }
+
+
+        /// <summary>
+        /// 案件コピーを実行する
+        /// </summary>
+        /// <param name="param"></param>
+        /// <param name="copyDay"></param>
+        /// <returns></returns>
+        public async Task<IActionResult> CopyAnkenExec(SenzokuBaseModel param, string[] copyDay)
+        {
+
+            try
+            {
+                //ログイン情報取得
+                Dto.V_LoginUser_Local loguinUser = await GetLoginUser();
+
+                AnkenCopyDataDto_Local dto = new()
+                {
+                    companyID = param.Company_ID,
+                    targetDate = param.TargetDate.ToString("yyyy/MM/dd"),
+                    senzokuID = param.SenzokuID,
+                    senzokuDriverID = param.SenzokuDriverID,
+                    ankenId = param.AnkenId,
+                    copyDay = copyDay,
+                    V_LoginUser = loguinUser,
+                };
+
+
+                API.WebApp.AnkenDataApi api = new(_mapApiSettiong);
+                List<Dto.T_Anken_Local> result = await api.CopyAnkenData(dto);
+
+                return Json(new { retrunFlg = true, result = "", message = "" });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception: " + ex.Message);
+                return Json(new { retrunFlg = false, errorMessage = ex.Message });
+            }
+
+
+        }
+
+
     }
 }

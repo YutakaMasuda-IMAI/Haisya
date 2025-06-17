@@ -36,7 +36,7 @@
       <div class="modal-header" style="background-color: gainsboro;">
         <h1 class="modal-title fs-3" id="exampleModalLabel">@(Model.m_Code.Code_Name)</h1>
         <h5 class="modal-title fs-3" id="exampleModalLabel">@(Model.m_Code.Remarks)</h5>
-        <button type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
+        <button type="button" type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
       </div>
       <div class="model-body">
         <form id="form1">
@@ -56,7 +56,7 @@
               @foreach (var item in Model.m_CodeDataList)
               {
                 <tr>
-                  <td width="200px"><button class="btn btn-success" style="width: 100%; padding:0;" onclick="submitData(@(item.Code_Data),@(item.Code_Name),@(item.Code_Name_abbr))"></button></td>
+                  <td width="200px"><button type="button" class="btn btn-success" style="width: 100%; padding:0;" onclick="submitData(@(item.Code_Data),@(item.Code_Name),@(item.Code_Name_abbr))"></button></td>
                   <td width="100px">@(item.Code_Data)</td>
                   <td width="200px">@(item.Code_Name)</td>
                   <td width="300px">@(item.Remarks)</td>

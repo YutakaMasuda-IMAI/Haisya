@@ -1,17 +1,5 @@
 ﻿@model CommonDialogModel.SelectAddressModel
 
-@*@{
-    Layout = "_ModalLayout";
-  }*@
-
-<head>
-
-  <!-- ローダーのURLをscriptでロードする -->
-  <!-- ログイン認証の場合 -->
-  @*<script src="@(Model.MapsApiForJSUrl)" charset="utf-8"></script>*@
-
-</head>
-
 
 <style>
 
@@ -171,7 +159,7 @@
                 <tbody>
                   @foreach (var item in Model.AreaList)
                   {
-                    <tr><td><button class="btn btn-dark" onclick="onClickArea(@(item.Area_ID)); return false;">@(item.Area)</button></td></tr>
+                    <tr><td><button type="button" class="btn btn-dark" onclick="onClickArea(@(item.Area_ID)); return false;">@(item.Area)</button></td></tr>
                   }
                 </tbody>
               </table>
@@ -230,7 +218,7 @@
             {
               <div id="mapHead">
                 <!-- ログイン認証の場合 -->
-                <button onclick="logout(); return false;" style="width: 100px;height:30px;font-size:12px;">logout</button>
+                <button type="button" onclick="logout(); return false;" style="width: 100px;height:30px;font-size:12px;">logout</button>
               </div>
               <table width="100%">
                 <tr>
@@ -241,7 +229,7 @@
                     <input type="text" id="txtAddress" class="form-control" />
                   </td>
                   <td style="width: 200px;">
-                    <button class="btn btn-success" id="btnMapCenter" style="float: right; width:95%;">中心場所設定</button>
+                    <button type="button" class="btn btn-success" id="btnMapCenter" style="float: right; width:95%;">中心場所設定</button>
                   </td>
                 </tr>
               </table>
@@ -260,7 +248,7 @@
                     <input type="text" id="txtAddress" class="form-control" />
                   </td>
                   <td style="width: 200px;">
-                    <button class="btn btn-success" id="btnMapCenter" style="float: right; width:95%;">中心場所設定</button>
+                    <button type="button" class="btn btn-success" id="btnMapCenter" style="float: right; width:95%;">中心場所設定</button>
                   </td>
                 </tr>
               </table>
@@ -274,7 +262,7 @@
         } else
             {
         <div hidden>
-          <button id="btnMapCenter"></button>
+          <button type="button" id="btnMapCenter"></button>
         </div>
             }
       </div>
@@ -942,9 +930,9 @@
     var row = tbody.insertRow(-1);
     var cell1 = row.insertCell(-1);
     if (dblclickEvent == null) {
-      cell1.innerHTML = '<button name=' + name + ' class="btn btn-dark" onclick="' + ckickEvent + '(\'' + textVal + '\'); return false;">' + textVal + '</button>';
+      cell1.innerHTML = '<button type="button" name=' + name + ' class="btn btn-dark" onclick="' + ckickEvent + '(\'' + textVal + '\'); return false;">' + textVal + '</button>';
     } else {
-      cell1.innerHTML = '<button name=' + name + ' class="btn btn-dark" onclick="' + ckickEvent + '(\'' + textVal + '\'); return false;" ondblclick="' + dblclickEvent + '(\'' + textVal + '\'); return false;">' + textVal + '</button>';
+      cell1.innerHTML = '<button type="button" name=' + name + ' class="btn btn-dark" onclick="' + ckickEvent + '(\'' + textVal + '\'); return false;" ondblclick="' + dblclickEvent + '(\'' + textVal + '\'); return false;">' + textVal + '</button>';
     }
 
   };

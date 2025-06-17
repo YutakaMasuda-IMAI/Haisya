@@ -15,6 +15,7 @@ namespace HaisyaWeb.API.WebApp
             httpClient.BaseAddress = new Uri(_baseUrl);
         }
 
+        #region AnkenData
         /// <summary>
         /// 案件データの新規登録
         /// </summary>
@@ -217,6 +218,25 @@ namespace HaisyaWeb.API.WebApp
             return await GetHttpData<DriveRouteListDto_Local>(url);
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="CcompanyID"></param>
+        /// <param name="targetDate"></param>
+        /// <param name="senzokuID"></param>
+        /// <param name="senzokuDriverID"></param>
+        /// <param name="ankenId"></param>
+        /// <param name="copyDay"></param>
+        /// <returns></returns>
+        public async Task<List<T_Anken_Local>> CopyAnkenData(AnkenCopyDataDto_Local param)
+        {
+            string url = "AnkenData/CopyAnkenData";
+            return await ExecHttpDataToResponse<AnkenCopyDataDto_Local, List<T_Anken_Local>>(param, url);
+        }
+
+        #endregion AnkenData
+
         #region M_Customer
         /// <summary>
         /// 指定ユーザーIDのM_Customerの登録件数の降順の指定件数を返却
@@ -271,13 +291,13 @@ namespace HaisyaWeb.API.WebApp
         /// UserIdを元にT_Pointのリストを抽出いて返却
         /// </summary>
         /// <param name="userId"></param>
-        /// <param name="groupId"></param>
+        /// <param name="groupKubun">2:グループのみ、９：全て、それ以外：個人</param>
         /// <returns></returns>
-        public async Task<List<T_Point_Local>> GetPointListFromUserId(int userId, int groupId)
+        public async Task<List<T_Point_Local>> GetPointListFromUserId(int userId, int groupKubun)
         {
             string url = string.Format("AnkenData/T_PointListFromUserId?dummy=1");
             url += string.Format("&userId={0}", userId);
-            url += string.Format("&groupId={0}", groupId);
+            url += string.Format("&groupKubun={0}", groupKubun);
 
             //データ取得
             return await GetHttpData<List<T_Point_Local>>(url);
@@ -316,8 +336,31 @@ namespace HaisyaWeb.API.WebApp
             string url = string.Format("AnkenData/GetAnkenPointList?ankenDisplayId={0}", ankenDisplayId.ToString());
             return await GetHttpData<T_Anken_Display_Local>(url);
         }
+
+        /// <summary>
+        /// T_Anken_Displayを返却
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<T_Anken_Display_Local>> GetAnkenDisplayList(String targetDateFrom, String targetDateTo, int companyId = 0)
+        {
+            string url = string.Format("HaisyaData/GetHaisyaDisplayList?targetDateFrom={0}&targetDateTo={1}&companyId={2}", targetDateFrom, targetDateTo, companyId);
+            //データ取得
+            return await GetHttpData<List<T_Anken_Display_Local>>(url);
+        }
+
+        /// <summary>
+        /// 指定された案件IDリストに基づいてT_Anken_Displayを非同期に取得
+        /// </summary>
+        /// <param name="Anken_IDs"></param>
+        /// <returns>T_Anken_Displayオブジェクトのリスト</returns>
+        public async Task<List<T_Anken_Display_Local>> GetAnkenDisplayAsync(List<int> Anken_IDs)
+        {
+            var response = await MakePostGetRequestAsync<List<int>, List<T_Anken_Display_Local>>(Anken_IDs, _baseUrl, "AnkenData/GetAnkenDisplayListAsync");
+            return response.Data;
+        }
         #endregion T_Anken_Display
 
+        #region View
         /// <summary>
         /// 住所検索使用率TOP30
         /// </summary>
@@ -347,27 +390,8 @@ namespace HaisyaWeb.API.WebApp
             url += string.Format("&Top={0}", Top);
             return await GetHttpData<List<T_Anken_Point_Local>>(url);
         }
+        #endregion View
 
-        /// <summary>
-        /// T_Anken_Displayを返却
-        /// </summary>
-        /// <returns></returns>
-        public async Task<List<T_Anken_Display_Local>> GetAnkenDisplayList(String targetDateFrom, String targetDateTo, int companyId = 0)
-        {
-            string url = string.Format("HaisyaData/GetHaisyaDisplayList?targetDateFrom={0}&targetDateTo={1}&companyId={2}", targetDateFrom, targetDateTo, companyId);
-            //データ取得
-            return await GetHttpData<List<T_Anken_Display_Local>>(url);
-        }
 
-        /// <summary>
-        /// 指定された案件IDリストに基づいてT_Anken_Displayを非同期に取得
-        /// </summary>
-        /// <param name="Anken_IDs"></param>
-        /// <returns>T_Anken_Displayオブジェクトのリスト</returns>
-        public async Task<List<T_Anken_Display_Local>> GetAnkenDisplayAsync(List<int> Anken_IDs)
-        {
-            var response = await MakePostGetRequestAsync<List<int>, List<T_Anken_Display_Local>>(Anken_IDs, _baseUrl, "AnkenData/GetAnkenDisplayListAsync");
-            return response.Data;
-        }
     }
 }

@@ -53,9 +53,12 @@ namespace WebApplication.Controllers.DB
             {
                 r = await m.GetExpenseDataList(company_id, expense_category, vehicle_number, driver_code, driver_name, accident_year);
             }
-            catch (Exception x)
+            catch (Exception ex)
             {
-                return CommonHelper.HandleError(x);
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
+                return CommonHelper.HandleError(ex);
             }
             finally
             {

@@ -73,12 +73,12 @@
           <tbody>
             <tr style="vertical-align: middle;">
               <td class="col-sm-4">
-                <button style="width: 150px;" class="btn btn-success align-items-start" onclick="return false;">担当者登録</button>
+                <button type="button" style="width: 150px;" class="btn btn-success align-items-start" onclick="return false;">担当者登録</button>
               </td>
               <td class="col-sm-4">
               </td>
               <td class="col-sm-1">
-                <button style="width: 100px; float: right;" class="btn btn-primary align-items-end" onclick="listDisplay();return false;">検索</button>
+                <button type="button" style="width: 100px; float: right;" class="btn btn-primary align-items-end" onclick="listDisplay();return false;">検索</button>
               </td>
             </tr>
           </tbody>
@@ -86,7 +86,7 @@
         <div id="alertTop" style="vertical-align: middle; margin-top: 1px;">
         </div>
 
-        <div id="DataList" class="table-CustomerTantouListDataModal dataList" style="height:500px; margin: 0;">
+        <div id="DataList-CustomerTantouListDataModal" class="table-CustomerTantouListDataModal dataList" style="height:500px; margin: 0;">
 
         </div>
 
@@ -150,7 +150,7 @@
           }
           else {
               $('#alertTop').hide();
-              $('#DataList').html(data.partialView);
+              $('#DataList-CustomerTantouListDataModal').html(data.partialView);
           }
       }
     );

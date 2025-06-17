@@ -42,7 +42,7 @@
       </div>
       @foreach (var item in Model.Addresslist)
       {
-      <button class="btnAddressList" style="" onclick="btnAddressClick('@(item.address_code)','@(item.address)','@(item.post_code)','@(item.address_level)','@(item.address2)','@(item.address3)','@(item.address4)'); return false;">
+      <button type="button" class="btnAddressList" style="" onclick="btnAddressClick('@(item.address_code)','@(item.address)','@(item.post_code)','@(item.address_level)','@(item.address2)','@(item.address3)','@(item.address4)'); return false;">
         <div style="text-align: left; margin-left: 10px;">
           〒@(item.post_code)<br />
           @(item.address)
@@ -60,7 +60,7 @@
       </div>
       @foreach (var item in Model.BuildingList)
       {
-      <button class="btnBuildingList" style="" onclick="btnBuildingClick('@(item.address_code)','@(item.zid)','@(item.zid_attr)','@(item.building_name)','@(item.address)','@(item.post_code)','@(item.address_level)','@(item.address2)','@(item.address3)','@(item.address4)'); return false;">
+      <button type="button" class="btnBuildingList" style="" onclick="btnBuildingClick('@(item.address_code)','@(item.zid)','@(item.zid_attr)','@(item.building_name)','@(item.address)','@(item.post_code)','@(item.address_level)','@(item.address2)','@(item.address3)','@(item.address4)'); return false;">
         <div style="text-align: left; margin-left: 10px; ">
           @(item.building_name)<br />
           〒@(item.post_code)<br />
@@ -72,7 +72,7 @@
   </tr>
 </table>
 <div style="margin-top: 0.2rem;">
-  <button class="btn btn-danger" style="width: 400px;" onclick="addressListBack(); return false;" >地図に戻る</button>
+  <button type="button" class="btn btn-danger" style="width: 400px;" onclick="addressListBack(); return false;" >地図に戻る</button>
 </div>
 
 

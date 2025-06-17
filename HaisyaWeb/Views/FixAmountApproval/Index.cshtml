@@ -89,7 +89,7 @@
                       <th>
                         <div id="tokuisaki" style="display: inline-block; _display: inline; padding: 0;">
                           @Html.LabelFor(model => model.Search.SelectTokuisakiID, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "" })
-                          <button id="btnTokuisakiFrom" class="btn btn-info btn-sm btn-select" style="width:80px;" onclick="return false;">選択</button>
+                          <button type="button" id="btnTokuisakiFrom" class="btn btn-info btn-sm btn-select" style="width:80px;" onclick="return false;">選択</button>
                           @Html.TextBoxFor(model => Model.Search.SelectTokuisakiID, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 100px; display: inline-block;" })
                           @Html.TextBoxFor(model => model.Search.SelectTokuisakiName, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 300px; display: inline-block;" })
                         </div>
@@ -98,7 +98,7 @@
                         <div id="tokuisakiTo" style="display: inline-block; _display: inline; padding: 0; ">
                           ～
                           @Html.LabelFor(model => model.Search.SelectTokuisakiID, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "" })
-                          <button id="btnTokuisakiTo" class="btn btn-info btn-sm btn-select" style="width:80px;" onclick="return false;">選択</button>
+                          <button type="button" id="btnTokuisakiTo" class="btn btn-info btn-sm btn-select" style="width:80px;" onclick="return false;">選択</button>
                           @Html.TextBoxFor(model => Model.Search.SelectTokuisakiIDTo, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 100px; display: inline-block;" })
                           @Html.TextBoxFor(model => model.Search.SelectTokuisakiNameTo, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 300px; display: inline-block;" })
                         </div>

@@ -107,7 +107,7 @@
 <!-- モダールの中身 -->
 <div class="" id="exampleModal">
     <div role="document" style="">
-        <button onclick="onClose(); return false;">close</button>
+        <button type="button" onclick="onClose(); return false;">close</button>
         <div class="">
             <div class="ex_driveList_model">
                 <div>
@@ -205,7 +205,7 @@
                                                 <tr class="ex_lineUnder">
                                                     <td style="vertical-align: middle;" align="center">
                                                         <div name="divButtonDriveRoute" onclick="onCickDriveRoute('@(item.routeID)','@(item.routeType)');" style="font-size: 16px; width: 120px;color:#ff00dc"> ＞＞詳細＞＞</div>
-                                                        @*<button onclick="" style="font-size: 14px; width: 120px;">詳細</button>*@
+                                                        @*<button type="button" onclick="" style="font-size: 14px; width: 120px;">詳細</button>*@
                                                     </td>
                                                     <td align="center" width="70px">
                                                         @Convert.ToInt32(60).ToString("(##)")

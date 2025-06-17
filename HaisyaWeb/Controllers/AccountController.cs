@@ -1,5 +1,4 @@
 ﻿using HaisyaWeb.Models;
-using HaisyaWeb.Models.DB;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
@@ -37,10 +36,22 @@ namespace HaisyaWeb.Controllers
         /// <returns></returns>
         public IActionResult Login(string returnUrl)
         {
-            AccountModel model = new();
-            model.ReturnUrl = returnUrl;
+            try
+            {
+                AccountModel model = new();
+                model.ReturnUrl = returnUrl;
 
-            return View(model);
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception: " + ex.Message);
+                ErrorViewModel errorModel = new();
+                errorModel.RequestId = "1";
+                errorModel.Message = ex.Message;
+                return View("Error", errorModel);
+            }
+
         }
 
         /// <summary>
@@ -65,8 +76,20 @@ namespace HaisyaWeb.Controllers
         /// <returns></returns>
         public IActionResult SignIn()
         {
-            Models.AccountModel model = new();
-            return View(model);
+            try
+            {
+                Models.AccountModel model = new();
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Exception: " + ex.Message);
+                ErrorViewModel errorModel = new();
+                errorModel.RequestId = "1";
+                errorModel.Message = ex.Message;
+                return View("Error", errorModel);
+            }
+
         }
 
         public IActionResult Details(string id)
@@ -232,10 +255,10 @@ namespace HaisyaWeb.Controllers
                                       new ClaimsPrincipal(claimsIdentity),
                                       new AuthenticationProperties
                                       {
-                                          //サーバーアクセスによる認証時間を更新する
-                                          AllowRefresh = true,
-                                          //認証の有効期間,認証cookieタイムアウト
-                                          ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(5),
+                                          ////サーバーアクセスによる認証時間を更新する
+                                          //AllowRefresh = true,
+                                          ////認証の有効期間,認証cookieタイムアウト
+                                          //ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(5),
                                           //cookieの有効期間を優先かsessionを優先か
                                           //true:cookieが有効であれば、ブラウザを閉じても再ログインが必要ない
                                           //false:ブラウザ閉じたら再ログインが必要（ブラウザを閉じてもログアウトしないかどうか）

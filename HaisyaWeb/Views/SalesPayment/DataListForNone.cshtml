@@ -96,7 +96,7 @@ else
             var color = i % 2 == 1 ? "row-even" : "row-odd";
             <tr>
                 <td class="@(color)" rowspan="2">
-                    <button class="btn btn-outline-success btn-select" onclick="sendInputIndexForm(@item.Anken_ID,0); return false;">選択</button>
+                    <button type="button" class="btn btn-outline-success btn-select" onclick="sendInputIndexForm(@item.Anken_ID,0); return false;">選択</button>
                 </td>
                 <td class="@(color)" rowspan="2" align="center">
                     @{
@@ -242,7 +242,7 @@ else
           var color = i % 2 == 0 ? "row-even" : "row-odd";
           <tr>
               <td class="@(color)" align="center">
-                  <button class="btn btn-outline-success btn-select" onclick="sendInputIndexForm(@item.Anken_ID,@item.SenzokuID); return false;">詳細</button>
+                  <button type="button" class="btn btn-outline-success btn-select" onclick="sendInputIndexForm(@item.Anken_ID,@item.SenzokuID); return false;">詳細</button>
               </td>
               <td class="@(color)" align="center">
                   @{
@@ -343,7 +343,7 @@ else
           var color = i % 2 == 0 ? "row-even" : "row-odd";
           <tr>
               <td class="@(color)" align="center">
-                  <button class="btn btn-outline-success btn-select" onclick="sendInputIndexForm(0,@item.Uriage_ID); return false;">詳細</button>
+                  <button type="button" class="btn btn-outline-success btn-select" onclick="sendInputIndexForm(0,@item.Uriage_ID); return false;">詳細</button>
               </td>
               <td class="@(color)" align="center">
                   @{

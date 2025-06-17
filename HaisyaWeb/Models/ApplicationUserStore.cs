@@ -1,5 +1,4 @@
-﻿using HaisyaWeb.Models.DB;
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
 using System;
 using System.Threading;

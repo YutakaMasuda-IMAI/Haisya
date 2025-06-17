@@ -73,7 +73,7 @@
       string color = rem == 0 ? "khaki" : "	whitesmoke";
     <tr style="font-size: 12px; font-weight: bold; background-color: @(color); height: 20px;">
       <td width="50px" rowspan="2" style="vertical-align: middle;">
-        <button class="btn btn-success" style="width: 100%; padding:0;" onclick="submitCustomerData('@(item.Customer_ID)'); return false;">選択</button>
+        <button type="button" class="btn btn-success" style="width: 100%; padding:0;" onclick="submitCustomerData('@(item.Customer_ID)'); return false;">選択</button>
       </td>
       <td width="20px" rowspan="2" style="vertical-align: middle;" align="center">
         @Html.DisplayFor(modelItem => item.Customer_Code)

@@ -1,6 +1,5 @@
 ﻿using HaisyaWeb.Dto;
 using HaisyaWeb.Models;
-using HaisyaWeb.Models.DB;
 using HaisyaWeb.Service;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -287,7 +286,7 @@ namespace HaisyaWeb.Controllers
 
                     if (param.SelectTantou != null && !"ALL".Equals(param.SelectTantou))
                     {
-                        // listData = listData.Where(m => m.TantouID == int.Parse(param.SelectTantou)).ToList();
+                        // listData = listData.Where(m => m.HasiyaTantouID == int.Parse(param.SelectTantou)).ToList();
                     }
 
                     if (param.SelectSeikyuTantou != null && !"ALL".Equals(param.SelectSeikyuTantou))

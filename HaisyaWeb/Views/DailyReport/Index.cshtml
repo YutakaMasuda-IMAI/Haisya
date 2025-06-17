@@ -67,7 +67,7 @@
               <th style="width: 105px;">
                 <div class="" style="display: inline-block; _display: inline; padding: 0; ">
                   @Html.LabelFor(model => model.Search.SelectTokuisakiID, htmlAttributes: new { @class = "control-label align-self-center align-middle text-end", @style = "padding: 0; width: 50px;", @id = "Search_SelectTokuisakiID" })
-                  <button id="btnKokyaku" class="btn btn-info btn-sm" style="display: inline-block; height: 50%;" onclick="return false;">選択</button>
+                  <button type="button" id="btnKokyaku" class="btn btn-info btn-sm" style="display: inline-block; height: 50%;" onclick="return false;">選択</button>
                 </div>
               </th>
               <th>
@@ -78,7 +78,7 @@
           </tbody>
         </table>
 
-        <button id="btnCollapse" type="button" class="btn btn-secondary btn-sm" style="width: 100%; padding: 0;" data-bs-toggle="collapse" data-bs-target="#tblCollapseSearch" aria-expanded="false" aria-controls="tblCollapseSearch">▼詳細検索</button>
+        <button type="button" id="btnCollapse" type="button" class="btn btn-secondary btn-sm" style="width: 100%; padding: 0;" data-bs-toggle="collapse" data-bs-target="#tblCollapseSearch" aria-expanded="false" aria-controls="tblCollapseSearch">▼詳細検索</button>
         
         <table id="tblCollapseSearch" class="table jbc-table table-hedder collapse" style="padding: 0; border-collapse: collapse; ">
           <tbody>

@@ -125,7 +125,7 @@
                       <td align="center" style="margin: 0; vertical-align: middle; ">
                         @if (Model.EditEnabled)
                         {
-                          <button class="btn btn-outline-success" style="width: 100%; padding: 0; font-size: 12px; height: 30px; " onclick="ExecShowDetailOnClick('@(item.Driver_ID)','0'); return false;">詳細</button>
+                          <button type="button" class="btn btn-outline-success" style="width: 100%; padding: 0; font-size: 12px; height: 30px; " onclick="ExecShowDetailOnClick('@(item.Driver_ID)','0'); return false;">詳細</button>
                         }
                       </td>
                       @*<td></td>*@
@@ -188,7 +188,7 @@
           <td align="center" style="margin: 0; vertical-align: middle; ">
             @if (Model.EditEnabled)
             {
-              <button class="btn btn-outline-success" style="width: 100%; padding: 0; font-size: 12px; height: 30px; " onclick="ExecShowDetailOnClick('@(item.Driver_ID)','@(itemSyaryo.SyaryoManagement_ID)'); return false;">詳細</button>
+              <button type="button" class="btn btn-outline-success" style="width: 100%; padding: 0; font-size: 12px; height: 30px; " onclick="ExecShowDetailOnClick('@(item.Driver_ID)','@(itemSyaryo.SyaryoManagement_ID)'); return false;">詳細</button>
             }
           </td>
           <td hidden>@(itemSyaryo.End_Date == null ? "稼働終了":"稼働中")</td>

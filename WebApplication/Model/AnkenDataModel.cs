@@ -12,7 +12,7 @@ namespace WebApplication.Model
     /// <summary>
     /// 案件データモデルクラス
     /// </summary>
-    public class AnkenDataModel: BaseModel
+    public class AnkenDataModel : BaseModel
     {
         public AnkenDataModel(ApplicationDbContext context)
         {
@@ -37,11 +37,12 @@ namespace WebApplication.Model
                 string ankenNo = GetAnkenNo(targetDate);
                 data.T_Anken.Anken_No = ankenNo;
                 data.T_Anken.Anken_Latest_Order = ankenOrder;
-                
+
                 //Anken_IDの取得
                 ankenId = GetAnkenIDToAddNew(data.T_Anken);
                 data.T_Anken.Anken_ID = ankenId;
-            } else
+            }
+            else
             {
                 ankenId = data.T_Anken.Anken_ID;
                 ankenOrder = UpdateAnkenOrder(ankenId);
@@ -77,7 +78,8 @@ namespace WebApplication.Model
                 _context.T_Anken_Publishes.Add(t_Anken_Publish);
 
                 // T_Anken_Remarks作成
-                if (data.T_Anken_Remarks != null) { 
+                if (data.T_Anken_Remarks != null)
+                {
                     T_Anken_Remark t_Anken_Remarks = new();
                     CopyProperty(t_Anken_Remarks, data.T_Anken_Remarks);
                     t_Anken_Remarks.Anken_ID = ankenId;
@@ -86,11 +88,12 @@ namespace WebApplication.Model
                 }
 
                 // T_Anken_Luggage作成
-                if (data.T_Anken_LuggageList != null) { 
-                    foreach(T_Anken_Luggage t_Anken_Luggage in data.T_Anken_LuggageList)
+                if (data.T_Anken_LuggageList != null)
+                {
+                    foreach (T_Anken_Luggage t_Anken_Luggage in data.T_Anken_LuggageList)
                     {
-                    t_Anken_Luggage.Anken_ID = ankenId;
-                    t_Anken_Luggage.Anken_Order = ankenOrder;
+                        t_Anken_Luggage.Anken_ID = ankenId;
+                        t_Anken_Luggage.Anken_Order = ankenOrder;
                     }
 
                     await _context.T_Anken_Luggages.AddRangeAsync(data.T_Anken_LuggageList);
@@ -99,10 +102,10 @@ namespace WebApplication.Model
                 // T_Anken_Equipment作成
                 if (data.T_Anken_EquipmentList != null)
                 {
-                    foreach(T_Anken_Equipment t_Anken_Equipment in data.T_Anken_EquipmentList)
+                    foreach (T_Anken_Equipment t_Anken_Equipment in data.T_Anken_EquipmentList)
                     {
-                    t_Anken_Equipment.Anken_ID = ankenId;
-                    t_Anken_Equipment.Anken_Order = ankenOrder;
+                        t_Anken_Equipment.Anken_ID = ankenId;
+                        t_Anken_Equipment.Anken_Order = ankenOrder;
                     }
 
                     await _context.T_Anken_Equipments.AddRangeAsync(data.T_Anken_EquipmentList);
@@ -132,7 +135,8 @@ namespace WebApplication.Model
                 }
 
                 // T_Anken_Excharge 作成
-                if (data.T_Anken_ExchargeList != null) { 
+                if (data.T_Anken_ExchargeList != null)
+                {
                     foreach (var target in data.T_Anken_ExchargeList)
                     {
                         T_Anken_Excharge t_Anken_Excharge = new();
@@ -169,9 +173,10 @@ namespace WebApplication.Model
                 if (data.T_Anken.SenzokuID > 0)
                 {
                     //傭車データの配車情報登録処理
-                    M_Senzoku_Driver driver = await _context.M_Senzoku_Drivers.FirstOrDefaultAsync(m => m.SenzokuID == data.T_Anken.SenzokuID);
+                    M_Senzoku_Driver driver = await _context.M_Senzoku_Drivers.FirstOrDefaultAsync(m => m.Senzoku_Driver_ID == data.T_Anken.Senzoku_Driver_ID);
+
                     await RegsterHaisyaToJisya(true, data.T_Anken, data.T_Anken_Detail.Update_User, driver.Driver_ID, driver.DriverSyaryo_ID);
-                } 
+                }
                 if (data.T_Anken_Detail.HaisyaPlanKubun == 5 && data.T_Anken_Detail.HaisyaDriverID > 0)
                 {
                     await RegsterHaisyaToJisya(true, data.T_Anken, data.T_Anken_Detail.Update_User, data.T_Anken_Detail.HaisyaDriverID, data.T_Anken_Detail.HaisyaDriverSyaryoID);
@@ -222,7 +227,7 @@ namespace WebApplication.Model
                 {
                     throw new Exception("T_Anken_Detailデータ不正");
                 }
-                
+
                 CopyProperty(t_Anken_Detail, data.T_Anken_Detail, "Insert_Datetime,Insert_User");
                 t_Anken_Detail.Anken_ID = ankenId;
                 t_Anken_Detail.Anken_Order = ankenOrder;
@@ -237,15 +242,17 @@ namespace WebApplication.Model
                     t_Anken_PublishAdd.Anken_ID = ankenId;
                     _context.T_Anken_Publishes.Add(t_Anken_PublishAdd);
                     //throw new Exception("T_Anken_Publishデータ不正");
-                } else
+                }
+                else
                 {
                     this.CopyProperty(t_Anken_Publish, data.T_Anken_Publish);
                     t_Anken_Publish.Anken_ID = ankenId;
                 }
 
                 // T_Anken_Remarks作成
-                if (data.T_Anken_Remarks != null) { 
-                Data.T_Anken_Remark t_Anken_Remark = await _context.T_Anken_Remarks.FirstOrDefaultAsync(x => x.Anken_ID == ankenId && x.Anken_Order == ankenOrder);
+                if (data.T_Anken_Remarks != null)
+                {
+                    Data.T_Anken_Remark t_Anken_Remark = await _context.T_Anken_Remarks.FirstOrDefaultAsync(x => x.Anken_ID == ankenId && x.Anken_Order == ankenOrder);
                     if (t_Anken_Remark == null)
                     {
                         Data.T_Anken_Remark t_Anken_Remark_Add = new();
@@ -263,7 +270,8 @@ namespace WebApplication.Model
                 }
 
                 // T_Anken_Luggage作成
-                if (data.T_Anken_LuggageList != null) { 
+                if (data.T_Anken_LuggageList != null)
+                {
 
                     foreach (Data.T_Anken_Luggage item in data.T_Anken_LuggageList)
                     {
@@ -353,7 +361,7 @@ namespace WebApplication.Model
                 }
 
                 // T_Anken_Display  作成
-                foreach(Data.T_Anken_Display target in data.T_Anken_DisplayList)
+                foreach (Data.T_Anken_Display target in data.T_Anken_DisplayList)
                 {
                     Data.T_Anken_Display t_Anken_Display = await _context.T_Anken_Displays.FirstOrDefaultAsync(m => m.Anken_ID == target.Anken_ID && m.Daisuu_Sort == target.Daisuu_Sort && m.Anken_Key == target.Anken_Key);
                     if (t_Anken_Display == null)
@@ -416,6 +424,7 @@ namespace WebApplication.Model
             List<T_Anken_Display> DisplayList = await _context.T_Anken_Displays.Where(m => m.Anken_ID == ankenId).ToListAsync();
             foreach (var display in DisplayList)
             {
+
                 HaisyaDataModel.HaisyaDataModelDto haisyaDto = new()
                 {
                     Haisya = new()
@@ -436,13 +445,15 @@ namespace WebApplication.Model
                     },
                 };
 
+                Data.T_Haisya haisya = await _context.T_Haisyas.FirstOrDefaultAsync(m => m.AnkenDisplay_ID == haisyaDto.Haisya.AnkenDisplay_ID);
+
                 using HaisyaDataModel haisyamodel = new(_context);
-                if (flgAddNew)
+                if (flgAddNew && haisya == null)
                 {
                     returnHaisya = await haisyamodel.AddNewHaisyaData(haisyaDto, true);
-                } else
+                }
+                else
                 {
-                    Data.T_Haisya haisya = await _context.T_Haisyas.FirstOrDefaultAsync(m => m.AnkenDisplay_ID == haisyaDto.Haisya.AnkenDisplay_ID);
                     if (haisya != null)
                     {
                         haisyaDto.Haisya.Haisya_ID = haisya.Haisya_ID;
@@ -483,7 +494,8 @@ namespace WebApplication.Model
                         Data.T_Point t_Point1 = data.FirstOrDefault();
                         CopyProperty(t_Point1, t_Point, "Point_ID");
                         t_Point1.Insert_Datetime = DateTime.Now;
-                    } else
+                    }
+                    else
                     {
                         Data.T_Point t_Point1 = new();
                         CopyProperty(t_Point1, t_Point);
@@ -544,7 +556,8 @@ namespace WebApplication.Model
 
                 return returnData;
 
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 throw;
@@ -625,7 +638,7 @@ namespace WebApplication.Model
         /// <param name="RirekiKubun"></param>
         /// <param name="AnkenID"></param>
         /// <returns></returns>
-        public async Task<IEnumerable<V_AnkenDataList>> GetAnkenDataList(int CcompanyID, int CustomerID, int branchID, string targetDate, 
+        public async Task<IEnumerable<V_AnkenDataList>> GetAnkenDataList(int CcompanyID, int CustomerID, int branchID, string targetDate,
                                     string targetDateFrom, string targetDateTo, int SenzokuID = 0, int TakeNum = 0, int RirekiKubun = 0,
                                     int AnkenID = 0)
         {
@@ -654,6 +667,55 @@ namespace WebApplication.Model
             if (TakeNum > 0) resultData = resultData.Take(TakeNum);
 
             return resultData;
+        }
+
+        internal async Task<List<T_Anken>> CopyAnkenData(AnkenCopyDataDto copyDto, AnkenDataModelDto ankenDto)
+        {
+
+            List<Data.T_Anken> returnData = [];
+
+
+            //日付の変更＆新規登録
+            foreach (string itemDate in copyDto.copyDay)
+            {
+                DateOnly date = DateOnly.Parse(itemDate);
+
+                //スタート時の日付の取得
+                DateTime dateStart = (DateTime)ankenDto.T_Anken_PointList.OrderBy(m => m.Point_Order).First().PointDate;
+
+                //AnkenId、Anken_Orderの初期化
+                ankenDto.T_Anken.Anken_ID = 0;
+                ankenDto.T_Anken.Anken_Latest_Order = 0;
+                ankenDto.T_Anken_Detail.Anken_ID = 0;
+                ankenDto.T_Anken_Detail.Anken_Order = 0;
+                foreach (var target in ankenDto.T_Anken_PointList) { target.Anken_ID = 0; target.Anken_Order = 0; }
+                foreach (var target in ankenDto.T_Anken_DisplayList) { target.Anken_ID = 0; target.AnkenDisplay_ID = 0; }
+
+                if (ankenDto.T_Anken_Publish != null) { ankenDto.T_Anken_Publish.Anken_ID = 0; }
+                if (ankenDto.T_Anken_Remarks != null) { ankenDto.T_Anken_Remarks.Anken_ID = 0; ankenDto.T_Anken_Remarks.Anken_Order = 0; }
+
+                if (ankenDto.T_Anken_ExchargeList != null) { foreach (var target in ankenDto.T_Anken_ExchargeList) { target.Anken_ID = 0; target.Anken_Order = 0; } }
+                if (ankenDto.T_Anken_LuggageList != null) { foreach (var target in ankenDto.T_Anken_LuggageList) { target.Anken_ID = 0; target.Anken_Order = 0; } }
+                if (ankenDto.T_Anken_EquipmentList != null) { foreach (var target in ankenDto.T_Anken_EquipmentList) { target.Anken_ID = 0; target.Anken_Order = 0; } }
+                if (ankenDto.T_Anken_OyaKokyakuList != null) { foreach (var target in ankenDto.T_Anken_OyaKokyakuList) { target.Anken_ID = 0; target.Anken_Order = 0; } }
+
+                if (ankenDto.T_Anken_Riyounso != null) { ankenDto.T_Anken_Riyounso.Anken_ID = 0; ankenDto.T_Anken_Riyounso.Anken_Order = 0; }
+                if (ankenDto.T_Anken_Riyounso_PointList != null) { foreach (var target in ankenDto.T_Anken_Riyounso_PointList) { target.Anken_ID = 0; target.Anken_Order = 0; } }
+
+                //日付の変更
+                foreach (var target in ankenDto.T_Anken_PointList)
+                {
+                    TimeSpan difference = (DateTime)target.PointDate - (DateTime)dateStart;
+                    target.PointDate = DateTime.Parse(date.AddDays(difference.Days).ToString());
+                }
+
+                //案件データ新規登録
+                AnkenDataModel model = new(_context);
+                T_Anken t_Anken = await model.AddNewAnkenData(ankenDto);
+                returnData.Add(t_Anken);
+            }
+
+            return returnData;
         }
     }
 
@@ -692,6 +754,26 @@ namespace WebApplication.Model
         public string AnkenRemarks { get; set; }
 
     }
+
+    public class AnkenCopyDataDto
+    {
+
+        public V_LoginUser V_LoginUser { set; get; }
+
+        public int companyID { set; get; }
+
+        public string targetDate { set; get; }
+
+        public int senzokuID { set; get; }
+
+        public int senzokuDriverID { set; get; }
+
+        public int ankenId { set; get; }
+
+        public string[] copyDay { set; get; }
+
+    }
+
 
     public class PointDto
     {

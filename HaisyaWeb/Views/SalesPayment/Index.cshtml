@@ -58,7 +58,7 @@
                   <th>
                     <div class="" style="display: inline-block; _display: inline; padding: 0; ">
                       @Html.LabelFor(model => model.Search.SelectTokuisakiID, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "" })
-                      <button id="btnKokyaku" class="btn btn-info btn-sm btn-select" style="width:80px;" onclick="return false;">選択</button>
+                      <button type="button" id="btnKokyaku" class="btn btn-info btn-sm btn-select" style="width:80px;" onclick="return false;">選択</button>
                     </div>
                     @Html.TextBoxFor(model => model.Search.SelectTokuisakiID, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 100px;" })
                     @Html.TextBoxFor(model => model.Search.SelectTokuisakiName, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 300px;display: inline-block;" })
@@ -84,7 +84,7 @@
               </tbody>
             </table>
 
-            <button type="button" class="btn btn-secondary btn-sm" style="width: 100%; padding:0;"
+            <button type="button" type="button" class="btn btn-secondary btn-sm" style="width: 100%; padding:0;"
               data-bs-toggle="collapse"
               data-bs-target="#tblCollapseSearch"
               aria-expanded='@(Model.Search.ExpandSearch.ToString().ToLower())'
@@ -121,7 +121,7 @@
                 <th>
                   <div class="" style="display: inline-block; _display: inline; padding: 0; ">
                     @Html.LabelFor(model => model.Search.JyoumuinString, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "" })
-                    <button id="btnJyoumuin" class="btn btn-info btn-sm btn-select" style="width:80px;" >選択</button>
+                    <button type="button" id="btnJyoumuin" class="btn btn-info btn-sm btn-select" style="width:80px;" >選択</button>
                   </div>
                   @Html.TextBoxFor(model => model.Search.JyoumuinID, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width:60px;" })
                   @Html.TextBoxFor(model => model.Search.JyoumuinName, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width:200px; display: inline-block;" })
@@ -130,7 +130,7 @@
               </tbody>
             </table>
             <div style="width: 100%; padding: 0; margin-top: 4px;">
-              <button id="connectionRegisteration" class="btn btn-primary btn-sm" style="width: 150px; height: 40px; padding: 0; float: right;" onclick="return false;">直接新規登録</button>
+              <button type="button" id="connectionRegisteration" class="btn btn-primary btn-sm" style="width: 150px; height: 40px; padding: 0; float: right;" onclick="return false;">直接新規登録</button>
             </div>
           </div>
         </div>

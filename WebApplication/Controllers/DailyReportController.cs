@@ -32,8 +32,8 @@ namespace WebApplication.Controllers
         /// <param name="dailyReportRegistrationDetailService">日報登録詳細サービス。</param>
         /// <param name="dailyReportService">日報サービス。</param>
         /// <param name="contextKintai">勤怠データベースコンテキスト。</param>
-        public DailyReportController(ILogger<DailyReportController> logger, ApplicationDbContext context, 
-            IOptions<MapApiSettings> mapApiSettings, IDailyReportRegistrationDetailService dailyReportRegistrationDetailService, 
+        public DailyReportController(ILogger<DailyReportController> logger, ApplicationDbContext context,
+            IOptions<MapApiSettings> mapApiSettings, IDailyReportRegistrationDetailService dailyReportRegistrationDetailService,
             IDailyReportService dailyReportService, ApplicationDbContextKintai contextKintai)
         {
             _logger = logger;
@@ -73,6 +73,9 @@ namespace WebApplication.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
         }
@@ -93,19 +96,22 @@ namespace WebApplication.Controllers
         /// <param name="EndDatetime">終了日時。</param>
         /// <returns>非同期操作を表すタスク。結果として<see cref="DailyReportRegistrationDetailModel"/>を返します。</returns>
         [HttpGet("GetDailyReportDetail")]
-        public async Task<IActionResult> GetDailyReportDetail(int Anken_ID, int AnkenDisplay_ID, int DriverCd, int Syaban, 
-                                        int? KokyakuId, int? Driver_ID, int? Haisya_Kubun, int? SyaryoManagement_ID, int? Haisya_ID, 
+        public async Task<IActionResult> GetDailyReportDetail(int Anken_ID, int AnkenDisplay_ID, int DriverCd, int Syaban,
+                                        int? KokyakuId, int? Driver_ID, int? Haisya_Kubun, int? SyaryoManagement_ID, int? Haisya_ID,
                                         DateTime StartDatetime, DateTime EndDatetime)
         {
             try
             {
                 var DailyReportRegistrationDetail = await _dailyReportRegistrationDetailService.GetDailyReportRegistrationDetail(Anken_ID, AnkenDisplay_ID,
-                    DriverCd, Syaban, KokyakuId, Driver_ID, Haisya_Kubun, SyaryoManagement_ID, Haisya_ID, 
+                    DriverCd, Syaban, KokyakuId, Driver_ID, Haisya_Kubun, SyaryoManagement_ID, Haisya_ID,
                     StartDatetime, EndDatetime);
                 return new OkObjectResult(DailyReportRegistrationDetail);
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
         }
@@ -125,6 +131,9 @@ namespace WebApplication.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
         }
@@ -149,6 +158,7 @@ namespace WebApplication.Controllers
             {
                 Console.WriteLine(ex.Message);
                 Response.StatusCode = ex is BadHttpRequestException ? StatusCodes.Status400BadRequest : StatusCodes.Status500InternalServerError;
+                await Response.WriteAsync(ex.Message);
                 resultVal.ErrrMessage = ex.Message;
             }
             finally
@@ -176,7 +186,8 @@ namespace WebApplication.Controllers
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                 Response.StatusCode = ex is BadHttpRequestException ? StatusCodes.Status400BadRequest : StatusCodes.Status500InternalServerError;
+                Response.StatusCode = ex is BadHttpRequestException ? StatusCodes.Status400BadRequest : StatusCodes.Status500InternalServerError;
+                await Response.WriteAsync(ex.Message);
                 resultVal.ErrrMessage = ex.Message;
             }
             finally
@@ -203,6 +214,9 @@ namespace WebApplication.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
         }
@@ -226,6 +240,9 @@ namespace WebApplication.Controllers
             }
             catch (Exception ex)
             {
+                Console.WriteLine("Exception: " + ex.Message);
+                Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 return CommonHelper.HandleError(ex);
             }
         }

@@ -16,7 +16,7 @@
     @Html.HiddenFor(model => Model.CompanyID)
   </div>
   <h2>
-    <span class="glyphicon glyphicon-chevron-right"></span>標準運賃設定
+    <span class="bi bi-chevron-right"></span>標準運賃設定
   </h2>
 
   <div id="main">
@@ -67,7 +67,7 @@
                               </div>
                               @if (Model.EditEnabled)
                               {
-                              <button class="btn btn-primary" style="width: 200px;margin: 2px;" onclick="ExecShowModalOnClick('@(itemArea.Area)', '@(itemSyaryoSize.SIZE)'); return false;">登録/修正</button>
+                              <button type="button" class="btn btn-primary" style="width: 200px;margin: 2px;" onclick="ExecShowModalOnClick('@(itemArea.Area)', '@(itemSyaryoSize.SIZE)'); return false;">登録/修正</button>
                               }
                             </div>
 

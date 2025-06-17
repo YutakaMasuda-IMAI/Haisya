@@ -10,26 +10,26 @@
 
 <style>
 
-  div.ex_driveList_model {
+  div.ex_driveList_modal {
     background-color: black;
   }
 
 
-  table.ex_table_model td.ex_border_model,
-  table.ex_table_model th.ex_border_model {
+  table.ex_table_modal td.ex_border_modal,
+  table.ex_table_modal th.ex_border_modal {
     border-left: double 10px #4682b4;
   }
 
-  table.ex_table_model {
+  table.ex_table_modal {
     font-size: 20px;
     font-weight: bold;
   }
 
-    table.ex_table_model th {
+    table.ex_table_modal th {
       color: white;
     }
 
-    table.ex_table_model td {
+    table.ex_table_modal td {
       background-color: black;
       color: white;
       /*margin: 0 20px;*/
@@ -38,7 +38,7 @@
       border-top-color: white;
     }
 
-  table.ex_table_model_Extra {
+  table.ex_table_modal_Extra {
     font-size: 20px;
     font-weight: bold;
     border-width: 5px;
@@ -46,13 +46,13 @@
     border-style: groove;
   }
 
-    table.ex_table_model_Extra th.ex_table_model_th1 {
+    table.ex_table_modal_Extra th.ex_table_modal_th1 {
       color: white;
       width: 20%;
       padding-left: 2px;
     }
 
-    table.ex_table_model_Extra th.ex_table_model_th2 {
+    table.ex_table_modal_Extra th.ex_table_modal_th2 {
       color: white;
       border-left: double;
       border-left-color: white;
@@ -62,7 +62,7 @@
       padding-left: 2px;
     }
 
-    table.ex_table_model_Extra td {
+    table.ex_table_modal_Extra td {
       color: white;
       width: 10%;
       border-left: dotted;
@@ -72,14 +72,14 @@
     }
 
 
-  /*table.ex_table_model tr:nth-child(odd) td {
+  /*table.ex_table_modal tr:nth-child(odd) td {
             background: #fff;
         }*/
-  table.ex_table_model thead.ex_head-line_model {
+  table.ex_table_modal thead.ex_head-line_modal {
     line-height: 20px;
   }
 
-  table.ex_border_model tbody.ex_head-line_model {
+  table.ex_border_modal tbody.ex_head-line_modal {
     line-height: 30px;
   }
 
@@ -105,91 +105,88 @@
 </style>
 
 
-<!-- モダールの中身 -->
-<div role="dialog" id="addRireki" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  @*<div id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true"  class="modal fade" style="z-index: 1240;" data-backdrop="static" >*@
-  <div class="modal-dialog " role="document" style="max-width:1300px">
-    <div class="modal-content">
-      <div class="modal-header" style="">
-        <h3 class="modal-title" id="exampleModalLabel">ルート候補一覧</h3>
-        <label style="float: right; color: red; font-weight: bold; font-size: x-large;">※指定ルートの行をダブルクリック</label>
-      </div>
-      <div class="modal-body ex_driveList_model">
-        <div>
-          <table id="tableRoutList" class="ex_table_model" width="100%">
-            <thead class="ex_head-line_model">
-              <tr align="center" style="background-color: blue;">
-                <th hidden>routeID</th>
-                <th hidden>type</th>
-                <th width="120px">ルート</th>
-                <th width="100px">所要時間</th>
-                <th width="70px">休憩</th>
-                <th width="50px">行程</th>
-                <th width="80px">距離</th>
-                <th width="90px">消費<br />燃料</th>
-                <th width="90px">有料<br />道路</th>
-                <th width="100px">標準運賃<br />(距離)</th>
-                <th width="100px">標準運賃<br />(追加料金)</th>
-                <th width="120px">標準運賃<br />合計(有料込)</th>
-                <th hidden></th>
-                <th width="100px">運賃原価<br />(有料別)</th>
-                <th width="100px">運賃原価<br />(有料込)</th>
-                <th width="50px"></th>
-              </tr>
-            </thead>
-            <tbody>
-              @foreach (var item in Model.DriveRouteListData)
+<div class="modal-dialog " role="document" style="max-width:1300px">
+  <div class="modal-content">
+    <div class="modal-header" style="">
+@*       <h3 class="modal-title" id="exampleModalLabel">ルート候補一覧</h3> *@
+      <label style="float: right; color: red; font-weight: bold; font-size: x-large;">※選択ルート行をダブルクリック</label>
+    </div>
+    <div class="modal-body ex_driveList_modal">
+      <div>
+        <table id="tableRoutList_modal" class="ex_table_modal" width="100%">
+          <thead class="ex_head-line_modal">
+            <tr align="center" style="background-color: blue;">
+              <th hidden>routeID</th>
+              <th hidden>type</th>
+              <th width="120px">ルート</th>
+              <th width="100px">所要時間</th>
+              <th width="70px">休憩</th>
+              <th width="50px">行程</th>
+              <th width="80px">距離</th>
+              <th width="90px">消費<br />燃料</th>
+              <th width="90px">有料<br />道路</th>
+              <th width="100px">標準運賃<br />(距離)</th>
+              <th width="100px">標準運賃<br />(追加料金)</th>
+              <th width="120px">標準運賃<br />合計(有料込)</th>
+              <th hidden></th>
+              <th width="100px">運賃原価<br />(有料別)</th>
+              <th width="100px">運賃原価<br />(有料込)</th>
+              <th width="50px"></th>
+            </tr>
+          </thead>
+          <tbody>
+            @foreach (var item in Model.DriveRouteListData)
+            {
+
+              string routeType = item.routeType;
+              string routeTypeDisplay = "推奨";
+              string routeTypeClass = "ex_route_name_0";
+
+              switch (routeType)
               {
+                case "2":
+                  routeTypeDisplay = "一般道優先";
+                  routeTypeClass = "ex_route_name_1";
+                  break;
+                case "3":
+                  routeTypeDisplay = "道幅優先";
+                  routeTypeClass = "ex_route_name_2";
+                  break;
+                case "4":
+                  routeTypeDisplay = "距離優先";
+                  routeTypeClass = "ex_route_name_3";
+                  break;
+                case "5":
+                  routeTypeDisplay = "別ルート";
+                  routeTypeClass = "ex_route_name_4";
+                  break;
+                default:
+                  routeTypeDisplay = "推奨";
+                  routeTypeClass = "ex_route_name_0";
+                  break;
+              }
 
-                string routeType = item.routeType;
-                string routeTypeDisplay = "推奨";
-                string routeTypeClass = "ex_route_name_0";
+              <tr style="height:50px;">
+                <td hidden>
+                  @Html.DisplayFor(modelItem => item.routeID)
+                </td>
+                <td hidden>
+                  @Html.DisplayFor(modelItem => item.routeType)
+                </td>
+                <td align="center">
+                  <div style="margin:0px;align-items:center; padding: 0;" class="@(routeTypeClass)">
+                    @(routeTypeDisplay)
+                  </div>
 
-                switch (routeType)
-                {
-                  case "2":
-                    routeTypeDisplay = "一般道優先";
-                    routeTypeClass = "ex_route_name_1";
-                    break;
-                  case "3":
-                    routeTypeDisplay = "道幅優先";
-                    routeTypeClass = "ex_route_name_2";
-                    break;
-                  case "4":
-                    routeTypeDisplay = "距離優先";
-                    routeTypeClass = "ex_route_name_3";
-                    break;
-                  case "5":
-                    routeTypeDisplay = "別ルート";
-                    routeTypeClass = "ex_route_name_4";
-                    break;
-                  default:
-                    routeTypeDisplay = "推奨";
-                    routeTypeClass = "ex_route_name_0";
-                    break;
-                }
-
-                <tr style="height:50px;">
-                  <td hidden>
-                    @Html.DisplayFor(modelItem => item.routeID)
-                  </td>
-                  <td hidden>
-                    @Html.DisplayFor(modelItem => item.routeType)
-                  </td>
-                  <td align="center">
-                    <div style="margin:0px;align-items:center; padding: 0;" class="@(routeTypeClass)">
-                      @(routeTypeDisplay)
-                    </div>
-
-                  </td>
-                  <td align="center">
-                    @Html.DisplayFor(modelItem => item.TotalTime)
-                  </td>
-                  <td align="center">
-                    @Html.DisplayFor(modelItem => item.BreakTimeDisplay)
-                  </td>
-                  <td align="center">
-                    @*@{
+                </td>
+                <td align="center">
+                  @Html.DisplayFor(modelItem => item.TotalTime)
+                </td>
+                <td align="center">
+                  @Html.DisplayFor(modelItem => item.BreakTimeDisplay)
+                </td>
+                <td align="center">
+                  @*@{
                       string restTime = item.RestTimeDisplay;
                       string restTime1 = null;
                       string restTime2 = null;
@@ -207,54 +204,56 @@
                     {@(restTime1)<br />}
                     @if (restTime2 != null)
     {@(restTime2)}*@
-                    @if (item.TotalDays == 0)
-                    {
-                      string dayTitle = "当日";
-                      @(dayTitle)
-                    }
-                    else
-                    {
-                      @Convert.ToDouble(item.TotalDays + 1).ToString("0日");
-                    }
-                  </td>
-                  <td align="right">
-                    @Convert.ToDouble(Math.Round(item.TotalDistance, 1, MidpointRounding.AwayFromZero)).ToString("#.0km")
-                  </td>
-                  <td align="right">
-                    @{
-                      @Convert.ToDouble(item.FuelConsume).ToString("#.00L");
-                    }
-                  </td>
-                  <td align="right" style="padding-right: 5px;">
-                    @Convert.ToInt32(item.Totaltoll).ToString("C")
-                  </td>
-                  <td align="right" style="border-left: double; border-left-color: white;">
-                    @Convert.ToInt32(item.StdFreight).ToString("C")
-                  </td>
-                  <td align="right">
-                    @Convert.ToInt32(item.StdExcharge).ToString("C")
-                  </td>
-                  <td align="right" style="padding-right: 10px;">
-                    @Convert.ToInt32(item.StdTotalFreight).ToString("C")
-                  </td>
-                  <td hidden align="right" style="padding-right: 10px;">
-                    @Convert.ToInt32(item.StdALLFreight).ToString("C")
-                  </td>
-                  <td align="right" style="border-left: double; border-left-color: white; border-left-width: 2px;">
-                    @Convert.ToInt32(item.GrossAmount).ToString("C")
-                  </td>
-                  <td align="right">
-                    @Convert.ToInt32(item.GrossAmountTotal).ToString("C")
-                  </td>
-                  <td align="right">
-                    <button style="width: 100%; font-size: 13px;" onclick="DriveRouteDetail_Click('@(item.routeID)','@(item.routeType)'); return false;">詳細</button>
-                  </td>
-                </tr>
-              }
-            </tbody>
-          </table>
-        </div>
-        @*<div>
+                  @if (item.TotalDays == 0)
+                  {
+                    string dayTitle = "当日";
+                    @(dayTitle)
+                  }
+                  else
+                  {
+                    @Convert.ToDouble(item.TotalDays + 1).ToString("0日")
+                    ;
+                  }
+                </td>
+                <td align="right">
+                  @Convert.ToDouble(Math.Round(item.TotalDistance, 1, MidpointRounding.AwayFromZero)).ToString("#.0km")
+                </td>
+                <td align="right">
+                  @{
+                    @Convert.ToDouble(item.FuelConsume).ToString("#.00L")
+                    ;
+                  }
+                </td>
+                <td align="right" style="padding-right: 5px;">
+                  @Convert.ToInt32(item.Totaltoll).ToString("C")
+                </td>
+                <td align="right" style="border-left: double; border-left-color: white;">
+                  @Convert.ToInt32(item.StdFreight).ToString("C")
+                </td>
+                <td align="right">
+                  @Convert.ToInt32(item.StdExcharge).ToString("C")
+                </td>
+                <td align="right" style="padding-right: 10px;">
+                  @Convert.ToInt32(item.StdTotalFreight).ToString("C")
+                </td>
+                <td hidden align="right" style="padding-right: 10px;">
+                  @Convert.ToInt32(item.StdALLFreight).ToString("C")
+                </td>
+                <td align="right" style="border-left: double; border-left-color: white; border-left-width: 2px;">
+                  @Convert.ToInt32(item.GrossAmount).ToString("C")
+                </td>
+                <td align="right">
+                  @Convert.ToInt32(item.GrossAmountTotal).ToString("C")
+                </td>
+                <td align="right">
+                  <button type="button" style="width: 100%; font-size: 13px;" onclick="DriveRouteDetail_Click('@(item.routeID)','@(item.routeType)'); return false;">詳細</button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+      @*<div>
               <table width="100%" height="100px">
                   <tr>
                       <td width="60%">
@@ -266,54 +265,46 @@
                   </tr>
               </table>
           </div>*@
-        <br />
-        <div>
-          <h4 style="color: white;">追加料金内訳</h4>
-          <table id="tableExtraList" class="ex_table_model_Extra" width="100%" style="">
-            @for (int i = 0; i < Model.ExtraChargeList.Count; i += 3)
-            {
-              <tr>
-                <th class="ex_table_model_th1">@Html.DisplayFor(modelItem => Model.ExtraChargeList[i].Title)</th>
-                <td style="text-align: right; padding-right: 1rem;">@Convert.ToInt32(Model.ExtraChargeList[i].StdAmount).ToString("C")</td>
-                @if ((i + 1) < Model.ExtraChargeList.Count)
-                {
-                  <th class="ex_table_model_th2">@Html.DisplayFor(modelItem => Model.ExtraChargeList[i + 1].Title)</th>
-                  <td style="text-align: right; padding-right: 1rem;">@Convert.ToInt32(Model.ExtraChargeList[i + 1].StdAmount).ToString("C")</td>
-                }
-                @if ((i + 2) < Model.ExtraChargeList.Count)
-                {
-                  <th class="ex_table_model_th2">@Html.DisplayFor(modelItem => Model.ExtraChargeList[i + 2].Title)</th>
-                  <td style="text-align: right; padding-right: 1rem;">@Convert.ToInt32(Model.ExtraChargeList[i + 2].StdAmount).ToString("C")</td>
-                }
-                else
-                {
-                  <th class="ex_table_model_th2"></th>
-                  <td></td>
-                }
-              </tr>
-            }
-          </table>
-        </div>
+      <br />
+      <div>
+        <h4 style="color: white;">追加料金内訳</h4>
+        <table id="tableExtraList_modal" class="ex_table_modal_Extra" width="100%" style="">
+          @for (int i = 0; i < Model.ExtraChargeList.Count; i += 3)
+          {
+            <tr>
+              <th class="ex_table_modal_th1">@Html.DisplayFor(modelItem => Model.ExtraChargeList[i].Title)</th>
+              <td style="text-align: right; padding-right: 1rem;">@Convert.ToInt32(Model.ExtraChargeList[i].StdAmount).ToString("C")</td>
+              @if ((i + 1) < Model.ExtraChargeList.Count)
+              {
+                <th class="ex_table_modal_th2">@Html.DisplayFor(modelItem => Model.ExtraChargeList[i + 1].Title)</th>
+                <td style="text-align: right; padding-right: 1rem;">@Convert.ToInt32(Model.ExtraChargeList[i + 1].StdAmount).ToString("C")</td>
+              }
+              @if ((i + 2) < Model.ExtraChargeList.Count)
+              {
+                <th class="ex_table_modal_th2">@Html.DisplayFor(modelItem => Model.ExtraChargeList[i + 2].Title)</th>
+                <td style="text-align: right; padding-right: 1rem;">@Convert.ToInt32(Model.ExtraChargeList[i + 2].StdAmount).ToString("C")</td>
+              }
+              else
+              {
+                <th class="ex_table_modal_th2"></th>
+                <td></td>
+              }
+            </tr>
+          }
+        </table>
       </div>
-      <div class="modal-footer" style="padding: 0;">
-        <div class="row" style="width: 100%;">
-          <div class="col-10" style="font-size:12px;">
-            <label>所要時間に対する1日の最大運転時間は9時間として計算しています。　「日計算」：8時間未満は8時間で労務費を計算　</label><br />
-            <label>1日：運転(4時間)+休憩(30分)+運転(4時間)+休憩(30分)+運転(1時間) を想定して計算してます。</label><br />
-            <label>※運行7日以降は改善基準違反の為、休憩・休息計算対象外です。</label>
-          </div>
-          <div class="col-2" style="text-align: right;">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="onClose()">Close</button>
-          </div>
+    </div>
+    <div class="modal-footer" style="padding: 0;">
+      <div class="row" style="width: 100%;">
+        <div class="col-10" style="font-size:12px;">
+          <label>所要時間に対する1日の最大運転時間は9時間として計算しています。　「日計算」：8時間未満は8時間で労務費を計算　</label><br />
+          <label>1日：運転(4時間)+休憩(30分)+運転(4時間)+休憩(30分)+運転(1時間) を想定して計算してます。</label><br />
+          <label>※運行7日以降は改善基準違反の為、休憩・休息計算対象外です。</label>
         </div>
-        
-        
       </div>
     </div>
   </div>
 </div>
-
-
 
 <script>
 
@@ -337,7 +328,7 @@
 
 
         
-      $('#tableRoutList tbody tr').on('dblclick', function () {
+      $('#tableRoutList_modal tbody tr').on('dblclick', function () {
 
 
         SelectRouteList(
@@ -359,13 +350,5 @@
     DriveRouteDetail(routeID.trim(), routeType.trim());
   };
  
-
-
-    function onClose() {
-
-      ModalClose();
-
-    }
-
 
 </script>

@@ -1,6 +1,5 @@
 ﻿using HaisyaWeb.API.WebApp;
 using HaisyaWeb.Models;
-using HaisyaWeb.Models.DB;
 using HaisyaWeb.Service;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -32,9 +31,9 @@ namespace HaisyaWeb.Controllers
             _signInManager = signInManager;
         }
 
-        #region 共通得意先親選択
+        #region 共通親得意先親選択
         /// <summary>
-        /// 得意先選択ダイアログを開く
+        /// 親得意先選択ダイアログを開く
         /// </summary>
         /// <param name="CompanyID"></param>
         /// <param name="selecttedId"></param>
@@ -57,8 +56,7 @@ namespace HaisyaWeb.Controllers
                     SelectedID = selectedId,
                 };
 
-                API.WebApp.MasterDataApi apiM = new(_mapApiSettiong);
-                model.CustomerList = await apiM.GetCustomerList(loguinUser.Company_ID);
+                
 
                 return await PartialViewAsJson("SelectCustomerOyaModal", model, true);
             }
@@ -78,10 +76,38 @@ namespace HaisyaWeb.Controllers
             }
         }
 
+        /// <summary>
+        /// 親得意先選択一覧を表示
+        /// </summary>
+        /// <param name="param"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<IActionResult> JsonGetSelectCustomerOyaDataList(Models.CommonDialogModel.SelectCustomerOyaModel param)
+        {
+            try
+            {
+                // ログインユーザー取得
+                Dto.V_LoginUser_Local loguinUser = await GetLoginUser();
+
+                Models.CommonDialogModel.SelectCustomerOyaModel model = new()
+                {
+                    CompanyID = loguinUser.Company_ID,
+                    CustomerList = new(),
+                };
 
 
-        #endregion 共通得意先親選択
+                API.WebApp.MasterDataApi apiM = new(_mapApiSettiong);
+                model.CustomerList = await apiM.GetCustomerList(loguinUser.Company_ID, param.SearchCustomerCd);
 
+                return await PartialViewAsJson("CustomerOyaDataList", model, true);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { partialView = "", message = ex.Message });
+            }
+        }
+
+        #endregion 共通親得意先親選択
 
         #region 共通得意先選択
         /// <summary>
@@ -569,6 +595,11 @@ namespace HaisyaWeb.Controllers
                     DateTime dateTime = DateTime.Parse(DateTime.Now.ToString("yyyy/MM/dd"));
                     model.CompanyDriverList = model.CompanyDriverList.Where(m => m.End_Date == null || m.End_Date >= dateTime).ToList();
                     model.CompanyDriverList = model.CompanyDriverList.Where(m => m.Taisyoku_Date == null || m.Taisyoku_Date >= dateTime).ToList();
+                }
+
+                if (model.SelectSyasyuID > 0)
+                {
+                    model.CompanyDriverList = model.CompanyDriverList.Where(m => m.Syaryo_ID == model.SelectSyasyuID).ToList();
                 }
 
                 if (model.Syaban != null)

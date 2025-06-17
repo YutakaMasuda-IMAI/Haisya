@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebApplication.Controllers.DB;
 using WebApplication.Data;
 using WebApplication.Model;
 
@@ -128,13 +129,14 @@ namespace WebApplication.Controllers
 
                 //ドライブルートリストデータに対して標準運賃、見積原価情報を追加する
                 AnkenModel ankenModel = new(_context);
-                resultVal = await ankenModel.GetDriveRouteListExAsync(driveListtEx, area, CompanyID, syasyu, kata, syasyuSize, 
+                resultVal = await ankenModel.GetDriveRouteListExAsync(driveListtEx, area, CompanyID, syasyu, kata, syasyuSize,
                                                                     TsumiTime, OroshiTime, DriverGrossCalc, t_anken_excharge_s);
             }
             catch (Exception ex)
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 resultVal.ErrrMessage = ex.Message;
             }
             finally
@@ -201,6 +203,7 @@ namespace WebApplication.Controllers
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
+                await Response.WriteAsync(ex.Message);
                 resultVal.ErrrMessage = ex.Message;
             }
             finally
@@ -238,7 +241,8 @@ namespace WebApplication.Controllers
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }
@@ -270,7 +274,8 @@ namespace WebApplication.Controllers
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
             finally { }
         }

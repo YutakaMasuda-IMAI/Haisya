@@ -9,7 +9,7 @@
    * @@param SelectedId
    */
   function openCommonDialogForCustomerOya(companyID, userID = 0, SelectedId = 0, yosyaFlg = 0) {
-    event.preventDefault();
+
     $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "OpenDialogForSelectCustomerOya" })',
       {
         companyId: companyID,
@@ -48,7 +48,7 @@
    * @@param SelectedId
    */
   function openCommonDialogForCustomer(companyID, userID = 0, SelectedId = 0, yosyaFlg = 0) {
-    event.preventDefault();
+
     $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "OpenDialogForSelectCustomer" })',
       {
         companyId: companyID,
@@ -86,7 +86,7 @@
    * @@param SelectedId
    */
   function openCommonDialogForCustomerTantou(companyID, userID, customerID, SelectedId) {
-    event.preventDefault();
+
     $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "OpenDialogForSelectCustomerTantou" })',
         {
           companyId: companyID,
@@ -124,7 +124,7 @@
    * @@param SelectedId
    */
   function openCommonDialogForSayryo(companyID, userID, SelectedId) {
-    event.preventDefault();
+
     //alert("openCommonDialogForSayryo");
 
       $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "OpenDialogForSelectSyaryoManagement" })',
@@ -164,7 +164,7 @@
    * @@param SelectedId
    */
   function openCommonDialogForVender(companyID, userID, SelectedId) {
-    event.preventDefault();
+
     $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "OpenDialogForSelectVender" })',
         {
             companyId: companyID,
@@ -202,7 +202,7 @@
    * @@param SelectedId
    */
   function openCommonDialogForCompanyDriver(companyID, userID, SelectedId) {
-    event.preventDefault();
+
     $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "OpenDialogForSelectCompanyDriver" })',
       {
         companyId: companyID,
@@ -216,7 +216,7 @@
             //alert(response.partialView);
           $("#ModalCommonDialog").html("");
           $("#ModalCommonDialog").html(response.partialView);
-          CommonDailogOpen("ModalCommonDialog", "乗務員選択", 950, 720, "ModalCommonDialogClose()");
+          CommonDailogOpen("ModalCommonDialog", "乗務員選択", 950, 700, "ModalCommonDialogClose()");
           return;
         }
       })
@@ -238,7 +238,7 @@
    * @@param SelectedId
    */
   function openCommonDialogForCustomerDriver(companyID, userID, SelectedId, CustomerBranchID) {
-    event.preventDefault();
+
     $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "OpenDialogForSelectCustomerDriver" })',
       {
         companyId: companyID,
@@ -277,7 +277,7 @@
    * @@param SelectedId
    */
   function openCommonDialogForAddress(companyID, userID, SelectedId, mapDisplayKubun) {
-    event.preventDefault();
+
     $.post('@Url.RouteUrl("Default", new { controller = "CommonDialog", Action = "OpenDialogForSelectAddress" })',
       {
         companyId: companyID,
@@ -310,7 +310,6 @@
   };
 
   function CommonDailogOpen(id, title, width, height, closeFunction) {
-    event.preventDefault();
     var thedialogCommon;
 
     thedialogCommon = $("#" + id).dialog({
@@ -355,7 +354,6 @@
    * @@param haisyaKubun
    */
   function AnkenRefenceModalEx(url, ankenID, ankenDisplayID, driverID, driverSyaryoID, haisyaKubun) {
-    event.preventDefault();
     ///処理中ダイアログ
     Swal.fire({
       title: 'データ読込中'

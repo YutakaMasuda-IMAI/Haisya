@@ -112,7 +112,7 @@ table.ex_tableSyaryoCost {
     min-height: 100%;
 }
 
-    #all h2 span.glyphicon {
+    #all h2 span.icons {
         padding-right: 10px;
         color: #007bff;
     }
@@ -128,11 +128,10 @@ table.ex_tableSyaryoCost {
     width: 197px;
 }
 
-.glyphicon {
+.icons {
     position: relative;
     top: 1px;
     display: inline-block;
-    font-family: 'Glyphicons Halflings';
     font-style: normal;
     font-weight: normal;
     line-height: 1;
@@ -245,29 +244,29 @@ table.table-setting {
     display: inline-table;
 }
 
-.sight-settings .title {
-    width: 25%;
-    display: table-cell;
-    vertical-align: middle;
-    padding: 5px 10px;
-    background-color: lightblue;
-}
+    .sight-settings .title {
+        width: 25%;
+        display: table-cell;
+        vertical-align: middle;
+        padding: 5px 10px;
+        background-color: lightblue;
+    }
 
-.sight-settings .buttons {
-    width: 25%;
-    display: table-cell;
-    vertical-align: middle;
-    background-color: lightgoldenrodyellow;
-}
+    .sight-settings .buttons {
+        width: 25%;
+        display: table-cell;
+        vertical-align: middle;
+        background-color: lightgoldenrodyellow;
+    }
 
-.sight-settings .description {
-    width: 34%;
-    display: table-cell;
-    vertical-align: middle;
-    padding: 5px 10px;
-    background-color: lightgoldenrodyellow;
-    font-size: 13px;
-}
+    .sight-settings .description {
+        width: 34%;
+        display: table-cell;
+        vertical-align: middle;
+        padding: 5px 10px;
+        background-color: lightgoldenrodyellow;
+        font-size: 13px;
+    }
 
 
 .company-settings {
@@ -564,4 +563,3 @@ ul.nav-tabs-jbc {
     vertical-align: middle;
     background-color: #FFFaF5;
 }
-

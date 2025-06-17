@@ -15,7 +15,7 @@
     @Html.HiddenFor(model => Model.CompanyID)
   </div>
   <h2>
-    <span class="glyphicon glyphicon-chevron-right"></span>車輌サイズ設定
+    <span class="bi bi-chevron-right"></span>車輌サイズ設定
   </h2>
 
   <div id="main">
@@ -32,8 +32,8 @@
 
     <div class="clearfix">
       @if (Model.EditEnabled) { 
-      <button class="btn btn-primary" style="width: 200px;margin: 2px;" onclick="ExecShowDetailOnClick('新規', ''); return false;">新規登録</button>
-      <button id="btnSortCommit" disabled class="btn btn-success" style="width: 200px;margin: 2px; float: right; margin-right: 40px;" onclick="SortCommit_Click(); return false;">並び順変更反映</button>
+      <button type="button" class="btn btn-primary" style="width: 200px;margin: 2px;" onclick="ExecShowDetailOnClick('新規', ''); return false;">新規登録</button>
+      <button type="button" id="btnSortCommit" disabled class="btn btn-success" style="width: 200px;margin: 2px; float: right; margin-right: 40px;" onclick="SortCommit_Click(); return false;">並び順変更反映</button>
       }
       <div id="option_attendance_setting" class="sight-settings">
         <div class="tables">
@@ -61,7 +61,7 @@
                     <td align="center" width="100px">
                       @if (Model.EditEnabled)
                       {
-                      <button class="btn btn-outline-success" style="width: 100%; padding: 0; font-size: 12px; height: 30px;" onclick="ExecShowDetailOnClick('@(itemSyaryoSize.SIZE)'); return false;">詳細</button>
+                      <button type="button" class="btn btn-outline-success" style="width: 100%; padding: 0; font-size: 12px; height: 30px;" onclick="ExecShowDetailOnClick('@(itemSyaryoSize.SIZE)'); return false;">詳細</button>
                       }
                     </td>
                     <td align="center" width="150px">

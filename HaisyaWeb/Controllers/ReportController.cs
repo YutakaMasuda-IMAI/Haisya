@@ -4,7 +4,6 @@ using HaisyaWeb.API.WebApp;
 using HaisyaWeb.Common;
 using HaisyaWeb.Dto;
 using HaisyaWeb.Models;
-using HaisyaWeb.Models.DB;
 using HaisyaWeb.Service;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

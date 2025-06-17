@@ -1,7 +1,5 @@
 ﻿@model HaisyaWeb.Models.HaisyaModel.DataListModel
-@*
-  For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+
 @{
   Layout = "_Layout";
 }
@@ -12,7 +10,7 @@
   <script src="~/js/jquery-rcschedule.js"></script>
   <style>
     .drag-over {
-      background-color: red;
+      background-color: yellow;
     }
 
     .body.container {
@@ -71,12 +69,12 @@
               </div>
             </div>
 
-            <button type="button" class="btn btn-secondary btn-sm" style="width: 100%; padding: 0;" onClick="UpdateColapse()">▼詳細検索</button>
+            <button type="button" type="button" class="btn btn-secondary btn-sm" style="width: 100%; padding: 0;" onClick="UpdateColapse()">▼詳細検索</button>
             <div id="tblCollapseSearch" class="collapse" style="padding: 0.2rem 0 0 0; border-collapse: collapse; ">
               <div class="row">
                 <div class="col-sm-6" style="display: flex;">
                   @Html.LabelFor(model => model.Search.SelectTokuisakiID, htmlAttributes: new { @class = "control-label align-self-center align-middle text-end", @style = "padding: 0; font-weight: bold; white-space: nowrap;" })
-                  <button id="btnKokyaku" class="btn btn-info btn-sm" onclick="return false;" style="white-space: nowrap;">選択</button>
+                  <button type="button" id="btnKokyaku" class="btn btn-info btn-sm" onclick="return false;" style="white-space: nowrap;">選択</button>
                   @Html.HiddenFor(model => Model.Search.SelectTokuisakiID)
                   @Html.TextBoxFor(model => model.Search.SelectTokuisakiName, null, new { @readonly = "readonly", @class = "form-control", @style = "font-size: 12px; padding: 2px;" })
                   <div class="icon_clear_kokyaku" onclick="clearKokyaku()"><i class="fa-solid fa-xmark"></i></div>
@@ -121,64 +119,68 @@
   <div id="HaisyaList" style="margin-top: 25px; padding-left: 12px; padding-right: 12px;">
   </div>
 
-  @await Html.PartialAsync("ModalStatusHaisya")
+  <div>
+    @await Html.PartialAsync("ModalStatusHaisya", Model)
+  </div>
+  
 </body>
 
 
 <script>
 
-  $('#ModalStatusHaisya').hide();
+    $('#ModalStatusHaisya').hide();
 
-  const spanLeft = 225;
-  const maxTimeRight = spanLeft + 29 * 60 / 15 * 10;
-  const weeks = ["日", "月", "火", "水", "木", "金", "土"];
-  let isBlockDriver = false;
+    const spanLeft = 225;
+    const maxTimeRight = spanLeft + 29 * 60 / 15 * 10;
+    const weeks = ["日", "月", "火", "水", "木", "金", "土"];
+    let isBlockDriver = false;
+    let cronRedraw = 0;
 
-  $(window).on('load', function () {
+    $(window).on('load', function () {
 
-    var disp = new Date($("#Search_SelectDay").val());
+      var disp = new Date($("#Search_SelectDay").val());
 
-    /** 日付を文字列にフォーマットする */
-    var formatted = `${disp.getFullYear()}\年${(disp.getMonth() + 1).toString().padStart(2, '0')}\月${disp.getDate().toString().padStart(2, '0')}\日\(${weeks[disp.getDay().toString()]}\)`.replace(/\n|\r/g, '');
-    $("input#TargetDayLavel").val(formatted);
-    $("input#TargetDayLavel_To").val(formatted);
+      /** 日付を文字列にフォーマットする */
+      var formatted = `${disp.getFullYear()}\年${(disp.getMonth() + 1).toString().padStart(2, '0')}\月${disp.getDate().toString().padStart(2, '0')}\日\(${weeks[disp.getDay().toString()]}\)`.replace(/\n|\r/g, '');
+      $("input#TargetDayLavel").val(formatted);
+      $("input#TargetDayLavel_To").val(formatted);
 
-    var radio = document.getElementsByName('num_of_inq');
-    for (let i = 0; i < radio.length; i++) {
-      if (radio.item(i).value == $("#Search_SelectGroup").val()) {
-        radio.item(i).checked = true;
+      var radio = document.getElementsByName('num_of_inq');
+      for (let i = 0; i < radio.length; i++) {
+        if (radio.item(i).value == $("#Search_SelectGroup").val()) {
+          radio.item(i).checked = true;
+        }
       }
-    }
 
-    radio = document.getElementsByName('num_of_filter');
-    for (let i = 0; i < radio.length; i++) {
-      if (radio.item(i).value == $("#Search_SelectFilter").val()) {
-        radio.item(i).checked = true;
+      radio = document.getElementsByName('num_of_filter');
+      for (let i = 0; i < radio.length; i++) {
+        if (radio.item(i).value == $("#Search_SelectFilter").val()) {
+          radio.item(i).checked = true;
+        }
       }
-    }
 
-    radio = document.getElementsByName('num_of_refresh');
-    for (let i = 0; i < radio.length; i++) {
-      if (radio.item(i).value == $("#RefreshKubun").val()) {
-        radio.item(i).checked = true;
+      radio = document.getElementsByName('num_of_refresh');
+      for (let i = 0; i < radio.length; i++) {
+        if (radio.item(i).value == $("#RefreshKubun").val()) {
+          radio.item(i).checked = true;
+        }
       }
-    }
 
-    dataListDisplay();
-
-  });
-
-  $(document).ready(function () {
-
-    $('#btnKokyaku').on('click', function (event) {
-      openCommonDialogForCustomer($('#Company_ID').val(), 0, $('#Search_SelectTokuisakiID').val());
-      return false;
+      dataListDisplay();
 
     });
-  });
+
+    $(document).ready(function () {
+
+      $('#btnKokyaku').on('click', function (event) {
+        openCommonDialogForCustomer($('#Company_ID').val(), 0, $('#Search_SelectTokuisakiID').val());
+        return false;
+
+      });
+    });
 
 
-  $(function () {
+     $(function () {
     $(this).keydown(function (e) {
       // key code 116 = F5
       if (isBlockDriver && e.keyCode == 116) {
@@ -203,10 +205,7 @@
     /** Redraw data */
     var numRefresh = $('input[name="num_of_refresh"]:checked').val();
     if (numRefresh != 0) {
-      let cronRedraw = setInterval(function () {
-        dataListDisplay(true);
-        alertSuccess('再描画は自動的に実行されています。');
-      }, parseInt(numRefresh || 1) * 60000);
+      SetIntervalDataList(numRefresh);
     }
 
     $('input[name="num_of_refresh"]:radio').change(function () {
@@ -218,10 +217,7 @@
         return false;
       }
 
-      var cronRedraw = setInterval(function () {
-        dataListDisplay(true);
-        alertSuccess('再描画は自動的に実行されています。');
-      }, parseInt(numRefresh || 1) * 60000);
+      SetIntervalDataList(numRefresh);
     });
 
     /** select group */
@@ -291,222 +287,160 @@
 
   });
 
+    function SetIntervalDataList(timeval) {
+      cronRedraw = setInterval(function () {
+          dataListDisplay(true);
+          alertLoading('再描画は自動的に実行されています。','再描画', 'success');
+        }, parseInt(timeval || 1) * 60000);
+    }
+
+    function selectedChangeDay(move) {
+      var dt = new Date($('#Search_SelectDay').val());
+      dt.setDate(dt.getDate() + move);
+      $("#Search_SelectDay").val(formatDate(dt));
+
+      /** 日付を文字列にフォーマットする */
+      var formatted = `${dt.getFullYear()}\年${(dt.getMonth() + 1).toString().padStart(2, '0')}\月${dt.getDate().toString().padStart(2, '0')}\日\(${weeks[dt.getDay().toString()]}\)`.replace(/\n|\r/g, '');
+      $("input#TargetDayLavel").val(formatted);
+      dataListDisplay();
+    };
+
+    function formatDate(date) {
+      var yyyy = date.getFullYear();
+      var mm = ('00' + (date.getMonth() + 1)).slice(-2);
+      var dd = ('00' + date.getDate()).slice(-2);
+      const ymd = String(yyyy) + '/' + String(mm) + '/' + String(dd);
+      return ymd;
+    };
+
+    /**
+     * 選択した顧客情報をクリアする
+     * */
+    function clearKokyaku() {
+      $("#Search_SelectTokuisakiID").val('');
+      $("#Search_SelectTokuisakiName").val('');
+      dataListDisplay();
+    }
+
+    /**
+  * 共通得意先選択ダイアログで一覧選択されたときのCallBack関数
+  * */
+    function selectCustomerSelectedCallBack(obj) {
+      $('#Search_SelectTokuisakiID').val(obj["Customer_Branch_ID"]);
+      $('#Search_SelectTokuisakiName').val(obj["Customer_Branch_Name_Abbr"]);
+      dataListDisplay();
+    };
 
 
-  function selectedChangeDay(move) {
-    var dt = new Date($('#Search_SelectDay').val());
-    dt.setDate(dt.getDate() + move);
-    $("#Search_SelectDay").val(formatDate(dt));
-
-    /** 日付を文字列にフォーマットする */
-    var formatted = `${dt.getFullYear()}\年${(dt.getMonth() + 1).toString().padStart(2, '0')}\月${dt.getDate().toString().padStart(2, '0')}\日\(${weeks[dt.getDay().toString()]}\)`.replace(/\n|\r/g, '');
-    $("input#TargetDayLavel").val(formatted);
-    dataListDisplay();
-  };
-
-  function formatDate(date) {
-    var yyyy = date.getFullYear();
-    var mm = ('00' + (date.getMonth() + 1)).slice(-2);
-    var dd = ('00' + date.getDate()).slice(-2);
-    const ymd = String(yyyy) + '/' + String(mm) + '/' + String(dd);
-    return ymd;
-  };
-
-  /**
-   * 選択した顧客情報をクリアする
-   * */
-  function clearKokyaku() {
-    $("#Search_SelectTokuisakiID").val('');
-    $("#Search_SelectTokuisakiName").val('');
-    dataListDisplay();
-  }
-
-  /**
-* 共通得意先選択ダイアログで一覧選択されたときのCallBack関数
-* */
-  function selectCustomerSelectedCallBack(obj) {
-    $('#Search_SelectTokuisakiID').val(obj["Customer_Branch_ID"]);
-    $('#Search_SelectTokuisakiName').val(obj["Customer_Branch_Name_Abbr"]);
-    dataListDisplay();
-  };
-
-
-  function getStateScreen() {
-    const state = {
-      scroll: {
-        driverList: {
-          y: $(".list-driver").scrollTop(),
-          x: []
+    function getStateScreen() {
+      const state = {
+        scroll: {
+          driverList: {
+            y: $(".list-driver").scrollTop(),
+            x: []
+          },
+          ankenList: $("#AnkenList").scrollTop()
         },
-        ankenList: $("#AnkenList").scrollTop()
-      },
-      collapse: {
-        driverList: [],
-        ankenList: []
+        collapse: {
+          driverList: [],
+          ankenList: []
+        }
       }
-    }
-    for (var i = 0; i < $(".accordion-005 .parent").length; i++) {
-      state.scroll.driverList.x.push($(".accordion-005 .parent").eq(i).scrollLeft());
-    }
-    for (var i = 0; i < $(".accordion-005").length; i++) {
-      state.collapse.driverList.push(!!$(".accordion-005").eq(i).attr('open'));
-    }
-    for (var i = 0; i < $("#AnkenList .accordion-001").length; i++) {
-      state.collapse.ankenList.push(!!$("#AnkenList .accordion-001").eq(i).attr('open'));
-    }
-    return state
-  }
-
-  function renderState(state) {
-    try {
-      $(".list-driver").scrollTop(state.scroll.driverList.y);
       for (var i = 0; i < $(".accordion-005 .parent").length; i++) {
-        $(".accordion-005 .parent").eq(i).scrollLeft(state.scroll.driverList.x[i]);
+        state.scroll.driverList.x.push($(".accordion-005 .parent").eq(i).scrollLeft());
       }
       for (var i = 0; i < $(".accordion-005").length; i++) {
-        if (state.collapse.driverList[i]) {
-          $(".accordion-005").eq(i).attr('open', '');
-        } else {
-          $(".accordion-005").eq(i).removeAttr('open');
-        }
+        state.collapse.driverList.push(!!$(".accordion-005").eq(i).attr('open'));
       }
       for (var i = 0; i < $("#AnkenList .accordion-001").length; i++) {
-        if (state.collapse.ankenList[i]) {
-          $("#AnkenList .accordion-001").eq(i).attr('open', '');
-        } else {
-          $("#AnkenList .accordion-001").eq(i).removeAttr('open');
-        }
+        state.collapse.ankenList.push(!!$("#AnkenList .accordion-001").eq(i).attr('open'));
       }
-      $("#AnkenList").scrollTop(state.scroll.ankenList);
-    } catch (e) {
-      console.log(e)
+      return state
     }
-  }
 
-  /**
-   * 乗務員データと荷物データを表示(再描画)する
-   * @@param keepState
-   */
-  async function dataListDisplay(keepState = false) {
+    function renderState(state) {
+      try {
+        $(".list-driver").scrollTop(state.scroll.driverList.y);
+        for (var i = 0; i < $(".accordion-005 .parent").length; i++) {
+          $(".accordion-005 .parent").eq(i).scrollLeft(state.scroll.driverList.x[i]);
+        }
+        for (var i = 0; i < $(".accordion-005").length; i++) {
+          if (state.collapse.driverList[i]) {
+            $(".accordion-005").eq(i).attr('open', '');
+          } else {
+            $(".accordion-005").eq(i).removeAttr('open');
+          }
+        }
+        for (var i = 0; i < $("#AnkenList .accordion-001").length; i++) {
+          if (state.collapse.ankenList[i]) {
+            $("#AnkenList .accordion-001").eq(i).attr('open', '');
+          } else {
+            $("#AnkenList .accordion-001").eq(i).removeAttr('open');
+          }
+        }
+        $("#AnkenList").scrollTop(state.scroll.ankenList);
+      } catch (e) {
+        console.log(e)
+      }
+    }
 
-    try {
+    /**
+     * 乗務員データと荷物データを表示(再描画)する
+     * @@param keepState
+     */
+    async function dataListDisplay(keepState = false) {
 
-      const state = getStateScreen();
+      try {
 
-      var selectTab = $('input[name="num_of_inq"]:checked').val();
-      $('#Search_SelectGroup').val(selectTab);
-      const sortOrder = $('#Search_SortSelectList').val();
-      var selectStatus = [];
-      $('input[name="num_of_status"]:checked').each(function (i) {
-        selectStatus[i] = $(this).val();
-      });
-      return new Promise((resolve, reject) => {
-        $.post('@Url.RouteUrl("Default", new { controller = "Haisya", Action = "JsonGetDataList" })',
-          {
-            SelectDay: $('#Search_SelectDay').val(),
-            SelectTantou: $('#Search_SelectTantou').val(),
-            SelectSyasyu: $('#Search_SelectSyasyu').val(),
-            SelectKata: $('#Search_SelectKata').val(),
-            SelectGroup: $('input[name="num_of_inq"]:checked').val(),
-            SortOrder: $('#Search_SortSelectList').val(),
-            SelectFilter: $('input[name="num_of_filter"]:checked').val(),
-            SelectTokuisakiID: $("#Search_SelectTokuisakiID").val(),
-            SelectStatus: selectStatus,
-          },
-          function (data) {
-            //setLoading(false);
-            $('#HaisyaList').html(data.partialView);
-            $('#Search_SortSelectList').val(sortOrder);
-            $('#Search_SortSelectList').on('change', function () {
-              dataListDisplay();
-            });
+        const state = getStateScreen();
 
-            $(".ex_LuggageList-tr").draggable({
-              helper: function (event) {
-                const html = $(event.currentTarget).find("div").html();
-                const width = $(event.currentTarget).width();
-                //alert(html);
-                return $(`<div style="border-radius: 10px; border: 1px solid #5AC472; width:${width}px; background: #ffffff; cursor: move">${html}</div>`)
-              },
-              cancel: ".ex_LuggageList-disable-tr"
-            });
+        var selectTab = $('input[name="num_of_inq"]:checked').val();
+        $('#Search_SelectGroup').val(selectTab);
+        const sortOrder = $('#Search_SortSelectList').val();
+        var selectStatus = [];
+        $('input[name="num_of_status"]:checked').each(function (i) {
+          selectStatus[i] = $(this).val();
+        });
+        return new Promise((resolve, reject) => {
+          $.post('@Url.RouteUrl("Default", new { controller = "Haisya", Action = "JsonGetDataList" })',
+            {
+              SelectDay: $('#Search_SelectDay').val(),
+              SelectTantou: $('#Search_SelectTantou').val(),
+              SelectSyasyu: $('#Search_SelectSyasyu').val(),
+              SelectKata: $('#Search_SelectKata').val(),
+              SelectGroup: $('input[name="num_of_inq"]:checked').val(),
+              SortOrder: $('#Search_SortSelectList').val(),
+              SelectFilter: $('input[name="num_of_filter"]:checked').val(),
+              SelectTokuisakiID: $("#Search_SelectTokuisakiID").val(),
+              SelectStatus: selectStatus,
+            },
+            function (data) {
+              //setLoading(false);
+              $('#HaisyaList').html(data.partialView);
+              $('#Search_SortSelectList').val(sortOrder);
+              $('#Search_SortSelectList').on('change', function () {
+                dataListDisplay();
+              });
 
-            $('.table-timetree-tr').droppable({
-              accept: ".ankenDropArea, .anken-dragable",
-              drop: function (event, ui) {
-                const Driver_ID = $(this).data('driver-id');
-                const DriverSyaryo_ID = $(this).data('driversyaryo-id');
-                const Haisya_Kubun = $(this).data('jisyayosyakubun');
-                const SyaryoManagement_ID = $(this).data('syaryomanage-id');
-                const SyaryoManagement_ID1 = $(this).data('syaryomanage-id1');
+              $(".ex_LuggageList-tr").draggable({
+                helper: function (event) {
+                  const html = $(event.currentTarget).find("div").html();
+                  const width = $(event.currentTarget).width();
+                  //alert(html);
+                  return $(`<div style="border-radius: 10px; border: 1px solid #5AC472; width:${width}px; background: #ffffff; cursor: move">${html}</div>`)
+                },
+                cancel: ".ex_LuggageList-disable-tr"
+              });
 
-                // X座標を取得
-                var left = $(".ankenDropArea").offset().left;
-                var right = left + $(".ankenDropArea").innerWidth();
+              $('.table-timetree-tr').droppable({
+                accept: ".ankenDropArea, .anken-dragable",
+                drop: function (event, ui) {
+                  const Driver_ID = $(this).data('driver-id');
+                  const DriverSyaryo_ID = $(this).data('driversyaryo-id');
+                  const Haisya_Kubun = $(this).data('jisyayosyakubun');
+                  const SyaryoManagement_ID = $(this).data('syaryomanage-id');
+                  const SyaryoManagement_ID1 = $(this).data('syaryomanage-id1');
 
-                //ドロップされたら吸着する
-                var dropposi = ui.position;
-
-                // ドロップされた場所
-                var dropPositionX = dropposi.left;
-                var dropPositionY = dropposi.top;
-
-                // ドロップされた場所が範囲内かチェック
-                if (!(left <= dropPositionX && dropPositionX <= right)) {
-                  var id = event.target.id;
-                  if (id != null) {
-                    var area = $("#" + id + "-drag-area").css("background-color", "white");
-                  }
-                  // ドロップNG
-                  return false;
-                }
-
-
-                if (ui.draggable.hasClass("ex_LuggageList-tr")) {
-                  ///案件新規登録
-                  let Anken_ID = ui.draggable.data('anken-id');
-                  let Anken_No = ui.draggable.data('anken-no');
-                  let AnkenDisplay_ID = ui.draggable.data('ankendisplay-id');
-                  let Day = ui.draggable.data('day');
-                  submitAddNew(Day, Driver_ID, DriverSyaryo_ID, Anken_ID, AnkenDisplay_ID, Haisya_Kubun, Anken_No, SyaryoManagement_ID, SyaryoManagement_ID1);
-
-                } else if (ui.draggable.hasClass("mnc1")) {
-                  ///案件移動処理
-                  let Anken_ID = ui.draggable.data('anken-id');
-                  let Anken_No = ui.draggable.data('anken-no');
-                  let AnkenDisplay_ID = ui.draggable.data('ankendisplay-id');
-                  let Day = ui.draggable.data('day');
-
-                  let Haisya_ID_current = ui.draggable.data('haisya-id');
-                  let Driver_ID_current = ui.draggable.data('driver-id');
-                  let DriverSyaryo_ID_current = ui.draggable.data('driversyaryo-id');
-                  let Haisya_Kubun_current = ui.draggable.data('jisyayosyakubun');
-
-                  if (
-                    Driver_ID_current != Driver_ID
-                    || DriverSyaryo_ID_current != DriverSyaryo_ID
-                    || Haisya_Kubun_current != Haisya_Kubun
-                  ) {
-                    submitMoveAnken(
-                      Haisya_ID_current,
-                      Driver_ID_current,
-                      DriverSyaryo_ID_current,
-                      Haisya_Kubun_current,
-                      Driver_ID,
-                      DriverSyaryo_ID,
-                      SyaryoManagement_ID,
-                      SyaryoManagement_ID1,
-                      Anken_ID,
-                      AnkenDisplay_ID,
-                      Haisya_Kubun
-                    );
-                  }
-
-                }
-              },
-              over: function (event, ui) {
-                var id = event.target.id;
-                if (id != null) {
                   // X座標を取得
                   var left = $(".ankenDropArea").offset().left;
                   var right = left + $(".ankenDropArea").innerWidth();
@@ -520,322 +454,389 @@
 
                   // ドロップされた場所が範囲内かチェック
                   if (!(left <= dropPositionX && dropPositionX <= right)) {
+                    var id = event.target.id;
+                    if (id != null) {
+                      var area = $("#" + id + "-drag-area").css("background-color", "white");
+                    }
                     // ドロップNG
-                    var area = $("#" + id + "-drag-area").css("background-color", "white");
+                    return false;
+                  }
 
-                  } else {
-                    var area = $("#" + id + "-drag-area").css("background-color", "red");
+
+                  if (ui.draggable.hasClass("ex_LuggageList-tr")) {
+                    ///案件新規登録
+                    let Anken_ID = ui.draggable.data('anken-id');
+                    let Anken_No = ui.draggable.data('anken-no');
+                    let AnkenDisplay_ID = ui.draggable.data('ankendisplay-id');
+                    let Day = ui.draggable.data('day');
+                    submitAddNew(Day, Driver_ID, DriverSyaryo_ID, Anken_ID, AnkenDisplay_ID, Haisya_Kubun, Anken_No, SyaryoManagement_ID, SyaryoManagement_ID1);
+
+                  } else if (ui.draggable.hasClass("mnc1")) {
+                    ///案件移動処理
+                    let Anken_ID = ui.draggable.data('anken-id');
+                    let Anken_No = ui.draggable.data('anken-no');
+                    let AnkenDisplay_ID = ui.draggable.data('ankendisplay-id');
+                    let Day = ui.draggable.data('day');
+
+                    let Haisya_ID_current = ui.draggable.data('haisya-id');
+                    let Driver_ID_current = ui.draggable.data('driver-id');
+                    let DriverSyaryo_ID_current = ui.draggable.data('driversyaryo-id');
+                    let Haisya_Kubun_current = ui.draggable.data('jisyayosyakubun');
+
+                    if (
+                      Driver_ID_current != Driver_ID
+                      || DriverSyaryo_ID_current != DriverSyaryo_ID
+                      || Haisya_Kubun_current != Haisya_Kubun
+                    ) {
+                      submitMoveAnken(
+                        Haisya_ID_current,
+                        Driver_ID_current,
+                        DriverSyaryo_ID_current,
+                        Haisya_Kubun_current,
+                        Driver_ID,
+                        DriverSyaryo_ID,
+                        SyaryoManagement_ID,
+                        SyaryoManagement_ID1,
+                        Anken_ID,
+                        AnkenDisplay_ID,
+                        Haisya_Kubun
+                      );
+                    }
+
+                  }
+                },
+                over: function (event, ui) {
+                  var id = event.target.id;
+                  if (id != null) {
+                    // X座標を取得
+                    var left = $(".ankenDropArea").offset().left;
+                    var right = left + $(".ankenDropArea").innerWidth();
+
+                    //ドロップされたら吸着する
+                    var dropposi = ui.position;
+
+                    // ドロップされた場所
+                    var dropPositionX = dropposi.left;
+                    var dropPositionY = dropposi.top;
+
+                    // ドロップされた場所が範囲内かチェック
+                    if (!(left <= dropPositionX && dropPositionX <= right)) {
+                      // ドロップNG
+                      var area = $("#" + id + "-drag-area").css("background-color", "white");
+
+                    } else {
+                      var area = $("#" + id + "-drag-area").css("background-color", "red");
+                    }
+                  }
+                },
+                out: function (event, ui) {
+                  var id = event.target.id;
+                  if (id != null) {
+                    var area = $("#" + id + "-drag-area").css("background-color", "white");
                   }
                 }
-              },
-              out: function (event, ui) {
-                var id = event.target.id;
-                if (id != null) {
-                  var area = $("#" + id + "-drag-area").css("background-color", "white");
-                }
+
+                //, deactivate: function (event, ui) { alert("aa"); },
+              });
+              if (keepState) {
+                renderState(state)
               }
 
-              //, deactivate: function (event, ui) { alert("aa"); },
-            });
-            if (keepState) {
-              renderState(state)
-            }
+              $('.table-timetree-tr').bind('dragover', function () {
+                alert("dragover");
+                $(this).addClass('drag-over');
+              });
 
-            $('.table-timetree-tr').bind('dragover', function () {
-              alert("dragover");
-              $(this).addClass('drag-over');
-            });
+              $('.table-timetree-tr').bind('dragleave', function () {
+                alert("dragleave");
+                $(this).removeClass('drag-over');
+              });
+              resolve(1);
+            }).always(function (xhr, msg) {
+            //console.log(xhr, msg);
+              CommonWaitEnd();
+          });
+        })
 
-            $('.table-timetree-tr').bind('dragleave', function () {
-              alert("dragleave");
-              $(this).removeClass('drag-over');
-            });
-            resolve(1);
-          }).always(function (xhr, msg) {
-          //console.log(xhr, msg);
-            CommonWaitEnd();
-        });
-      })
+      } catch (e) {
+        console.log(e)
+      } finally {
 
-    } catch (e) {
-      console.log(e)
-    } finally {
-
-    }
-
-  }
-
-  /**
-   * 
-   * @@param element
-   */
-  function isElementInViewport(element) {
-    const rect = element.getBoundingClientRect();
-    return (
-      rect.top >= 0 &&
-      rect.left >= 0 &&
-      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
-  };
-
-  /**
-   * タブレット送信画面（モーダル）を開く
-   * @@param driverID
-   * @@param syaryoManageID
-   */
-  function tableTransfer(driverID, syaryoManageID) {
-
-    $.post('@Url.RouteUrl("Default", new { controller = "TabletTransfer", Action = "TabletTransferModal" })',
-      {
-        driverID: driverID,
-        syaryoManagementID: syaryoManageID
-      })
-      .done(function (response) {
-        if (response.message != null) {
-            alertError(`【エラー】${response.message}`);
-            return false;
-        } else {
-          //alert("【done】" + response.partialView);
-          $("#ModalHere").html(response.partialView);
-
-          DailogOpen("ModalHere", "タブレット連携", 1200, 620);
-
-          return false;
-        }
-      })
-      .fail(function (xhr) {
-        console.log(xhr);
-      })
-      .always(function (xhr, msg) {
-        //console.log(xhr, msg);
-        //alert(msg);
-      });
-  };
-
-
-  /**
-   *　指定クラス名に切り替える
-   * @@param ele
-   * @@param className
-   * @@param newClassName
-   */
-  function replaceClass(ele, className, newClassName) {
-    ele.removeClass(className);
-    if (!ele.hasClass(newClassName)) {
-      ele.addClass(newClassName);
-    }
-  }
-
-  /**
-   * スケジュールロックを実施
-   * @@param id
-   */
-  function createLoaderBlock(id) {
-    isBlockDriver = true
-    const eleCurrent = $(`.table-timetree-tr[data-id="${id}"]`);
-    const top = eleCurrent.data('i') || 0;
-    const html = `
-          <div class="loader-block-driver" data-id="${id}" style="top: ${top * 51 + 43}px; width: 100%;">
-            <div class="dot-spin"></div>
-          </div>`
-
-    eleCurrent.parents(".parent").append(html)
-    replaceClass(eleCurrent, 'table-timetree-tr', 'table-timetree-disable-tr')
-
-  }
-
-  /**
-   * スケジュールロックを解除
-   * @@param id
-   */
-  function removeLoaderBlock(id) {
-    isBlockDriver = false
-    $(`.loader-block-driver[data-id="${id}"]`).remove()
-    const eleCurrent = $(`.table-timetree-tr[data-id="${id}"]`);
-    replaceClass(eleCurrent, 'table-timetree-disable-tr', 'table-timetree-tr')
-  }
-
-  /**
-   * 案件割当て処理
-   * @@param Day
-   * @@param Driver_ID
-   * @@param DriverSyaryo_ID
-   * @@param Anken_ID
-   * @@param AnkenDisplay_ID
-   * @@param Haisya_Kubun
-   * @@param Anken_No
-   * @@param SyaryoManagement_ID
-   * @@param SyaryoManagement_ID1
-   */
-  async function submitAddNew(Day, Driver_ID, DriverSyaryo_ID, Anken_ID, AnkenDisplay_ID, Haisya_Kubun, Anken_No, SyaryoManagement_ID, SyaryoManagement_ID1) {
-    const id = `${Driver_ID}-${DriverSyaryo_ID}-${Haisya_Kubun}`;
-    createLoaderBlock(id);
-    $.post('@Url.RouteUrl("Default", new { controller = "Haisya", Action = "AddNewHaisyaData" })', {
-      Driver_ID,
-      DriverSyaryo_ID,
-      Anken_ID,
-      AnkenDisplay_ID,
-      Haisya_Kubun,
-      Day: $('#Search_SelectDay').val(),
-      SyaryoManagement_ID,
-      SyaryoManagement_ID1,
-    }).done(async function (response) {
-
-      if (response.errorMessage != null) {
-        await alertError(`【エラー】${response.errorMessage}`)
-        await dataListDisplay(true);
-        return false;
-      } else {
-        await alertSuccess(`「${Anken_No}」の案件の割り当てが完了しました。`)
-        await dataListDisplay(true);
-        return;
       }
-    }).fail(function (xhr) {
-      alertError(`【ネットワークエラー】:${xhr}`)
-      console.log(xhr);
-      return false;
-    }).always(async function (xhr, msg) {
-      console.log(xhr, msg);
-      removeLoaderBlock(id);
-    });
 
-  }
-
-
-  /**
-   * 案件移動処理
-   * @@param Day
-   * @@param Driver_ID
-   * @@param DriverSyaryo_ID
-   * @@param Anken_ID
-   * @@param AnkenDisplay_ID
-   * @@param Haisya_Kubun
-   * @@param Anken_No
-   * @@param SyaryoManagement_ID
-   * @@param SyaryoManagement_ID1
-   * @@param Haisya_ID_From
-   * @@param Driver_ID_From
-   * @@param DriverSyaryo_ID_From
-   * @@param Haisya_Kubun_From
-   */
-  async function submitMoveAnken(
-    Haisya_ID_From,
-    Driver_ID_From,
-    DriverSyaryo_ID_From,
-    Haisya_Kubun_From,
-    Driver_ID,
-    DriverSyaryo_ID,
-    SyaryoManagement_ID,
-    SyaryoManagement_ID1,
-    Anken_ID,
-    AnkenDisplay_ID,
-    Haisya_Kubun
-  ) {
-
-    if (Haisya_Kubun_From != Haisya_Kubun) {
-      alertWarning("自車・傭車間での移動は出来ません。一度割当て解除してください。」");
-      return false;
     }
 
-    idFrom = `${Haisya_ID_From}-${Driver_ID_From}-${DriverSyaryo_ID_From}`;
-    idTo = `${AnkenDisplay_ID}-${Driver_ID}-${DriverSyaryo_ID}`;
-    createLoaderBlock(idFrom);
-    createLoaderBlock(idTo);
-    $.post('@Url.RouteUrl("Default", new { controller = "Haisya", Action = "MoveHaisyaData" })',
-      {
-        Haisya_ID_From,
-        Driver_ID_From,
-        DriverSyaryo_ID_From,
+    /**
+     *
+     * @@param element
+     */
+    function isElementInViewport(element) {
+      const rect = element.getBoundingClientRect();
+      return (
+        rect.top >= 0 &&
+        rect.left >= 0 &&
+        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+      );
+    };
+
+    /**
+     * タブレット送信画面（モーダル）を開く
+     * @@param driverID
+     * @@param syaryoManageID
+     */
+    function tableTransfer(driverID, syaryoManageID) {
+
+      $.post('@Url.RouteUrl("Default", new { controller = "TabletTransfer", Action = "TabletTransferModal" })',
+        {
+          driverID: driverID,
+          syaryoManagementID: syaryoManageID
+        })
+        .done(function (response) {
+          if (response.message != null) {
+              alertError(`【エラー】${response.message}`);
+              return false;
+          } else {
+            //alert("【done】" + response.partialView);
+            $("#ModalHere").html(response.partialView);
+
+            DailogOpen("ModalHere", "タブレット連携", 1200, 620);
+
+            return false;
+          }
+        })
+        .fail(function (xhr) {
+          console.log(xhr);
+        })
+        .always(function (xhr, msg) {
+          //console.log(xhr, msg);
+          //alert(msg);
+        });
+    };
+
+
+    /**
+     *　指定クラス名に切り替える
+     * @@param ele
+     * @@param className
+     * @@param newClassName
+     */
+    function replaceClass(ele, className, newClassName) {
+      ele.removeClass(className);
+      if (!ele.hasClass(newClassName)) {
+        ele.addClass(newClassName);
+      }
+    }
+
+    /**
+     * スケジュールロックを実施
+     * @@param id
+     */
+    function createLoaderBlock(id) {
+      isBlockDriver = true
+      const eleCurrent = $(`.table-timetree-tr[data-id="${id}"]`);
+      const top = eleCurrent.data('i') || 0;
+      const html = `
+            <div class="loader-block-driver" data-id="${id}" style="top: ${top * 51 + 43}px; width: 100%;">
+              <div class="dot-spin"></div>
+            </div>`
+
+      eleCurrent.parents(".parent").append(html)
+      replaceClass(eleCurrent, 'table-timetree-tr', 'table-timetree-disable-tr')
+
+    }
+
+    /**
+     * スケジュールロックを解除
+     * @@param id
+     */
+    function removeLoaderBlock(id) {
+      isBlockDriver = false
+      $(`.loader-block-driver[data-id="${id}"]`).remove()
+      const eleCurrent = $(`.table-timetree-tr[data-id="${id}"]`);
+      replaceClass(eleCurrent, 'table-timetree-disable-tr', 'table-timetree-tr')
+    }
+
+    /**
+     * 案件割当て処理
+     * @@param Day
+     * @@param Driver_ID
+     * @@param DriverSyaryo_ID
+     * @@param Anken_ID
+     * @@param AnkenDisplay_ID
+     * @@param Haisya_Kubun
+     * @@param Anken_No
+     * @@param SyaryoManagement_ID
+     * @@param SyaryoManagement_ID1
+     */
+    async function submitAddNew(Day, Driver_ID, DriverSyaryo_ID, Anken_ID, AnkenDisplay_ID, Haisya_Kubun, Anken_No, SyaryoManagement_ID, SyaryoManagement_ID1) {
+      const id = `${Driver_ID}-${DriverSyaryo_ID}-${Haisya_Kubun}`;
+      createLoaderBlock(id);
+      $.post('@Url.RouteUrl("Default", new { controller = "Haisya", Action = "AddNewHaisyaData" })', {
         Driver_ID,
         DriverSyaryo_ID,
-        SyaryoManagement_ID,
-        SyaryoManagement_ID1,
         Anken_ID,
         AnkenDisplay_ID,
+        Haisya_Kubun,
+        Day: $('#Search_SelectDay').val(),
+        SyaryoManagement_ID,
+        SyaryoManagement_ID1,
       }).done(async function (response) {
-        if (response.errorMessage != null) {
-            var errorObject = JSON.parse(response.errorMessage);
-            await alertError(`【エラー】${errorObject.errorMessage}`)
-            await dataListDisplay(true);
-            return false;
-        } else {
-            await alertSuccess(`この案件の配車移動が完了しました`)
-            await dataListDisplay(true);
-            return;
-        }
-      }).fail(function (xhr) {
-        alertError('【ネットワークエラー】:' + xhr);
-        console.log(xhr);
-        return false;
-      }).always(async function (xhr, msg) {
-        console.log(xhr, msg);
-        removeLoaderBlock(idFrom);
-        removeLoaderBlock(idTo);
-      });
-  }
 
-
-
-  /**
-   *
-   * @@param Anken_ID
-   */
-  function checkEnableContact(Anken_ID) {
-
-    $.post('@Url.RouteUrl("Default", new { controller = "Haisya", Action = "CheckEnableContact" })',
-      {
-        Anken_ID
-      }).done(async function (response) {
         if (response.errorMessage != null) {
           await alertError(`【エラー】${response.errorMessage}`)
           await dataListDisplay(true);
           return false;
         } else {
-          if (response.data?.status) {
-            await alertSuccess(`「${response.data.kokyakuName}」の案件全ての割当てが完了しました。車番連絡が可能となっています`);
-          }
+          await alertSuccess(`「${Anken_No}」の案件の割り当てが完了しました。`)
           await dataListDisplay(true);
           return;
         }
       }).fail(function (xhr) {
         alertError(`【ネットワークエラー】:${xhr}`)
+        console.log(xhr);
         return false;
-      })
-  }
+      }).always(async function (xhr, msg) {
+        console.log(xhr, msg);
+        removeLoaderBlock(id);
+      });
 
-  /**
-   * 案件照会画面(モーダル)を開く
-   * @@param ankenID
-   * @@param ankenDisplayID
-   * @@param driverID
-   * @@param driverSyaryoID
-   * @@param haisyaKubun
-   */
-  function AnkenRefenceModal(ankenID, ankenDisplayID, driverID = null, driverSyaryoID = null, haisyaKubun = null) {
-    var url = '@Url.RouteUrl("Default", new { controller = "AnkenReference", Action = "Index" })';
-    AnkenRefenceModalEx(url, ankenID, ankenDisplayID, driverID, driverSyaryoID, haisyaKubun);
-  };
-
-  /**
-   * ドライバー月間カレンダー（モーダル）を開く
-   * @@param kubun
-   * @@param driverID
-   */
-  function MonthScheduleCalendarModal(kubun, driverID) {
-    var url = '@Url.RouteUrl("Default", new { controller = "Haisya", Action = "MonthScheduleCalendarModal" })';
-    MonthScheduleCalendarModalEx(url, kubun, driverID, $("#Search_SelectDay").val(), null);
-  };
-
-
-  function UpdateColapse() {
-    if ($('#tblCollapseSearch').hasClass('show')) {
-      $('#tblCollapseSearch').removeClass("show");
     }
-    else {
-      $('#tblCollapseSearch').addClass("show");
+
+
+    /**
+     * 案件移動処理
+     * @@param Day
+     * @@param Driver_ID
+     * @@param DriverSyaryo_ID
+     * @@param Anken_ID
+     * @@param AnkenDisplay_ID
+     * @@param Haisya_Kubun
+     * @@param Anken_No
+     * @@param SyaryoManagement_ID
+     * @@param SyaryoManagement_ID1
+     * @@param Haisya_ID_From
+     * @@param Driver_ID_From
+     * @@param DriverSyaryo_ID_From
+     * @@param Haisya_Kubun_From
+     */
+    async function submitMoveAnken(
+      Haisya_ID_From,
+      Driver_ID_From,
+      DriverSyaryo_ID_From,
+      Haisya_Kubun_From,
+      Driver_ID,
+      DriverSyaryo_ID,
+      SyaryoManagement_ID,
+      SyaryoManagement_ID1,
+      Anken_ID,
+      AnkenDisplay_ID,
+      Haisya_Kubun
+    ) {
+
+      if (Haisya_Kubun_From != Haisya_Kubun) {
+        alertWarning("自車・傭車間での移動は出来ません。一度割当て解除してください。」");
+        return false;
+      }
+
+      idFrom = `${Haisya_ID_From}-${Driver_ID_From}-${DriverSyaryo_ID_From}`;
+      idTo = `${AnkenDisplay_ID}-${Driver_ID}-${DriverSyaryo_ID}`;
+      createLoaderBlock(idFrom);
+      createLoaderBlock(idTo);
+      $.post('@Url.RouteUrl("Default", new { controller = "Haisya", Action = "MoveHaisyaData" })',
+        {
+          Haisya_ID_From,
+          Driver_ID_From,
+          DriverSyaryo_ID_From,
+          Driver_ID,
+          DriverSyaryo_ID,
+          SyaryoManagement_ID,
+          SyaryoManagement_ID1,
+          Anken_ID,
+          AnkenDisplay_ID,
+        }).done(async function (response) {
+          if (response.errorMessage != null) {
+              var errorObject = JSON.parse(response.errorMessage);
+              await alertError(`【エラー】${errorObject.errorMessage}`)
+              await dataListDisplay(true);
+              return false;
+          } else {
+              await alertSuccess(`この案件の配車移動が完了しました`)
+              await dataListDisplay(true);
+              return;
+          }
+        }).fail(function (xhr) {
+          alertError('【ネットワークエラー】:' + xhr);
+          console.log(xhr);
+          return false;
+        }).always(async function (xhr, msg) {
+          console.log(xhr, msg);
+          removeLoaderBlock(idFrom);
+          removeLoaderBlock(idTo);
+        });
     }
-  };
+
+
+
+    /**
+     *
+     * @@param Anken_ID
+     */
+    function checkEnableContact(Anken_ID) {
+
+      $.post('@Url.RouteUrl("Default", new { controller = "Haisya", Action = "CheckEnableContact" })',
+        {
+          Anken_ID
+        }).done(async function (response) {
+          if (response.errorMessage != null) {
+            await alertError(`【エラー】${response.errorMessage}`)
+            await dataListDisplay(true);
+            return false;
+          } else {
+            if (response.data?.status) {
+              await alertSuccess(`「${response.data.kokyakuName}」の案件全ての割当てが完了しました。車番連絡が可能となっています`);
+            }
+            await dataListDisplay(true);
+            return;
+          }
+        }).fail(function (xhr) {
+          alertError(`【ネットワークエラー】:${xhr}`)
+          return false;
+        })
+    }
+
+    /**
+     * 案件照会画面(モーダル)を開く
+     * @@param ankenID
+     * @@param ankenDisplayID
+     * @@param driverID
+     * @@param driverSyaryoID
+     * @@param haisyaKubun
+     */
+    function AnkenRefenceModal(ankenID, ankenDisplayID, driverID = null, driverSyaryoID = null, haisyaKubun = null) {
+      var url = '@Url.RouteUrl("Default", new { controller = "AnkenReference", Action = "Index" })';
+      AnkenRefenceModalEx(url, ankenID, ankenDisplayID, driverID, driverSyaryoID, haisyaKubun);
+    };
+
+    /**
+     * ドライバー月間カレンダー（モーダル）を開く
+     * @@param kubun
+     * @@param driverID
+     */
+    function MonthScheduleCalendarModal(kubun, driverID) {
+      var url = '@Url.RouteUrl("Default", new { controller = "Haisya", Action = "MonthScheduleCalendarModal" })';
+      MonthScheduleCalendarModalEx(url, kubun, driverID, $("#Search_SelectDay").val(), null);
+    };
+
+
+    function UpdateColapse() {
+      if ($('#tblCollapseSearch').hasClass('show')) {
+        $('#tblCollapseSearch').removeClass("show");
+      }
+      else {
+        $('#tblCollapseSearch').addClass("show");
+      }
+    };
 
 
 </script>

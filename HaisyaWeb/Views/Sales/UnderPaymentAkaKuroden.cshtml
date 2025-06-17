@@ -19,7 +19,7 @@
                 @style = "width:140px;"
               })
         </td>
-        <td style="text-align:right;"><button class="btn btn-outline-danger delete-row-under">削除</button></td>
+        <td style="text-align:right;"><button type="button" class="btn btn-outline-danger delete-row-under">削除</button></td>
       </tr>
     </table>
 
@@ -28,14 +28,14 @@
         <th>下払先会社</th>
         <td style="width:120px;"><input type="text" class="form-control inputtable" id="KokyakuCode3" style="background-color: white" readonly /></td>
         <td style="width:auto;"><input type="text" class="form-control inputtable" id="KokyakuName3" style="background-color: white" readonly /></td>
-        <td style="width:80px;"><button class="btn btn-outline-primary btnKokyaku" id="btnKokyaku3" data-index="@Model.RowCount">変更</button></td>
+        <td style="width:80px;"><button type="button" class="btn btn-outline-primary btnKokyaku" id="btnKokyaku3" data-index="@Model.RowCount">変更</button></td>
         <td style="width:1px;"><input type="text" class="form-control" id="KokyakuId3" readonly hidden /></td>
       </tr>
       <tr>
       <th>下払先担当</th>
         <td><input type="text" class="form-control inputtable" id="CustomerTantouCD" readonly /></td>
         <td><input type="text" class="form-control inputtable" id="CustomerTantouName" readonly /></td>
-        <td><button class="btn btn-outline-primary" onclick="ShitabaraiTantouDialog(this)" data-index="@Model.RowCount">変更</button></td>
+        <td><button type="button" class="btn btn-outline-primary" onclick="ShitabaraiTantouDialog(this)" data-index="@Model.RowCount">変更</button></td>
         <td><input type="text" class="form-control" id="CustomerTantouID" readonly hidden /></td>
       </tr>
     </table>

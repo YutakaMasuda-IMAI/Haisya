@@ -96,7 +96,7 @@ else
     var color = i % 2 == 1 ? "row-even" : "row-odd";
     <tr class="@(color)">
       <td>
-        <button class="btn btn-outline-success" style="width: 100%; padding:0;" onclick="submitEdit(@(item.Seikyu_ID))">入金処理</button>
+        <button type="button" class="btn btn-outline-success" style="width: 100%; padding:0;" onclick="submitEdit(@(item.Seikyu_ID))">入金処理</button>
       </td>
       <td align="center">
         @item.Inquiry_status_label()

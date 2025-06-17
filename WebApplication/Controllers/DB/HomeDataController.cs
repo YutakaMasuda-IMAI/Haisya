@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using WebApplication.Common;
 using WebApplication.Data;
 
-namespace WebApplication.Controllers
+namespace WebApplication.Controllers.DB
 {
     /// <summary>
     /// ホームデータを管理するコントローラー
@@ -49,12 +49,12 @@ namespace WebApplication.Controllers
         /// <param name="dateTime">日付</param>
         /// <returns>T_Admin_Infoリスト</returns>
         [HttpGet("GetAdminInfos")]
-        public async Task<List<Data.T_Admin_Info>> GetAdminInfos(DateTime dateTime)
+        public async Task<List<T_Admin_Info>> GetAdminInfos(DateTime dateTime)
         {
             //DateTime.TryParse(dateTime, out DateTime dateTime1);
             try
             {
-                IQueryable<Data.T_Admin_Info> query = _context.T_Admin_Infos;
+                IQueryable<T_Admin_Info> query = _context.T_Admin_Infos;
                 query = query.Where(m => m.Info_Datetime <= dateTime);
                 query = query.Where(m => m.Info_End_Datetime >= dateTime);
 
@@ -64,7 +64,8 @@ namespace WebApplication.Controllers
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
         }
 
@@ -81,15 +82,15 @@ namespace WebApplication.Controllers
         /// <param name="portalKubun">ポータル区分</param>
         /// <returns>T_Portal_Infoリスト</returns>
         [HttpGet("GetPortalInfos")]
-        public async Task<List<Data.T_Portal_Info>> GetPortalInfos(DateTime dateTime, int companyId, int userId, 
+        public async Task<List<T_Portal_Info>> GetPortalInfos(DateTime dateTime, int companyId, int userId,
                                                                 SystemEnums.PortalKubun portalKubun = SystemEnums.PortalKubun.配車WEB)
         {
             try
             {
-                IQueryable<Data.T_Portal_Info> query = _context.T_Portal_Infos;
+                IQueryable<T_Portal_Info> query = _context.T_Portal_Infos;
                 query = query.Where(m => m.Portal_Kubun == (int)portalKubun);
                 query = query.Where(m => m.Limit_Date >= dateTime);
-                query = query.Where(m => (m.Company_ID >= companyId && m.User_ID == 0) || (m.User_ID == userId));
+                query = query.Where(m => m.Company_ID >= companyId && m.User_ID == 0 || m.User_ID == userId);
                 query = query.Where(m => m.Display_Flg >= SystemEnums.DisplayFlag.Visible);
 
                 return await query.ToListAsync();
@@ -98,7 +99,8 @@ namespace WebApplication.Controllers
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
         }
 
@@ -108,11 +110,11 @@ namespace WebApplication.Controllers
         /// <param name="infoId">情報ID</param>
         /// <returns>T_Portal_Info</returns>
         [HttpGet("GetPortalInfo")]
-        public async Task<Data.T_Portal_Info> GetPortalInfo(int infoId)
+        public async Task<T_Portal_Info> GetPortalInfo(int infoId)
         {
             try
             {
-                IQueryable<Data.T_Portal_Info> query = _context.T_Portal_Infos;
+                IQueryable<T_Portal_Info> query = _context.T_Portal_Infos;
                 query = query.Where(m => m.Portal_Info_ID == infoId);
 
                 return await query.FirstOrDefaultAsync();
@@ -121,7 +123,8 @@ namespace WebApplication.Controllers
             {
                 Console.WriteLine("Exception: " + ex.Message);
                 Response.StatusCode = StatusCodes.Status400BadRequest;
-                return null;
+                await Response.WriteAsync(ex.Message);
+                throw;
             }
         }
 

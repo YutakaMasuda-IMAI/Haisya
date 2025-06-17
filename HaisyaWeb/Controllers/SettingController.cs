@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using HaisyaWeb.Models;
 using HaisyaWeb.Service;
-using HaisyaWeb.Models.DB;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

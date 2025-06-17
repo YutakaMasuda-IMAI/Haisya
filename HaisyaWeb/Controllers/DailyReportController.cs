@@ -1,6 +1,5 @@
 ﻿using HaisyaWeb.Dto;
 using HaisyaWeb.Models;
-using HaisyaWeb.Models.DB;
 using HaisyaWeb.Service;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;

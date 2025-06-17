@@ -1,10 +1,6 @@
 ﻿@model  SettingModel.SenzokuModalModel
 
 
-@{
-  Layout = "_ModalLayout";
-}
-
 
 <style>
   .btn-senzoku-select {
@@ -47,7 +43,7 @@
                 <h4>@(Model.Title)</h4>
               </div>
               <div>
-                <button type="button" class="btn btn-primary" style="float:right;" onclick="SenzokuRegExec(); return false;">@(Model.BtnCaption)</button>
+                <button type="button" type="button" class="btn btn-primary" style="float:right;" onclick="SenzokuRegExec(); return false;">@(Model.BtnCaption)</button>
               </div>
             </div>
             
@@ -78,13 +74,13 @@
                 <tr>
                   <th>顧客</th>
                   <td style="display:flex;">
-                    <button id="btnKokyaku" class="btn btn-secondary btn-senzoku-select">選択</button>
+                    <button type="button" id="btnKokyaku" class="btn btn-secondary btn-senzoku-select">選択</button>
                     @Html.TextBoxFor(model => Model.Senzoku.KokyakuId, null, new { @class = "form-control", @style = "width: 0px; padding: 0;" })
                     @Html.TextBoxFor(model => Model.KokyakuName, null, new { @readonly = "readonly", @class = "form-control", @style = "width: 60%;" })
                   </td>
                   <th>顧客担当</th>
                   <td style="display:flex;">
-                    <button id="btnKokyakuTantou" class="btn btn-secondary btn-senzoku-select">選択</button>
+                    <button type="button" id="btnKokyakuTantou" class="btn btn-secondary btn-senzoku-select">選択</button>
                     @Html.TextBoxFor(model => Model.Senzoku.KokyakuTantouId, null, new { @class = "form-control", @style = "width: 0px; padding: 0;" })
                     @Html.TextBoxFor(model => Model.KokyakuTantouName, null, new { @readonly = "readonly", @class = "form-control", @style = "width: 60%;" })
                   </td>

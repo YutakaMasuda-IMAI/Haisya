@@ -1,12 +1,6 @@
 ﻿@model HaisyaWeb.Models.HaisyaModel.MonthScheduleModelViewModel
 
 
-@{
-  Layout = "_ModalLayout";
-}
-@*<link href="~/css/Haisya.css" rel="stylesheet" />*@
-
-
 <style>
   table.ex_TableDriverMonthListSummay {
     border-collapse: collapse;
@@ -40,16 +34,11 @@
 </style>
 
 
-@*<div tabindex="-1" role="dialog" style="position: absolute; z-index: 101;" class="modal fade ui-dialog ui-corner-all ui-widget ui-widget-content ui-front ui-dialog-buttons ui-draggable ui-resizable" aria-describedby="ModalHere" aria-labelledby="ui-id-1">*@
-@*<div role="dialog" id="modal-option" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true" style="z-index: 1051; ">
-  </div>*@
-@*<div class="modal-dialog" role="document" style="max-width:1000px">
-</div>*@
 
 <div class="modal-content">
   <div class="modal-header">
     <h1 class="modal-title fs-3" id="exampleModalLabel">個別月次配車表</h1>
-    <button id="btnClose" type="button" class="btn btn-secondary">閉じる</button>
+    <button type="button" id="btnClose" type="button" class="btn btn-secondary">閉じる</button>
   </div>
   <div class="model-body">
     <form id="form9999" class="">

@@ -1,10 +1,6 @@
 ﻿@model SettingModel.SenzokuDriverModalModel
 
 
-@{
-  Layout = "_ModalLayout";
-}
-
 
 <style>
   .btn-senzoku-select {
@@ -47,7 +43,7 @@
                 <h4>@(Model.Title)</h4>
               </div>
               <div>
-                <button type="button" class="btn btn-primary" style="float:right;" onclick="SenzokuDriverRegExec(); return false;">@(Model.BtnCaption)</button>
+                <button type="button" type="button" class="btn btn-primary" style="float:right;" onclick="SenzokuDriverRegExec(); return false;">@(Model.BtnCaption)</button>
               </div>
             </div>
 
@@ -72,7 +68,7 @@
                 <tr>
                   <th>乗務員</th>
                   <td style="display:flex;">
-                    <button id="btnDriver" class="btn btn-secondary btn-senzoku-select">選択</button>
+                    <button type="button" id="btnDriver" class="btn btn-secondary btn-senzoku-select">選択</button>
                     @Html.TextBoxFor(model => Model.SenzokuDriver.Driver_ID, null, new { @class = "form-control", @style = "width: 50px; padding: 0;" })
                     @Html.TextBoxFor(model => Model.DriverDisplay, null, new { @readonly = "readonly", @class = "form-control", @style = "width: 60%;" })
                   </td>

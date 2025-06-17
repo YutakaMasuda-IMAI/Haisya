@@ -3,7 +3,7 @@ using SeikyuWeb.Dto.ValidateRules;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace SeikyuWeb.Dto.CheckShiharaisDto
+namespace SeikyuWeb.Dto.CheckseikyusDto
 {
     /// <summary>
     /// APIから値を取得し、検証するためのDTOクラス

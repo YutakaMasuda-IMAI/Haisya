@@ -37,8 +37,8 @@
     <div class="modal-content">
       <div class="modal-header" style="background-color: gainsboro;">
         <h1 class="modal-title fs-3" id="exampleModalLabel">@(Model.Title)</h1>
-        <button type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
-        <button type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
+        <button type="button" type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
+        <button type="button" type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
       </div>
       <div class="model-body">
         <form id="form1">
@@ -192,7 +192,7 @@
 
           <div class="modal-header" style="padding-top: 0; padding-bottom: 0;">
             <h4>支店（営業所）</h4>
-            <button type="button" class="btn btn-success" onclick="insertRow(); return false;">行追加</button>
+            <button type="button" type="button" class="btn btn-success" onclick="insertRow(); return false;">行追加</button>
           </div>
           <table id="tableBranch" class="table table-bordered border-primary table-customer-Branch" border="1" style="margin: 10px; width:96%;">
             <thead>

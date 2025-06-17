@@ -1,4 +1,5 @@
 ﻿using SeikyuWeb.Common;
+using SeikyuWeb.Dto.ReportLayoutDto;
 using SeikyuWeb.Dto.Seikyu;
 using SeikyuWeb.Models;
 using SeikyuWeb.Repositories.Interfaces;

@@ -1,4 +1,3 @@
-using DriverAttendance.Service;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -10,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using PartnerWeb.Data;
 using PartnerWeb.Models;
-using PartnerWeb.Models.DB;
+using PartnerWeb.Service;
 using System;
 using System.Collections.Generic;
 using System.IO;

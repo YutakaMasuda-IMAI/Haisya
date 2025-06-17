@@ -18,7 +18,7 @@
                     @Html.TextBoxFor(model => Model.PointList[i].Lng, null, new { @class = "col-sm-4", @style = "background: none; border: none; padding: 0;", @readonly = "readonly" })
                   </div>
                   <div class="col-sm-2">
-                    <button name="PointList[@(i)].btnPointRegister" class="btn btn-anken" style="height: 20px; padding: 0; width: 100%; flex-flow: wrap-reverse; line-height: 0; "
+                    <button type="button" name="PointList[@(i)].btnPointRegister" class="btn btn-anken" style="height: 20px; padding: 0; width: 100%; flex-flow: wrap-reverse; line-height: 0; "
                             data-toggle="modal" data-backdrop="static" data-target="#modal-option" onclick="btnPointRegister_Click('PointList[@(i)]'); return false;">
                       <span style="font-size: 12px; color: red; font-weight: bold; vertical-align: middle;">地点登録</span>
                     </button>
@@ -36,7 +36,7 @@
                     </div>
                   </div>
                   <div class="col-sm-2" style="">
-                    <button name="PointList[@(i)].GetAddress" onclick="GetAddress('PointList', @(i)); return false;" class="btn btn-anken size17" style="border-radius: 15%; height: 100%; width: 100%;"
+                    <button type="button" name="PointList[@(i)].GetAddress" onclick="GetAddress('PointList', @(i)); return false;" class="btn btn-anken size17" style="border-radius: 15%; height: 100%; width: 100%;"
                                 @(Model.PageType == "DilyReport" ? "disabled" : "")>設定</button>
                   </div>
                 </div>
@@ -65,8 +65,8 @@
                         {
                           btnDisabled = "disabled";
                         }
-                        <button name="PointList[@(i)].addButton" class="btn btn-outline-danger" style="float: right; width: 60px; margin-left: 10px; height: 26px; padding: 1px 0 0 0;" onclick="btnAddPointOnClick(@(i)); return false;">追加</button>
-                        <button name="PointList[@(i)].deleteButton" class="btn btn-outline-danger" @(btnDisabled) style="float: right; width: 60px; margin-left: 10px; height: 26px; padding: 1px 0 0 0; " onclick="btnDeletePointOnClick(this); return false;">削除</button>
+                        <button type="button" name="PointList[@(i)].addButton" class="btn btn-outline-danger" style="float: right; width: 60px; margin-left: 10px; height: 26px; padding: 1px 0 0 0;" onclick="btnAddPointOnClick(@(i)); return false;">追加</button>
+                        <button type="button" name="PointList[@(i)].deleteButton" class="btn btn-outline-danger" @(btnDisabled) style="float: right; width: 60px; margin-left: 10px; height: 26px; padding: 1px 0 0 0; " onclick="btnDeletePointOnClick(this); return false;">削除</button>
                       }
                     }
                   </div>

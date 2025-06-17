@@ -129,7 +129,7 @@
                   <input type="text" id="txtPhone" style="width: 150px; display: inline-block;" class="form-control" />
                 </td>
                 <td>
-                  <button style="width: 100px;" class="btn btn-primary align-items-end" onclick="listDisplay();return false;">検索</button>
+                  <button type="button" style="width: 100px;" class="btn btn-primary align-items-end" onclick="listDisplay();return false;">検索</button>
                 </td>
               </tr>
             </tbody>
@@ -138,7 +138,7 @@
             <label>※Top100件を抽出</label>
           </div>
 
-          <div id="DataList" class="table-VenderListDataModal dataList" style="height:500px; margin: 0;">
+          <div id="DataList-VenderListDataModal" class="table-VenderListDataModal dataList" style="height:500px; margin: 0;">
 
           </div>
         </div>
@@ -238,7 +238,7 @@
           }
           else {
               $('#alertTop').hide();
-              $('#DataList').html(data.partialView);
+              $('#DataList-VenderListDataModal').html(data.partialView);
           }
       }
     );

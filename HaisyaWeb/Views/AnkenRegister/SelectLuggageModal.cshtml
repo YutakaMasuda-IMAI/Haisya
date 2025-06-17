@@ -7,6 +7,9 @@
     width: 100%;
   }
 
+    .table-LuggageModal tbody {
+        overflow-y: auto;
+    }
     .table-LuggageModal th {
       padding: 0;
       text-align: center;
@@ -35,132 +38,130 @@
 
 
 
-<div role="dialog" id="addRireki" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document" style="max-width:1100px; min-height: 700px;">
-    <div class="modal-content">
-      <div hidden>
-        <input type="number" id="SelectLuggageGroup" value="0" />
-        <table id="tableLuggageSelectListModal">
-          <thead></thead>
-          <tbody id="tableLuggageSelectListModal-tbody">
-            @{
-              var luggagelist = Model.LuggageList.OrderBy(m => m.Luggage_Group_ID).ThenBy(m => m.SortOrder).ToList();
-              foreach (var item in luggagelist)
-              {
-                <tr><td>@(item.Luggage_Group_ID)</td><td>@(item.Luggage_ID)</td><td>@(item.Luggage_Name)</td><td>@(item.Unit_Name)</td></tr>
-              }
+<div class="modal-dialog" role="document" style="max-width:1100px; min-height: 440px;">
+  <div class="modal-content">
+    <div hidden>
+      <input type="number" id="SelectLuggageGroup" value="0" />
+      <table id="tableLuggageSelectListModal">
+        <thead></thead>
+        <tbody id="tableLuggageSelectListModal-tbody">
+          @{
+            var luggagelist = Model.LuggageList.OrderBy(m => m.Luggage_Group_ID).ThenBy(m => m.SortOrder).ToList();
+            foreach (var item in luggagelist)
+            {
+              <tr><td>@(item.Luggage_Group_ID)</td><td>@(item.Luggage_ID)</td><td>@(item.Luggage_Name)</td><td>@(item.Unit_Name)</td></tr>
             }
-          </tbody>
-        </table>
+          }
+        </tbody>
+      </table>
+    </div>
 
+@*     <div class="modal-header">
+      <h3>荷物情報選択</h3>
+    </div> *@
 
-      </div>
-      <div class="modal-header">
-        <h3>荷物情報選択</h3>
-      </div>
-
-      <div class="model-body">
-        <div class="div-area">
-          @*<label class="tab_class" for="tab1"></label>*@
-          <div class="">
-            <div class="row">
-              <div class="col-6 col-sm-3">
-                <table class="table table-LuggageModal">
-                  <thead>
-                    <tr><th>荷物グループ</th></tr>
-                  </thead>
-                  <tbody>
-                    @{
-                      var luggageGroupList = Model.LuggageGroupList.OrderBy(m => m.SortOrder).ToList();
-                      foreach (var item in luggageGroupList)
-                      {
-                        <tr><td><button class="btn btn-dark" onclick="onClickLuggageGroup(@(item.Luggage_Group_ID)); return false;">@(item.Luggage_GroupName)</button></td></tr>
-                      }
-
+    <div class="model-body" style="height: 400px;">
+      <div class="div-area">
+        @*<label class="tab_class" for="tab1"></label>*@
+        <div class="">
+          <div class="row">
+            <div class="col-6 col-sm-3">
+              <table class="table table-LuggageModal">
+                <thead>
+                  <tr><th>荷物グループ</th></tr>
+                </thead>
+                <tbody>
+                  @{
+                    var luggageGroupList = Model.LuggageGroupList.OrderBy(m => m.SortOrder).ToList();
+                    foreach (var item in luggageGroupList)
+                    {
+                      <tr><td><button type="button" class="btn btn-dark" onclick="onClickLuggageGroup(@(item.Luggage_Group_ID)); return false;">@(item.Luggage_GroupName)</button></td></tr>
                     }
-                  </tbody>
-                </table>
-              </div>
-              <div class="col-6 col-sm-3">
-                <table id="tableLuggage" class="table table-LuggageModal">
-                  <thead>
-                    <tr><th>荷物詳細</th></tr>
-                  </thead>
-                  <tbody id="tableLuggage-body">
-                  </tbody>
-                </table>
-              </div>
-              @*<div class="col-1 col-sm-1" style="">
+
+                  }
+                </tbody>
+              </table>
+            </div>
+            <div class="col-6 col-sm-3">
+              <table id="tableLuggage" class="table table-LuggageModal">
+                <thead>
+                  <tr><th>荷物詳細</th></tr>
+                </thead>
+                <tbody id="tableLuggage-body">
+                </tbody>
+              </table>
+            </div>
+            @*<div class="col-1 col-sm-1" style="">
               </div>*@
-              <div class="col-6" style="margin-top: -20px;">
-                <h6 style="padding:0;margin:0;">選択荷物</h6>
-                <table id="tableLuggageListModal" class="table table-LuggageModal">
-                  <thead>
-                    <tr style="background-color:aquamarine;">
-                      <th>荷物</th>
-                      <th>数</th>
-                      <th style="font-size:9px;">単位</th>
-                      <th>備考</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tableSelectLuggage-body">
-                    @{
-                      if (Model.LuggageList != null)
+            <div class="col-6" style="margin-top: -20px;">
+              <h6 style="padding:0;margin:0;">選択荷物</h6>
+              <table id="tableLuggageListModal" class="table table-LuggageModal">
+                <thead>
+                  <tr style="background-color:aquamarine;">
+                    <th>荷物</th>
+                    <th>数</th>
+                    <th style="font-size:9px;">単位</th>
+                    <th>備考</th>
+                  </tr>
+                </thead>
+                <tbody id="tableSelectLuggage-body">
+                  @{
+                    if (Model.LuggageList != null)
+                    {
+                      var LuggageList = Model.AnkenLuggageList.OrderBy(m => m.Insert_Datetime).ToList();
+                      for (int i = 0; i < LuggageList.Count; i++)
                       {
-                        var LuggageList = Model.AnkenLuggageList.OrderBy(m => m.Insert_Datetime).ToList();
-                        for (int i = 0; i < LuggageList.Count; i++)
+                        var luggage = Model.LuggageList.FirstOrDefault(m => m.Luggage_ID == Model.AnkenLuggageList[i].Luggage_ID);
+                        if (luggage != null)
                         {
-                          var luggage = Model.LuggageList.FirstOrDefault(m => m.Luggage_ID == Model.AnkenLuggageList[i].Luggage_ID);
-                          if (luggage != null)
-                          {
-                            <tr>
-                              <td hidden>@Html.TextBoxFor(model => Model.AnkenLuggageList[i].Anken_ID, null, new { @readonly = "readonly", })</td>
-                              <td hidden>@Html.TextBoxFor(model => Model.AnkenLuggageList[i].Anken_Order, null, new { @readonly = "readonly", })</td>
-                              <td hidden>@Html.TextBoxFor(model => Model.AnkenLuggageList[i].Luggage_ID, null, new { @readonly = "readonly", @type = "number" })</td>
-                              <th><input type="text" value="@(luggage.Luggage_Name)" readonly style="width: 200px;" id="AnkenLuggageList_@(i)__Luggage_Name" name="AnkenLuggageList[@(i)].Luggage_Name" /></th>
-                              <td align="center">@Html.TextBoxFor(model => Model.AnkenLuggageList[i].Luggage_Count, null, new { @type = "number", @style = "width: 50px; background-color: aqua;" })</td>
-                              <th><input type="text" value="@(luggage.Unit_Name)" readonly style="width: 30px;" id="AnkenLuggageList_@(i)__Unit_Name" name="AnkenLuggageList[@(i)].Unit_Name" /></th>
-                              <td>@Html.TextBoxFor(model => Model.AnkenLuggageList[i].Remarks, null, new { @style = "width: 250px; background-color: aqua;" })</td>
-                            </tr>
-                          } else
-                          {
-                            <tr>
-                              <td hidden>@Html.TextBoxFor(model => Model.AnkenLuggageList[i].Anken_ID, null, new { @readonly = "readonly", })</td>
-                              <td hidden>@Html.TextBoxFor(model => Model.AnkenLuggageList[i].Anken_Order, null, new { @readonly = "readonly", })</td>
-                              <td hidden>@Html.TextBoxFor(model => Model.AnkenLuggageList[i].Luggage_ID, null, new { @readonly = "readonly", @type = "number" })</td>
-                              <th><input type="text" value="" readonly style="width: 200px;" id="AnkenLuggageList_@(i)__Luggage_Name" name="AnkenLuggageList[@(i)].Luggage_Name" /></th>
-                              <td align="center">@Html.TextBoxFor(model => Model.AnkenLuggageList[i].Luggage_Count, null, new { @type = "number", @style = "width: 50px; background-color: aqua;" })</td>
-                              <th><input type="text" value="" readonly style="width: 30px;" id="AnkenLuggageList_@(i)__Unit_Name" name="AnkenLuggageList[@(i)].Unit_Name" /></th>
-                              <td>@Html.TextBoxFor(model => Model.AnkenLuggageList[i].Remarks, null, new { @style = "width: 250px; background-color: aqua;" })</td>
-                            </tr>
-                          }
-
+                          <tr>
+                            <td hidden>@Html.TextBoxFor(model => Model.AnkenLuggageList[i].Anken_ID, null, new { @readonly = "readonly", })</td>
+                            <td hidden>@Html.TextBoxFor(model => Model.AnkenLuggageList[i].Anken_Order, null, new { @readonly = "readonly", })</td>
+                            <td hidden>@Html.TextBoxFor(model => Model.AnkenLuggageList[i].Luggage_ID, null, new { @readonly = "readonly", @type = "number" })</td>
+                            <th><input type="text" value="@(luggage.Luggage_Name)" readonly style="width: 200px;" id="AnkenLuggageList_@(i)__Luggage_Name" name="AnkenLuggageList[@(i)].Luggage_Name" /></th>
+                            <td align="center">@Html.TextBoxFor(model => Model.AnkenLuggageList[i].Luggage_Count, null, new { @type = "number", @style = "width: 50px; background-color: aqua;" })</td>
+                            <th><input type="text" value="@(luggage.Unit_Name)" readonly style="width: 30px;" id="AnkenLuggageList_@(i)__Unit_Name" name="AnkenLuggageList[@(i)].Unit_Name" /></th>
+                            <td>@Html.TextBoxFor(model => Model.AnkenLuggageList[i].Remarks, null, new { @style = "width: 250px; background-color: aqua;" })</td>
+                          </tr>
                         }
+                        else
+                        {
+                          <tr>
+                            <td hidden>@Html.TextBoxFor(model => Model.AnkenLuggageList[i].Anken_ID, null, new { @readonly = "readonly", })</td>
+                            <td hidden>@Html.TextBoxFor(model => Model.AnkenLuggageList[i].Anken_Order, null, new { @readonly = "readonly", })</td>
+                            <td hidden>@Html.TextBoxFor(model => Model.AnkenLuggageList[i].Luggage_ID, null, new { @readonly = "readonly", @type = "number" })</td>
+                            <th><input type="text" value="" readonly style="width: 200px;" id="AnkenLuggageList_@(i)__Luggage_Name" name="AnkenLuggageList[@(i)].Luggage_Name" /></th>
+                            <td align="center">@Html.TextBoxFor(model => Model.AnkenLuggageList[i].Luggage_Count, null, new { @type = "number", @style = "width: 50px; background-color: aqua;" })</td>
+                            <th><input type="text" value="" readonly style="width: 30px;" id="AnkenLuggageList_@(i)__Unit_Name" name="AnkenLuggageList[@(i)].Unit_Name" /></th>
+                            <td>@Html.TextBoxFor(model => Model.AnkenLuggageList[i].Remarks, null, new { @style = "width: 250px; background-color: aqua;" })</td>
+                          </tr>
+                        }
+
                       }
                     }
-                  </tbody>
-                </table>
-                
-              </div>
+                  }
+                </tbody>
+              </table>
+
             </div>
           </div>
-
-
         </div>
+
+
       </div>
+    </div>
 
-      <div style="vertical-align: middle; display: inline-block; " class="modal-footer">
-        <div class="row">
-          <div class="col-8">
-            <div>
-              名前<input id="addLuggageText" type="text" style="width: 200px;" value="" />
-              単位<input id="addLuggageUnit" type="text" style="width: 50px;" value="" />
-              <button id="btnModelCancel" class="btn btn-secondary" data-dismiss="modal" onclick="addLuggageMaster(); return false;">荷物詳細追加</button>
-            </div>
+    <div style="vertical-align: middle; display: inline-block; " class="modal-footer">
+      <div class="row">
+        <div class="col-8">
+          <div>
+            名前<input id="addLuggageText" type="text" style="width: 200px;" value="" />
+            単位<input id="addLuggageUnit" type="text" style="width: 50px;" value="" />
+            <button type="button" id="btnModelCancel" class="btn btn-secondary" data-dismiss="modal" onclick="addLuggageMaster(); return false;">荷物詳細追加</button>
           </div>
-          <div class="col-2"><button id="btnModelHolidayReister" class="btn btn-success" onclick="SelectLuggageRegExec(); return false;">登録</button></div>
-          <div class="col-2"><button id="btnModelCancel" class="btn btn-secondary" data-dismiss="modal" onclick="ModalClose();">Close</button></div>
         </div>
+        <div class="col-2"><button type="button" id="btnModelHolidayReister" class="btn btn-success" onclick="SelectLuggageRegExec(); return false;">登録</button></div>
+        <div class="col-2"><button type="button" id="btnModelCancel" class="btn btn-secondary" data-dismiss="modal" onclick="ModalClose();">Close</button></div>
       </div>
     </div>
   </div>
@@ -308,7 +309,7 @@
 
         var row = tbody.insertRow(-1);
         var cell1 = row.insertCell(-1);
-        cell1.innerHTML = '<button class="btn btn-dark" ondblclick="ondblclickLuggage(\'' + id + '\'); return false;">' + name + '(' + unit + ')</button>';
+        cell1.innerHTML = '<button type="button" class="btn btn-dark" ondblclick="ondblclickLuggage(\'' + id + '\'); return false;">' + name + '(' + unit + ')</button>';
       }
     }
 

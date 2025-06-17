@@ -28,11 +28,11 @@
   <div class="header-buttons" style="margin-top:1rem;">
     <table width="100%">
       <tr>
-        <td><button class="btn btn-outline-dark" style="width: 150px;" onclick="ProvisionalRegistrationWithConfirm()">仮登録</button></td>
-        <td><button class="btn btn-outline-success" style="width:150px;" onclick="CertificationRequestModal()">登録(承認依頼)</button></td>
-        <td><button class="btn btn-outline-danger" style="width: 150px;" onclick="ApprovalRegistration()">登録(承認)</button></td>
-        <td><button class="btn btn-outline-secondary" style="width: 150px;" onclick="salesEntry()">売上入力</button></td>
-        <td align="right"><button class="btn btn-outline-warning" style="width: 150px;" onclick="btnCloseOnClick(); return false;">閉じる</button></td>
+        <td><button type="button" class="btn btn-outline-dark" style="width: 150px;" onclick="ProvisionalRegistrationWithConfirm()">仮登録</button></td>
+        <td><button type="button" class="btn btn-outline-success" style="width:150px;" onclick="CertificationRequestModal()">登録(承認依頼)</button></td>
+        <td><button type="button" class="btn btn-outline-danger" style="width: 150px;" onclick="ApprovalRegistration()">登録(承認)</button></td>
+        <td><button type="button" class="btn btn-outline-secondary" style="width: 150px;" onclick="salesEntry()">売上入力</button></td>
+        <td align="right"><button type="button" class="btn btn-outline-warning" style="width: 150px;" onclick="btnCloseOnClick(); return false;">閉じる</button></td>
       </tr>
     </table>
   </div>
@@ -54,8 +54,8 @@
       <div class="header">
         <div></div>
         <div>
-          <button class="btn btn-outline-primary" style="width: 200px;" onclick="OvernightModal();" id="btnOvernightModal">泊まり設定</button>
-          <button class="btn btn-outline-primary" style="width: 200px;" onclick="EmptyCarModal();" id="btnEmptyCarModal">空車回送設定</button>
+          <button type="button" class="btn btn-outline-primary" style="width: 200px;" onclick="OvernightModal();" id="btnOvernightModal">泊まり設定</button>
+          <button type="button" class="btn btn-outline-primary" style="width: 200px;" onclick="EmptyCarModal();" id="btnEmptyCarModal">空車回送設定</button>
         </div>
       </div>
     </div>
@@ -63,22 +63,22 @@
 
   <br />
 
-  <button type="button" class="btn btn-primary btn-sm" style="width: 100%; padding: 0;" data-bs-toggle="collapse" data-bs-target="#divCollapseHighway" aria-expanded="false" aria-controls="divCollapseHighway">
+  <button type="button" type="button" class="btn btn-primary btn-sm" style="width: 100%; padding: 0;" data-bs-toggle="collapse" data-bs-target="#divCollapseHighway" aria-expanded="false" aria-controls="divCollapseHighway">
     <div style="padding: 0rem 2rem;"><span class="size17" style="float:left;">高速代</span><span style="float:right;">▼</span></div>
   </button>
   <div id="divCollapseHighway" class="container collapse show" style="padding: 0; border-collapse: collapse; ">
     <div class="header">
       <div></div>
-      <button class="btn btn-outline-info" style="width:250px;" onclick="HighwayDataModal(this, -1);" id="highwayButton">高速情報追加</button>
+      <button type="button" class="btn btn-outline-info" style="width:250px;" onclick="HighwayDataModal(this, -1);" id="highwayButton">高速情報追加</button>
       <div class="all-setting">
         <div style="text-align: center;">一括設定</div>
         <div class="highway-buttons2">
           @if (Model.HaisyaDataList.Haisya_Kubun != 2)
           {
-            <button class="btn btn-outline-dark" style="width:100px;" id="personalButton" onclick="changeFutanKubun(1)">個人負担</button>
+            <button type="button" class="btn btn-outline-dark" style="width:100px;" id="personalButton" onclick="changeFutanKubun(1)">個人負担</button>
           }
-          <button class="btn btn-outline-dark" style="width:100px;" id="companyButton" onclick="changeFutanKubun(2)">会社負担</button>
-          <button class="btn btn-outline-dark" style="width:100px;" id="clientButton" onclick="changeFutanKubun(3)">荷主負担</button>
+          <button type="button" class="btn btn-outline-dark" style="width:100px;" id="companyButton" onclick="changeFutanKubun(2)">会社負担</button>
+          <button type="button" class="btn btn-outline-dark" style="width:100px;" id="clientButton" onclick="changeFutanKubun(3)">荷主負担</button>
         </div>
       </div>
     </div>
@@ -122,7 +122,7 @@
                      new { @class = "form-control list text-center", @id = "entry" }
                  )
               </td>
-              <td rowspan="2" style="align-content: center; text-align: center; border-bottom: 1px solid #000000; padding: 0; "><button class="highway-button" onClick="saveHighwayDataFutanKubunChange(@index)">保存</button></td>
+              <td rowspan="2" style="align-content: center; text-align: center; border-bottom: 1px solid #000000; padding: 0; "><button type="button" class="highway-button" onClick="saveHighwayDataFutanKubunChange(@index)">保存</button></td>
             </tr>
             <tr data-index="@index" onclick="HighwayDataModal(this, @index);" >
               <td style="cursor: pointer; text-align: center;">@Html.DisplayFor(modelItem => item.終了日時)</td>
@@ -154,7 +154,7 @@
                    new { @class = "form-control list text-center", @id = "entry", onchange = $"onNippouTollFutanKubunChange(this, {index})" }
                )
               </td>
-              <td rowspan="2"><button class="highway-button" onClick="saveNippouTollDataChange(@index)">保存</button></td>
+              <td rowspan="2"><button type="button" class="highway-button" onClick="saveNippouTollDataChange(@index)">保存</button></td>
             </tr>
             <tr data-index="@index">
               <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer; text-align: center;">@Html.DisplayFor(modelItem => item1.終了日時)</td>
@@ -171,14 +171,14 @@
   </div>
   <br />
 
-  <button type="button" class="btn btn-primary btn-sm" style="width: 100%; padding: 0;" data-bs-toggle="collapse" data-bs-target="#divCollapseOtherPaid" aria-expanded="false" aria-controls="divCollapseOtherPaid">
+  <button type="button" type="button" class="btn btn-primary btn-sm" style="width: 100%; padding: 0;" data-bs-toggle="collapse" data-bs-target="#divCollapseOtherPaid" aria-expanded="false" aria-controls="divCollapseOtherPaid">
     <div style="padding: 0rem 2rem;"><span class="size17" style="float:left;">その他有料代</span><span style="float:right;">▼</span></div>
   </button>
   <div id="divCollapseOtherPaid" class="container collapse show" style="padding: 0; border-collapse: collapse; ">
     <div class="header">
       <div></div>
       <div>
-        <button class="btn btn-outline-info" style="width:100px;" onclick="OtherPaidModal(this, -1);">追加</button>
+        <button type="button" class="btn btn-outline-info" style="width:100px;" onclick="OtherPaidModal(this, -1);">追加</button>
       </div>
     </div>
     <div class="other-paid-list">

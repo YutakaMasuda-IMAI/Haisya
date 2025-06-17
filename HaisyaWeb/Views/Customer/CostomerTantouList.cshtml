@@ -16,7 +16,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-3" id="exampleModalLabel" style="width:120px;">担当者選択</h1>
-        <button type="button" class="btn btn-success" onclick="insertRow(); return false;">行追加</button>
+        <button type="button" type="button" class="btn btn-success" onclick="insertRow(); return false;">行追加</button>
         <a href="#" data-dismiss="modal" class="btn btn-close" onclick="ModalClose(); return false;" style="width:30px;"></a>
       </div>
       <div class="model-body">
@@ -53,10 +53,10 @@
                 {
                             <tr style="vertical-align: middle;">
                               <td width="50px" rowspan="2" style="vertical-align: middle;">
-                                <button class="btn btn-success" style="width: 100%; padding:0;" onclick="submitCustomerTantouData('@(Model.CustomerID)', '@(CustomerTantouList[i].Tantou_ID)','@(CustomerTantouList[i].Tantou_Name)','@(CustomerTantouList[i].Phone1)'); return false;">選択</button>
+                                <button type="button" class="btn btn-success" style="width: 100%; padding:0;" onclick="submitCustomerTantouData('@(Model.CustomerID)', '@(CustomerTantouList[i].Tantou_ID)','@(CustomerTantouList[i].Tantou_Name)','@(CustomerTantouList[i].Phone1)'); return false;">選択</button>
                               </td>
                               <td width="50px" rowspan="2" style="vertical-align: middle;">
-                                <button class="btn btn-success" style="width: 100%; padding:0;" onclick="submitCustomerTantouDetail('@(Model.CustomerID)', '@(CustomerTantouList[i].Tantou_ID)'); return false;">詳細</button>
+                                <button type="button" class="btn btn-success" style="width: 100%; padding:0;" onclick="submitCustomerTantouDetail('@(Model.CustomerID)', '@(CustomerTantouList[i].Tantou_ID)'); return false;">詳細</button>
                               </td>
                               <td hidden rowspan="2">@Html.TextBoxFor(model => CustomerTantouList[i].Tantou_ID, null, new { @readonly = "readonly", @class = "form-control", @style = "" })</td>
                               <td hidden rowspan="2">@Html.TextBoxFor(model => CustomerTantouList[i].Customer_ID, null, new { @readonly = "readonly", @class = "form-control", @style = "" })</td>

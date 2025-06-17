@@ -10,7 +10,7 @@ exports.KenAll = void 0;
 const fs_1 = require("fs");
 const iconv = require("iconv-cp932");
 const JSZip = require("jszip");
-const node_fetch_1 = require("node-fetch");
+const node_fetch_native_1 = require("node-fetch-native");
 const os = require("os");
 const removeKanaSuffix = new RegExp("(ｲｶﾆｹｲｻｲｶﾞﾅｲﾊﾞｱｲ|.*ﾉﾂｷﾞﾆﾊﾞﾝﾁｶﾞｸﾙﾊﾞｱｲ|\(.*?\))$");
 const removeTextSuffix = new RegExp("(以下に掲載がない場合|.*に番地がくる場合|（.*?）)$");
@@ -56,7 +56,7 @@ class KenAll {
      */
     async fetchZip() {
         this.debug("loading: " + this.url);
-        const res = await (0, node_fetch_1.default)(this.url);
+        const res = await (0, node_fetch_native_1.fetch)(this.url);
         return Buffer.from(await res.arrayBuffer());
     }
     /**

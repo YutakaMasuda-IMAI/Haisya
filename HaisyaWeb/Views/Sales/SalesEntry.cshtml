@@ -131,23 +131,23 @@
           }
           @if (Model.ProcessingCategory != "赤伝黒伝登録請求" && Model.ProcessingCategory != "赤伝黒伝登録下払")
           {
-          <td><button class="btn btn-outline-dark" style="width:100px;" onClick="SubmitButton(3);">仮登録</button></td>
-          <td><button class="btn btn-outline-success" style="width:120px;" onClick="SubmitButton(1);">暫定登録</button></td>
+          <td><button type="button" class="btn btn-outline-dark" style="width:100px;" onClick="SubmitButton(3);">仮登録</button></td>
+          <td><button type="button" class="btn btn-outline-success" style="width:120px;" onClick="SubmitButton(1);">暫定登録</button></td>
           }
-          <td><button class="btn btn-outline-success" style="width:120px;" onClick="SubmitButton(2);">確定登録</button></td>
+          <td><button type="button" class="btn btn-outline-success" style="width:120px;" onClick="SubmitButton(2);">確定登録</button></td>
           @if (Model.ProcessingCategory != "直接入力")
           {
-                <td><button class="btn btn-outline-info" style="width:120px;" onClick="submitNippouEdit();">日報修正</button></td>
-          <td><button class="btn btn-outline-info" style="width:120px;" onClick="submitAnkenEdit();">案件修正</button></td>
+                <td><button type="button" class="btn btn-outline-info" style="width:120px;" onClick="submitNippouEdit();">日報修正</button></td>
+          <td><button type="button" class="btn btn-outline-info" style="width:120px;" onClick="submitAnkenEdit();">案件修正</button></td>
           }
           else
           {
           @if (Model.Uriage?.Uriage_ID != 0)
           {
-            <td><button class="btn btn-outline-danger" style="width:100px;" onClick="DeleteButton();">削除</button></td>
+            <td><button type="button" class="btn btn-outline-danger" style="width:100px;" onClick="DeleteButton();">削除</button></td>
           }
           }
-          <td style="text-align:right;"><button class="btn btn-outline-warning" style="width:100px;" onClick="CancelButton();">キャンセル</button></td>
+          <td style="text-align:right;"><button type="button" class="btn btn-outline-warning" style="width:100px;" onClick="CancelButton();">キャンセル</button></td>
         </tr>
       </table>
     </div>
@@ -560,7 +560,7 @@
             <table class="no-line">
               <tr>
                 <th style="width:140px"><label class="label required">顧客</label></th>
-                <td style="width: 80px;"><button id="btnKokyaku2" class="btn btn-uriage select-button btnKokyaku" style="width:60px;">選択</button></td>
+                <td style="width: 80px;"><button type="button" id="btnKokyaku2" class="btn btn-uriage select-button btnKokyaku" style="width:60px;">選択</button></td>
                 @{
                   var matchedCustomer = Model?.AddCustomerDto?.FirstOrDefault(c => c.CustomerId == Model?.Uriage?.Direct_Customer_Branch_ID);
                   var kokyakuCode = matchedCustomer?.Code ?? "";
@@ -572,7 +572,7 @@
               </tr>
               <tr>
                 <th width="140px">顧客担当</th>
-                <td style="width: 80px;"><button class="btn btn-uriage select-button" style="width:60px;" onclick="CustomerTantouDialog()">選択</button></td>
+                <td style="width: 80px;"><button type="button" class="btn btn-uriage select-button" style="width:60px;" onclick="CustomerTantouDialog()">選択</button></td>
                 <td style="width:100px;"><input type="text" class="form-control" id="CustomerTantouCD" value="@Model.AddCustomerTantouDto.Code" readonly /></td>
                 <td style="width:auto;"><input type="text" class="form-control" id="CustomerTantouName" value="@Model.AddCustomerTantouDto.Name" readonly /></td>
                 <td style="width:1px;"><input type="text" class="form-control" id="CustomerTantouID" value="@Model.Uriage.Direct_Customer_Tantou_ID" readonly hidden /></td>
@@ -689,7 +689,7 @@
                               new { @class = "form-control list dropdown ", @id = "entry", @style = "width:160px;" }
                               )
                 </td>
-                <td style="text-align:right;"><button id="addBillingInfo" class="btn btn-outline-success" style="width:160px;">請求情報追加</button></td>
+                <td style="text-align:right;"><button type="button" id="addBillingInfo" class="btn btn-outline-success" style="width:160px;">請求情報追加</button></td>
               </tr>
             </table>
           </div>
@@ -962,7 +962,7 @@
           <div class="table-div">
             <table class="no-line">
               <tr>
-                <td style="text-align:right;"><button class="btn btn-outline-success" id="addItemButton" onclick="SelectBurdenModal()" style="width:100px;">項目設定</button></td>
+                <td style="text-align:right;"><button type="button" class="btn btn-outline-success" id="addItemButton" onclick="SelectBurdenModal()" style="width:100px;">項目設定</button></td>
               </tr>
             </table>
 
@@ -987,7 +987,7 @@
                       <td style="border:none;">
                         @if (item.Default_Kubun != 1)
                         {
-                          <button type="button" class="btn btn-outline-danger deleteRowButton" onclick="deleteFutanRow(this)">削除</button>
+                          <button type="button" type="button" class="btn btn-outline-danger deleteRowButton" onclick="deleteFutanRow(this)">削除</button>
                         }
                       </td>
                     </tr>
@@ -1239,7 +1239,7 @@
               </div>
             }
 
-            <div style="text-align:right;"><button id="addUnderPayment" class="btn btn-outline-success" style="width:140px;">下払情報追加</button></div>
+            <div style="text-align:right;"><button type="button" id="addUnderPayment" class="btn btn-outline-success" style="width:140px;">下払情報追加</button></div>
             <div id="UnderPaymentParent">
               @if (Model.Uriage.Uriage_ID != 0 && Model.UriageShitabarai?.Count > 0)
               {
@@ -1301,7 +1301,7 @@
             <div class="table-div">
               <table class="no-line">
                 <tr>
-                  <td style="text-align:right;"><button id="addBillingInfo" class="btn btn-outline-success" style="width:160px;">請求情報追加</button></td>
+                  <td style="text-align:right;"><button type="button" id="addBillingInfo" class="btn btn-outline-success" style="width:160px;">請求情報追加</button></td>
                 </tr>
               </table>
 
@@ -1317,7 +1317,7 @@
             <div class="table-div">
               <table class="no-line">
                 <tr>
-                  <td style="text-align:right;"><button id="addRowButton" class="btn btn-outline-success" style="width:160px;" onClick="DriverDialog()">乗務員追加</button></td>
+                  <td style="text-align:right;"><button type="button" id="addRowButton" class="btn btn-outline-success" style="width:160px;" onClick="DriverDialog()">乗務員追加</button></td>
                 </tr>
               </table>
 
@@ -1378,7 +1378,7 @@
                           <td>@Html.TextBoxFor(m => item.Route_Teate, "{0:N0}", new { @class = "form-control route-allowance inputtable", data_index = kojinIndex, @id = "routeAllowance", @onblur = "kanmaChange(this);", @style = "text-align:right;", @onchange = "contentChanged=true;" })</td>
                           <td>@Html.TextBoxFor(m => item.Route_OverTime, "{0:N0}", new { @class = "form-control route-overtime inputtable", data_index = kojinIndex, @id = "routeOvertime", @onblur = "kanmaChange(this);", @style = "text-align:right;", @onchange = "contentChanged=true;" })</td>
                           <td>@Html.TextBoxFor(m => item.Route_Midnight, "{0:N0}", new { @class = "form-control route-midnight inputtable", data_index = kojinIndex, @id = "routeMidnight", @onblur = "kanmaChange(this);", @style = "text-align:right;", @onchange = "contentChanged=true;" })</td>
-                          <td style="border:none;"><button type="button" class="btn btn-outline-danger deleteRowButton">削除</button></td>
+                          <td style="border:none;"><button type="button" type="button" class="btn btn-outline-danger deleteRowButton">削除</button></td>
                         </tr>
                         kojinIndex++;
                       }
@@ -1401,7 +1401,7 @@
                     <td><input type="text" id="routeAllowance" name="routeAllowance" value="0" class="form-control route-allowance2" style="text-align:right;" oninput="this.value = this.value.replace(/[^0-9]/g, '');" onblur="kanmaChange(this);" onchange="contentChanged=true;"/></td>
                     <td><input type="text" id="routeOvertime" name="routeOvertime" value="0" class="form-control route-overtime" style="text-align:right;" oninput="this.value = this.value.replace(/[^0-9]/g, '');" onblur="kanmaChange(this);" onchange="contentChanged=true;"/></td>
                     <td><input type="text" id="routeMidnight" name="routeMidnight" value="0" class="form-control route-midnight" style="text-align:right;" oninput="this.value = this.value.replace(/[^0-9]/g, '');" onblur="kanmaChange(this);" onchange="contentChanged=true;"/></td>
-                    <td style="border:none;"><button type="button" class="btn btn-outline-danger deleteRowButton">削除</button></td>
+                    <td style="border:none;"><button type="button" type="button" class="btn btn-outline-danger deleteRowButton">削除</button></td>
                   </tr>
                 </tbody>
               </table>
@@ -1412,7 +1412,7 @@
           <div class="table-div">
             <table class="no-line">
               <tr>
-                <td style="text-align:right;"><button class="btn btn-outline-success" onclick="SelectBurdenModal()" id="addItemButton" style="width:100px;">項目設定</button></td>
+                <td style="text-align:right;"><button type="button" class="btn btn-outline-success" onclick="SelectBurdenModal()" id="addItemButton" style="width:100px;">項目設定</button></td>
               </tr>
             </table>
 
@@ -1439,7 +1439,7 @@
                       <td style="border:none;">
                         @if (item.Default_Kubun != 1)
                         {
-                          <button type="button" class="btn btn-outline-danger deleteRowButton" onclick="deleteFutanRow(this)">削除</button>
+                          <button type="button" type="button" class="btn btn-outline-danger deleteRowButton" onclick="deleteFutanRow(this)">削除</button>
                         }
                       </td>
                     </tr>
@@ -1555,7 +1555,7 @@
               </div>
             }
 
-            <div style="text-align:right;"><button id="addUnderPayment" class="btn btn-outline-success" style="width:140px;">下払情報追加</button></div>
+            <div style="text-align:right;"><button type="button" id="addUnderPayment" class="btn btn-outline-success" style="width:140px;">下払情報追加</button></div>
             <div id="UnderPaymentParent">
               @if (Model.Uriage.Uriage_ID != 0)
               {
@@ -1572,7 +1572,7 @@
             <div class="table-div">
               <table class="no-line">
                 <tr>
-                <td style="text-align:right;"><button id="addBillingInfoClosed" class="btn btn-outline-success" style="width:160px;">請求情報追加</button></td>
+                <td style="text-align:right;"><button type="button" id="addBillingInfoClosed" class="btn btn-outline-success" style="width:160px;">請求情報追加</button></td>
                 </tr>
               </table>
               <div id="billingInfoParentClosed">
@@ -1867,7 +1867,7 @@
             <div class="table-div">
               <table class="no-line">
                 <tr>
-                  <td style="text-align:right;"><button id="addUnderPaymentAkaKuroden" class="btn btn-outline-success" style="width:160px;">下払情報追加</button></td>
+                  <td style="text-align:right;"><button type="button" id="addUnderPaymentAkaKuroden" class="btn btn-outline-success" style="width:160px;">下払情報追加</button></td>
                 </tr>
               </table>
               <div id="underPaymentParentClosed"></div>

@@ -82,7 +82,7 @@ else
     var color = index % 2 == 0 ? "row-even" : "row-odd";
     <tr>
       <td class="@(color)" align="center">
-        <button class="btn btn-info" type="button" style="width:90%; padding:0;" onclick="submitDetailButton(@index)">詳細</button>
+        <button type="button" class="btn btn-info" type="button" style="width:90%; padding:0;" onclick="submitDetailButton(@index)">詳細</button>
       </td>
       <td class="@(color)" align="center">
         @(item.Inquiry_Status == 1 ? "WEB" : item.Inquiry_Status == 2 ? "帳票" : "")
