@@ -14,6 +14,66 @@ namespace HaisyaWeb.Models
     /// </summary>
     public class DailyReportModel
     {
+
+
+        /// <summary>
+        /// 日報リスト検索モデル
+        /// </summary>
+        public class SearchModelForDailyReportList : CommonModel
+        {
+            /// <summary> </summary>
+            public string SelectTab { get; set; }
+
+            /// <summary> </summary>
+            public int SelectGroup { get; set; }
+
+            /// <summary> </summary>
+            public int SelectFilter { get; set; }
+
+            /// <summary>案件担当</summary>
+            [Display(Name = "請求担当")]
+            public int TantouID { get; set; }
+            public string TantouName { get; set; }
+
+            /// <summary> </summary>
+            public IEnumerable<SelectListItem> SelectSeikyuTantouList { set; get; }
+
+            /// <summary> </summary>
+            public bool SingleSwitch { get; set; }
+
+            /// <summary> 選択キー  </summary>
+            public int Anken_ID { get; set; }
+
+            /// <summary> 選択キー  </summary>
+            public int AnkenDisplay_ID { get; set; }
+
+            /// <summary> 乗務員CD  </summary>
+            public int DriverCd { get; set; }
+
+            /// <summary> 車番  </summary>
+            public int Syaban { get; set; }
+
+            //[Required]
+            [Display(Name = "請求担当")]
+            public string SelectSeikyuTantou { get; set; }
+
+            /// <summary>
+            /// 顧客ID
+            /// </summary>
+            public string KokyakuId { get; set; }
+
+            /// <summary>
+            /// 顧客名
+            /// </summary>
+            public string KokyakuName { get; set; }
+
+            /// <summary>
+            /// 折りたたみ状態
+            /// </summary>
+            public bool IsCollapse { get; set; }
+        }
+
+
         /// <summary>
         /// データリストモデル
         /// </summary>
@@ -53,63 +113,6 @@ namespace HaisyaWeb.Models
 
             /// <summary> ソート順 </summary>
             public DataListSortModel SortParam { get; set; }
-        }
-
-        /// <summary>
-        /// 日報リスト検索モデル
-        /// </summary>
-        public class SearchModelForDailyReportList : CommonModel
-        {
-            /// <summary> </summary>
-            public string SelectTab { get; set; }
-
-            /// <summary> </summary>
-            public int SelectGroup { get; set; }
-
-            /// <summary> </summary>
-            public int SelectFilter { get; set; }
-
-            /// <summary>案件担当</summary>
-            [Display(Name = "請求担当")]
-            public int TantouID { get; set; }
-            public string TantouName { get; set; }
-
-            /// <summary> </summary>
-            public IEnumerable<SelectListItem> SelectSeikyuTantouList { set; get; }
-
-            /// <summary> </summary>
-            public bool SingleSwitch { get; set; }
-
-            /// <summary> 選択キー  </summary>
-            public int Anken_ID { get; set; }
-
-            /// <summary> 選択キー  </summary>
-            public int AnkenDisplay_ID { get; set; }
-
-            /// <summary> 乗務員CD  </summary>
-            public int DriverCd { get; set; }
-
-            /// <summary> 車番  </summary>
-            public int Syaban { get; set; }
-
-            [Required]
-            [Display(Name = "請求担当")]
-            public string SelectSeikyuTantou { get; set; }
-
-            /// <summary>
-            /// 顧客ID
-            /// </summary>
-            public string KokyakuId { get; set; }
-
-            /// <summary>
-            /// 顧客名
-            /// </summary>
-            public string KokyakuName { get; set; }
-
-            /// <summary>
-            /// 折りたたみ状態
-            /// </summary>
-            public bool IsCollapse { get; set; }
         }
 
         /// <summary>
@@ -189,20 +192,21 @@ namespace HaisyaWeb.Models
         /// </summary>
         public partial class DailyReportRegistrationDetailModel : DailyReportRegistrationDetailModel_Base
         {
-            public V_HaisyaDataList_Local HaisyaDataList { get; set; }
 
-            public List<DriveRouteListDisplay_Local> DriveRouteListData { set; get; }
+            public int User_ID { get; set; }
 
-            public List<PointDto_Local> PointList { get; set; }
+            // <summary>検索項目</summary>
+            public SearchModelForDailyReportList Search { get; set; }
 
-            /// <summary>経由ポイント選択リスト</summary>
-            public IEnumerable<SelectListItem> PointSelectList { set; get; }
+            /// <summary>パラメーター</summary>
+            //public int Anken_ID { get; set; }
+            //public int AnkenDisplay_ID { get; set; }
+            //public string SelectDay { get; set; }
+            //public string SelectEndDay { get; set; }
+            //public string SelectTokuisakiID { get; set; }
 
-            // 選択されたドライブルートリスト
-            public DriveRouteListDisplay_Local SelectedDriveRouteDisplay { set; get; }
 
-            /// <summary> M_Code_DataのID=3　ポイント区分名 </summary>
-            public List<Dto.M_Code_Data_Local> PointKubunCode { set; get; }
+            public string ExecType { get; set; }
 
             public string Area { set; get; }
             public string Ferry { get; set; }
@@ -220,20 +224,53 @@ namespace HaisyaWeb.Models
             public string Kata { get; set; }
             public int Company_ID { get; set; }
             public string PageType { set; get; } = "Anken";
-            public int Anken_ID { get; set; }
-            public int AnkenDisplay_ID { get; set; }
+
+            #region 案件のデジタコ選択
+            /// <summary>開始日時（デジタコ選択による）</summary>
+            public int AnkenDegitakoStartId { get; set; }
+            public DateTime AnkenDegitakoStartDatetime { get; set; }
+
+            /// <summary>終了日時（デジタコ選択による）</summary>
+            public int AnkenDegitakoEndId { get; set; }
+            public DateTime AnkenDegitakoEndDatetime { get; set; }
+
+            /// <summary>走行距離（デジタコ選択による）</summary>
+            public double AnkenDegitakoDistance { get; set; }
+
+            /// <summary>休憩時間（デジタコ選択による）</summary>
+            public DateTime AnkenDegitakoBreakTime { get; set; }
+
+            /// <summary>労働時間（デジタコ選択による）</summary>
+            public DateTime AnkenDegitakoWorkTime { get; set; }
+
+            /// <summary>実労働時間（デジタコ選択による）</summary>
+            public DateTime AnkenDegitakoActualWorkTime { get; set; }
+            #endregion 案件のデジタコ選択
+
+            public V_HaisyaDataList_Local HaisyaDataList { get; set; }
+
+            public List<DriveRouteListDisplay_Local> DriveRouteListData { set; get; }
+
+            public List<PointDto_Local> PointList { get; set; }
+
+            /// <summary>経由ポイント選択リスト</summary>
+            public IEnumerable<SelectListItem> PointSelectList { set; get; }
+
+            /// <summary>負担区分選択リスト</summary>
+            public IEnumerable<SelectListItem> FutanKubunList { set; get; }
+
+            //// 選択されたドライブルートリスト
+            //public DriveRouteListDisplay_Local SelectedDriveRouteDisplay { set; get; }
+
+            /// <summary> M_Code_DataのID=3　ポイント区分名 </summary>
+            public List<Dto.M_Code_Data_Local> PointKubunCode { set; get; }
 
             public IEnumerable<SelectListItem> GroupUserSelectList { set; get; }
-            public IEnumerable<SelectListItem> FutanKubunList { set; get; }
 
             public int Index { get; set; }
             public string FormattedIntervalTime { get; set; }
             public int SelectedFutanKubun { get; set; }
 
-            /// <summary>
-            /// 検索
-            /// </summary>
-            public SearchModelForDailyReportList Search { get; set; }
         }
 
         /// <summary>
@@ -267,7 +304,7 @@ namespace HaisyaWeb.Models
 
             public T_Nippou_Approval_Local NippouApproval { set; get; }
 
-            public string ExecType { get; set; }
+
 
             public List<CodeDataDto> CodeDataDto { get; set; }
             public List<T_Nippou_Toll_Other> NippouTollOther { get; set; }
@@ -275,8 +312,8 @@ namespace HaisyaWeb.Models
             public List<T_Nippou_Toll_Local> NippouToll { get; set; }
             public List<T_Nippou_Toll_Local> InitialDisplayNippouToll { get; set; }
             public List<T_Nippou_Toll_Local> NippouTollDegitako { get; set; }
-            public int User_ID { get; set; }
-            public string SelectDay { get; set; }
+
+
         }
 
         /// <summary>

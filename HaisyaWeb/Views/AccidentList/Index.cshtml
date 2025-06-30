@@ -27,36 +27,36 @@
       <h6 class="heading-pagetitle">事故一覧</h6>
       <div class="form-group" style="width: 100%">
         <div class="row">
-          <table class="table jbc-table table-hedder" style="padding: 0; border-collapse: collapse; ">
+          <table class="table jbc-table table-hedder p-0" style="border-collapse: collapse; ">
             <tbody>
               <tr>
                 <th width="400px" style="text-align:left;">
-                  <div style="padding: 0; border-radius: 0px;">
+                  <div class="p-0" style="border-radius: 0px;">
                     @Html.LabelFor(model => model.Search.AccidentCategory, htmlAttributes: new { @class = "control-label text-end search-label2 required", @style = "width: 120px;" })
                     <select id="jiko-select" class="form-control search-select" style="width: 100px;" onchange="changeAccidentReasonValue(this)">
                     </select>
                   </div>
                 </th>
                 <th>
-                  <div style="padding: 0; border-radius: 0px;">
+                  <div class="p-0" style="border-radius: 0px;">
                     @Html.LabelFor(model => model.Search.AccidentName, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "width: 90px;" })
                     @Html.TextBoxFor(model => Model.Search.AccidentName, null, new { @class = "form-control search-text", @style = "width: 200px;", @id = "selectAccidentName" })
                   </div>
                 </th>
                 <th style="text-align:right;">事故発生日</th>
                 <th style="text-align:center;" width="350px">
-                  <div class="appeal-box box" style="vertical-align: middle; display: inline-block; padding: 0;">
-                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeDay(-1)" onselectstart="return false;" alt="<<" tooltip="前月">＜＜</span>
-                    <input id="fCalendar" class="calender" type="text" readonly style="width: 200px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
-                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeDay(1)" onselectstart="return false;" alt=">>" tooltip="翌月">＞＞</span>
+                  <div class="appeal-box box p-0" style="vertical-align: middle; display: inline-block;">
+                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer;" onclick="selectedChangeDay(-1)" onselectstart="return false;" alt="<<" tooltip="前月">＜＜</span>
+                    <input id="fCalendar" class="calender" type="text" readonly style="width: 200px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; outline: none; border: none;" value="1900/01/01" />
+                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer;" onclick="selectedChangeDay(1)" onselectstart="return false;" alt=">>" tooltip="翌月">＞＞</span>
                   </div>
                 </th>
                 <th style="text-align: center;" width="15px">～</th>
                 <th style="text-align:center;" width="350px">
-                  <div id="divTargetDayLavelTo" class="appeal-box box" style="vertical-align: middle; display: inline-block; padding: 0;">
-                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeDay2(-1)" onselectstart="return false;" alt="<<" tooltip="前月">＜＜</span>
-                    <input id="tCalendar" class="calender" type="text" readonly style="width: 200px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
-                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeDay2(1)" onselectstart="return false;" alt=">>" tooltip="翌月">＞＞</span>
+                  <div id="divTargetDayLavelTo" class="appeal-box box p-0" style="vertical-align: middle; display: inline-block;">
+                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer;" onclick="selectedChangeDay2(-1)" onselectstart="return false;" alt="<<" tooltip="前月">＜＜</span>
+                    <input id="tCalendar" class="calender" type="text" readonly style="width: 200px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; outline: none; border: none;" value="1900/01/01" />
+                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer;" onclick="selectedChangeDay2(1)" onselectstart="return false;" alt=">>" tooltip="翌月">＞＞</span>
                   </div>
                 </th>
               </tr>

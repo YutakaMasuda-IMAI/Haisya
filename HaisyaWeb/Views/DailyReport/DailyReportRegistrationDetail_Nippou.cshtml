@@ -6,10 +6,10 @@
   </style>
 </head>
 
-
+<link href="~/css/DailyReport.css" rel="stylesheet" />
 <div style="padding:5px 5px 5px 15px;">
   <div hidden>
-    @Html.TextBoxFor(model => Model.NippouStayDegitakoIdList)
+    @Html.HiddenFor(model => Model.NippouStayDegitakoIdList)
     @Html.HiddenFor(model => Model.NippouKaisoDegitakoIdList)
     @Html.HiddenFor(model => Model.KUDGSIRIdList)
     @Html.HiddenFor(model => Model.NippouApproval.Nippou_Approval_ID)
@@ -19,9 +19,9 @@
     @Html.HiddenFor(model => Model.NippouApproval.Order_Memo)
   </div>
 
-  <div class="heading-21" style="font-weight: bold; width: 100%; margin-top: 1rem;">
-    <h3 id="labelTitle" class="heading-40" style="width: 100%;">運転日報登録修正</h3>
-    <div style="border: 1px solid #000000; width: 100%; height: 100px; overflow: auto; ">
+  <div class="heading-21 w-100" style="font-weight: bold; margin-top: 1rem;">
+    <h3 id="labelTitle" class="heading-40 w-100" style="">運転日報登録修正</h3>
+    <div class="w-100" style="border: 1px solid #000000; height: 100px; overflow: auto; ">
       @Html.DisplayFor(model => model.SeikyuRemarks)
     </div>
   </div>
@@ -35,6 +35,58 @@
         <td align="right"><button type="button" class="btn btn-outline-warning" style="width: 150px;" onclick="btnCloseOnClick(); return false;">閉じる</button></td>
       </tr>
     </table>
+  </div>
+  <div class="row">
+    <div class="col-4">
+    </div>
+    <div class="col-8 root-list">
+      <table>
+        <thead>
+          <tr class="" style="text-align-last: center;">
+            <th style="width: 140px;">開始日時</th>
+            <th style="width: 140px;">終了日時</th>
+            <th style="width: 70px;" class="p-0">勤務時間</th>
+            <th style="width: 70px;" class="p-0">実労働時間</th>
+            <th style="width: 70px;" class="p-0">休憩時間</th>
+            <th style="width: 70px;" class="p-0">走行距離</th>
+          </tr>
+        </thead>
+        <tbody class="root-list-body">
+          <tr class="" style="height:28px;text-align-last: center;">
+            <td class="" style="">@(Model.AnkenDegitakoStartDatetime.ToString("yyyy/MM/dd HH:mm"))</td>
+            <td class="" style="">@(Model.AnkenDegitakoEndDatetime.ToString("yyyy/MM/dd HH:mm"))</td>
+            <td class="" style="">@(Model.AnkenDegitakoWorkTime.ToString("HH:mm"))</td>
+            <td class="" style="">@(Model.AnkenDegitakoActualWorkTime.ToString("HH:mm"))</td>
+            <td class="" style="">@(Model.AnkenDegitakoBreakTime.ToString("HH:mm"))</td>
+            <td class="" style="">@(Model.AnkenDegitakoDistance)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="row" style="">
+    <div class="col-6">
+    </div>
+    <div class="col-6 root-list">
+      <table>
+        <thead>
+          <tr class="" style="text-align-last: center;">
+            <th style="width: 130px;background-color:aquamarine;" class="p-0">高速代合計</th>
+            <th style="width: 130px;" class="p-0">荷主負担合計</th>
+            <th style="width: 130px;" class="p-0">会社負担合計</th>
+            <th style="width: 130px;" class="p-0">個人負担合計</th>
+          </tr>
+        </thead>
+        <tbody class="root-list-body">
+          <tr class="" style="height:28px;text-align-last: center;">
+            <td class="" style=""><div id="disp-TollTotalSum" class="text-center routedisplay ms-0" style="" /></td>
+            <td class="" style=""><div id="disp-TollTotalClient" class="text-center routedisplay ms-0" style="" /></td>
+            <td class="" style=""><div id="disp-TollTotalCompany" class="text-center routedisplay ms-0" style="" /></td>
+            <td class="" style=""><div id="disp-TollTotalPersonal" class="text-center routedisplay ms-0" style="" /></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
   <div class="row" style="margin-top:0.5rem;">
     <div class="col-4">
@@ -63,22 +115,22 @@
 
   <br />
 
-  <button type="button" type="button" class="btn btn-primary btn-sm" style="width: 100%; padding: 0;" data-bs-toggle="collapse" data-bs-target="#divCollapseHighway" aria-expanded="false" aria-controls="divCollapseHighway">
-    <div style="padding: 0rem 2rem;"><span class="size17" style="float:left;">高速代</span><span style="float:right;">▼</span></div>
+  <button type="button" class="btn btn-primary btn-sm w-100 p-0" style="" data-bs-toggle="collapse" data-bs-target="#divCollapseHighway" aria-expanded="false" aria-controls="divCollapseHighway">
+    <div style="padding: 0rem 2rem;"><span class="size17 float-start" style="">高速代</span><span class=" float-start" style="">▼</span></div>
   </button>
-  <div id="divCollapseHighway" class="container collapse show" style="padding: 0; border-collapse: collapse; ">
+  <div id="divCollapseHighway" class="container collapse show p-0" style="border-collapse: collapse; ">
     <div class="header">
       <div></div>
       <button type="button" class="btn btn-outline-info" style="width:250px;" onclick="HighwayDataModal(this, -1);" id="highwayButton">高速情報追加</button>
       <div class="all-setting">
         <div style="text-align: center;">一括設定</div>
         <div class="highway-buttons2">
+          <button type="button" class="btn btn-outline-dark" style="width:100px;" id="clientButton" onclick="changeFutanKubun(3)">荷主負担</button>
+          <button type="button" class="btn btn-outline-dark" style="width:100px;" id="companyButton" onclick="changeFutanKubun(2)">会社負担</button>
           @if (Model.HaisyaDataList.Haisya_Kubun != 2)
           {
             <button type="button" class="btn btn-outline-dark" style="width:100px;" id="personalButton" onclick="changeFutanKubun(1)">個人負担</button>
           }
-          <button type="button" class="btn btn-outline-dark" style="width:100px;" id="companyButton" onclick="changeFutanKubun(2)">会社負担</button>
-          <button type="button" class="btn btn-outline-dark" style="width:100px;" id="clientButton" onclick="changeFutanKubun(3)">荷主負担</button>
         </div>
       </div>
     </div>
@@ -105,32 +157,34 @@
         <tbody id="highwayDataTable" style="display: none;">
           @{
             var index = 0;
+
+            var datalist = Model.NippouTollDegitako.Where(m => m.開始日時 >= Model.AnkenDegitakoStartDatetime && m.終了日時 <= Model.AnkenDegitakoEndDatetime).ToList();
           }
-          @foreach (var item in Model.NippouTollDegitako)
+          @foreach (var item in datalist)
           {
             <tr data-index="@index" style="border-bottom: 0.05em dashed #cfcfcf;">
-              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer; text-align: center;">@Html.DisplayFor(modelItem => item.開始日時)</td>
-              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;">@Html.DisplayFor(modelItem => item.開始道路名)</td>
-              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;">@Html.DisplayFor(modelItem => item.開始IC名)</td>
+              <td onclick="HighwayDataModal(this, @index);" class="text-ceter pointer" style="">@Html.DisplayFor(modelItem => item.開始日時)</td>
+              <td onclick="HighwayDataModal(this, @index);" class="pointer" style="">@Html.DisplayFor(modelItem => item.開始道路名)</td>
+              <td onclick="HighwayDataModal(this, @index);" class="pointer" style="">@Html.DisplayFor(modelItem => item.開始IC名)</td>
               <td onclick="HighwayDataModal(this, @index);" hidden><input type="hidden" id="start-ic" value="@item.開始IC名" /></td>
-              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer; text-align: center;">@Html.DisplayFor(modelItem => item.精算区分名)</td>
-              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer; text-align: right;">@String.Format("{0:N0}", item.料金)円</td>
-              <td rowspan="2" style="align-content: center; text-align: center; border-bottom: 1px solid #000000; padding: 0;">
+              <td onclick="HighwayDataModal(this, @index);" class="text-ceter pointer" style="">@Html.DisplayFor(modelItem => item.精算区分名)</td>
+              <td onclick="HighwayDataModal(this, @index);" class="text-end toll-money pointer" style="">@String.Format("{0:N0}", item.料金)円</td>
+              <td rowspan="2" class="text-ceter p-0" style="align-content: center; border-bottom: 1px solid #000000;">
                 @Html.DropDownListFor(
                      m => item.Futan_Kubun,
                      new SelectList(Model.FutanKubunList, "Value", "Text"),
-                     new { @class = "form-control list text-center", @id = "entry" }
+                       new { @class = "form-control list text-center futan-select", @id = "entry" }
                  )
               </td>
-              <td rowspan="2" style="align-content: center; text-align: center; border-bottom: 1px solid #000000; padding: 0; "><button type="button" class="highway-button" onClick="saveHighwayDataFutanKubunChange(@index)">保存</button></td>
+              <td rowspan="2" class="text-ceter p-0" style="align-content: center; border-bottom: 1px solid #000000;"><button type="button" class="highway-button" onClick="saveHighwayDataFutanKubunChange(@index)">保存</button></td>
             </tr>
             <tr data-index="@index" onclick="HighwayDataModal(this, @index);" >
-              <td style="cursor: pointer; text-align: center;">@Html.DisplayFor(modelItem => item.終了日時)</td>
-              <td style="cursor: pointer;">@Html.DisplayFor(modelItem => item.終了道路名)</td>
+              <td class="text-ceter pointer" style="">@Html.DisplayFor(modelItem => item.終了日時)</td>
+              <td class="pointer" style="">@Html.DisplayFor(modelItem => item.終了道路名)</td>
               <td hidden><input type="hidden" id="end-ic" value="@item.終了IC名" /></td>
-              <td style="cursor: pointer;" class="end-ic">@Html.DisplayFor(modelItem => item.終了IC名)</td>
-              <td style="cursor: pointer; text-align: center;">@Html.DisplayFor(modelItem => item.読取NO)</td>
-              <td style="cursor: pointer; text-align: right;">@Html.DisplayFor(modelItem => item.走行距離)km</td>
+              <td class="pointer" style="">@Html.DisplayFor(modelItem => item.終了IC名)</td>
+              <td class="text-ceter pointer" style="">@Html.DisplayFor(modelItem => item.読取NO)</td>
+              <td class="text-end pointer" style="">@Html.DisplayFor(modelItem => item.走行距離)km</td>
             </tr>
             index++;
           }
@@ -142,26 +196,26 @@
           @foreach (var item1 in Model.NippouToll)
           {
             <tr data-index="@index" style="border-bottom: 0.05em dashed #cfcfcf;">
-              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer; text-align: center;">@Html.DisplayFor(modelItem => item1.開始日時)</td>
-              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;">@Html.DisplayFor(modelItem => item1.開始道路名)</td>
-              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;">@Html.DisplayFor(modelItem => item1.開始IC名)</td>
-              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;"></td>
-              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer; text-align: right;">@String.Format("{0:N0}", item1.料金)円</td>
+              <td onclick="HighwayDataModal(this, @index);" class="text-ceter pointer" style="">@Html.DisplayFor(modelItem => item1.開始日時)</td>
+              <td onclick="HighwayDataModal(this, @index);" class="pointer" style="">@Html.DisplayFor(modelItem => item1.開始道路名)</td>
+              <td onclick="HighwayDataModal(this, @index);" class="pointer" style="">@Html.DisplayFor(modelItem => item1.開始IC名)</td>
+              <td onclick="HighwayDataModal(this, @index);" class="pointer" style=""></td>
+              <td onclick="HighwayDataModal(this, @index);" class="text-end toll-money pointer" style="">@String.Format("{0:N0}", item1.料金)円</td>
               <td rowspan="2">
                 @Html.DropDownListFor(
                    m => item1.Futan_Kubun,
                    new SelectList(Model.FutanKubunList, "Value", "Text"),
-                   new { @class = "form-control list text-center", @id = "entry", onchange = $"onNippouTollFutanKubunChange(this, {index})" }
+                       new { @class = "form-control list text-center futan-select", @id = "entry", onchange = $"onNippouTollFutanKubunChange(this, {index})" }
                )
               </td>
               <td rowspan="2"><button type="button" class="highway-button" onClick="saveNippouTollDataChange(@index)">保存</button></td>
             </tr>
             <tr data-index="@index">
-              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer; text-align: center;">@Html.DisplayFor(modelItem => item1.終了日時)</td>
-              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;">@Html.DisplayFor(modelItem => item1.終了道路名)</td>
-              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;">@Html.DisplayFor(modelItem => item1.終了IC名)</td>
-              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer;"></td>
-              <td onclick="HighwayDataModal(this, @index);" style="cursor: pointer; text-align: right;">@Html.DisplayFor(modelItem => item1.走行距離)km</td>
+              <td onclick="HighwayDataModal(this, @index);" class="text-ceter pointer" style="">@Html.DisplayFor(modelItem => item1.終了日時)</td>
+              <td onclick="HighwayDataModal(this, @index);" class="pointer" style="">@Html.DisplayFor(modelItem => item1.終了道路名)</td>
+              <td onclick="HighwayDataModal(this, @index);" class="pointer" style="">@Html.DisplayFor(modelItem => item1.終了IC名)</td>
+              <td onclick="HighwayDataModal(this, @index);" class="pointer" style=""></td>
+              <td onclick="HighwayDataModal(this, @index);" class="text-end pointer" style="">@Html.DisplayFor(modelItem => item1.走行距離)km</td>
             </tr>
             index++;
           }
@@ -171,54 +225,18 @@
   </div>
   <br />
 
-  <button type="button" type="button" class="btn btn-primary btn-sm" style="width: 100%; padding: 0;" data-bs-toggle="collapse" data-bs-target="#divCollapseOtherPaid" aria-expanded="false" aria-controls="divCollapseOtherPaid">
-    <div style="padding: 0rem 2rem;"><span class="size17" style="float:left;">その他有料代</span><span style="float:right;">▼</span></div>
+  <button type="button" class="btn btn-primary btn-sm p-0 w-100" style="" data-bs-toggle="collapse" data-bs-target="#divCollapseOtherPaid" aria-expanded="false" aria-controls="divCollapseOtherPaid">
+    <div style="padding: 0rem 2rem;"><span class="size17 float-start" style="">その他有料代</span><span class="float-start" style="">▼</span></div>
   </button>
-  <div id="divCollapseOtherPaid" class="container collapse show" style="padding: 0; border-collapse: collapse; ">
+  <div id="divCollapseOtherPaid" class="container collapse show p-0" style="border-collapse: collapse; ">
     <div class="header">
       <div></div>
       <div>
         <button type="button" class="btn btn-outline-info" style="width:100px;" onclick="OtherPaidModal(this, -1);">追加</button>
       </div>
     </div>
-    <div class="other-paid-list">
-      <table class="table table-HaisyaWeb">
-        <thead class="table-active">
-          <tr>
-            <th style="width:120px;">項目名</th>
-            <th style="width: auto;">発</th>
-            <th style="width: auto;">着</th>
-            <th style="width:120px;">料金</th>
-            <th style="width:120px;">負担選択</th>
-          </tr>
-        </thead>
-        <tbody>
-          @{ var otherIndex = 0; }
-          @if (Model.NippouTollOther != null)
-          {
-            @foreach (var item in Model.NippouTollOther)
-            {
-              <tr data-index="@otherIndex">
-                <td onclick="OtherPaidModal(this, @otherIndex);" style="cursor: pointer;text-align:center;">
-                  @Model.GroupUserSelectList.FirstOrDefault(x => x.Value == item.Toll_Kubun.ToString())?.Text
-                </td>
-                <td onclick="OtherPaidModal(this, @otherIndex);" style="cursor: pointer;">@item.Start_Name</td>
-                <td onclick="OtherPaidModal(this, @otherIndex);" style="cursor: pointer;">@item.End_Name</td>
-                <td onclick="OtherPaidModal(this, @otherIndex);" style="cursor: pointer; text-align: right;">@string.Format("{0:N0}", item.Toll_Fee)円</td>
-                <td>
-                  @Html.DropDownListFor(
-                       m => item.Futan_Kubun,
-                       new SelectList(Model.FutanKubunList, "Value", "Text"),
-                       new { @class = "form-control list text-center", onchange = $"onOtherPaidFutanKubunChange(this, {otherIndex})" }
-                   )
-                </td>
-              </tr>
-              otherIndex++;
-            }
-          }
-        </tbody>
-      </table>
-    </div>
+    @await Html.PartialAsync("OthderPaidList", Model)
+
   </div>
   <br />
 </div>
@@ -244,7 +262,19 @@
   var InitialDisplayNippouTollOther = JSON.parse('@Html.Raw(Json.Serialize(Model.InitialDisplayNippouTollOther))') || [];
   var InitialDisplayNippouToll = JSON.parse('@Html.Raw(Json.Serialize(Model.InitialDisplayNippouToll))') || [];
   var HighwayData = JSON.parse('@Html.Raw(Json.Serialize(Model.HighwayData))') || [];
-  var NippouTollDegitako = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouTollDegitako))') || [];
+  var NippouTollDegitako = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouTollDegitako.Where(m => m.開始日時 >= Model.AnkenDegitakoStartDatetime && m.終了日時 <= Model.AnkenDegitakoEndDatetime).ToList()))') || [];
+
+  /** 案件期間のデジタコ選択 */
+  let AnkenDegitakoStartId = Number(@Html.Raw(Json.Serialize(Model.AnkenDegitakoStartId)));
+  let AnkenDegitakoStartDatetime = new Date('@Html.Raw(Json.Serialize(Model.AnkenDegitakoStartDatetime))');
+  let AnkenDegitakoEndId = Number(@Html.Raw(Json.Serialize(Model.AnkenDegitakoEndId)));
+  let AnkenDegitakoEndDatetime = new Date('@Html.Raw(Json.Serialize(Model.AnkenDegitakoEndDatetime))');
+  let AnkenDegitakoDistance = parseFloat(@Html.Raw(Json.Serialize(Model.AnkenDegitakoDistance)));
+  let AnkenDegitakoBreakTime = new Date('@Html.Raw(Json.Serialize(Model.AnkenDegitakoBreakTime))');
+  let AnkenDegitakoWorkTime = new Date('@Html.Raw(Json.Serialize(Model.AnkenDegitakoWorkTime))');
+  let AnkenDegitakoActualWorkTime = new Date('@Html.Raw(Json.Serialize(Model.AnkenDegitakoActualWorkTime))');
+
+
 
   // 変更内容があるかどうかのデータチェック
   function DataCheck() {
@@ -375,18 +405,31 @@
   $(function () {
     //ラジオボタンの表示・非表示を制御
     var isManualEntry = $('#manualEntry').is(':checked') || @(Model.HaisyaDataList.Haisya_Kubun == 2 ? "true" : "false");
+
     $('#distanceInputContainer').toggle(isManualEntry);
     //案件情報の表示・非表示を制御
     var isManualEntry = $('#digitalTachograph').is(':checked') && @(Model.HaisyaDataList.Haisya_Kubun != 2 ? "true" : "false");
-    $('#distanceContainer').toggle(isManualEntry);
+
+    // $('#distanceContainer').collapse(isManualEntry == true ? 'show':'hide');
+
     $('#digitalTachograph, #manualEntry').change(function() {
       var isManualEntry = $('#manualEntry').is(':checked') || @(Model.HaisyaDataList.Haisya_Kubun == 2 ? "true" : "false");
       $('#distanceInputContainer').toggle(isManualEntry);
       var isManualEntry = $('#digitalTachograph').is(':checked') && @(Model.HaisyaDataList.Haisya_Kubun != 2 ? "true" : "false");
-      $('#distanceContainer').toggle(isManualEntry);
+      // $('#distanceContainer').toggle(isManualEntry);
+      // $('#distanceContainer').collapse(isManualEntry == true ? 'show':'hide');
     });
+
+
     $('#NippouStayDegitakoIdList').val(@Html.Raw(Json.Serialize(Model.NippouStayDegitakoIdList)));
     $('#NippouKaisoDegitakoIdList').val(@Html.Raw(Json.Serialize(Model.NippouKaisoDegitakoIdList)));
+
+
+    $('.futan-select').change(function() {
+        CalcTollMoney();
+    });
+
+    CalcTollMoney();
   });
 
   $(document).ready(function() {
@@ -394,6 +437,7 @@
 
     updateTableVisibility();
     updateNippouDetails();
+    
   });
 
   function updateNippouDetails(){
@@ -414,6 +458,7 @@
     $('#Nippou_Stay_Dllowance').val('@Model.Nippou_Stay?.Dllowance');
     $('#Nippou_Stay_Day').val('@Model.Nippou_Stay?.Day');
   }
+  
   function updateTableVisibility() {
     var isManualEntry = $('#manualEntry').is(':checked') || @(Model.HaisyaDataList.Haisya_Kubun == 2 ? "true" : "false");
     var isDigitalTachograph = $('#digitalTachograph').is(':checked') && @(Model.HaisyaDataList.Haisya_Kubun != 2 ? "true" : "false");
@@ -433,7 +478,7 @@
 
   // その他有料代のモーダル表示
   function OtherPaidModal(tr, rowIndex) {
-    event.preventDefault();
+    
     let otherPaidData;
 
     if (rowIndex >= 0 && Array.isArray(OtherPaidData) && OtherPaidData[rowIndex]) {
@@ -455,7 +500,7 @@
         } else {
           //alert("【done】" + response.partialView);
           $("#ModalHere").html(response.partialView);
-          $("#ModalHere").find('.modal').modal('show');
+          DailogOpen2("ModalHere","",600,300);
           return false;
         }
       })
@@ -463,16 +508,15 @@
         console.log(xhr);
       })
       .always(function(xhr, msg) {
-        //console.log(xhr, msg);
-        //alert(msg);
       });
   };
+  
   //その他有料代のレコードの追加・更新処理
   function saveOtherPaidList() {
     if (!validateOtherPaidForm()) {
       return;
     }
-    event.preventDefault();
+    
     const index = $("#recordIndex").val();
     const otherPaidData = {
       Toll_Kubun: $("#tollKubun").val(),
@@ -522,8 +566,9 @@
     return isValid;
   }
 
+  /** 一括設定ボタン押下処理　*/
   function changeFutanKubun(value) {
-    event.preventDefault();
+    
     if ($('#manualEntry').is(':checked')) {
       var dropdowns = document.querySelectorAll('#nippouTollTable select[id^="entry"]');
       dropdowns.forEach(function (dropdown, index) {
@@ -538,6 +583,8 @@
         onHighwayDataFutanKubunChange(dropdown, index);
       });
     }
+
+    CalcTollMoney();
   }
   //レコードの削除処理
   function deleteOtherPaidList() {
@@ -549,29 +596,59 @@
   //その他有料代のリストの更新
   function postOtherPaidList(otherPaidData) {
 
-    $.post('@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "UpdateOtherPaidData" })', {
-        NippouTollOther: otherPaidData,
-        HaisyaDataList: @Html.Raw(Json.Serialize(Model.HaisyaDataList)),
-      })
-      .done(function(response) {
-        if (response.message != null) {
-            alertError(`【エラー】${response.message}`);
+    let haisyaDataList = @Html.Raw(Json.Serialize(Model.HaisyaDataList));
+
+    $.ajax({
+      url: '@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "UpdateOtherPaidData" })',
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({
+            NippouTollOther: otherPaidData,
+            HaisyaDataList: haisyaDataList,
+      }),
+      success: function(data) {
+        if (data.message != null) {
+            alertError(`【エラー】${data.message}`);
             return false;
         } else {
           //alert("【done】" + response.partialView);
-          $('#ModalHere').find('.modal').modal('hide');
+          $("#ModalHere").dialog('close');
           $("#ModalHere").html('');
-          updateOtherPaidList(response.partialView);
+          updateOtherPaidList(data.partialView);
+          CalcTollMoney();
           return false;
         }
-      })
-      .fail(function(xhr) {
-        console.log(xhr);
-      })
-      .always(function(xhr, msg) {
-        //console.log(xhr, msg);
-        //alert(msg);
-      });
+      },
+      error: function(xhr, status, error) {
+        // エラー処理
+        console.error(error);
+      },
+      complete: function() {
+      }
+    });
+
+
+    // $.post('@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "UpdateOtherPaidData" })', {
+    //     NippouTollOther: otherPaidData,
+    //     HaisyaDataList: JSON.stringify(haisyaDataList),
+    //   })
+    //   .done(function(response) {
+    //     if (response.message != null) {
+    //         alertError(`【エラー】${response.message}`);
+    //         return false;
+    //     } else {
+    //       //alert("【done】" + response.partialView);
+    //       $('#ModalHere').find('.modal').modal('hide');
+    //       $("#ModalHere").html('');
+    //       updateOtherPaidList(response.partialView);
+    //       return false;
+    //     }
+    //   })
+    //   .fail(function(xhr) {
+    //     console.log(xhr);
+    //   })
+    //   .always(function(xhr, msg) {
+    //   });
   };
 
   function updateOtherPaidList(partialView) {
@@ -580,8 +657,7 @@
 
   //高速情報追加のモーダル表示
   function HighwayDataModal(tr, rowIndex) {
-    event.preventDefault();
-
+    
     var row = $(`#highwayDataTable tr[data-index="${rowIndex}"]`);
 
     var selectedRowIndex = NippouToll.findIndex(record =>
@@ -605,7 +681,7 @@
         } else {
           //alert("【done】" + response.partialView);
           $("#ModalHere").html(response.partialView);
-          $("#ModalHere").find('.modal').modal('show');
+          DailogOpen2("ModalHere","",1050,300);
           return false;
         }
       })
@@ -613,8 +689,6 @@
         console.log(xhr);
       })
       .always(function(xhr, msg) {
-        console.log(xhr, msg);
-        //alert(msg);
       });
   };
   //高速情報追加のレコードの追加・更新処理
@@ -624,7 +698,7 @@
     }
     var feeInput = $("#fee");
     feeInput.val(feeInput.val().replace(/,/g, ""));
-    event.preventDefault();
+    
     const index = $("#recordIndex").val();
 
     if (index == -1) {
@@ -657,6 +731,7 @@
     postHighwayList(NippouToll);
     closeHighwayList();
   };
+
   //レコードの削除処理
   function deleteHighwayList() {
     const index = $("#recordIndex").val();
@@ -689,10 +764,11 @@
           return false;
       } else {
         //alert("【done】" + response.partialView);
-        $('#ModalHere').find('.modal').modal('hide');
+        $("#ModalHere").dialog('close');
         $("#ModalHere").html('');
         updateHighwayList(response.partialView);
         $('#nippouTollTable').show();
+        CalcTollMoney();
         return false;
       }
     })
@@ -700,8 +776,6 @@
       console.log(xhr);
     })
     .always(function(xhr, msg) {
-      //console.log(xhr, msg);
-      //alert(msg);
     });
   };
 
@@ -760,8 +834,7 @@
 
   // 泊まり設定のモーダル表示
   function OvernightModal() {
-    event.preventDefault();
-
+    
     let nippouStayDegitakoIdList = $('#NippouStayDegitakoIdList').val() || "";
 
     const nippouStayDegitakoIdListInt = nippouStayDegitakoIdList.split(",")
@@ -806,20 +879,20 @@
       .fail(function(xhr) {
         console.log(xhr);
       })
-      .always(function(xhr, msg) {});
+      .always(function(xhr, msg) {
+      });
   };
 
   // 承認依頼のモーダルの表示
   function CertificationRequestModal() {
-    event.preventDefault();
 
     $.post('@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "CertificationRequestModal" })',
       {
-          Nippou_ID: @Html.Raw(Json.Serialize(Model.Nippou_ID)),
-          Nippou_Approval_ID: @Html.Raw(Json.Serialize(Model.NippouApproval.Nippou_Approval_ID)),
-              Approval_Group_ID: $("#NippouApproval_Approval_Group_ID").val(),
-              FormattedLimitDate:$("#NippouApproval_Limit_DateTime").val(),
-                  Comment: $("#NippouApproval_Order_Memo").val(),
+          Nippou_ID: JSON.parse(@Html.Raw(Json.Serialize(Model.Nippou_ID))),
+          Nippou_Approval_ID: JSON.parse(@Html.Raw(Json.Serialize(Model.NippouApproval.Nippou_Approval_ID))),
+          Approval_Group_ID: $("#NippouApproval_Approval_Group_ID").val(),
+          FormattedLimitDate:$("#NippouApproval_Limit_DateTime").val(),
+          Comment: $("#NippouApproval_Order_Memo").val(),
       })
       .done(function(response) {
         if (response.message != null) {
@@ -839,7 +912,7 @@
 
   // 空車回送設定のモーダル表示
   function EmptyCarModal() {
-    event.preventDefault();
+    
 
     let nippouKaisoDegitakoIdList = $('#NippouKaisoDegitakoIdList').val() || "";
 
@@ -864,23 +937,32 @@
       NippouKaisoDegitakoIdList: nippouKaisoDegitakoIdListInt,
     };
 
-    $.post('@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "EmptyCarModal" })', {
-        EmptyCarModalData: JSON.stringify(data)
-      })
-      .done(function(response) {
-        if (response.message != null) {
-            alertError(`【エラー】${response.message}`);
-            return false;
+    $.ajax({
+        url: '@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "EmptyCarModal" })',
+        type: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify(data)
+    })
+    .done(function(data) {
+        if (data.message != null) {
+              alertError(`【エラー】${data.message}`);
+              return false;
         } else {
-          $("#ModalHere").html(response.partialView);
-          $("#ModalHere").find('.modal').modal('show');
-          return false;
+        //alert("【done】" + data.partialView);
+        $("#ModalHere").html(data.partialView);
+        DailogOpen2('ModalHere','空車回送登録',1050, 700);
+        return false;
         }
-      })
-      .fail(function(xhr) {
-        console.log(xhr);
-      })
-      .always(function(xhr, msg) {});
+    })
+    .fail(function(jqXHR, textStatus, errorThrown) {
+        console.error("エラー:", textStatus, errorThrown);
+    })
+    .always(function(){
+    });
+
+
+
+
   };
 
   //空車回送設定時の選択したレコードの終了日時以降のデータのみを表示
@@ -915,7 +997,7 @@
 
   // 仮登録ボタン押下時の処理
   function ProvisionalRegistration(ApprovalStatus = 0) {
-    event.preventDefault();
+    
     let nippouKaisoDegitakoIdList = $('#NippouKaisoDegitakoIdList').val() || "";
 
     const nippouKaisoDegitakoIdListInt = nippouKaisoDegitakoIdList.split(",")
@@ -1041,8 +1123,9 @@
     }
   }
 
+  /**  */
   function saveHighwayDataFutanKubunChange(index) {
-    event.preventDefault();
+    
     var row = $(`#highwayDataTable tr[data-index="${index}"]`);
     // HighwayDataから該当するindexの行を取得
 
@@ -1134,8 +1217,9 @@
     }
   }
 
+  /**  */
   function saveNippouTollDataChange(index) {
-    event.preventDefault();
+    
     var selectedRow = NippouToll[index];
     // 見つかれば更新
     if (!selectedRow)
@@ -1191,8 +1275,9 @@
     }
   }
 
+  /**  */
   function ProvisionalRegistrationWithConfirm() {
-    event.preventDefault();
+    
     alertYesNoMsg("確認", "仮登録します。よろしいですか。", "question", "はい", "いいえ")
       .then(function(result) {
         if (result) {
@@ -1205,10 +1290,10 @@
         console.error('Error in alertThreeButtonsMsg:', error);
       });
   }
-  // 承認ボタン押下時の処理
-  function ApprovalRegistration() {
-    event.preventDefault();
 
+  /** 承認ボタン押下時の処理 */
+  function ApprovalRegistration() {
+    
     var comment = $('#Nippou_Kaiso_Commnet').val();
     var dllowance = $('#Nippou_Stay_Dllowance').val();
     let Distance = $('#Nippou_Distance').val();
@@ -1237,9 +1322,9 @@
       });
   }
 
-  // 売上入力ボタン押下時の処理
+  /** 売上入力ボタン押下時の処理 */
   function salesEntry() {
-    event.preventDefault();
+    
     if (DataCheck()) {
       // DataCheckがtrueを返した場合
       sendInputIndexForm()
@@ -1249,9 +1334,9 @@
     }
   }
 
-  // 案件修正ボタン押下時の処理
+  /** 案件修正ボタン押下時の処理 */
   function CaseAmendments() {
-    event.preventDefault();
+    
     if (DataCheck()) {
       // DataCheckがtrueを返した場合
       submitAnkenEdit();
@@ -1261,7 +1346,7 @@
     }
   }
 
-  // 登録・更新後の確認モーダルの表示
+  /** 登録・更新後の確認モーダルの表示 */
   function showChangeTransitionDialog(Anken_ID) {
     alertYesNoMsg("登録・更新処理が完了しました", "画面を閉じますか？", "question", "はい", "いいえ")
       .then(function(result) {
@@ -1277,9 +1362,10 @@
       });
   }
 
+  /**  */
   function sendInputIndexForm() {
 
-    var ankenId = @Html.Raw(Json.Serialize(Model.Anken_ID));
+    var ankenId = @Html.Raw(Json.Serialize(Model.Search.Anken_ID));
     var processingCategory = @Html.Raw(Json.Serialize(Model.Uriage != null ? Model.Uriage.Reg_Kubun : 0));
     var form = document.createElement('form');
     form.id = 'customForm'; // Assign a unique ID to the form
@@ -1310,8 +1396,9 @@
     form.submit();
   }
 
+  /**  */
   async function btnCloseOnClick() {
-    event.preventDefault();
+    
     if (DataCheck()) {
         // DataCheckがtrueを返した場合
         BackMenuOnClick();
@@ -1322,6 +1409,7 @@
     return false;
   };
 
+  /**  */
   function BackMenuOnClick() {
     // if ($('#WebViewFlg').val() == 0) {
     //     logout();
@@ -1345,4 +1433,45 @@
 
   };
 
+  /** 有料料金を集計して集計結果を表示 */
+  function CalcTollMoney() {
+
+    let totalTollMoney = 0;
+    let companyTollMoney = 0;
+    let clientTollMoney = 0;
+    let personalTollMoney = 0;
+
+    let bodys = ["highwayDataTable", "nippouTollTable", "otherTollTable"];
+
+    for (let i = 0; i < bodys.length; i++) {
+      $('#' + bodys[i] + ' tr').each(function() {
+          // 現在の行を取得
+          let currentRow = $(this);
+          let rowId = currentRow.data('index');
+
+          // 行内のセルの値を取得（例: 最初のセル）
+          let futankubun = currentRow.find('.futan-select').val();
+          let futankubunText = currentRow.find('.futan-select').text();
+
+          if (typeof futankubunText === "undefined") {
+          } else {
+              let tollmoneyText = currentRow.find('.toll-money').text();
+              tollmoneyText = tollmoneyText.replace('円','').replace(',','').replace(',','');
+              let tollmoney = Number(tollmoneyText);
+              if (isNumber(tollmoney)) {
+                  totalTollMoney += Number(tollmoney);
+                  if (futankubun === '1') { personalTollMoney += Number(tollmoney); }
+                  if (futankubun === '2') { companyTollMoney += Number(tollmoney); }
+                  if (futankubun === '3') { clientTollMoney += Number(tollmoney); }
+              }
+          }
+
+      });
+    }
+
+    $("#disp-TollTotalSum").text(kanmaChange2(totalTollMoney));
+    $("#disp-TollTotalCompany").text(kanmaChange2(companyTollMoney));
+    $("#disp-TollTotalClient").text(kanmaChange2(clientTollMoney));
+    $("#disp-TollTotalPersonal").text(kanmaChange2(personalTollMoney));
+  }
 </script>

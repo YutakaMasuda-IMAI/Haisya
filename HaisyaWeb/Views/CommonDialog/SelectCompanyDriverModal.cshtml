@@ -69,23 +69,23 @@
   <div class="modal-content">
     <div class="model-body">
       <div class="div-area-company-driver-dialog">
-        <table class="table jbc-table table-borderless" style="padding: 0; background-color: whitesmoke;" border="1">
+        <table class="table jbc-table table-borderless p-0" style="background-color: whitesmoke;" border="1">
           <tbody>
             <tr style="vertical-align: middle;">
               @*<td width="20px"></td>*@
               <td class="col-sm-2">
-                <label class="control-label align-self-center align-middle text-end" style="padding:0;">車番：</label>
+                <label class="control-label align-self-center align-middle text-end p-0" style="">車番：</label>
                 @Html.TextBoxFor(model => Model.Syaban, null, new { @class = "text", @style = "width:90px;" })
               </td>
               <td class="col-sm-3">
-                @Html.LabelFor(model => model.SelectSyasyuID, htmlAttributes: new { @class = "control-label align-self-center align-middle text-end", @style = "padding: 0;" })
-                <div class="" style="display: inline-block; _display: inline; padding: 0; width: 80%;">
+                @Html.LabelFor(model => model.SelectSyasyuID, htmlAttributes: new { @class = "control-label align-self-center align-middle text-end p-0", @style = "" })
+                <div class="p-0 d-inline-block" style="_display: inline; width: 80%;">
                   @Html.DropDownListFor(model => model.SelectSyasyuID, new SelectList(Model.SyasyuSelectList, "Value", "Text", "Selected"), "車種を選択", new { @class = "form-control", @style = "padding: 0;" })
                   @Html.ValidationMessageFor(model => model.SelectSyasyuID, "", new { id = "SelectDriverKubun", @class = "text-danger align-middle" })
                 </div>
               </td>
               @*<td class="col-sm-3">
-                  @Html.LabelFor(model => model.SelectKata, htmlAttributes: new { @class = "control-label align-self-center align-middle text-end", @style = "padding: 0;" })
+                  @Html.LabelFor(model => model.SelectKata, htmlAttributes: new { @class = "control-label align-self-center align-middle text-end p-0", @style = "" })
                   <div class="2" style="display: inline-block; _display: inline; padding: 0; width: 80%;">
                     @Html.DropDownListFor(model => model.SelectKata, new SelectList(Model.KataSelectList, "Value", "Text", "Selected"), "型を選択", new { @class = "form-control", @style = "padding: 0;" })
                     @Html.ValidationMessageFor(model => model.SelectKata, "", new { id = "SelectMonth", @class = "text-danger align-middle" })
@@ -93,11 +93,11 @@
                 </td>*@
               <td class="col-sm-2">
                 @Html.CheckBoxFor(model => model.MyTantouOnlyFlg, new { })
-                @Html.LabelFor(model => model.MyTantouOnlyFlg, htmlAttributes: new { @class = "control-label align-self-center align-middle", @style = "padding: 0; margin-right: 1rem;" })
+                @Html.LabelFor(model => model.MyTantouOnlyFlg, htmlAttributes: new { @class = "control-label align-self-center align-middle p-0", @style = "margin-right: 1rem;" })
               </td>
               <td class="col-sm-2">
                 @Html.CheckBoxFor(model => model.NowUsingSyaryoFlg, new { })
-                @Html.LabelFor(model => model.NowUsingSyaryoFlg, htmlAttributes: new { @class = "control-label align-self-center align-middle", @style = "padding: 0; margin-right: 1rem;" })
+                @Html.LabelFor(model => model.NowUsingSyaryoFlg, htmlAttributes: new { @class = "control-label align-self-center align-middle p-0", @style = "margin-right: 1rem;" })
               </td>
               <td class="col-sm-1">
                 <button type="button" style="width: 100px; float: right;" class="btn btn-primary align-items-end" onclick="listDisplay();return false;">検索</button>
@@ -109,7 +109,7 @@
           @*<label>※Top100件を抽出</label>*@
         </div>
 
-        <div id="DataList-CompanyDriverListDataModal" class="table-CompanyDriverListDataModal dataList" style="height:500px; margin: 0;">
+        <div id="DataList-CompanyDriverListDataModal" class="table-CompanyDriverListDataModal dataList m-0" style="height:500px;">
 
         </div>
 

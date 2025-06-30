@@ -68,31 +68,31 @@
   <div class="modal-content">
     <div class="model-body">
       <div class="div-area-syaryomanagement-dialog">
-        <table class="table jbc-table table-borderless" style="padding: 0; background-color: whitesmoke;" border="1">
+        <table class="table jbc-table table-borderless p-0" style="background-color: whitesmoke;" border="1">
           <tbody>
             <tr style="vertical-align: middle;">
               @*<td width="20px"></td>*@
               <td class="col-sm-2">
-                <label class="control-label align-self-center align-middle text-end" style="padding:0;">車番：</label>
+                <label class="control-label align-self-center align-middle text-end p-0" style="">車番：</label>
                 @Html.TextBoxFor(model => Model.Syaban, null, new { @class = "text", @style = "width:100px;" })
               </td>
               <td class="col-sm-3">
-                @Html.LabelFor(model => model.SelectSyasyuID, htmlAttributes: new { @class = "control-label align-self-center align-middle text-end", @style = "padding: 0;" })
-                <div class="" style="display: inline-block; _display: inline; padding: 0; width: 80%;">
-                  @Html.DropDownListFor(model => model.SelectSyasyuID, new SelectList(Model.SyasyuSelectList, "Value", "Text", "Selected"), "車種を選択", new { @class = "form-control", @style = "padding: 0;" })
+                @Html.LabelFor(model => model.SelectSyasyuID, htmlAttributes: new { @class = "control-label align-self-center align-middle text-end p-0", @style = "" })
+                <div class="d-inline-block  p-0" style="_display: inline; width: 80%;">
+                  @Html.DropDownListFor(model => model.SelectSyasyuID, new SelectList(Model.SyasyuSelectList, "Value", "Text", "Selected"), "車種を選択", new { @class = "form-control p-0", @style = "" })
                   @Html.ValidationMessageFor(model => model.SelectSyasyuID, "", new { id = "SelectDriverKubun", @class = "text-danger align-middle" })
                 </div>
               </td>
               @*<td class="col-sm-3">
-                  @Html.LabelFor(model => model.SelectKata, htmlAttributes: new { @class = "control-label align-self-center align-middle text-end", @style = "padding: 0;" })
-                  <div class="2" style="display: inline-block; _display: inline; padding: 0; width: 80%;">
-                    @Html.DropDownListFor(model => model.SelectKata, new SelectList(Model.KataSelectList, "Value", "Text", "Selected"), "型を選択", new { @class = "form-control", @style = "padding: 0;" })
+                  @Html.LabelFor(model => model.SelectKata, htmlAttributes: new { @class = "control-label align-self-center align-middle text-end p-0", @style = "" })
+                  <div class="2 p-0" style="display: inline-block; _display: inline; width: 80%;">
+                    @Html.DropDownListFor(model => model.SelectKata, new SelectList(Model.KataSelectList, "Value", "Text", "Selected"), "型を選択", new { @class = "form-control p-0", @style = "" })
                     @Html.ValidationMessageFor(model => model.SelectKata, "", new { id = "SelectMonth", @class = "text-danger align-middle" })
                   </div>
                 </td>*@
               <td class="col-sm-4">
-                <div style="border: .1em solid #bbb; padding: 0; margin: 0 5px 0 5px; border-radius: 10px; display: block; ">
-                  @Html.LabelFor(model => model.MyTantouOnlyFlg, htmlAttributes: new { @class = "control-label align-self-center align-middle", @style = "padding: 0; margin-right: 2rem;" })
+                <div class="d-block p-0" style="border: .1em solid #bbb; margin: 0 5px 0 5px; border-radius: 10px;">
+                  @Html.LabelFor(model => model.MyTantouOnlyFlg, htmlAttributes: new { @class = "control-label align-self-center align-middle p-0", @style = "margin-right: 2rem;" })
                   <input type="radio" name="num_of_inq" value="0">全て　
                   <input type="radio" name="num_of_inq" value="1">担当車輌のみ　
                 </div>
@@ -107,7 +107,7 @@
           @*<label>※Top100件を抽出</label>*@
         </div>
 
-        <div id="DataList-SyaryoManagementListDataModal" class="table-SyaryoManagementListDataModal dataList" style="height:500px; margin: 0;">
+        <div id="DataList-SyaryoManagementListDataModal" class="table-SyaryoManagementListDataModal dataList m-0" style="height:500px;">
 
         </div>
 

@@ -174,7 +174,7 @@
                   @Html.DisplayFor(modelItem => item.routeType)
                 </td>
                 <td align="center">
-                  <div style="margin:0px;align-items:center; padding: 0;" class="@(routeTypeClass)">
+                  <div class="p-0" style="margin:0px;align-items:center;" class="@(routeTypeClass)">
                     @(routeTypeDisplay)
                   </div>
 
@@ -294,8 +294,8 @@
         </table>
       </div>
     </div>
-    <div class="modal-footer" style="padding: 0;">
-      <div class="row" style="width: 100%;">
+    <div class="modal-footer p-0" style="">
+      <div class="row w-100" style="">
         <div class="col-10" style="font-size:12px;">
           <label>所要時間に対する1日の最大運転時間は9時間として計算しています。　「日計算」：8時間未満は8時間で労務費を計算　</label><br />
           <label>1日：運転(4時間)+休憩(30分)+運転(4時間)+休憩(30分)+運転(1時間) を想定して計算してます。</label><br />

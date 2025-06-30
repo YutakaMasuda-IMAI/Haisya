@@ -1,4 +1,5 @@
 ﻿using HaisyaWeb.API.WebApp;
+using HaisyaWeb.Common;
 using HaisyaWeb.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
@@ -87,7 +88,7 @@ namespace HaisyaWeb.Service
         /// <param name="AllDisplay">全員表示テキスト</param>
         /// <param name="user_group">ユーザーグループ区分</param>
         /// <returns>担当選択リスト</returns>
-        public static async Task<List<SelectListItem>> GetTantouSelect(MapApiSettings _mapApiSettiong, int CompanyId, 
+        public static async Task<List<SelectListItem>> GetTantouSelect(MapApiSettings _mapApiSettiong, int CompanyId,
                                             TantouLists listKubun = TantouLists.ALL,
                                             bool notAllFlg = false, string AllDisplay = "全員", UserGroupLists user_group = UserGroupLists.ALL)
         {
@@ -127,7 +128,7 @@ namespace HaisyaWeb.Service
             {
                 list.Add(new SelectListItem() { Value = item.User_ID.ToString(), Text = item.Display_Name, Selected = false });
             }
-            
+
             return list;
         }
 
@@ -163,7 +164,7 @@ namespace HaisyaWeb.Service
 
             API.WebApp.MasterDataApi api = new(_mapApiSettiong);
             IEnumerable<Dto.M_Syaryo_Local> dataList = await api.GetSyaryoList(CompanyId, null, null, Size);
-            var queryKata = dataList.OrderBy(x => x.KataDisplay).GroupBy(x => new { KataDisplay = x.KataDisplay, kata = x.KATA });;
+            var queryKata = dataList.OrderBy(x => x.KataDisplay).GroupBy(x => new { KataDisplay = x.KataDisplay, kata = x.KATA }); ;
             foreach (var item in queryKata)
             {
                 list.Add(new SelectListItem() { Value = item.Key.kata, Text = item.Key.KataDisplay, Selected = false });
@@ -431,7 +432,7 @@ namespace HaisyaWeb.Service
 
             for (int i = 1; i <= 12; i++)
             {
-                   list.Add(new SelectListItem() { Value = i.ToString(), Text = i.ToString("#月"), Selected = (0 == i) });
+                list.Add(new SelectListItem() { Value = i.ToString(), Text = i.ToString("#月"), Selected = (0 == i) });
             }
 
             return list;
@@ -473,6 +474,29 @@ namespace HaisyaWeb.Service
             .OrderBy(x => x.Sort_Order)
             .Select(x => new SelectListItem() { Value = x.Report_Serch_Kubun_ID.ToString(), Text = x.Display_Title, Selected = selectedId == x.Report_Serch_Kubun_ID })
             .ToList();
+
+        /// <summary>
+        /// 負担区分選択リスト
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<SelectListItem> FutanKubunSelect(bool flgYosya = false)
+        {
+            List<SelectListItem> list = [];
+            list.Add(new SelectListItem() { Value = "0".ToString(), Text = "", Selected = false });
+
+            foreach (SystemEnums.FutanKubun Value in Enum.GetValues(typeof(SystemEnums.FutanKubun)))
+            {
+                string name = Enum.GetName(typeof(SystemEnums.FutanKubun), Value);
+                if (!(flgYosya && "1".Equals(Value.ToString())))
+                {
+                    list.Add(new SelectListItem() { Value = ((int)Value).ToString(), Text = name, Selected = false });
+                }
+            }
+            return list;
+
+        }
+
+
 
     }
 }

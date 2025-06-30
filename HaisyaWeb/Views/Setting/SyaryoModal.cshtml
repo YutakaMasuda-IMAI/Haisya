@@ -33,8 +33,8 @@
     <div class="modal-content">
       <div class="modal-header" style="background-color: gainsboro;">
         <h1 class="modal-title fs-3" id="exampleModalLabel">@(Model.Title)</h1>
-        <button type="button" type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
-        <button type="button" type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
+        <button type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
       </div>
       <div class="model-body">
         <form id="form1">
@@ -149,7 +149,7 @@
               </tr>
               <tr>
                 <td colspan="3">
-                  <table width="100%" style="margin: 0px; padding: 0px;">
+                  <table width="100%" class="p-0 m-0" style="">
                     <tr>
                       <th style="width: 100px; text-align: right;">長さ</th>
                       <td style="width: 80px;">@Html.TextBoxFor(model => Model.M_Syaryo.LONG, null, new { @class = "form-control text-end", @style = "width: 80px; margin-right:0px; padding: 0;", @onblur = "" })</td>
@@ -166,7 +166,7 @@
               </tr>
               <tr>
                 <td colspan="3">
-                  <table width="100%" style="margin: 0px; padding: 0px;">
+                  <table width="100%" class="p-0 m-0" style="">
                     <tr>
                       <th style="width: 100px; text-align: right;">最大積載量</th>
                       <td style="width: 80px;">@Html.TextBoxFor(model => Model.M_Syaryo.MAX_LOAD_CAPA, null, new { @class = "form-control text-end", @style = "width: 80px; padding: 0;", @onblur = "" })</td>

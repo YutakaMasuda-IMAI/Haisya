@@ -97,9 +97,9 @@
     <div class="modal-header">
       @*<h1 class="modal-title fs-3" id="exampleModalLabel" style="width:120px;">案件照会</h1>*@
       <div class="row text-center" style="margin:0 2rem; width:100%;">
-        <button type="button" type="button" id="btnTabletTransfer" class="btn btn-success col-2" onclick="btnTabletTransferOnClick(); return false;" style="margin: 0 1rem 0 0.5rem;">タブレット送信</button>
-        <button type="button" type="button" class="btn btn-primary" onclick="btnAnkenRegisterOnClick(); return false;" style="margin: 0 0.5rem 0 0.5rem; width: 100px; ">案件修正</button>
-        <button type="button" type="button" class="btn btn-info" onclick="return false;" style="margin: 0 0.5rem 0 0.5rem; width: 90px;">見積書</button>
+        <button type="button" id="btnTabletTransfer" class="btn btn-success col-2" onclick="btnTabletTransferOnClick(); return false;" style="margin: 0 1rem 0 0.5rem;">タブレット送信</button>
+        <button type="button" class="btn btn-primary" onclick="btnAnkenRegisterOnClick(); return false;" style="margin: 0 0.5rem 0 0.5rem; width: 100px; ">案件修正</button>
+        <button type="button" class="btn btn-info" onclick="return false;" style="margin: 0 0.5rem 0 0.5rem; width: 90px;">見積書</button>
         <button type="button" 
           type="button" 
           name="ReportSearchKubunId" 
@@ -111,8 +111,8 @@
           style="margin: 0 0.5rem 0 0.5rem; width: 90px;"
           @(Model?.Report_Serch_Kubun?.Report_Serch_Kubun_ID == null ? "disabled" : "")
         >指示書</button>
-        <button type="button" type="button" class="btn btn-info" onclick="return false;" style="margin: 0 0.5rem 0 0.5rem; width: 90px;">発注書</button>
-        <button type="button" type="button" class="btn btn-light" onclick="btnDailyOnClick();" style="margin: 0 0.5rem 0 1rem; width: 100px;">日報管理</button>
+        <button type="button" class="btn btn-info" onclick="return false;" style="margin: 0 0.5rem 0 0.5rem; width: 90px;">発注書</button>
+        <button type="button" class="btn btn-light" onclick="btnDailyOnClick();" style="margin: 0 0.5rem 0 1rem; width: 100px;">日報管理</button>
       </div>
       @*<a href="#" data-dismiss="modal" class="btn btn-close" onclick="WindowsCloseModel(); return false;" style="width:30px;"></a>*@
     </div>
@@ -334,7 +334,7 @@
                           <td>
                             @if (Model.EditEnabled && (haisya.Haisya_Kubun == null || haisya.Haisya_Kubun == 2 || haisya.Haisya_Kubun == 3))
                             {
-                              <button type="button" class="btn btn-danger" style="width: 40px; font-size: 10px; padding: 0;" onclick="btnCustomerDriverOnClick(@(haisya.AnkenDisplay_ID),@(haisya.Driver_Branch_ID)); return false;">設定</button>
+                              <button type="button" class="btn btn-danger p-0" style="width: 40px; font-size: 10px;" onclick="btnCustomerDriverOnClick(@(haisya.AnkenDisplay_ID),@(haisya.Driver_Branch_ID)); return false;">設定</button>
                             }
                           </td>
 
@@ -353,7 +353,7 @@
 
       </div>
     </div>
-    <div class="modal-footer" style="padding: 0;">
+    <div class="modal-footer p-0" style="">
     </div>
   </div>
 </div>

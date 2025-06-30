@@ -15,6 +15,13 @@ namespace HaisyaWeb.Common
             連携WEB = 3
         }
 
+        public enum FutanKubun
+        {
+            個人負担 = 1,
+            会社負担 = 2,
+            荷主負担 = 3
+        }
+
         /// <summary>
         /// Report_Type
         /// </summary>

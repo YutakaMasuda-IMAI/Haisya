@@ -2,161 +2,189 @@
 
 <head>
   <meta charset="UTF-8">
-  <link href="~/css/Anken.css" rel="stylesheet" />
+
   <style>
   </style>
 </head>
 
-@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAnken", @class = "contact-form", @style = "padding: 0; min-width: 1400px;", @onsubmit = "return false;" }))
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAnken", @class = "contact-form p-0", @style = "min-width: 1400px;", @onsubmit = "return false;" }))
 {
   <div>
     <div hidden>
       <input hidden id="SetPointId" />
       <input hidden id="SetPointDatetime" />
     </div>
-    <button type="button" type="button" class="btn btn-primary btn-sm" style="width: 100%; padding: 0;" data-bs-toggle="collapse" data-bs-target="#distanceContainer" aria-expanded="false" aria-controls="distanceContainer">
+    <button type="button" class="btn btn-primary btn-sm w-100 p-0" style="" data-bs-toggle="collapse" data-bs-target="#distanceContainer" aria-expanded="false" aria-controls="distanceContainer">
       <div style="padding: 0rem 2rem;"><span class="size17" style="float:left;">案件ルート情報</span><span style="float:right;">▼</span></div>
     </button>
-    <div id="distanceContainer" class="container collapse show" style="padding: 0; border-collapse: collapse; width: 100%;">
+    <div id="distanceContainer" class="container collapse w-100 p-0" style="border-collapse: collapse;">
       <div class="header row">
-        <div class="col-3">
-          <button type="button" id="btnSerchRoot2" class="btn btn-outline-primary" style="width: 300px;" onclick="btnSerchRootOnclick(); return false;">ルート検索</button>
+        <div class="col-4">
+          <div class="border border-1 mt-2 ms-4" style="width: 90%;border-radius: 10px;">
+            <div class="d-flex" style="place-content: center;">
+              <label class="text-center" style="writing-mode: vertical-lr;">前日</label>
+              <label class="toggle-button-dr">
+                <input id="check-yesterday" class="degitako-check" type="checkbox" />
+              </label>
+              <span class="" style="width: 50px;"></span>
+              <label class="text-center" style="writing-mode: vertical-lr;">翌日</label>
+              <label class="toggle-button-dr">
+                <input id="check-tommorow" class="degitako-check" type="checkbox" />
+              </label>
+            </div>
+          </div>
         </div>
-
-        <div class="col-9">
+        <div class="col-8">
           <div class="root-list">
             <table id="tableRoutList">
               <thead>
                 <tr>
-                  <th style="text-align:center;">ルート</th>
-                  <th style="text-align:center;">所要時間</th>
-                  <th style="text-align:center;">距離</th>
-                  <th style="text-align:center;">有料道路</th>
-                  <th style="text-align:center;">見積原価</th>
-                  <th style="text-align:center;">標準運賃</th>
+                  <th style="text-align:center; width: 140px;">開始日時</th>
+                  <th style="text-align:center; width: 140px;">終了日時</th>
+                  <th style="text-align:center; width: 70px;" class="p-0">勤務時間</th>
+                  <th style="text-align:center; width: 70px;" class="p-0">実労働時間</th>
+                  <th style="text-align:center; width: 70px;" class="p-0">休憩時間</th>
+                  <th style="text-align:center; width: 70px;" class="p-0">走行距離</th>
                 </tr>
               </thead>
               <tbody class="root-list-body">
-                <tr style="">
-                  <td hidden>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.routeID, null, new { @readonly = "readonly", @class = "form-control2 text-center form-control routedisplay", @style = "margin-left: 0;" })</td>
-                  <td hidden>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.routeType, null, new { @readonly = "readonly", @class = "form-control2 form-control routedisplay", @style = "margin-left: 0;" })</td>
-                  <td>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.RouteTypeDisplay, null, new { @readonly = "readonly", @class = "text-center form-control routedisplay", @style = "margin-left: 0;" })</td>
-                  <td>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.TotalTime, null, new { @readonly = "readonly", @class = "text-center form-control routedisplay", @style = "margin-left: 0;" })</td>
-                  <td>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.TotalDistance, "{0:N2}", new { @readonly = "readonly", @class = "text-end form-control routedisplay", @style = "margin-left: 0;", @onblur = "kanmaChange(this);" })</td>
-                  <td>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.Totaltoll, "{0:N0}", new { @readonly = "readonly", @class = "text-end form-control routedisplay", @style = "margin-left: 0;", @onblur = "kanmaChange(this);" })</td>
-                  <td>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.GrossAmountTotal, "{0:N0}", new { @readonly = "readonly", @class = "text-end form-control routedisplay", @style = "margin-left: 0;", @onblur = "kanmaChange(this);" })</td>
-                  <td>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.StdALLFreight, "{0:N0}", new { @readonly = "readonly", @class = "text-end form-control routedisplay", @style = "margin-left: 0;", @onblur = "kanmaChange(this);" })</td>
+                <tr style="height:28px;">
+                  <td class="" style=""><div id="disp-AnkenDegitakoStartDatetime" class="text-center routedisplay ms-0" style="" /></td>
+                  <td class="" style=""><div id="disp-AnkenDegitakoEndDatetime" class="text-center routedisplay ms-0" style="" /></td>
+                  <td class="" style=""><div id="disp-AnkenDegitakoWorkTime" class="text-center routedisplay ms-0" style="" /></td>
+                  <td class="" style=""><div id="disp-AnkenDegitakoActualWorkTime" class="text-center routedisplay ms-0" style="" /></td>
+                  <td class="" style=""><div id="disp-AnkenDegitakoBreakTime" class="text-center routedisplay ms-0" style="" /></td>
+                  <td class="" style=""><div id="disp-AnkenDegitakoDistance" class="text-center routedisplay ms-0" style="" /></td>
                 </tr>
               </tbody>
             </table>
           </div>
         </div>
       </div>
-      <label class="text text-danger fw-bold" style="">上記ルートを変更した場合は、必ず「ルート検索」ボタンをクリックしてルート検索処理を実施してください。</label>
       <div class="anken-body" style="overflow-x: auto;  ">
-        <div style="min-width: 1350px; display: flex;">
-          <div class="" style="background: #6699FF; width: 690px;">
+        <div class="row w-100" style="">
+          <div class="col-9" style="">
             @{
-              AnkenModel.AnkenRegisterModel registerModel = new()
-              {
-                PointList = Model.PointList,
-                Anken_ID = Model.Anken_ID,
-                PointSelectList = Model.PointSelectList,
-                PageType = "DilyReport",
-              };
-
-              registerModel.PointComboBoxItemsStatusKubun = new SelectListItemEx[] {
-                        new SelectListItemEx() { Value="1", Text="確定" },
-                        new SelectListItemEx() { Value="2", Text="暫定" },
-                        };
-              registerModel.PointComboBoxItemsTimeKubun = new SelectListItemEx[] {
-                        new SelectListItemEx() { Value="1", Text="頃" },
-                        new SelectListItemEx() { Value="2", Text="まで" },
-                        new SelectListItemEx() { Value="3", Text="厳守" },
-                        };
-              registerModel.PointSelectRoadTypeList = new SelectListItemEx[] {
-                        new SelectListItemEx() { Value="2", Text="全道路" },
-                        new SelectListItemEx() { Value="0", Text="一般優先" },
-                        new SelectListItemEx() { Value="1", Text="高速優先" },
-                        };
-
+              int maxHeight = 600;
             }
-            @await Html.PartialAsync("~/Views/AnkenRegister/RegisterPoint.cshtml", registerModel)
-          </div>
-          <div class="anken-list" style="width: 650px;">
-            <table class="">
-              <thead>
-                <tr>
-                  <th style="width:100px;" colspan="1">開始日時</th>
-                  <th style="width:10px;" rowspan="2">イベント名</th>
-                  <th style="width:60px;" colspan="1">区間時間</th>
-                  <th style="width:120px;" colspan="1">開始市町村名</th>
-                  <th style="width:100px;" colspan="1">開始場所名</th>
-                  <th style="width:60px;" colspan="1">休憩</th>
-                  <th style="width:80px;" rowspan="2">車輌名</th>
-                </tr>
-                <tr>
-                  <th>終了日時</th>
-                  <th>区間距離</th>
-                  <th>終了市町村名</th>
-                  <th>終了場所名</th>
-                  <th>夜間休憩</th>
-                </tr>
-              </thead>
-              <tfoot>
+            <div class="anken-list w-100" style="max-height: @(maxHeight)px;overflow-y:auto;">
+              <table id="table-degitako-anken" class="table-light table-HaisyaWeb" style="table-layout:fixed;place-self: center;">
+                <thead>
+                  <tr>
+                    <th style="width:100px;" rowspan="2">開始終了<br />選択</th>
+                    <th style="width:130px;" colspan="1">開始日時</th>
+                    <th style="width:100px;" rowspan="2">イベント名</th>
+                    <th style="width:80px;" colspan="1">区間時間</th>
+                    <th style="width:250px;" colspan="1">開始市町村名</th>
+                    <th style="width:250px;" colspan="1">開始場所名</th>
+                    <th style="width:80px;" colspan="1">休憩</th>
+                    <th style="width:130px;" rowspan="2">車輌名</th>
+                  </tr>
+                  <tr>
+                    <th>終了日時</th>
+                    <th>区間距離</th>
+                    <th>終了市町村名</th>
+                    <th>終了場所名</th>
+                    <th>夜間休憩</th>
+                  </tr>
+                </thead>
+                <tfoot>
+                </tfoot>
 
-              </tfoot>
-
-              @if (Model.DegitakoData != null)
-              {
-                @foreach (var item in Model.DegitakoData)
+                @if (Model.DegitakoData != null)
                 {
-                  decimal ido = decimal.Parse(item.開始GPS緯度 ?? "0");
-                  decimal keido = decimal.Parse(item.開始GPS経度 ?? "0");
+                  var indexAnken = 0;
+                  @foreach (var item in Model.DegitakoData.OrderBy(m => m.取り込みID))
+                  {
+                    decimal ido = decimal.Parse(item.開始GPS緯度 ?? "0");
+                    decimal keido = decimal.Parse(item.開始GPS経度 ?? "0");
 
-                  ido = HaisyaWeb.Common.MapConvertUtil.DmsToDForIdo(ido);
-                  keido = HaisyaWeb.Common.MapConvertUtil.DmsToDForKeido(keido);
+                    ido = HaisyaWeb.Common.MapConvertUtil.DmsToDForIdo(ido);
+                    keido = HaisyaWeb.Common.MapConvertUtil.DmsToDForKeido(keido);
 
-                  <tbody class="@(item.イベント名 == "運転" ? "" : "ex-AnkenPoint-tr")"
-                         data-degitako-id="@(item.ID)"
-                         data-degitako-start-datetime="@(item.開始日時)"
-                         data-degitako-start-shiku="@(item.開始市町村名)"
-                         data-degitako-start-basyo="@(item.開始場所名)"
-                         data-degitako-start-gps-ido="@((double)ido)"
-                         data-degitako-start-gps-keido="@((double)keido)">
-                    <tr style="@(item.イベント名 == "運転" ? "background-color: lightgray;" : "") border-bottom: 0.05em dashed #cfcfcf;">
-                      <td style="text-align: center;">@Convert.ToDateTime(item.開始日時).ToString("yyyy/MM/dd HH:mm")</td>
-                      <td rowspan="2" style="text-align: center;">@Html.DisplayFor(modelItem => item.イベント名)</td>
-                      <td style="text-align: right;">@Html.DisplayFor(modelItem => item.区間時間)</td>
-                      <td style="text-align: center;">@Html.DisplayFor(modelItem => item.開始市町村名)</td>
-                      <td style="text-align: center;">@Html.DisplayFor(modelItem => item.開始場所名)</td>
-                      <td style="text-align: center;">
-                        @if (item.日勤_休憩 != null)
-                        {
-                          var val = HaisyaWeb.Common.DateTimeConverter.GetTimeForString(item.日勤_休憩.ToString());
-                          @Html.DisplayFor(modelItem => val)
-                        }
-                      </td>
-                      <td rowspan="2" style="text-align: center;font-size:9px">@Html.DisplayFor(modelItem => item.車輌名)</td>
-                    </tr>
-                    <tr style="@(item.イベント名 == "運転" ? "background-color: lightgray;" : "") border-bottom: 1px solid #000000">
-                      <td style="text-align: center;">@Convert.ToDateTime(item.終了日時).ToString("yyyy/MM/dd HH:mm")</td>
-                      <td style="text-align: right;">@Html.DisplayFor(modelItem => item.区間距離)</td>
-                      <td style="text-align: center;">@Html.DisplayFor(modelItem => item.終了市町村名)</td>
-                      <td style="text-align: center;">@Html.DisplayFor(modelItem => item.終了場所名)</td>
-                      <td style="text-align: center;">
-                        @if (item.早朝深夜_休憩 != null)
-                        {
-                          var val = HaisyaWeb.Common.DateTimeConverter.GetTimeForString(item.早朝深夜_休憩.ToString());
-                          @Html.DisplayFor(modelItem => val)
-                        }
-                      </td>
-                    </tr>
-                  </tbody>
+                    string background = item.イベント名 == "運転" ? "background-color: lemonchiffon;" : "";
+
+                    <tbody data-index="@indexAnken" class="@(item.イベント名 == "運転" ? "" : "ex-AnkenPoint-tr")"
+                    data-degitako-id="@(item.ID)"
+                    data-degitako-start-datetime="@(item.開始日時)"
+                    data-degitako-start-shiku="@(item.開始市町村名)"
+                    data-degitako-start-basyo="@(item.開始場所名)"
+                    data-degitako-start-gps-ido="@((double)ido)"
+                    data-degitako-start-gps-keido="@((double)keido)">
+                      <tr data-index="@indexAnken" style="border-bottom: 0.05em dashed #cfcfcf; @(background) ">
+                        <td rowspan="2" style="text-align: center;">
+                          <div class="form-check form-switch" style="place-self: center;">
+                            <input class="form-check-input custom-checkbox anken-check" style="width:5em; height:2em;" type="checkbox">
+                          </div>
+                        </td>
+                        <td style="text-align: center;" class="start-datetime">@Convert.ToDateTime(item.開始日時).ToString("yyyy/MM/dd HH:mm")</td>
+                        <td rowspan="2" style="text-align: center;">@Html.DisplayFor(modelItem => item.イベント名)</td>
+                        <td style="text-align: right;">@Html.DisplayFor(modelItem => item.区間時間)</td>
+                        <td style="text-align: center;">@Html.DisplayFor(modelItem => item.開始市町村名)</td>
+                        <td style="text-align: center;">@Html.DisplayFor(modelItem => item.開始場所名)</td>
+                        <td style="text-align: center;" class="breaktime">
+                          @if (item.日勤_休憩 != null)
+                          {
+                            var val = HaisyaWeb.Common.DateTimeConverter.GetTimeForString(item.日勤_休憩.ToString());
+                            @Html.DisplayFor(modelItem => val)
+                          }
+                        </td>
+                        <td rowspan="2" style="text-align: center;">@Html.DisplayFor(modelItem => item.車輌名)</td>
+                      </tr>
+                      <tr style="@(item.イベント名 == "運転" ? "background-color: lemonchiffon;" : "") border-bottom: 1px solid #000000">
+                        <td style="text-align: center;" class="end-datetime">@Convert.ToDateTime(item.終了日時).ToString("yyyy/MM/dd HH:mm")</td>
+                        <td style="text-align: right;" class="sect-dist">@Html.DisplayFor(modelItem => item.区間距離)</td>
+                        <td style="text-align: center;">@Html.DisplayFor(modelItem => item.終了市町村名)</td>
+                        <td style="text-align: center;">@Html.DisplayFor(modelItem => item.終了場所名)</td>
+                        <td style="text-align: center;">
+                          @if (item.早朝深夜_休憩 != null)
+                          {
+                            var val = HaisyaWeb.Common.DateTimeConverter.GetTimeForString(item.早朝深夜_休憩.ToString());
+                            @Html.DisplayFor(modelItem => val)
+                          }
+                        </td>
+                      </tr>
+                    </tbody>
+                    indexAnken++;
+                  }
                 }
-              }
-
-            </table>
+              </table>
+            </div>
+          </div>
+          <div class="col-3">
+            <div class="w-100 ms-1 border border-2" style="border-radius: 10px;">
+              <div class="text-center align-content-center" style="background-color:greenyellow; height: 40px; border-bottom: double 3px black;">
+                <h4>案件登録情報</h4>
+              </div>
+              <div class="mt-1" style="max-height: @(maxHeight-42)px;overflow-y:auto;">
+                @{
+                  var pointlist = Model.PointList.OrderBy(m => m.Kubun).ThenBy(m => m.Point_Order).ToList();
+                  for (int i = 0; i < pointlist.Count; i++)
+                  {
+                    <div class="border border-2 m-1 p-1" style="border-radius: 10px;border-color:black !important;">
+                      <div>
+                        @(Model.PointList[i].BuildingName)
+                      </div>
+                      <div>
+                        @(Model.PointList[i].Address)
+                      </div>
+                      <div class="d-flex">
+                        <div class="">@Html.DropDownListFor(model => model.PointList[i].Kubun, new SelectList(Model.PointSelectList, "Value", "Text", "Selected"), new { @class = "form-control dropDownList", @style = "padding: 0; margin-left: 5px; width: 70px; text-align: center;" })</div>
+                        <div class="ms-2">@(Model.PointList[i].PointDateTime?.ToString("yyyy/MM/dd HH:mm"))</div>
+                      </div>
+                    </div>
+                  }
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="w-100 mt-2" style="">
+        <div class="row">
+          <div class="col-sm-10">
+            <button type="button" class="btn btn-outline-primary" onclick="btnOnClickForNoRegAnkenData(); return false;" style="width:90%;">日報情報を表示</button>
           </div>
         </div>
       </div>
@@ -166,9 +194,11 @@
 
 <script>
 
+    var selectedRowsAnken = [];
+
     $(async function () {
 
-      $(".ex-AnkenPoint-tr").draggable({
+        $(".ex-AnkenPoint-tr").draggable({
         helper: function (event) {
           const html = $(event.currentTarget).html();
           const width = $(event.currentTarget).width();
@@ -177,7 +207,7 @@
         },
       });
 
-      $('.drop-area').droppable({
+        $('.drop-area').droppable({
         drop: async function (event, ui) {
           await pointDrop(event, ui);
         },
@@ -189,7 +219,31 @@
         },
       });
 
+        // 切り替えボタンのクリックイベントハンドラ
+        $(".anken-check").click(function() {
+            var row = $(this).closest("tr");
+            var rowId = row.data('index');
+            if ($(this).is(":checked")) {
+                // 最大2行まで選択可能
+                if (selectedRowsAnken.length >= 2) {
+                    $(this).prop("checked", false);
+                    return;
+                }
+                selectedRowsAnken.push(rowId);
+            } else {
+                selectedRowsAnken = selectedRowsAnken.filter(function(id) {
+                    return id !== rowId;
+                });
+            }
+            updateDisplayDataAnken();
+        });
 
+
+        $(".degitako-check").click(function(){
+          DegitakoDataDisplayChange();
+        });
+
+        DegitakoDataDisplayChange();
     });
 
   /**
@@ -357,5 +411,119 @@
     document.getElementById(sId + '__PointDateTime').value = formatDate4(date);
 
   };
+
+  /**
+   * 
+   */
+  function updateDisplayDataAnken() {
+      
+    if (selectedRowsAnken.length === 2) {
+        let minStartDatetime = new Date(9999, 11, 31, 23, 59, 59);
+        let maxEndDatetime = new Date(0, 0, 1, 0, 0, 0);
+        let totalDistance = 0.0;
+        let totalBreakTime = new Date(0, 0, 1, 0, 0, 0);
+        let totalWorkTime = new Date(0, 0, 1, 0, 0, 0);
+        let actualWorkTime = new Date(0, 0, 1, 0, 0, 0);
+
+        let startId = Math.min(selectedRowsAnken[0], selectedRowsAnken[selectedRowsAnken.length - 1]);
+        let endId = Math.max(selectedRowsAnken[0], selectedRowsAnken[selectedRowsAnken.length - 1]);
+        for (let rowId = startId; rowId <= endId; rowId++) {
+            // alert(rowId);
+            let row = $("#table-degitako-anken tbody tr[data-index='" + rowId + "']");
+            let rowStartDatetime = new Date(row.find(".start-datetime").text());
+            let rowEndDatetime = new Date(row.next().find(".end-datetime").text());
+            totalDistance += Number(row.next().find(".sect-dist").text());
+            let rowBreakTime  = row.find(".breaktime").text().trim();
+            if (rowBreakTime.length > 1) {
+                totalBreakTime.setHours(totalBreakTime.getHours() + Number(rowBreakTime.substring(0, 2)));
+                totalBreakTime.setMinutes(totalBreakTime.getMinutes() + Number(rowBreakTime.substring(3, 5)));
+            } 
+
+            if (rowStartDatetime < minStartDatetime) {
+                minStartDatetime = rowStartDatetime;
+                startPlace = row.find(".start-place").text();
+            }
+            if (rowEndDatetime > maxEndDatetime) {
+                maxEndDatetime = rowEndDatetime;
+                endPlace = row.next().find(".end-place").text();
+            }
+
+        }
+
+        // 勤務時間を計算
+        let diffInMilliseconds  = maxEndDatetime - minStartDatetime;
+        let diffInSeconds = diffInMilliseconds / 1000;
+        let diffInMinutes = diffInSeconds / 60;
+        totalWorkTime.setMinutes(totalWorkTime.getMinutes() + diffInMinutes);
+           
+        // 実労働時間を計算
+        diffInMilliseconds = totalWorkTime - totalBreakTime;
+        diffInSeconds = diffInMilliseconds / 1000;
+        diffInMinutes = diffInSeconds / 60;
+        actualWorkTime.setMinutes(actualWorkTime.getMinutes() + diffInMinutes);
+
+        // 距離は少数第一で切り捨て
+        totalDistance = parseFloat(totalDistance.toFixed(1));
+
+        $("#AnkenDegitakoStartId").val(startId);
+        $("#AnkenDegitakoStartDatetime").val(minStartDatetime);
+        $("#AnkenDegitakoEndId").val(endId);
+        $("#AnkenDegitakoEndDatetime").val(maxEndDatetime);
+        $("#AnkenDegitakoDistance").val(totalDistance);
+        $("#AnkenDegitakoBreakTime").val(totalBreakTime);
+        $("#AnkenDegitakoWorkTime").val(totalWorkTime);
+        $("#AnkenDegitakoActualWorkTime").val(actualWorkTime);
+
+        $("#disp-AnkenDegitakoStartDatetime").text(formatDate4(minStartDatetime));
+        $("#disp-AnkenDegitakoEndDatetime").text(formatDate4(maxEndDatetime));
+        $("#disp-AnkenDegitakoWorkTime").text(formatDate5(totalWorkTime));
+        $("#disp-AnkenDegitakoActualWorkTime").text(formatDate5(actualWorkTime));
+        $("#disp-AnkenDegitakoBreakTime").text(formatDate5(totalBreakTime));
+        $("#disp-AnkenDegitakoDistance").text(parseFloat(totalDistance.toFixed(2)) + "km");
+
+
+    }
+    else {
+        $("#AnkenDegitakoStartId").val("");
+        $("#AnkenDegitakoStartDatetime").val("");
+        $("#AnkenDegitakoEndId").val("");
+        $("#AnkenDegitakoEndime").val("");
+        $("#AnkenDegitakoDistance").val(0);
+        $("#AnkenDegitakoBreakTime").val("");
+        $("#AnkenDegitakoWorkTime").val("");
+        $("#AnkenDegitakoActualWorkTime").val("");
+
+        $("#disp-AnkenDegitakoStartDatetime").text("");
+        $("#disp-AnkenDegitakoEndDatetime").text("");
+        $("#disp-AnkenDegitakoWorkTime").text("");
+        $("#disp-AnkenDegitakoActualWorkTime").text("");
+        $("#disp-AnkenDegitakoBreakTime").text("");
+        $("#disp-AnkenDegitakoDistance").text("");
+    }
+  }
+
+
+  function DegitakoDataDisplayChange() {
+
+      let checkY = $('#check-yesterday').prop('checked');
+      let checkT = $('#check-tommorow').prop('checked');
+ 
+      let tableElem = document.getElementById('table-degitako-anken');
+
+      let tbodyElems = tableElem.tBodies;
+
+      const startDate = formatDate3(new Date($('#AnkenDisplay_StartDatetime').val()));
+      const endDate = formatDate3(new Date($('#AnkenDisplay_EndDatetime').val()));
+
+      Array.from(tbodyElems).forEach((tbody, index) => {
+        let row = $("#table-degitako-anken tbody[data-index='" + index + "']");
+        var start = formatDate3(new Date(row.data('degitako-start-datetime')));
+        if (start < startDate) { tbody.style.display = (checkY) ? "" : "none"; }
+        if (start > endDate) { tbody.style.display = (checkT) ? "" : "none"; }
+      });
+
+
+  }
+
 
 </script>

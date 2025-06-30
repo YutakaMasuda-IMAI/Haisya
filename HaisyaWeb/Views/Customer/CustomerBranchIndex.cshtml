@@ -1,8 +1,8 @@
 ﻿@model HaisyaWeb.Models.CustomerBranchModalDto
 
 @{
-    Layout = "../Setting/MasterDataMenu";
-    ViewData["Title"] = "顧客一覧";
+  Layout = "../Setting/MasterDataMenu";
+  ViewData["Title"] = "顧客一覧";
 }
 
 <head>
@@ -18,50 +18,49 @@
   </div>
   <div>
     @*<h3>顧客一覧</h3>*@
-    
+
   </div>
   <div>
     @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "Form2" }))
     {
-    <div id="hedder" class="row" style="margin-bottom: -20px;">
-      <h6 class="heading-pagetitle">顧客支店一覧</h6>
-      <div class="form-group" style="width: 100%">
-        <div class="row">
-          <table class="table jbc-table table-borderless" style="padding: 0; background-color: whitesmoke;" border="1">
-            <tbody>
-              <tr>
-                <td width="20px"></td>
-                <td class="col-sm-3">
-                  <label class="control-label align-self-center align-middle text-end" style="padding:0;">顧客支店コード：</label>
-                  <input type="text" id="txtCode" style="width: 150px; display: inline-block;" class="form-control" />
-                </td>
-                <td class="col-sm-3">
-                  <label class="control-label align-self-center align-middle text-end" style="padding:0;">検索キー：</label>
-                  <input type="text" id="txtKey" style="width: 150px; display: inline-block;" class="form-control" />
-                </td>
-                <td class="col-sm-3">
-                  <label class="control-label align-self-center align-middle text-end" style="padding:0;">電話(Fax)番号：</label>
-                  <input type="text" id="txtPhone" style="width: 150px; display: inline-block;" class="form-control" />
-                </td>
-                <td>
-                  <button type="button" style="width: 100px;" class="btn btn-primary align-items-end" onclick="listDisplay();return false;">検索</button>
-                  @*<button type="button" type="button" class="btn btn-success align-items-end" style="float: right; width: 150px;" onclick="addNewCustomer(); return false;">新規追加</button>*@
-                </td>
-
-              </tr>
-            </tbody>
-          </table>
+      <div id="hedder" class="row" style="margin-bottom: -20px;">
+        <h6 class="heading-pagetitle">顧客支店一覧</h6>
+        <div class="form-group" style="width: 100%">
+          <div class="row">
+            <table class="table jbc-table table-borderless p-0" style="background-color: whitesmoke;" border="1">
+              <tbody>
+                <tr>
+                  <td width="20px"></td>
+                  <td class="col-sm-3">
+                    <label class="control-label align-self-center align-middle text-end p-0" style="">顧客支店コード：</label>
+                    <input type="text" id="txtCode" style="width: 150px;" class="form-control d-inline-block" />
+                  </td>
+                  <td class="col-sm-3">
+                    <label class="control-label align-self-center align-middle text-end p-0" style="">検索キー：</label>
+                    <input type="text" id="txtKey" style="width: 150px;" class="form-control d-inline-block" />
+                  </td>
+                  <td class="col-sm-3">
+                    <label class="control-label align-self-center align-middle text-end p-0" style="">電話(Fax)番号：</label>
+                    <input type="text" id="txtPhone" style="width: 150px;" class="form-control d-inline-block" />
+                  </td>
+                  <td>
+                    <button type="button" style="width: 100px;" class="btn btn-primary align-items-end" onclick="listDisplay();return false;">検索</button>
+                    @*<button type="button" class="btn btn-success align-items-end" style="float: right; width: 150px;" onclick="addNewCustomer(); return false;">新規追加</button>*@
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-    </div>
     }
   </div>
 
   <div style="vertical-align: middle; margin-top: 2px;">
-      <label>※Top100件を抽出</label>
+    <label>※Top100件を抽出</label>
   </div>
 
-  <div id="CustomerBranchList" style=margin-right: 0px; margin-top: 2px;">
+  <div id="CustomerBranchList" class="me-0" style="margin-top: 2px;">
   </div>
 
 </body>
@@ -109,8 +108,8 @@
   function closeModelAndRefresh() {
     $('#ModalHere').html('');
     $("#btnDialogClose").click();
-    
-    
+
+
 
     listDisplay();
     alertInfo("登録が完了しました。");

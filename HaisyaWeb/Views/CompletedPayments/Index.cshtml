@@ -42,27 +42,27 @@
       <h6 class="heading-pagetitle">入金一覧</h6>
       <div class="form-group" style="width: 110%">
         <div class="row">
-          <table class="table jbc-table table-hedder" style="padding: 0; border-collapse: collapse; width: 100%; margin-left: 12px;">
+            <table class="table jbc-table table-hedder p-0 w-100" style="border-collapse: collapse; margin-left: 12px;">
             <tbody>
               <tr>
                 <th style="width:400px;">
-                  <div style="vertical-align: middle; display: inline-block;">
+                  <div class="d-inline-block" style="vertical-align: middle;">
                     <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer;" onclick="ChangeMonth(-1); return false;" onselectstart="return false;" alt="<<" tooltip="前月">&lt;&lt;</span>
-                    <input id="TargetMonthLavel" type="text" readonly style="width: 150px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
-                    <input id="TargetMonthInput" class="calender" type="text" readonly style="width: 0px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
+                    <input id="TargetMonthLavel" type="text" readonly style="width: 150px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; outline: none; border: none;" value="1900/01/01" />
+                    <input id="TargetMonthInput" class="calender" type="text" readonly style="width: 0px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px;  outline: none; border: none;" value="1900/01/01" />
                     <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer;" onclick="ChangeMonth(1); return false;" onselectstart="return false;" alt=">>" tooltip="翌月">&gt;&gt;</span>
-                    <button type="button" class="btn btn-outline-info" style="width: 70px; vertical-align: text-bottom; margin: 0; padding: 0; font-size: 16px; " onclick="LocationReload(); return false;">再描画</button>
+                    <button type="button" class="btn btn-outline-info p-0 m-0" style="width: 70px; vertical-align: text-bottom; font-size: 16px; " onclick="LocationReload(); return false;">再描画</button>
                   </div>
                 </th>
                 <th style="width:400px;">
                   <div style="padding: 0; margin: 0 15px 0 0; border-radius: 0px;">
                     @Html.LabelFor(model => model.Search.SelectShimebi, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "width: 70px;" })
-                    @Html.TextBoxFor(model => Model.Search.SelectShimebi, null, new { @class = "form-control search-text", @style = "width: 50px; display: inline-block;text-align:right", @maxlength = "2", @id = "selectShimebiInput" })
+                      @Html.TextBoxFor(model => Model.Search.SelectShimebi, null, new { @class = "form-control search-text d-inline-block", @style = "width: 50px;text-align:right", @maxlength = "2", @id = "selectShimebiInput" })
                   </div>
                 </th>
                 <th colspan="2">
                   @Html.LabelFor(model => model.Search.TokuisakiName, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "width: 150px;" })
-                  @Html.TextBoxFor(model => model.Search.TokuisakiName, null, new { @class = "form-control search-text", @style = "width: 70%; display: inline-block", })
+                    @Html.TextBoxFor(model => model.Search.TokuisakiName, null, new { @class = "form-control search-text d-inline-block", @style = "width: 70%;", })
                 </th>
               </tr>
               <tr>
@@ -77,16 +77,16 @@
                       <th>
                         @Html.LabelFor(model => model.Search.SelectTokuisakiID, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "width: 100px;" })
                         <button type="button" id="btnTokuisakiFrom" class="btn btn-info btn-sm btn-select" style="width:80px;" onclick="return false;">選択</button>
-                        @Html.TextBoxFor(model => model.Search.SelectTokuisakiID, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 100px; display: inline-block;" })
-                        @Html.TextBoxFor(model => model.Search.SelectTokuisakiName, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 300px; display: inline-block;" })
+                          @Html.TextBoxFor(model => model.Search.SelectTokuisakiID, null, new { @readonly = "readonly", @class = "form-control search-text d-inline-block", @style = "width: 100px;" })
+                          @Html.TextBoxFor(model => model.Search.SelectTokuisakiName, null, new { @readonly = "readonly", @class = "form-control search-text d-inline-block", @style = "width: 300px;" })
                       </th>
                       <th>
                         <div id="tokuisakiTo" style="display: inline-block; _display: inline; padding: 0; ">
               　            〜
                         @Html.LabelFor(model => model.Search.SelectTokuisakiID, htmlAttributes: new { @class = "control-label text-end search-label2", @style = "" })
                         <button type="button" id="btnTokuisakiTo" class="btn btn-info btn-sm btn-select" style="width:80px;" onclick="return false;">選択</button>
-                        @Html.TextBoxFor(model => model.Search.SelectTokuisakiIDTo, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 100px; display: inline-block;" })
-                        @Html.TextBoxFor(model => model.Search.SelectTokuisakiNameTo, null, new { @readonly = "readonly", @class = "form-control search-text", @style = "width: 300px; display: inline-block;" })
+                            @Html.TextBoxFor(model => model.Search.SelectTokuisakiIDTo, null, new { @readonly = "readonly", @class = "form-control search-text d-inline-block", @style = "width: 100px;" })
+                            @Html.TextBoxFor(model => model.Search.SelectTokuisakiNameTo, null, new { @readonly = "readonly", @class = "form-control search-text d-inline-block", @style = "width: 300px;" })
                         </div>
                       </th>
                       <td>&nbsp;</td>

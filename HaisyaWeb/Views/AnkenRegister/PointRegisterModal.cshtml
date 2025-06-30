@@ -35,8 +35,8 @@
   <div class="modal-content">
     @*     <div class="modal-header" style="background-color: gainsboro;">
       <h1 class="modal-title fs-3" id="exampleModalLabel">地図ポイント保存</h1>
-      <button type="button" type="button" class="btn btn-primary" onclick="regExec(); return false;">登録</button>
-      <button type="button" type="button" class="btn btn-secondary" onclick="ModalClose(); return false;">閉じる</button>
+      <button type="button" class="btn btn-primary" onclick="regExec(); return false;">登録</button>
+      <button type="button" class="btn btn-secondary" onclick="ModalClose(); return false;">閉じる</button>
     </div> *@
     <div class="model-body">
       @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "form1", @class = "contact-form p-0", @style = "", @onsubmit = "return false;" }))
@@ -80,23 +80,23 @@
               </tr>
               <tr style="">
                 <th>郵便番号</th>
-                <td>@Html.TextBoxFor(model => Model.PointData.Post_code, null, new { @readonly = "readonly", @class = "", @style = "width: 95%; border: none; padding: 0; background: none;" })</td>
+                <td>@Html.TextBoxFor(model => Model.PointData.Post_code, null, new { @readonly = "readonly", @class = "p-0", @style = "width: 95%; border: none; background: none;" })</td>
               </tr>
               <tr style="">
                 <th>住所</th>
-                <td>@Html.TextBoxFor(model => Model.PointData.Address, null, new { @readonly = "readonly", @class = "", @style = "width: 95%; border: none; padding: 0; background: none;" })</td>
+                <td>@Html.TextBoxFor(model => Model.PointData.Address, null, new { @readonly = "readonly", @class = "p-0", @style = "width: 95%; border: none; background: none;" })</td>
               </tr>
               <tr style="">
                 <th>建物ZIP(地図)</th>
-                <td>@Html.TextBoxFor(model => Model.PointData.BuildingZid, null, new { @readonly = "readonly", @class = "", @style = "width: 95%; border: none; padding: 0; background: none;" })</td>
+                <td>@Html.TextBoxFor(model => Model.PointData.BuildingZid, null, new { @readonly = "readonly", @class = "p-0", @style = "width: 95%; border: background: none;" })</td>
               </tr>
               <tr style="">
                 <td colspan="2">
                   <div style="display: flex;">
                     <label style="width: 150px;">緯度：</label>
-                    @Html.TextBoxFor(model => Model.PointData.Lat, null, new { @readonly = "readonly", @class = "", @style = "width: 95%; border: none; padding: 0;" })
+                    @Html.TextBoxFor(model => Model.PointData.Lat, null, new { @readonly = "readonly", @class = "p-0", @style = "width: 95%; border: none;" })
                     <label style="width: 150px;">経度：</label>
-                    @Html.TextBoxFor(model => Model.PointData.Lng, null, new { @readonly = "readonly", @class = "", @style = "width: 95%; border: none; padding: 0;" })
+                    @Html.TextBoxFor(model => Model.PointData.Lng, null, new { @readonly = "readonly", @class = "p-0", @style = "width: 95%; border: none;" })
                   </div>
                 </td>
               </tr>
@@ -104,11 +104,11 @@
                 <td colspan="2">
                   <div style="display: flex;">
                     <label style="width: 50px;">県：</label>
-                    @Html.TextBoxFor(model => Model.PointData.Address2, null, new { @readonly = "readonly", @class = "", @style = "width: 20%; border: none; padding: 0;" })
+                    @Html.TextBoxFor(model => Model.PointData.Address2, null, new { @readonly = "readonly", @class = "p-0", @style = "width: 20%; border: none;" })
                     <label style="width: 80px;">市区町村：</label>
-                    @Html.TextBoxFor(model => Model.PointData.Address3, null, new { @readonly = "readonly", @class = "", @style = "width: 20%;border: none; padding: 0;" })
+                    @Html.TextBoxFor(model => Model.PointData.Address3, null, new { @readonly = "readonly", @class = "p-0", @style = "width: 20%;border: none;" })
                     <label style="width: 50px;">町域：</label>
-                    @Html.TextBoxFor(model => Model.PointData.Address4, null, new { @readonly = "readonly", @class = "", @style = "width: 20%;border: none; padding: 0;" })
+                    @Html.TextBoxFor(model => Model.PointData.Address4, null, new { @readonly = "readonly", @class = "p-0", @style = "width: 20%;border: none;" })
                   </div>
                 </td>
               </tr>
@@ -125,7 +125,7 @@
   $(function() {
 
     ///ダイアログに登録ボタン追加
-    $(".ui-dialog-titlebar").append('<button type="button" type="button" class="btn btn-primary" onclick="regExec(); return false;">登録</button>');
+    $(".ui-dialog-titlebar").append('<button type="button" class="btn btn-primary" onclick="regExec(); return false;">登録</button>');
 
     $('input[name="num_of_filter"]').on('change', function() {
       var val = $(this).val();

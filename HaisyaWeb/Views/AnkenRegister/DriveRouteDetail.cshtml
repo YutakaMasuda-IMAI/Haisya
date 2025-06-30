@@ -63,16 +63,16 @@
 
 </head>
 
-<body style="margin-bottom: 0px;">
+<body class="mb-0" style="">
   <div hidden>
     @Html.HiddenFor(model => Model.CenterLatlon.lat)
     @Html.HiddenFor(model => Model.CenterLatlon.lng)
   </div>
   <div id="div-page-top" class="map-page-top">
-    <table width="100%" class="table-heder" border="0">
+    <table class="table-heder w-100" border="0">
       <tr>
         <th style="width: 50px;"></th>
-        <th style="width: 70px; font-size: 14px; line-height: 13px;"><label class="control-label align-self-center align-middle text-end" style="margin: 0; padding: 0; line-height: 17px; font-size: larger">ルート：<br />タイプ：</label></th>
+        <th style="width: 70px; font-size: 14px; line-height: 13px;"><label class="control-label align-self-center align-middle text-end m-0 p-0" style="line-height: 17px; font-size: larger">ルート：<br />タイプ：</label></th>
         <td style="font-size: 19px;">@(routeTypeDisplay)</td>
         <th style="width: 70px;">車種：</th>
         <td>@(Model.driveList.Syasyu)</td>
@@ -106,8 +106,8 @@
       </tr>
     </table>
   </div>
-  <div class="map-page-container" style="display: inline-flex;">
-    <div id="left-side-area" class="left-side-area is-show fade-in" style="margin-left: 0px;">
+  <div class="map-page-container d-inline-flex" style="">
+    <div id="left-side-area" class="left-side-area is-show fade-in ms-0" style="">
       <div class="map-route-page-result">
         <div class="map-route-page-result-inner">
           @*<a class="go-back">
@@ -387,7 +387,7 @@
       }
       else
       {
-        <div id="MapContainer" class="map-container" style="margin:0;padding:0;">
+        <div id="MapContainer" class="map-container m-0 p-0" style="">
           <div id="ZMap" style="background:#00ffff;"></div>
         </div>
       }

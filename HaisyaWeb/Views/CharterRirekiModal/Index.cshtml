@@ -23,18 +23,18 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-3" id="exampleModalLabel">個別傭車案件履歴</h1>
-        <button type="button" type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
       </div>
       <div class="model-body">
         <form id="form1" class="month-calendar">
-          <table class="table jbc-table table-hedder" style="padding: 0; border-collapse: collapse; ">
+          <table class="table jbc-table table-hedder p-0" style="border-collapse: collapse; ">
             <tbody>
               <tr>
                 <th width="300px" colspan="2">
-                  <div class="appeal-box box" style="vertical-align: middle; display: inline-block; padding: 0;">
-                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeDayModal(-1)" onselectstart="return false;" alt="<<" tooltip="前日">＜＜</span>
+                  <div class="appeal-box box p-0 d-inline-block" style="vertical-align: middle;">
+                    <span class="p-0" style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer;" onclick="selectedChangeDayModal(-1)" onselectstart="return false;" alt="<<" tooltip="前日">＜＜</span>
                     <input id="TargetDayLavelModal" class="calender calenderModal" type="text" readonly style="width: 130px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
-                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="selectedChangeDayModal(1)" onselectstart="return false;" alt=">>" tooltip="翌日">＞＞</span>
+                    <span class="p-0" style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer;" onclick="selectedChangeDayModal(1)" onselectstart="return false;" alt=">>" tooltip="翌日">＞＞</span>
                   </div>
                 </th>
                 <td width="30%" colspan="2">

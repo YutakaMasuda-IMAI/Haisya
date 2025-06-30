@@ -19,178 +19,201 @@
       align-content: center;
     }
 
-    .custom-checkbox {
+    .custom-checkbox2 {
       transform: scale(1.5);
       margin: 0;
     }
 
     .td-list {
-      background-color:#FFD800;
+      background-color: #FFD800;
     }
+
+    .empty-degitako-list {
+      margin: 0;
+      border-spacing: 0;
+    }
+
+      .empty-degitako-list thead {
+        position: sticky;
+        top: -5.0px;
+        left: 0;
+    }
+
+      .empty-degitako-list thead {
+      border-right: 1px solid #999;
+      border-bottom: 1px solid #999;
+        z-index: 1;
+    }
+
+/*     .empty-degitako-list tr:first-child th:first-child {
+      z-index: 1;
+    } */
   </style>
   <link href="~/css/Entry.css" rel="stylesheet" />
 </head>
-<div role="dialog" id="addRireki" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-3" id="exampleModalLabel">空車回送登録処理</h1>
-        <div class="buttons">
-          <button type="button" class="btn btn-outline-danger" style="width:100px;margin-right:50px;" type="button" id="deleteButton" onclick="deleteData()">削除</button>
-          <button type="button" class="btn btn-outline-success" style="width:200px;" type="button" id="saveButton" onclick="initializeSaveButton()">登録</button>
-          <button type="button" class="btn btn-outline-warning" style="width: 100px; margin-left:100px;margin-right:15px;" type="button" onclick="closeModal()">閉じる</button>
-        </div>
-      </div>
-      <div class="modal-body">
-        <form id="overnightForm" style="width: 100%;">
-          <div class="degitako-list">
-            <div class="table-div">
-              <table class="no-line">
-                <tr>
-                  <th style="width:150px;">車番</th>
-                  <td style="width:160px;">@(Model.SyabanNumber)</td>
-                  <th style="width:80px;">乗務員</th>
-                  <td style="width:200px;">@(Model.DisplayName)</td>
-                  <th style="width:80px;">処理日</th>
-                  <td style="width:auto;">@(Model.HaisyaDataList.Day.ToString("yyyy/MM/dd"))</td>
-                </tr>
-              </table>
-              <table class="no-line">
-                <tr>
-                  <th style="width:150px;">開始日時</th>
-                  <td style="width:200px;"><div id="startDatetime">@(Model.Nippou_Kaiso != null ? Model.Nippou_Kaiso.Start_Datetime : "")</div></td>
-                  <td style="width:auto;"><div id="startPlace">@(Model.Nippou_Kaiso != null ? Model.Nippou_Kaiso.Start_ShikuName :"")</div></td>
-                </tr>
-                <tr>
-                  <th style="width:150px;">終了日時</th>
-                  <td style="width:200px;"><div id="endDatetime">@(Model.Nippou_Kaiso != null ? Model.Nippou_Kaiso.End_Datetime : "")</div></td>
-                  <td style="width:auto;"><div id="endPlace">@(Model.Nippou_Kaiso != null ? Model.Nippou_Kaiso.End_ShikuName : "")</div></td>
-                </tr>
-              </table>
-              <table class="no-line">
-                <tr>
-                  <th style="width:150px;">デジタコ走行距離</th>
-                  <td style="width:200px;"><div id="restTime">@(Model.Nippou_Kaiso?.Distance != null ? Model.Nippou_Kaiso.Distance.ToString() + "km" :"")</div></td>
-                  <th style="width:120px;">手当費用</th>
-                  <td style="width:auto;"><input type="text" id="dllowance" name="dllowance" class="form-control" style="width: 100px;text-align:right;" value="@Model.Nippou_Kaiso?.Dllowance.ToString("N0")" maxlength="7" oninput="filterDigitsOnly(this);" onblur="kanmaChange(this);" }) /></td>
-                </tr>
-              </table>
-              <table class="no-line">
-                <tr>
-                  <th style="width: 150px;">空車回送理由</th>
-                  <td>
-                    <div id="comment">
-                      @Html.TextAreaFor(m => m.Nippou_Kaiso.Commnet, new
-                       {
-                         @id = "commnet",
-                         @type = "text",
-                         @class = "form-control",
-                         @rows = "3",
-                         @style = "width: 100%;height:60px;",
-                         @value = Model.Nippou_Kaiso.Commnet
-                       })
-                    </div>
-                  </td>
-                </tr>
-              </table>
-            </div>
-            @if (Model.DegitakoData != null && Model.DegitakoData.Count > 0)
-            {
-              <div class="table-div" style="width: 100%; margin-top: 20px;">
-                <table class="list">
-                  <thead>
-                    <tr>
-                      <th class="td-list" style="width:60px;" rowspan="2">選択</th>
-                      <th class="td-list" style="width:90px;" colspan="1">開始日時</th>
-                      <th class="td-list" style="width:10px;" rowspan="2">イベント名</th>
-                      <th class="td-list" style="width:60px;" colspan="1">区間時間</th>
-                      <th class="td-list" style="width:120px;" colspan="1">開始市町村名</th>
-                      <th class="td-list" style="width:auto;" colspan="1">開始場所名</th>
-                      <th class="td-list" style="width:60px;" colspan="1">休憩</th>
-                      <th class="td-list" style="width:100px;" rowspan="2">車輌名</th>
-                    </tr>
-                    <tr>
-                      <th class="td-list">終了日時</th>
-                      <th class="td-list">区間距離</th>
-                      <th class="td-list">終了市町村名</th>
-                      <th class="td-list">終了場所名</th>
-                      <th class="td-list">夜間休憩</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @{
-                      var index = 0;
-                    }
-                    @foreach (var item in Model.DegitakoData)
-                    {
-                      <tr data-index="@index" style="@(item.イベント名 == "運転" ? "background-color: #ffffff;" : "background-color: lightgray;") border-bottom: 0.05em dashed #cfcfcf;">
-                        <th hidden><input type="hidden" value="@item.ID" /></th>
-                        <th rowspan="2" style="text-align:center;">
-                          @if (item.イベント名 == "運転")
-                          {
-                            <div class="form-check form-switch" style="text-align: center;">
-                              <input class="form-check-input custom-checkbox" type="checkbox">
-                            </div>
-                          }
-                        </th>
-                        <td style="text-align:center;" class="start-datetime">@Convert.ToDateTime(item.開始日時).ToString("yyyy/MM/dd HH:mm")</td>
-                        <td rowspan="2" style="text-align:center;">
-                          @Html.DisplayFor(modelItem => item.イベント名)
-                        </td>
-                        <td style="text-align:right;" class="rest-time">@Html.DisplayFor(modelItem => item.区間時間)</td>
-                        <td style="text-align:left;" class="start-place">@Html.DisplayFor(modelItem => item.開始市町村名)</td>
-                        <td style="text-align:left;">@Html.DisplayFor(modelItem => item.開始場所名)</td>
-                        <td style="text-align:center;">
-                          @if (item.日勤_休憩 != null)
-                          {
-                            var val = HaisyaWeb.Common.DateTimeConverter.GetTimeForString(item.日勤_休憩.ToString());
-                            @Html.DisplayFor(modelItem => val)
-                          }
-                        </td>
-                        <td rowspan="2" style="text-align:left;">
-                          @Html.DisplayFor(modelItem => item.車輌名)
-                        </td>
-                      </tr>
-                      <tr style="@(item.イベント名 == "運転" ? "background-color: #ffffff;" : "background-color: lightgray;") border-bottom: 1px solid #000000">
-                        <td style="text-align:center;" class="end-datetime">@Convert.ToDateTime(item.終了日時).ToString("yyyy/MM/dd HH:mm")</td>
-                        <td style="text-align:right;" class="sect-dist">@Html.DisplayFor(modelItem => item.区間距離)</td>
-                        <td style="text-align:left;" class="end-place">@Html.DisplayFor(modelItem => item.終了市町村名)</td>
-                        <td style="text-align:left;">@Html.DisplayFor(modelItem => item.終了場所名)</td>
-                        <td style="text-align:center;">
-                          @if (item.早朝深夜_休憩 != null)
-                          {
-                            var val = HaisyaWeb.Common.DateTimeConverter.GetTimeForString(item.早朝深夜_休憩.ToString());
-                            @Html.DisplayFor(modelItem => val)
-                          }
-                        </td>
-                      </tr>
-                      index++;
-                    }
-                  </tbody>
-                </table>
-              </div>
-            }
-            <div class="highway-empty-list">
 
-            </div>
-          </div>
-        </form>
+
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h1 class="modal-title fs-3" id="exampleModalLabel">空車回送登録処理</h1>
+      <span class="" style="width: 100px;"></span>
+      <div class="buttons ms-4">
+        <button type="button" class="btn btn-outline-danger" style="width:100px;margin-right:50px;" id="deleteButton" onclick="deleteData()">削除</button>
+        <button type="button" class="btn btn-outline-success" style="width:200px;" id="saveButton" onclick="initializeSaveButton()">登録</button>
+        <button type="button" class="btn btn-outline-warning" style="width: 100px; margin-left:100px;margin-right:15px;" onclick="CloseModal()">閉じる</button>
       </div>
+    </div>
+    <div class="modal-body">
+      <form id="overnightForm" style="width: 100%;">
+        <div class="degitako-list">
+          <div class="table-div" style="">
+            <table class="no-line">
+              <tr>
+                <th style="width:150px;">車番</th>
+                <td style="width:160px;">@(Model.SyabanNumber)</td>
+                <th style="width:80px;">乗務員</th>
+                <td style="width:200px;">@(Model.DisplayName)</td>
+                <th style="width:80px;">処理日</th>
+                <td style="width:auto;">@(Model.HaisyaDataList.Day.ToString("yyyy/MM/dd"))</td>
+              </tr>
+            </table>
+            <table class="no-line">
+              <tr>
+                <th style="width:150px;">開始日時</th>
+                <td style="width:200px;"><div id="startDatetime">@(Model.Nippou_Kaiso != null ? Model.Nippou_Kaiso.Start_Datetime : "")</div></td>
+                <td style="width:auto;"><div id="startPlace">@(Model.Nippou_Kaiso != null ? Model.Nippou_Kaiso.Start_ShikuName : "")</div></td>
+              </tr>
+              <tr>
+                <th style="width:150px;">終了日時</th>
+                <td style="width:200px;"><div id="endDatetime">@(Model.Nippou_Kaiso != null ? Model.Nippou_Kaiso.End_Datetime : "")</div></td>
+                <td style="width:auto;"><div id="endPlace">@(Model.Nippou_Kaiso != null ? Model.Nippou_Kaiso.End_ShikuName : "")</div></td>
+              </tr>
+            </table>
+            <table class="no-line">
+              <tr>
+                <th style="width:150px;">デジタコ走行距離</th>
+                <td style="width:200px;"><div id="restTime">@(Model.Nippou_Kaiso?.Distance != null ? Model.Nippou_Kaiso.Distance.ToString() + "km" : "")</div></td>
+                <th style="width:120px;">手当費用</th>
+                <td style="width:auto;"><input type="text" id="dllowance" name="dllowance" class="form-control" style="width: 100px;text-align:right;" value="@Model.Nippou_Kaiso?.Dllowance.ToString("N0")" maxlength="7" oninput="filterDigitsOnly(this);" onblur="kanmaChange(this);" }) /></td>
+              </tr>
+            </table>
+            <table class="no-line">
+              <tr>
+                <th style="width: 150px;">空車回送理由</th>
+                <td>
+                  <div id="comment">
+                    @Html.TextAreaFor(m => m.Nippou_Kaiso.Commnet, new
+                      {
+                        @id = "commnet",
+                        @type = "text",
+                        @class = "form-control",
+                        @rows = "3",
+                        @style = "width: 100%;height:60px;",
+                        @value = Model.Nippou_Kaiso.Commnet
+                      })
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+          @if (Model.DegitakoData != null && Model.DegitakoData.Count > 0)
+          {
+            <div class="table-div w-100" style="margin-top: 20px;max-height: 430px; overflow-y:auto;">
+              <table class="list empty-degitako-list" style="">
+                <thead>
+                  <tr>
+                    <th class="td-list" style="width:60px;" rowspan="2">選択</th>
+                    <th class="td-list" style="width:100px;" colspan="1">開始日時</th>
+                    <th class="td-list" style="width:10px;" rowspan="2">イベント名</th>
+                    <th class="td-list" style="width:60px;" colspan="1">区間時間</th>
+                    <th class="td-list" style="width:120px;" colspan="1">開始市町村名</th>
+                    <th class="td-list" style="width:auto;" colspan="1">開始場所名</th>
+                    <th class="td-list" style="width:60px;" colspan="1">休憩</th>
+                    <th class="td-list" style="width:100px;" rowspan="2">車輌名</th>
+                  </tr>
+                  <tr>
+                    <th class="td-list">終了日時</th>
+                    <th class="td-list">区間距離</th>
+                    <th class="td-list">終了市町村名</th>
+                    <th class="td-list">終了場所名</th>
+                    <th class="td-list">夜間休憩</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @{
+                    var index = 0;
+                  }
+                  @foreach (var item in Model.DegitakoData.OrderBy(m => m.取り込みID))
+                  {
+                    <tr data-index="@index" style="@(item.イベント名 == "運転" ? "background-color: #ffffff;" : "background-color: lightgray;") border-bottom: 0.05em dashed #cfcfcf;">
+                      <th hidden><input type="hidden" value="@item.ID" /></th>
+                      <th rowspan="2" style="text-align:center;">
+                        @if (item.イベント名 == "運転")
+                        {
+                          <div class="form-check form-switch" style="text-align: center;">
+                            <input class="form-check-input custom-checkbox2" type="checkbox">
+                          </div>
+                        }
+                      </th>
+                      <td style="text-align:center;" class="start-datetime">@Convert.ToDateTime(item.開始日時).ToString("yyyy/MM/dd HH:mm")</td>
+                      <td rowspan="2" style="text-align:center;">
+                        @Html.DisplayFor(modelItem => item.イベント名)
+                      </td>
+                      <td style="text-align:right;" class="rest-time">@Html.DisplayFor(modelItem => item.区間時間)</td>
+                      <td style="text-align:left;" class="start-place">@Html.DisplayFor(modelItem => item.開始市町村名)</td>
+                      <td style="text-align:left;">@Html.DisplayFor(modelItem => item.開始場所名)</td>
+                      <td style="text-align:center;">
+                        @if (item.日勤_休憩 != null)
+                        {
+                          var val = HaisyaWeb.Common.DateTimeConverter.GetTimeForString(item.日勤_休憩.ToString());
+                          @Html.DisplayFor(modelItem => val)
+                        }
+                      </td>
+                      <td rowspan="2" style="text-align:left;">
+                        @Html.DisplayFor(modelItem => item.車輌名)
+                      </td>
+                    </tr>
+                    <tr style="@(item.イベント名 == "運転" ? "background-color: #ffffff;" : "background-color: lightgray;") border-bottom: 1px solid #000000">
+                      <td style="text-align:center;" class="end-datetime">@Convert.ToDateTime(item.終了日時).ToString("yyyy/MM/dd HH:mm")</td>
+                      <td style="text-align:right;" class="sect-dist">@Html.DisplayFor(modelItem => item.区間距離)</td>
+                      <td style="text-align:left;" class="end-place">@Html.DisplayFor(modelItem => item.終了市町村名)</td>
+                      <td style="text-align:left;">@Html.DisplayFor(modelItem => item.終了場所名)</td>
+                      <td style="text-align:center;">
+                        @if (item.早朝深夜_休憩 != null)
+                        {
+                          var val = HaisyaWeb.Common.DateTimeConverter.GetTimeForString(item.早朝深夜_休憩.ToString());
+                          @Html.DisplayFor(modelItem => val)
+                        }
+                      </td>
+                    </tr>
+                    index++;
+                  }
+                </tbody>
+              </table>
+            </div>
+          }
+          <div class="highway-empty-list">
+          </div>
+        </div>
+      </form>
     </div>
   </div>
 </div>
 
 
 <script>
-  var selectedRows = [];
+
+  var nippou_Kaiso = JSON.parse('@Html.Raw(Json.Serialize(Model.Nippou_Kaiso))');
+  var nippouKaisoDegitakoIds = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouKaisoDegitakoIdList))');
+
+  var selectedRowsForEmptyCar = [];
+
   $(function() {
 
     initializeSwitches();
 
-
     function initializeSwitches() {
-
-      var nippouKaisoDegitakoIds = @Html.Raw(Json.Serialize(Model.NippouKaisoDegitakoIdList));
 
       if (!nippouKaisoDegitakoIds || nippouKaisoDegitakoIds.length === 0) {
         return;
@@ -203,46 +226,66 @@
         if (nippouKaisoDegitakoIds.includes(Number(id))) {
           row.find(".form-check-input").prop("checked", true);
           row.addClass("selected");
-          selectedRows.push(rowId);
+          selectedRowsForEmptyCar.push(rowId);
         }
       });
 
-      updateDisplayData();
+      updateDisplayDataForEmptyCar();
       updateHighwayList();
 
     }
 
+
+
     // 切り替えボタンのクリックイベントハンドラ
     $(".form-check-input").click(function() {
-      var row = $(this).closest("tr");
-      var rowId = row.data('index');
-      if ($(this).is(":checked")) {
-        // 最大2行まで選択可能
-        if (selectedRows.length >= 2) {
-          $(this).prop("checked", false);
-          return;
+        var row = $(this).closest("tr");
+        var rowId = row.data('index');
+        if ($(this).is(":checked")) {
+            // 最大2行まで選択可能
+            if (selectedRowsForEmptyCar.length >= 2) {
+            $(this).prop("checked", false);
+            return;
+            }
+            selectedRowsForEmptyCar.push(rowId);
+        } else {
+            selectedRowsForEmptyCar = selectedRowsForEmptyCar.filter(function(id) {
+            return id !== rowId;
+            });
         }
-        selectedRows.push(rowId);
-      } else {
-        selectedRows = selectedRows.filter(function(id) {
-          return id !== rowId;
-        });
-      }
-      updateDisplayData();
-      updateHighwayList();
+        updateDisplayDataForEmptyCar();
+        updateHighwayList();
     });
 
-    function updateHighwayList() {
+
+    // 料金入力にカンマを追加する処理
+    $("#dllowance").on("input", function() {
+    var value = $(this).val().replace(/,/g, ''); // カンマを一度除去してから
+    if (!isNaN(value) && value !== "") {
+        var formattedValue = Number(value).toLocaleString(); // カンマ区切りを追加
+        $(this).val(formattedValue);
+    } else {
+        $(this).val(""); // 数値以外の場合は空にする
+    }
+    });
+
+  });
+
+
+
+
+
+  function updateHighwayList() {
       var highwayRows = [];
       var start, end;
 
-      if (selectedRows.length === 1) {
-        var rowId = selectedRows[0];
+      if (selectedRowsForEmptyCar.length === 1) {
+        var rowId = selectedRowsForEmptyCar[0];
         var row = $("tbody tr[data-index='" + rowId + "']");
         start = new Date(row.find(".start-datetime").text());
         end = new Date(row.next().find(".end-datetime").text());
-      } else if (selectedRows.length === 2) {
-        selectedRows.forEach(function(rowId) {
+      } else if (selectedRowsForEmptyCar.length === 2) {
+        selectedRowsForEmptyCar.forEach(function(rowId) {
           var row = $("tbody tr[data-index='" + rowId + "']");
           var rowStart = new Date(row.find(".start-datetime").text());
           var rowEnd = new Date(row.next().find(".end-datetime").text());
@@ -254,11 +297,9 @@
           }
         });
       } else {
-        if ("@Model.Nippou_Kaiso != null") {
-          start = Model.Nippou_Kaiso.Start_Datetime.ToString(
-            "yyyy-MM-ddTHH:mm:ss");
-          end = Model.Nippou_Kaiso.End_Datetime.ToString(
-            "yyyy-MM-ddTHH:mm:ss");
+        if (nippou_Kaiso != null) {
+          start = isNaN(new Date(nippou_Kaiso.start_Datetime)) ? '' : new Date(nippou_Kaiso.start_Datetime).ToString("yyyy-MM-ddTHH:mm:ss");
+          end = isNaN(new Date(nippou_Kaiso.end_Datetime)) ? '' : new Date(nippou_Kaiso.end_Datetime).ToString("yyyy-MM-ddTHH:mm:ss");
         } else {
           return;
         }
@@ -299,9 +340,11 @@
     }
 
 
-    function updateDisplayData() {
-      if (selectedRows.length === 1) {
-        var rowId = selectedRows[0];
+
+
+  function updateDisplayDataForEmptyCar() {
+      if (selectedRowsForEmptyCar.length === 1) {
+        var rowId = selectedRowsForEmptyCar[0];
         var row = $("tbody tr[data-index='" + rowId + "']");
         var startDatetime = new Date(row.find(".start-datetime").text());
         var endDatetime = new Date(row.next().find(".end-datetime").text());
@@ -315,21 +358,19 @@
         $("#startPlace").text(startPlace);
         $("#endPlace").text(endPlace);
         $("#restTime").text(restTime + "km");
-      } else if (selectedRows.length === 2) {
+      } else if (selectedRowsForEmptyCar.length === 2) {
         var minStartDatetime = new Date(9999, 11, 31, 23, 59, 59);
         var maxEndDatetime = new Date(0, 0, 0, 0, 0, 0);
         var startPlace = "";
         var endPlace = "";
         var restTime = 0;
 
-        let start = Math.min(selectedRows[0], selectedRows[selectedRows.length - 1]);
-        let end = Math.max(selectedRows[0], selectedRows[selectedRows.length - 1]);
+        let start = Math.min(selectedRowsForEmptyCar[0], selectedRowsForEmptyCar[selectedRowsForEmptyCar.length - 1]);
+        let end = Math.max(selectedRowsForEmptyCar[0], selectedRowsForEmptyCar[selectedRowsForEmptyCar.length - 1]);
         for (let rowId = start; rowId <= end; rowId++) {
           var row = $("tbody tr[data-index='" + rowId + "']");
-          var rowStartDatetime = new Date(row.find(".start-datetime")
-            .text());
-          var rowEndDatetime = new Date(row.next().find(
-            ".end-datetime").text());
+          var rowStartDatetime = new Date(row.find(".start-datetime").text());
+          var rowEndDatetime = new Date(row.next().find(".end-datetime").text());
           if (rowStartDatetime < minStartDatetime) {
             minStartDatetime = rowStartDatetime;
             startPlace = row.find(".start-place").text();
@@ -355,7 +396,8 @@
         $("#restTime").text("");
       }
     }
-  });
+
+
 
   function initializeSaveButton() {
     if (!validateEmptyCarForm()) {
@@ -407,9 +449,8 @@
       filterAnkenList(endDatetime);
     }
 
-    closeModal();
-  }
-
+    CloseModal();
+  };
 
   function deleteData() {
     $('#Nippou_Kaiso_Start_Datetime').val(null);
@@ -424,14 +465,8 @@
     filterHighwayList(null);
     filterAnkenList(null);
 
-    closeModal();
-  }
-
-  function closeModal() {
-    $('#ModalHere').find('.modal').modal('hide');
-    $("#ModalHere").html('');
-    selectedRows = [];
-  }
+    CloseModal();
+  };
 
   function validateEmptyCarForm() {
     let isValid = true;
@@ -452,16 +487,6 @@
     }
 
     return isValid;
-  }
-  // 料金入力にカンマを追加する処理
-  $("#dllowance").on("input", function() {
-    var value = $(this).val().replace(/,/g, ''); // カンマを一度除去してから
-    if (!isNaN(value) && value !== "") {
-      var formattedValue = Number(value).toLocaleString(); // カンマ区切りを追加
-      $(this).val(formattedValue);
-    } else {
-      $(this).val(""); // 数値以外の場合は空にする
-    }
-  });
+  };
 
 </script>

@@ -17,8 +17,8 @@
     <div class="modal-content">
       <div class="modal-header" style="background-color: gainsboro;">
         <h1 class="modal-title fs-3" id="exampleModalLabel">@(Model.Title)</h1>
-        <button type="button" type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
-        <button type="button" type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
+        <button type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
       </div>
       <div class="model-body">
         <form id="form1">
@@ -46,72 +46,72 @@
             <tbody>
               <tr hidden>
                 <th width="200px">ID</th>
-                <td width="200px">@Html.TextBoxFor(model => Model.CustomerTantouData.Tantou_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px; padding: 0;" })</td>
+                <td width="200px">@Html.TextBoxFor(model => Model.CustomerTantouData.Tantou_ID, null, new { @class = "form-control text-end p-0", @onblur = "", @style = "width: 100px;" })</td>
                 <td width="400px"></td>
               </tr>
               <tr hidden>
                 <th width="200px">会社ID</th>
-                <td width="200px">@Html.TextBoxFor(model => Model.CustomerTantouData.Company_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px; padding: 0;" })</td>
+                <td width="200px">@Html.TextBoxFor(model => Model.CustomerTantouData.Company_ID, null, new { @class = "form-control text-end p-0", @onblur = "", @style = "width: 100px;" })</td>
                 <td width="400px"></td>
               </tr>
               <tr hidden>
                 <th width="200px">顧客ID</th>
-                <td width="200px">@Html.TextBoxFor(model => Model.CustomerTantouData.Customer_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px; padding: 0;" })</td>
+                <td width="200px">@Html.TextBoxFor(model => Model.CustomerTantouData.Customer_ID, null, new { @class = "form-control text-end p-0", @onblur = "", @style = "width: 100px;" })</td>
                 <td width="400px"></td>
               </tr>
               <tr>
                 <th>部署名</th>
-                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Busyo_Name, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Busyo_Name, null, new { @class = "form-control p-0", @style = "width: 95%;" })</td>
                 <td></td>
               </tr>
               <tr>
                 <th>役職名</th>
-                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Position_Name, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Position_Name, null, new { @class = "form-control p-0", @style = "width: 95%;" })</td>
                 <td></td>
               </tr>
               <tr>
                 <th style="color: red;">担当者名</th>
-                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Tantou_Name, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Tantou_Name, null, new { @class = "form-control p-0", @style = "width: 95%;" })</td>
                 <td></td>
               </tr>
               <tr>
                 <th style="color: red;">担当者名カナ</th>
-                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Tantou_Name_Kana, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Tantou_Name_Kana, null, new { @class = "form-control p-0", @style = "width: 95%;" })</td>
                 <td></td>
               </tr>
               <tr>
                 <th style="color: red;">メール記載名</th>
-                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Tantou_Name_Abbr, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Tantou_Name_Abbr, null, new { @class = "form-control p-0", @style = "width: 95%;" })</td>
                 <td></td>
               </tr>
               <tr>
                 <th style="color: red;">メールアドレス１</th>
-                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Mail_Address1, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Mail_Address1, null, new { @class = "form-control p-0", @style = "width: 95%;" })</td>
                 <td></td>
               </tr>
               <tr>
                 <th style="color: red;">メールアドレス２</th>
-                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Mail_Address2, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Mail_Address2, null, new { @class = "form-control p-0", @style = "width: 95%;" })</td>
                 <td></td>
               </tr>
               <tr>
                 <th style="color: red;">電話番号１</th>
-                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Phone1, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Phone1, null, new { @class = "form-control p-0", @style = "width: 95%;" })</td>
                 <td></td>
               </tr>
               <tr>
                 <th style="color: red;">FAX番号１</th>
-                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Fax1, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Fax1, null, new { @class = "form-control p-0", @style = "width: 95%;" })</td>
                 <td></td>
               </tr>
               <tr>
                 <th style="color: red;">電話番号２</th>
-                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Phone2, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Phone2, null, new { @class = "form-control p-0", @style = "width: 95%;" })</td>
                 <td></td>
               </tr>
               <tr>
                 <th style="color: red;">FAX番号２</th>
-                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Fax2, null, new { @class = "form-control", @style = "width: 95%; padding: 0;" })</td>
+                <td>@Html.TextBoxFor(model => Model.CustomerTantouData.Fax2, null, new { @class = "form-control p-0", @style = "width: 95%;" })</td>
                 <td></td>
               </tr>
               <tr>

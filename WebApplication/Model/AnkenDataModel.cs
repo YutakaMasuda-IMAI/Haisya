@@ -709,6 +709,20 @@ namespace WebApplication.Model
                     target.PointDate = DateTime.Parse(date.AddDays(difference.Days).ToString());
                 }
 
+                foreach (var target in ankenDto.T_Anken_DisplayList)
+                {
+                    target.Day = (DateTime)dateStart;
+
+                    TimeSpan difference = (DateTime)target.StartDatetime - (DateTime)dateStart;
+                    target.StartDatetime = DateTime.Parse(date.AddDays(difference.Days).ToString());
+
+                    difference = (DateTime)target.EndDatetime - (DateTime)dateStart;
+                    target.EndDatetime = DateTime.Parse(date.AddDays(difference.Days).ToString());
+
+                }
+
+
+
                 //案件データ新規登録
                 AnkenDataModel model = new(_context);
                 T_Anken t_Anken = await model.AddNewAnkenData(ankenDto);

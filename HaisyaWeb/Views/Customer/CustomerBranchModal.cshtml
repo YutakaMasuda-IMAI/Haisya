@@ -277,7 +277,7 @@
 
               <div class="modal-header" style="padding-top: 0; padding-bottom: 0; margin-right: 2rem;">
                 <h4>顧客担当</h4>
-                <button type="button" type="button" class="btn btn-success" onclick="insertRow(); return false;">行追加</button>
+                <button type="button" class="btn btn-success" onclick="insertRow(); return false;">行追加</button>
               </div>
               <table id="tableTantou" class="table table-bordered border-primary table-customer-tantou" border="1" style="margin: 10px; width:96%;">
                 <thead>
@@ -332,11 +332,11 @@
 
                           @if (CustomerTantouList[i].Tantou_ID == 0)
                           {
-                            <td rowspan="3" style="vertical-align: middle;padding: 0;" align="center"><button type="button" class="btn btn-warning" onclick="deleteRow(this); return false;" style="margin: 0;">行<br />削<br />除</button></td>
+                            <td rowspan="3" class="p-0" style="vertical-align: middle;" align="center"><button type="button" class="btn btn-warning" onclick="deleteRow(this); return false;" style="margin: 0;">行<br />削<br />除</button></td>
                           }
                           else
                           {
-                            <td rowspan="3" style="vertical-align: middle;padding: 0;" align="center">@Html.CheckBoxFor(model => CustomerTantouList[i].Del_Flg, new { @class = "form-control text-left form-check-input" })</td>
+                            <td rowspan="3" class="p-0" style="vertical-align: middle;" align="center">@Html.CheckBoxFor(model => CustomerTantouList[i].Del_Flg, new { @class = "form-control text-left form-check-input" })</td>
                           }
                         }
                         else
@@ -853,7 +853,7 @@
 
     if ($('#EditEnabled').val() == 'True')
     {
-      $(".ui-dialog-titlebar").append('<button type="button" type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>');
+      $(".ui-dialog-titlebar").append('<button type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>');
     }
 
     $('#Seikyu_Customer_Branch_Name').addClear({ onClear: function () { $('#CustomerBranchData_Seikyu_Customer_Branch_ID').val(0); }, top: 10, });

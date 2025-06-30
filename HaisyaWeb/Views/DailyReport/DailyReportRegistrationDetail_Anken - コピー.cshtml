@@ -1,0 +1,363 @@
+@model DailyReportModel.DailyReportRegistrationDetailModel
+
+<head>
+  <meta charset="UTF-8">
+  <link href="~/css/Anken.css" rel="stylesheet" />
+  <style>
+  </style>
+</head>
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAnken", @class = "contact-form", @style = "padding: 0; min-width: 1400px;", @onsubmit = "return false;" }))
+{
+  <div>
+    <div hidden>
+      <input hidden id="SetPointId" />
+      <input hidden id="SetPointDatetime" />
+    </div>
+    <button type="button" class="btn btn-primary btn-sm" style="width: 100%; padding: 0;" data-bs-toggle="collapse" data-bs-target="#distanceContainer" aria-expanded="false" aria-controls="distanceContainer">
+      <div style="padding: 0rem 2rem;"><span class="size17" style="float:left;">案件ルート情報</span><span style="float:right;">▼</span></div>
+    </button>
+    <div id="distanceContainer" class="container collapse show" style="padding: 0; border-collapse: collapse; width: 100%;">
+      <div class="header row">
+        <div class="col-3">
+          <button type="button" id="btnSerchRoot2" class="btn btn-outline-primary" style="width: 300px;" onclick="btnSerchRootOnclick(); return false;">ルート検索</button>
+        </div>
+
+        <div class="col-9">
+          <div class="root-list">
+            <table id="tableRoutList">
+              <thead>
+                <tr>
+                  <th style="text-align:center;">ルート</th>
+                  <th style="text-align:center;">所要時間</th>
+                  <th style="text-align:center;">距離</th>
+                  <th style="text-align:center;">有料道路</th>
+                  <th style="text-align:center;">見積原価</th>
+                  <th style="text-align:center;">標準運賃</th>
+                </tr>
+              </thead>
+              <tbody class="root-list-body">
+ @*                <tr style="">
+                  <td hidden>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.routeID, null, new { @readonly = "readonly", @class = "form-control2 text-center form-control routedisplay", @style = "margin-left: 0;" })</td>
+                  <td hidden>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.routeType, null, new { @readonly = "readonly", @class = "form-control2 form-control routedisplay", @style = "margin-left: 0;" })</td>
+                  <td>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.RouteTypeDisplay, null, new { @readonly = "readonly", @class = "text-center form-control routedisplay", @style = "margin-left: 0;" })</td>
+                  <td>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.TotalTime, null, new { @readonly = "readonly", @class = "text-center form-control routedisplay", @style = "margin-left: 0;" })</td>
+                  <td>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.TotalDistance, "{0:N2}", new { @readonly = "readonly", @class = "text-end form-control routedisplay", @style = "margin-left: 0;", @onblur = "kanmaChange(this);" })</td>
+                  <td>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.Totaltoll, "{0:N0}", new { @readonly = "readonly", @class = "text-end form-control routedisplay", @style = "margin-left: 0;", @onblur = "kanmaChange(this);" })</td>
+                  <td>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.GrossAmountTotal, "{0:N0}", new { @readonly = "readonly", @class = "text-end form-control routedisplay", @style = "margin-left: 0;", @onblur = "kanmaChange(this);" })</td>
+                  <td>@Html.TextBoxFor(model => model.SelectedDriveRouteDisplay.StdALLFreight, "{0:N0}", new { @readonly = "readonly", @class = "text-end form-control routedisplay", @style = "margin-left: 0;", @onblur = "kanmaChange(this);" })</td>
+                </tr> *@
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <label class="text text-danger fw-bold" style="">上記ルートを変更した場合は、必ず「ルート検索」ボタンをクリックしてルート検索処理を実施してください。</label>
+      <div class="anken-body" style="overflow-x: auto;  ">
+        <div class="row" style="min-width: 1350px; display: flex;">
+          <div class="col-6" style="background: #6699FF;">
+            @{
+              AnkenModel.AnkenRegisterModel registerModel = new()
+              {
+                PointList = Model.PointList,
+                Anken_ID = Model.Search.Anken_ID,
+                PointSelectList = Model.PointSelectList,
+                PageType = "DilyReport",
+              };
+
+              registerModel.PointComboBoxItemsStatusKubun = new SelectListItemEx[] {
+                        new SelectListItemEx() { Value="1", Text="確定" },
+                        new SelectListItemEx() { Value="2", Text="暫定" },
+                        };
+              registerModel.PointComboBoxItemsTimeKubun = new SelectListItemEx[] {
+                        new SelectListItemEx() { Value="1", Text="頃" },
+                        new SelectListItemEx() { Value="2", Text="まで" },
+                        new SelectListItemEx() { Value="3", Text="厳守" },
+                        };
+              registerModel.PointSelectRoadTypeList = new SelectListItemEx[] {
+                        new SelectListItemEx() { Value="2", Text="全道路" },
+                        new SelectListItemEx() { Value="0", Text="一般優先" },
+                        new SelectListItemEx() { Value="1", Text="高速優先" },
+                        };
+
+            }
+            @* @await Html.PartialAsync("~/Views/AnkenRegister/RegisterPoint.cshtml", registerModel) *@
+            @await Html.PartialAsync("DailyReportRegistrationDetail_Point.cshtml", registerModel)
+          </div>
+          <div class="col-6" style="">
+            <div class="anken-list h-100 w-100">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width:100px;" colspan="1">開始日時</th>
+                    <th style="width:10px;" rowspan="2">イベント名</th>
+                    <th style="width:60px;" colspan="1">区間時間</th>
+                    <th style="width:120px;" colspan="1">開始市町村名</th>
+                    <th style="width:100px;" colspan="1">開始場所名</th>
+                    <th style="width:60px;" colspan="1">休憩</th>
+                    <th style="width:80px;" rowspan="2">車輌名</th>
+                  </tr>
+                  <tr>
+                    <th>終了日時</th>
+                    <th>区間距離</th>
+                    <th>終了市町村名</th>
+                    <th>終了場所名</th>
+                    <th>夜間休憩</th>
+                  </tr>
+                </thead>
+                <tfoot>
+                </tfoot>
+
+                @if (Model.DegitakoData != null)
+                {
+                  @foreach (var item in Model.DegitakoData)
+                  {
+                    decimal ido = decimal.Parse(item.開始GPS緯度 ?? "0");
+                    decimal keido = decimal.Parse(item.開始GPS経度 ?? "0");
+
+                    ido = HaisyaWeb.Common.MapConvertUtil.DmsToDForIdo(ido);
+                    keido = HaisyaWeb.Common.MapConvertUtil.DmsToDForKeido(keido);
+
+                    <tbody class="@(item.イベント名 == "運転" ? "" : "ex-AnkenPoint-tr")"
+                           data-degitako-id="@(item.ID)"
+                           data-degitako-start-datetime="@(item.開始日時)"
+                           data-degitako-start-shiku="@(item.開始市町村名)"
+                           data-degitako-start-basyo="@(item.開始場所名)"
+                           data-degitako-start-gps-ido="@((double)ido)"
+                           data-degitako-start-gps-keido="@((double)keido)">
+                      <tr style="@(item.イベント名 == "運転" ? "background-color: lightgray;" : "") border-bottom: 0.05em dashed #cfcfcf;">
+                        <td style="text-align: center;">@Convert.ToDateTime(item.開始日時).ToString("yyyy/MM/dd HH:mm")</td>
+                        <td rowspan="2" style="text-align: center;">@Html.DisplayFor(modelItem => item.イベント名)</td>
+                        <td style="text-align: right;">@Html.DisplayFor(modelItem => item.区間時間)</td>
+                        <td style="text-align: center;">@Html.DisplayFor(modelItem => item.開始市町村名)</td>
+                        <td style="text-align: center;">@Html.DisplayFor(modelItem => item.開始場所名)</td>
+                        <td style="text-align: center;">
+                          @if (item.日勤_休憩 != null)
+                          {
+                            var val = HaisyaWeb.Common.DateTimeConverter.GetTimeForString(item.日勤_休憩.ToString());
+                            @Html.DisplayFor(modelItem => val)
+                          }
+                        </td>
+                        <td rowspan="2" style="text-align: center;font-size:9px">@Html.DisplayFor(modelItem => item.車輌名)</td>
+                      </tr>
+                      <tr style="@(item.イベント名 == "運転" ? "background-color: lightgray;" : "") border-bottom: 1px solid #000000">
+                        <td style="text-align: center;">@Convert.ToDateTime(item.終了日時).ToString("yyyy/MM/dd HH:mm")</td>
+                        <td style="text-align: right;">@Html.DisplayFor(modelItem => item.区間距離)</td>
+                        <td style="text-align: center;">@Html.DisplayFor(modelItem => item.終了市町村名)</td>
+                        <td style="text-align: center;">@Html.DisplayFor(modelItem => item.終了場所名)</td>
+                        <td style="text-align: center;">
+                          @if (item.早朝深夜_休憩 != null)
+                          {
+                            var val = HaisyaWeb.Common.DateTimeConverter.GetTimeForString(item.早朝深夜_休憩.ToString());
+                            @Html.DisplayFor(modelItem => val)
+                          }
+                        </td>
+                      </tr>
+                    </tbody>
+                  }
+                }
+
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+}
+
+<script>
+
+    $(async function () {
+
+      $(".ex-AnkenPoint-tr").draggable({
+        helper: function (event) {
+          const html = $(event.currentTarget).html();
+          const width = $(event.currentTarget).width();
+          //alert(html);
+          return $(`<div class="anken-list" style="background-color: yellow ;border-radius: 10px; border: 1px solid #5AC472; width:${width}px; background: #ffffff; cursor: move"><table class="" style="background-color: yellow ;">${html}</table></div>`)
+        },
+      });
+
+      $('.drop-area').droppable({
+        drop: async function (event, ui) {
+          await pointDrop(event, ui);
+        },
+        over: async function (event, ui) {
+          await pointDropOver(event, ui);
+        },
+        out: async function (event, ui) {
+          await pointDropOut(event, ui);
+        },
+      });
+
+
+    });
+
+  /**
+   * デジタコデータから案件ポイントへのドロップ処理
+   * @@param event
+   * @@param ui
+   */
+  async function pointDrop(event, ui) {
+
+    var id = event.target.id;
+
+    if (id.indexOf('area') == 0) {
+      alertError('ドラッグ＆ドロップが正しく行えませんでした。処理を中断します。');
+      return false;
+    }
+
+    var lowId = id.replace('drop-area-','');
+
+    var area = $("#" + id).css("background-color", "white");
+
+    let deg_id = ui.draggable.data('degitako-id');
+
+    let sId = 'PointList_' + lowId;
+    $('#SetPointId').val(sId);
+
+    let datetime = ui.draggable.data('degitako-start-datetime');
+    let shiku = ui.draggable.data('degitako-start-shiku');
+    let basyo = ui.draggable.data('degitako-start-basyo');
+    let gps_ido = ui.draggable.data('degitako-start-gps-ido');
+    let gps_keido = ui.draggable.data('degitako-start-gps-keido');
+
+    $('#SetPointDatetime').val(datetime);
+
+    //alert(i);
+    //alert(id + ';;;' + datetime + ';;;' + shiku + ';;;' + basyo + ';;;' + gps_ido + ';;;' + gps_keido);
+
+    GetAddress(i, gps_ido, gps_keido);
+  };
+
+  /**
+   * デジタコデータから案件ポイントへのドロップオーバー処理
+   * @@param event
+   * @@param ui
+   */
+  async function pointDropOver(event, ui) {
+    const i = $(this).data('pointlist-i');
+    var id = event.target.id;
+    var area = $("#" + id).css("background-color", "red");
+  };
+
+  /**
+   * デジタコデータから案件ポイントへのドロップオーバーアウト処理
+   * @@param event
+   * @@param ui
+   */
+  async function pointDropOut(event, ui) {
+    const i = $(this).data('pointlist-i');
+    var id = event.target.id;
+    var area = $("#" + id).css("background-color", "white");
+  };
+
+  /**
+  * 地図のセンターの住所情報をゼンリンAPIより取得
+  * @@param s
+  * @@param i
+  */
+  async function GetAddress(id, lat, lng) {
+
+
+    ///処理中ダイアログ
+    Swal.fire({
+      title: '住所データ読込中'
+      , html: 'ゼンリン地図APIで住所情報取得中です。<br /> 表示されるまでそのままお待ちください。<br /> 場所が密集地の場合、読み込みに時間がかかります。'
+      , allowOutsideClick: true     //枠外をクリックしても画面を閉じない
+      , showConfirmButton: false
+      , didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
+    $('#PointList_' + id + '__Lat').val(lat);
+    $('#PointList_' + id + '__Lng').val(lng);
+
+    let slatlon = String(lng) + ',' + String(lat);
+    //alert(slatlon);
+    $.post('@Url.RouteUrl("Default", new { controller = "Map", Action = "MapGetAddressFromPosition" })',
+      {
+        position: String(slatlon),
+        modal_flg: 1,
+        datum: '@(HaisyaWeb.Common.SystemConstants.Zenrin_datum.世界測地系)',
+        range: 100,
+      })
+      .done(function (response) {
+
+          if (response.errorMessage != null) {
+              alertError(`【エラー】${response.errorMessage}`);
+              return false;
+          } else {
+
+            $("#ModalHere").html(response.partialView);
+            $("#ModalHere").find('.modal').modal('show');
+
+            //完了ダイアログ
+            Swal.fire({
+              title: '処理終了'
+              , html: '処理を終了しました。'
+              , type: 'info'
+              , timer: 1
+            });
+
+
+            return;
+          }
+      })
+      .fail(function (xhr) {
+        alertError(xhr, "【ネットワークエラー】");
+          console.log(xhr);
+        return false;
+      })
+      .always(function (xhr, msg) {
+      /*    console.log(xhr, msg);*/
+      });
+    return false;
+  };
+
+  /**
+   *　住所検索用画面（モーダル）からの選択時処理
+   * @@param address_code
+   * @@param BuildingZid
+   * @@param BuildingZid_Attr
+   * @@param buildingName
+   * @@param address
+   * @@param post_code
+   * @@param address_level
+   * @@param address2
+   * @@param address3
+   * @@param address4
+   */
+  function SetAddressData(address_code, BuildingZid, BuildingZid_Attr, buildingName, address, post_code, address_level, address2, address3, address4) {
+
+    let sId = $('#SetPointId').val();
+    let sDatetime = $('#SetPointDatetime').val();
+
+    alert(sDatetime);
+
+    var date = new Date(sDatetime);
+    alert(date);
+
+    $('#ModalHere').find('.modal').modal('hide');
+    $('#ModalHere').html('');
+
+    $('#' + sId + '__PointDateTime').val(sDatetime);
+
+    $('#' + sId + '__BuildingName').val(buildingName);
+    $('#' + sId + '__Address').val(address);
+    $('#' + sId + '__Post_code').val(post_code);
+    $('#' + sId + '__Address_Code').val(address_code);
+    $('#' + sId + '__BuildingZid').val(BuildingZid);
+    $('#' + sId + '__BuildingZid_Attr').val(BuildingZid_Attr);
+    $('#' + sId + '__Address_Level').val(address_level);
+    $('#' + sId + '__Address2').val(address2);
+    $('#' + sId + '__Address3').val(address3);
+    $('#' + sId + '__Address4').val(address4);
+
+    document.getElementById(sId + '__PointDateTime').value = formatDate4(date);
+
+  };
+
+</script>

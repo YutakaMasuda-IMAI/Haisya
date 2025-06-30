@@ -45,11 +45,10 @@
     @Html.TextBoxFor(model => Model.Nippou_Kaiso.Day)
     @Html.HiddenFor(model => Model.NippouKaisoDegitakoIdList)
     @Html.HiddenFor(model => Model.KUDGSIRIdList)
-    @Html.HiddenFor(model => Model.SelectDay)
-    @Html.HiddenFor(model => Model.Anken_ID)
-    @Html.HiddenFor(model => Model.AnkenDisplay_ID)
-    @Html.HiddenFor(model => Model.SyabanNumber)
-    @Html.HiddenFor(model => Model.DisplayName)
+
+    @Html.HiddenFor(model => Model.Search.SelectDay)
+    @Html.HiddenFor(model => Model.Search.Anken_ID)
+    @Html.HiddenFor(model => Model.Search.AnkenDisplay_ID)
     @Html.HiddenFor(Model => Model.Search.SingleSwitch)
     @Html.HiddenFor(Model => Model.Search.SelectEndDay)
     @Html.HiddenFor(Model => Model.Search.KokyakuId)
@@ -60,6 +59,22 @@
     @Html.HiddenFor(Model => Model.Search.SelectGroup)
     @Html.HiddenFor(Model => Model.Search.IsCollapse)
     @Html.HiddenFor(Model => Model.Search.SelectTokuisakiID)
+
+    @Html.HiddenFor(model => Model.SyabanNumber)
+    @Html.HiddenFor(model => Model.DisplayName)
+
+    @Html.HiddenFor(Model => Model.AnkenDisplay.StartDatetime)
+    @Html.HiddenFor(Model => Model.AnkenDisplay.EndDatetime)
+
+    @* デジタコ選択　案件開始終了 *@
+    @Html.HiddenFor(Model => Model.AnkenDegitakoStartId)
+    @Html.HiddenFor(Model => Model.AnkenDegitakoStartDatetime)
+    @Html.HiddenFor(Model => Model.AnkenDegitakoEndId)
+    @Html.HiddenFor(Model => Model.AnkenDegitakoEndDatetime)
+    @Html.HiddenFor(Model => Model.AnkenDegitakoDistance)
+    @Html.HiddenFor(Model => Model.AnkenDegitakoBreakTime)
+    @Html.HiddenFor(Model => Model.AnkenDegitakoWorkTime)
+    @Html.HiddenFor(Model => Model.AnkenDegitakoActualWorkTime)
   </div>
 
   <div class="anken-detail">
@@ -110,10 +125,10 @@
       <span class="data-content" style="width:500px;">@Html.DisplayFor(model => model.HaisyaDataList.EndAddressDisplay3)</span>
     </div>
   </div>
-  <button type="button" type="button" class="btn btn-primary btn-sm" style="width: 100%; padding: 0;" data-bs-toggle="collapse" data-bs-target="#tblCollapseInfo" aria-expanded="false" aria-controls="tblCollapseInfo">
+  <button type="button" class="btn btn-primary btn-sm w-100 p-0" style="" data-bs-toggle="collapse" data-bs-target="#tblCollapseInfo" aria-expanded="false" aria-controls="tblCollapseInfo">
     <div style="padding: 0rem 2rem;"><span class="size17" style="float:left;">インフォメーション</span><span style="float:right;">▼</span></div>
   </button>
-  <div id="tblCollapseInfo" class="container collapse show" style="padding: 5px; border-collapse: collapse; border: 1px solid #cccccc;">
+  <div id="tblCollapseInfo" class="container collapse" style="padding: 5px; border-collapse: collapse; border: 1px solid #cccccc;">
     <div style="" class="row">
       <div class="col-sm-6" style="">
         <div>
@@ -137,13 +152,8 @@
                 {
                   foreach (var item in Model.TollSeikyuKubun)
                   {
-                    string seikyuKubunText = item.SeikyuKubun switch
-                    {
-                      1 => "自己負担",
-                      2 => "荷主負担",
-                      3 => "会社負担",
-                      _ => ""
-                    };
+                    string seikyuKubunText = Model.FutanKubunList.First(m => m.Value == item.SeikyuKubun.ToString()).Text;
+
                     string seikyuTypeText = item.Seikyu_Type switch
                     {
                       1 => "距離",
@@ -276,20 +286,11 @@
   @await Html.PartialAsync("DailyReportRegistrationDetail_Anken", Model)
 
   <br />
-  <div style="width: 100%;">
-    <div class="row">
-      <div class="col-sm-6">
-        <button type="button" class="btn btn-outline-primary" onclick="btnOnClickForRegAnkenData(); return false;" style="width:90%;">上記ルート情報を登録して日報情報を表示</button>
-      </div>
-      <div class="col-sm-6">
-        <button type="button" class="btn btn-outline-danger" onclick="btnOnClickForNoRegAnkenData(); return false;" style="width:90%;">登録しないで日報情報を表示</button>
-      </div>
-    </div>
-  </div>
   <div id="divDaileReortDetail_Nippou" style="width: 100%"></div>
 </div>
 
 <script>
+
   if (typeof NippouToll === 'undefined') {
     var NippouToll = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouToll))') || [];
   } else {
@@ -310,7 +311,17 @@
   var HighwayData = JSON.parse('@Html.Raw(Json.Serialize(Model.HighwayData))') || [];
 
   function btnOnClickForNoRegAnkenData() {
-    DailyReportRegistrationDetailNippouDisplay($('#AnkenDisplay_ID').val());
+
+    if (selectedRowsAnken.length != 2) {
+        alertCustomInputError("デジタコが正しく選択されていません。<br /> 案件の開始終了のデジタコを選択してください。");
+        return false;
+    }
+
+    DailyReportRegistrationDetailNippouDisplay($('#Search_AnkenDisplay_ID').val());
+
+    // $("#tblCollapseInfo").collapse('hide');
+    // $("#distanceContainer").collapse('hide');
+    
     return false;
   }
 
@@ -330,36 +341,7 @@
     form.submit();
   }
 
-  function btnOnClickForRegAnkenData() {
-    if (varidationCheckForAnken()) {
-      return false;
-    }
-
-    //Formの参照を取る
-    var $form = $('#frmAnken');
-
-    $.ajax({
-      url: '@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "AnkenPointRegExec" })',
-      type: 'post',
-      data: $form.serialize(),
-    }).done(function (response) {
-      if (response.errorMessage != null) {
-        alertInputError("【エラー】" + response.errorMessage);
-        return false;
-      } else {
-        DailyReportRegistrationDetailNippouDisplay($('#AnkenDisplay_ID').val());
-        return false;
-      }
-    }).fail(function (xhr) {
-      alertInputError('【ネットワークエラー】:' + xhr);
-      console.log(xhr);
-      return false;
-    }).always(function (xhr, msg) {
-      console.log(xhr, msg);
-    });
-
-    return false;
-  }
+  
 
   function varidationCheckForAnken() {
 
@@ -413,7 +395,7 @@
     document.body.appendChild(form);
 
     let html = '';
-    html += '      <input type="hidden" id="SelectDay" name="SelectDay" value="' + $('#SelectDay').val() + '" />';
+    html += '      <input type="hidden" id="SelectDay" name="SelectDay" value="' + $('#Search_SelectDay').val() + '" />';
     html += '      <input type="hidden" id="SelectEndDay" name="SelectEndDay" value="' + $('#Search_SelectEndDay').val() + '" />';
     html += '      <input type="hidden" id="SelectTokuisakiID" name="SelectTokuisakiID" value="' + $('#Search_SelectTokuisakiID').val() + '" />';
     html += '      <input type="hidden" id="SelectTantou" name="SelectTantou" value="' + $('#Search_SelectTantou').val() + '" />';
@@ -561,8 +543,6 @@
   }
 
   function ProvisionalRegistration(ApprovalStatus = 0) {
-    event.preventDefault();
-
     let nippouKaisoDegitakoIdList = $('#NippouKaisoDegitakoIdList').val() || [];
     if (!Array.isArray(nippouKaisoDegitakoIdList)) {
       nippouKaisoDegitakoIdList = [nippouKaisoDegitakoIdList];
@@ -659,7 +639,7 @@
   };
 
   function ApprovalRegistration() {
-    event.preventDefault();
+    
 
     var comment = $('#Nippou_Kaiso_Commnet').val();
     var dllowance = $('#Nippou_Stay_Dllowance').val();

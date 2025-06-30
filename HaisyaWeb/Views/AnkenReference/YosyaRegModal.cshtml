@@ -24,7 +24,7 @@
 
 <div class="modal-content">
   <div class="model-body">
-    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmYosyaReg", @class = "contact-form", @style = "padding: 0;", @onsubmit = "return false;" }))
+    @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmYosyaReg", @class = "contact-form p-0", @style = "", @onsubmit = "return false;" }))
     {
     <div id="hidden" hidden>
       @Html.TextBoxFor(model => model.UserID)
@@ -40,7 +40,7 @@
             <div>
               <h4>@(Model.Title)</h4>
             </div>
-            <div style="display: flex; align-items: center;">
+            <div class="d-flex" style="align-items: center;">
               <label style="margin-right: 1rem; font-weight:bold;">傭車数</label>
               <div class="radio-group" style="">
                 <input type="radio" class="btn-check" name="num_of_YosyaCount" id="optYosyaCount1" value="1"><label class="btn btn-outline-danger" for="optYosyaCount1">第1</label>
@@ -82,7 +82,7 @@
 
                 <tr>
                   <th>支払情報</th>
-                  <td colspan="2" style="display:flex;">
+                  <td colspan="2" class="d-flex" style="">
                     <div class="radio-group" style="">
                       <input type="radio" class="btn-check" name="num_of_SeikyuKubun" id="optSeikyuKubun0" value="0"><label class="btn btn-outline-danger" for="optSeikyuKubun0">確定</label>
                       <input type="radio" class="btn-check" name="num_of_SeikyuKubun" id="optSeikyuKubun1" value="1"><label class="btn btn-outline-danger" for="optSeikyuKubun1">暫定</label>
@@ -95,7 +95,7 @@
 
                 <tr id="trDriver">
                   <th style="">第１傭車乗務員</th>
-                  <td style="display:flex;">
+                  <td class="d-flex" style="">
                     <button type="button" id="btnYosya" class="btn btn-success" style="width: 100px;">傭車選択</button>
                     @Html.TextBoxFor(model => Model.Yosya.YosyaDriver_ID, null, new { @class = "form-control", @style = "width: 0px; padding: 0;" })
                     @Html.TextBoxFor(model => Model.YosyaDriverName, null, new { @readonly = "readonly", @class = "form-control", @style = "width: 60%;" })
@@ -105,7 +105,7 @@
 
                 <tr>
                   <th>第１傭車会社</th>
-                  <td style="display:flex;">
+                  <td class="d-flex" style="">
                     <button type="button" id="btnCustomerBranch" class="btn btn-success" style="width: 100px;">傭車選択</button>
                     @Html.TextBoxFor(model => Model.Yosya.Yosya_Branch_ID, null, new { @class = "form-control", @style = "width: 0px; padding: 0;" })
                     @Html.TextBoxFor(model => Model.YosyaBranchName, null, new { @readonly = "readonly", @class = "form-control", @style = "width: 60%;" })
@@ -114,7 +114,7 @@
 
                 <tr id="trTantou">
                   <th>第１傭車担当</th>
-                  <td style="display:flex;">
+                  <td class="d-flex" style="">
                     <button type="button" id="btnCustomerTantou" class="btn btn-success" style="width: 100px;">傭車選択</button>
                     @Html.TextBoxFor(model => Model.Yosya.Yosya_Tantou_ID, null, new { @class = "form-control", @style = "width: 0px; padding: 0;" })
                     @Html.TextBoxFor(model => Model.YosyaTantouName, null, new { @readonly = "readonly", @class = "form-control", @style = "width: 60%;" })
@@ -125,7 +125,7 @@
 
                 <tr id="trSyaryo">
                   <th>第１傭車車輌</th>
-                  <td style="display:flex;">
+                  <td class="d-flex" style="">
                     @Html.TextBoxFor(model => Model.Yosya.YosyaDriverSyaryo_ID, null, new { @class = "form-control", @style = "width: 0px; padding: 0;" })
                     @Html.TextBoxFor(model => Model.YosyaDriverSyaryoName, null, new { @readonly = "readonly", @class = "form-control", @style = "width: 60%;" })
                   </td>
@@ -134,21 +134,21 @@
 
                 <tr class="trNo2">
                   <th>第２傭車会社名</th>
-                  <td style="display:flex;">
+                  <td class="d-flex" style="">
                     @Html.TextBoxFor(model => Model.Yosya.Yosya_No2_Company_Name, null, new { @class = "form-control", @style = "width: 60%;" })
                   </td>
                   <td>直接入力</td>
                 </tr>
                 <tr class="trNo2">
                   <th>第２傭車乗務員名</th>
-                  <td style="display:flex;">
+                  <td class="d-flex" style="">
                     @Html.TextBoxFor(model => Model.Yosya.Yosya_No2_Driver_Name, null, new { @class = "form-control", @style = "width: 60%;" })
                   </td>
                   <td>直接入力</td>
                 </tr>
                 <tr class="trNo2">
                   <th>第２傭車車種車番</th>
-                  <td style="display: flex; align-items: center;">
+                  <td class="d-flex" style="align-items: center;">
                     <label>車種</label>
                     @Html.TextBoxFor(model => Model.Yosya.Yosya_No2_Syasyu, null, new { @class = "form-control", @style = "width: 150px;" })
                     <label style="margin-left:2rem;">車番</label>
@@ -159,7 +159,7 @@
                 
                 <tr class="trNo2">
                   <th>第２傭車電話番号</th>
-                  <td style="display:flex;">
+                  <td class="d-flex" style="">
                     @Html.TextBoxFor(model => Model.Yosya.Yosya_No2_Phone, null, new { @class = "form-control", @style = "width: 60%;" })
                   </td>
                   <td>直接入力</td>

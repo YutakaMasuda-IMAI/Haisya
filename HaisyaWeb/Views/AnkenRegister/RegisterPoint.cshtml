@@ -12,42 +12,50 @@
               <div>
                 <div class="" style="display: flex; padding-right: 5px;">
                   <div class="col-sm-10">
-                    @Html.Label("緯度", "緯度", new { @class = "col-form-label", @style = "width: 40px; padding: 0;" })
-                    @Html.TextBoxFor(model => Model.PointList[i].Lat, null, new { @class = "col-sm-4 pointInputCheck", @style = "background: none; border: none; padding: 0;", @readonly = "readonly" })
-                    @Html.Label("経度", "　経度", new { @class = "col-form-label", @style = "width: 60px; padding: 0" })
-                    @Html.TextBoxFor(model => Model.PointList[i].Lng, null, new { @class = "col-sm-4", @style = "background: none; border: none; padding: 0;", @readonly = "readonly" })
+                    @Html.Label("緯度", "緯度", new { @class = "col-form-label p-0", @style = "width: 40px;" })
+                    @Html.TextBoxFor(model => Model.PointList[i].Lat, null, new { @class = "col-sm-4 pointInputCheck p-0", @style = "background: none; border: none;", @readonly = "readonly" })
+                    @Html.Label("経度", "　経度", new { @class = "col-form-label p-0", @style = "width: 60px;" })
+                    @Html.TextBoxFor(model => Model.PointList[i].Lng, null, new { @class = "col-sm-4 p-0", @style = "background: none; border: none;", @readonly = "readonly" })
                   </div>
                   <div class="col-sm-2">
-                    <button type="button" name="PointList[@(i)].btnPointRegister" class="btn btn-anken" style="height: 20px; padding: 0; width: 100%; flex-flow: wrap-reverse; line-height: 0; "
-                            data-toggle="modal" data-backdrop="static" data-target="#modal-option" onclick="btnPointRegister_Click('PointList[@(i)]'); return false;">
+                    <button type="button" name="PointList[@(i)].btnPointRegister" class="btn btn-anken p-0 w-100" style="height: 20px; flex-flow: wrap-reverse; line-height: 0; "
+                    data-toggle="modal" data-backdrop="static" data-target="#modal-option" onclick="btnPointRegister_Click('PointList[@(i)]'); return false;">
                       <span style="font-size: 12px; color: red; font-weight: bold; vertical-align: middle;">地点登録</span>
                     </button>
                   </div>
                 </div>
                 <div class="" style="display: flex; padding-right: 5px;">
                   <div class="col-sm-10" style="display: flex;">
-                    <label class="label-Title control-label align-self-center align-middle text-left" style="padding: 0; color: #FFFFFF; width: 18px;">住所</label>
-                    <div id="drop-area-@(i)" class="drop-area" style="border: .1em solid #bbb; padding: 0px 0px 0px 2px; margin: 0; background-color: white; width: 100%;"
-                         data-pointlist-i="@(i)"
-                         >
-                      @Html.TextBoxFor(model => model.PointList[i].BuildingName, null, new { @class = "", @Style = "border: none; width: 100%; background: none;", @readonly = "readonly" })<br />
-                      <div style="display:inline-flex">〒@Html.TextBoxFor(model => model.PointList[i].Post_code, null, new { @class = "", @Style = "border: none; width: 100%; background: none;", @readonly = "readonly" })</div><br />
-                      @Html.TextBoxFor(model => model.PointList[i].Address, null, new { @class = "", @Style = "border: none; width: 100%;; background: none;", @readonly = "readonly" })
+                    <label class="label-Title control-label align-self-center align-middle text-left p-0" style="color: #FFFFFF; width: 18px;">住所</label>
+                    <div id="drop-area-@(i)" class="drop-area m-0" style="border: .1em solid #bbb; padding: 0px 0px 0px 2px; background-color: white; width: 100%;"
+                    data-pointlist-i="@(i)"
+                    >
+                      @Html.TextBoxFor(model => model.PointList[i].BuildingName, null, new { @class = "w-100", @Style = "border: none; background: none;", @readonly = "readonly" })<br />
+                      <div style="display:inline-flex">〒@Html.TextBoxFor(model => model.PointList[i].Post_code, null, new { @class = "w-100", @Style = "border: none; background: none;", @readonly = "readonly" })</div><br />
+                      @Html.TextBoxFor(model => model.PointList[i].Address, null, new { @class = "w-100", @Style = "border: none; background: none;", @readonly = "readonly" })
                     </div>
                   </div>
                   <div class="col-sm-2" style="">
-                    <button type="button" name="PointList[@(i)].GetAddress" onclick="GetAddress('PointList', @(i)); return false;" class="btn btn-anken size17" style="border-radius: 15%; height: 100%; width: 100%;"
-                                @(Model.PageType == "DilyReport" ? "disabled" : "")>設定</button>
+                    @if ("DilyReport".Equals(Model.PageType))
+                    {
+                      <label class="w-100 h-100 h1 text-center align-content-center border border-2 pb-1" style="border-radius: 15%;background-color:yellow;">@(Model.PointList[i].Point_Order)</label>
+                    } else
+                    {
+                      <button type="button" name="PointList[@(i)].GetAddress" onclick="GetAddress('PointList', @(i)); return false;" class="btn btn-anken size17 h-100 w-100" style="border-radius: 15%;"
+                      @(Model.PageType == "DilyReport" ? "disabled" : "")>
+                        設定
+                      </button>
+                    }
                   </div>
                 </div>
                 <div class="row" style="margin-top: 5px;">
                   <div class="col-7" style="display: flex;min-width: 450px;">
-                    @Html.DropDownListFor(model => model.PointList[i].Kubun, new SelectList(Model.PointSelectList, "Value", "Text", "Selected"), new { @class = "form-control dropDownList", @style = "padding: 0; margin-left: 5px; width: 70px; text-align: center;" })
+                    @Html.DropDownListFor(model => model.PointList[i].Kubun, new SelectList(Model.PointSelectList, "Value", "Text", "Selected"), new { @class = "form-control dropDownList p-0", @style = "margin-left: 5px; width: 70px; text-align: center;" })
                     <div name="divPointTime" style="display: flex;">
-                      <label class="label-Title control-label align-self-center align-middle text-left" style="padding: 0; color: #FFFFFF; text-align: right;">日時</label>
-                      @Html.EditorFor(model => model.PointList[i].PointDateTime, null, null, new { htmlAttributes = new { @Class = "form-control txt-time pointInputCheckTime", @Style = "padding: 0; margin-left: 5px; width: 180px; text-align: center;" }, })
-                      @Html.DropDownListFor(model => model.PointList[i].PointTimeKubun, new SelectList(Model.PointComboBoxItemsTimeKubun, "Value", "Text", "Selected"), new { @class = "form-control dropDownList", @style = "padding: 0; margin-left: 10px; width: 50px; text-align: center;" })
-                      @Html.DropDownListFor(model => model.PointList[i].PointStatusKubun, new SelectList(Model.PointComboBoxItemsStatusKubun, "Value", "Text", "Selected"), new { @class = "form-control dropDownList", @style = "padding: 0; margin-left: 10px; width: 50px; text-align: center;" })
+                      <label class="label-Title control-label align-self-center align-middle text-left p-0" style="color: #FFFFFF; text-align: right;">日時</label>
+                      @Html.EditorFor(model => model.PointList[i].PointDateTime, null, null, new { htmlAttributes = new { @Class = "form-control txt-time pointInputCheckTime p-0", @Style = "margin-left: 5px; width: 180px; text-align: center;" }, })
+                      @Html.DropDownListFor(model => model.PointList[i].PointTimeKubun, new SelectList(Model.PointComboBoxItemsTimeKubun, "Value", "Text", "Selected"), new { @class = "form-control dropDownList p-0", @style = "margin-left: 10px; width: 50px; text-align: center;" })
+                      @Html.DropDownListFor(model => model.PointList[i].PointStatusKubun, new SelectList(Model.PointComboBoxItemsStatusKubun, "Value", "Text", "Selected"), new { @class = "form-control dropDownList p-0", @style = "margin-left: 10px; width: 50px; text-align: center;" })
                     </div>
                     @Html.ValidationMessageFor(model => model.PointList[i].PointDateTime, "", new { id = "SelectFerry", @class = "text-danger align-middle" })
                     @Html.ValidationMessageFor(model => model.PointList[i].PointTimeKubun, "", new { id = "SelectFerry", @class = "text-danger align-middle" })

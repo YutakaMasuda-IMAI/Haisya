@@ -71,13 +71,6 @@
   </div>
 </div>
 
-<!--<div>-->
-  @*//モダール表示用のスペースを追加*@
-  <!--<div id="ModalHere" data-keyboard="false" data-backdrop="static"></div>
-  <div id="SortHere" hidden></div>
-</div>-->
-
-
 
 <script>
 
@@ -96,7 +89,8 @@
         } else {
           //alert("【done】" + response.partialView);
           $("#ModalHere").html(response.partialView);
-          $("#ModalHere").find('.modal').modal('show');
+          // $("#ModalHere").find('.modal').modal('show');
+          DailogOpen("ModalHere", "ログイン情報登録", 750, 600);
           return false;
         }
       })
@@ -104,17 +98,19 @@
           console.log(xhr);
       })
       .always(function (xhr, msg) {
-          console.log(xhr, msg);
+          // console.log(xhr, msg);
       });
   };
 
   function closeModel() {
-    $('#ModalHere').find('.modal').modal('hide');
-    $("#ModalHere").html('');
+    // $('#ModalHere').find('.modal').modal('hide');
+    // $("#ModalHere").html('');
+    CloseDailog('ModalHere');
   };
 
   function closeModelAndRefresh() {
-    $('#ModalHere').find('.modal').modal('hide');
+    // $('#ModalHere').find('.modal').modal('hide');
+    CloseDailog('ModalHere');
     location.reload();
     document.getElementById("btnSortCommit").disabled = "disabled";
     alert("登録が完了しました。");

@@ -165,6 +165,10 @@ namespace HaisyaWeb.Models
 
             public string Title { set; get; }
 
+            /// <summary>
+            /// 登録画面
+            /// "Anken"：案件画面、"DilyReport"：日報画面
+            /// </summary>
             public string PageType { set; get; } = "Anken";
 
             /// <summary>選択過去案件ID</summary>
@@ -188,6 +192,7 @@ namespace HaisyaWeb.Models
             /// <summary>ポイント暫定確定選択</summary>
             public IEnumerable<SelectListItem> HighwayKubunList { set; get; }
 
+            #region T_Anken
             /////////////////////////T_Anken//////////////////////////////
             public int Anken_ID { get; set; }
             [Display(Name = "案件№")]
@@ -199,13 +204,16 @@ namespace HaisyaWeb.Models
             public int Anken_Kubun { get; set; }
             public int SenzokuID { get; set; } = 0;
             public int SenzokuDriverID { get; set; } = 0;
+            #endregion T_Anken
 
+            #region T_Anken_Detail
             /////////////////////////T_Anken_Detail//////////////////////////////
             /// <summary>
             /// 登録区分　：　利用運送の場合、0：都度運行、1：固定運行
             /// </summary>
             public int RegKubun { get; set; }
 
+            /// <summary>配車日</summary>
             [Column(TypeName = "date")]
             public DateTime TargetDate { get; set; }
 
@@ -393,6 +401,7 @@ namespace HaisyaWeb.Models
             [DisplayName("内部連絡")]
             [StringLength(100)]
             public string Notice { get; set; }
+            #endregion T_Anken_Detail
         }
 
         /// <summary>

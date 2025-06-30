@@ -286,19 +286,16 @@ img.ui-datepicker-trigger {
 }
 
 .anken-list {
-    max-height: 500px;
     overflow-y: auto;
     width: auto;
     margin-left: 10px;
 }
 
 .anken-list table {
-    width: 100%;
+    width:auto;
     border-collapse: collapse;
     empty-cells: show;
 }
-
-
 
     .anken-list thead tr:nth-child(1) th {
         top: 0;
@@ -320,8 +317,8 @@ img.ui-datepicker-trigger {
     }
 
     .anken-list th {
-        background-color: rgba(249, 217, 73, 1);
         text-align: center;
+        padding: 0;
     }
 
     .anken-list th,
@@ -330,8 +327,6 @@ img.ui-datepicker-trigger {
         border-right: 1px solid #000000;
         font-size: 12px;
     }
-
-
 
     .anken-list td {
         padding: 0px 0.2rem 0 0;
@@ -426,6 +421,7 @@ table.ex_DataList {
         background: #eee;
     }
 
+/************受領処理選択用********************/
 .toggle-button-recipt {
     display: flex;
     align-items: center;
@@ -476,5 +472,60 @@ table.ex_DataList {
     }
 
     .toggle-button-recipt input {
+        display: none;
+    }
+
+
+/************デジタコ前日翌日出力選択用********************/
+.toggle-button-dr {
+    display: flex;
+    align-items: center;
+    position: relative;
+    width: 80px;
+    height: 40px;
+    border-radius: 50px;
+    box-sizing: content-box;
+    background-color: #ff8d8d33;
+    cursor: pointer;
+    transition: background-color .4s;
+}
+
+    .toggle-button-dr:has(:checked) {
+        background-color: #75bbff33;
+    }
+
+    .toggle-button-dr::before {
+        position: absolute;
+        left: 5px;
+        width: 35px;
+        height: 35px;
+        border-radius: 50%;
+        background-color: #ff8d8d;
+        content: '';
+        transition: left .4s;
+    }
+
+    .toggle-button-dr:has(:checked)::before {
+        left: 40px;
+        background-color: #75bbff;
+    }
+
+    .toggle-button-dr::after {
+        position: absolute;
+        left: 22px;
+        transform: translateX(-50%);
+        color: #fff;
+        font-weight: 600;
+        font-size: .9em;
+        content: '未';
+        transition: left .4s;
+    }
+
+    .toggle-button-dr:has(:checked)::after {
+        left: 60px;
+        content: '出';
+    }
+
+    .toggle-button-dr input {
         display: none;
     }

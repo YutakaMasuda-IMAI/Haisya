@@ -43,7 +43,7 @@
                 <h4>@(Model.Title)</h4>
               </div>
               <div>
-                <button type="button" type="button" class="btn btn-primary" style="float:right;" onclick="SenzokuRegExec(); return false;">@(Model.BtnCaption)</button>
+                <button type="button" class="btn btn-primary" style="float:right;" onclick="SenzokuRegExec(); return false;">@(Model.BtnCaption)</button>
               </div>
             </div>
             
@@ -111,7 +111,7 @@
                 <tr>
                   <th>車種</th>
                   <td colspan="3">
-                    <table width="100%" style="margin: 0px; padding: 0px;">
+                    <table width="100%" class="p-0 m-0" style="">
                       <tr>
                         <th style="width: 70px; text-align: right;">車種表示</th>
                         <td style="width: 80px;">@Html.TextBoxFor(model => Model.Senzoku.SyasyuDisplay, null, new { @class = "form-control text-left", @style = "width: 100px;", @onblur = "" })</td>

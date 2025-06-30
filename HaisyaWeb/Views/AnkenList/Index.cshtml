@@ -35,16 +35,16 @@
             <tbody>
               <tr>
                 <th width="320px">
-                  <div class="appeal-box box" style="vertical-align: middle; display: inline-block; padding: 0;">
-                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="ChangeDay(-1)" onselectstart="return false;" alt="<<" tooltip="前日">＜＜</span>
-                    <input id="TargetDayLavel" type="text" readonly style="width: 200px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
-                    <input id="TargetDayInput" type="text" readonly style="width: 0px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; padding: 0; outline: none; border: none;" value="1900/01/01" />
-                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer; padding: 0;" onclick="ChangeDay(1)" onselectstart="return false;" alt=">>" tooltip="翌日">＞＞</span>
+                  <div class="appeal-box box p-0" style="vertical-align: middle; display: inline-block;">
+                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer;" onclick="ChangeDay(-1)" onselectstart="return false;" alt="<<" tooltip="前日">＜＜</span>
+                    <input id="TargetDayLavel" type="text" readonly style="width: 200px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; outline: none; border: none;" value="1900/01/01" />
+                    <input id="TargetDayInput" type="text" readonly style="width: 0px; padding: 0px 5px; margin: 0px; vertical-align: text-bottom; font-size: 22px; outline: none; border: none;" value="1900/01/01" />
+                    <span style="padding: 0px 5px; top: -5px; color: rgb(136, 136, 136); font-size: 18px; position: relative; cursor: pointer;" onclick="ChangeDay(1)" onselectstart="return false;" alt=">>" tooltip="翌日">＞＞</span>
                   </div>
                 </th>
                 <th></th>
-                <th style="padding: 0;" width="450px">
-                  <div style="border: .1em solid #bbb; padding: 0; margin: 0 5px 0 5px; border-radius: 10px; ">
+                  <th class="p-0" style="" width="450px">
+                    <div class="p-0" style="border: .1em solid #bbb; margin: 0 5px 0 5px; border-radius: 10px; ">
                     <label style="color: #ff00dc; margin-left: 5px; ">グループ化　</label>
                     <input type="radio" name="num_of_inq" value="0">なし　
                     <input type="radio" name="num_of_inq" value="1">ｽﾃｰﾀｽ　
@@ -57,27 +57,27 @@
               </tr>
             </tbody>
           </table>
-          <button type="button" type="button" class="btn btn-secondary btn-sm" style="width: 100%; padding: 0;" data-bs-toggle="collapse" data-bs-target="#tblCollapseSearch" aria-expanded="false" aria-controls="tblCollapseSearch">▼詳細検索</button>
-          <table id="tblCollapseSearch" class="table jbc-table table-hedder collapse" style="padding: 0; border-collapse: collapse; ">
+          <button type="button" class="btn btn-secondary btn-sm w-100 p-0" style="" data-bs-toggle="collapse" data-bs-target="#tblCollapseSearch" aria-expanded="false" aria-controls="tblCollapseSearch">▼詳細検索</button>
+          <table id="tblCollapseSearch" class="table jbc-table table-hedder collapse p-0" style="border-collapse: collapse; ">
             <tbody>
               <tr>
                 <th style="width: 25%;">
-                  @Html.LabelFor(model => model.Search.SelectTantou, htmlAttributes: new { @class = "control-label align-self-center align-middle text-end", @style = "padding: 0;" })
-                  <div class="" style="display: inline-block; _display: inline; padding: 0; width: 70%;">
-                    @Html.DropDownListFor(model => model.Search.SelectTantou, new SelectList(Model.Search.TantouSelectList, "Value", "Text", "Selected"), "担当者を選択", new { @class = "form-control", @style = "padding: 0;" })
+                  @Html.LabelFor(model => model.Search.SelectTantou, htmlAttributes: new { @class = "control-label align-self-center align-middle text-end p-0", @style = "" })
+                  <div class="p-0" style="display: inline-block; _display: inline; width: 70%;">
+                    @Html.DropDownListFor(model => model.Search.SelectTantou, new SelectList(Model.Search.TantouSelectList, "Value", "Text", "Selected"), "担当者を選択", new { @class = "form-control p-0", @style = "" })
                     @Html.ValidationMessageFor(model => model.Search.SelectTantou, "", new { id = "SelectTantou", @class = "text-danger align-middle" })
                   </div>
                 </th>
                 <th style="width: 25%;">
-                  @Html.LabelFor(model => model.Search.SelectSyasyu, htmlAttributes: new { @class = "control-label align-self-center align-middle text-end", @style = "padding: 0;" })
-                  <div class="" style="display: inline-block; _display: inline; padding: 0; width: 80%;">
-                    @Html.DropDownListFor(model => model.Search.SelectSyasyu, new SelectList(Model.Search.SyasyuSelectList, "Value", "Text", "Selected"), "車種を選択", new { @class = "form-control", @style = "padding: 0;" })
+                  @Html.LabelFor(model => model.Search.SelectSyasyu, htmlAttributes: new { @class = "control-label align-self-center align-middle text-end p-0", @style = "" })
+                  <div class="p-0" style="display: inline-block; _display: inline; width: 80%;">
+                    @Html.DropDownListFor(model => model.Search.SelectSyasyu, new SelectList(Model.Search.SyasyuSelectList, "Value", "Text", "Selected"), "車種を選択", new { @class = "form-control p-0", @style = "" })
                     @Html.ValidationMessageFor(model => model.Search.SelectSyasyu, "", new { id = "SelectDriverKubun", @class = "text-danger align-middle" })
                   </div>
                 </th>
                 <th style="width: 25%;">
                   @Html.LabelFor(model => model.Search.SelectKata, htmlAttributes: new { @class = "control-label align-self-center align-middle text-end", @style = "padding: 0;" })
-                  <div class="2" style="display: inline-block; _display: inline; padding: 0; width: 80%;">
+                  <div class="p-0" style="display: inline-block; _display: inline; width: 80%;">
                     @Html.DropDownListFor(model => model.Search.SelectKata, new SelectList(Model.Search.KataSelectList, "Value", "Text", "Selected"), "型を選択", new { @class = "form-control", @style = "padding: 0;" })
                     @Html.ValidationMessageFor(model => model.Search.SelectKata, "", new { id = "SelectMonth", @class = "text-danger align-middle" })
                   </div>
@@ -85,10 +85,10 @@
               </tr>
             </tbody>
           </table>
-          <table class="table jbc-table table-hedder" width="100%" style="margin: 0; padding: 0;">
+          <table class="table jbc-table table-hedder w-100 m-0 p-0" style="">
             <tbody>
               <tr style="height: 25px;">
-                <th style="width: 33%; padding: 1px 1rem;"><button type="button" class="btn btn-primary btn-sm" style="width: 100%; padding: 0;" onclick="submitAnkenAddNew(); return false;">新規登録</button></th>
+                <th style="width: 33%; padding: 1px 1rem;"><button type="button" class="btn btn-primary btn-sm w-100 p-0" style="" onclick="submitAnkenAddNew(); return false;">新規登録</button></th>
                 <th style="width: 33%"></th>
                 <th style="width: 33%"></th>
               </tr>

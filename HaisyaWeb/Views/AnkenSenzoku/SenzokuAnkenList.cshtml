@@ -54,20 +54,20 @@
       <input data-val="true" id="paramHaisyaId" name="paramNowDriverId" type="hidden" value="">
     </div>
 
-    <div id="divTitle" style="height: 40px; padding: 0; margin: 0 0 5px 0; width: 100%; ">
+    <div id="divTitle" class="w-100 p-0" style="height: 40px; margin: 0 0 5px 0;">
       <table class="ex_TableBackgroundNone" width="100%" height="100%">
         <tr>
           <td width="80%">
             <h3 class="heading-40">専属乗務員月次案件一覧</h3>
           </td>
           <td width="20%" style="">
-            <button type="button" id="btnBackMenu" class="btn btn-outline-success" style="padding: 0px; width: 100%; border-radius: 5px;">戻る</button>
+            <button type="button" id="btnBackMenu" class="btn btn-outline-success w-100 p-0" style="border-radius: 5px;">戻る</button>
           </td>
         </tr>
       </table>
     </div>
 
-    <div id="divHead" style="vertical-align: middle; display: inline-block; width: 100%;">
+    <div id="divHead" class="w-100 d-inline-block" style="vertical-align: middle;">
       <table class="ex_TableBackgroundNone" width="100%">
         <tr valign="middle">
           <th>
@@ -83,34 +83,34 @@
             <table style="padding-left: 3em; margin-left: 10px; line-height: 2em;" width="100%" valign="middle">
               <tr>
                 <th>
-                  <label style="margin-bottom: 0; color: gray; ">顧客名</label>
+                  <label class="mb-0" style=" color: gray; ">顧客名</label>
                 </th>
                 <td>
-                  <label style="margin-bottom: 0;">@(Model.SenzokuDriverData.Customer_Branch_Name_Abbr)</label>
+                  <label class="mb-0" style="">@(Model.SenzokuDriverData.Customer_Branch_Name_Abbr)</label>
                 </td>
                 <th>
-                  <label style="margin-bottom: 0; color: gray; ">担当者</label>
+                  <label class="mb-0" style=" color: gray; ">担当者</label>
                 </th>
                 <td>
-                  <label style="margin-bottom: 0;">@(Model.SenzokuDriverData.Tantou_Name_Abbr)</label>
+                  <label class="mb-0" style="">@(Model.SenzokuDriverData.Tantou_Name_Abbr)</label>
                 </td>
                 <th>
-                  <label style="margin-bottom: 0; color: gray; ">電話</label>
+                  <label class="mb-0" style=" color: gray; ">電話</label>
                 </th>
                 <td>
-                  <label style="margin-bottom: 0;">@(Model.SenzokuDriverData.Tantou_Phone1)</label>
+                  <label class="mb-0" style="">@(Model.SenzokuDriverData.Tantou_Phone1)</label>
                 </td>
                 <th>
-                  <label style="margin-bottom: 0; color: gray; ">専属乗務員NO</label>
+                  <label class="mb-0" style=" color: gray; ">専属乗務員NO</label>
                 </th>
                 <td>
-                  <label style="margin-bottom: 0;">@(Model.SenzokuDriverData.Employee_Number)</label>
+                  <label class="mb-0" style="">@(Model.SenzokuDriverData.Employee_Number)</label>
                 </td>
                 <th>
-                  <label style="margin-bottom: 0; color: gray; ">専属乗務員名</label>
+                  <label class="mb-0" style=" color: gray; ">専属乗務員名</label>
                 </th>
                 <td>
-                  <label style="margin-bottom: 0;">@(Model.SenzokuDriverData.Display_Name)</label>
+                  <label class="mb-0" style="">@(Model.SenzokuDriverData.Display_Name)</label>
                 </td>
 
               </tr>

@@ -48,55 +48,56 @@
   }
 </style>
 </head>
-<div role="dialog" aria-hidden="true" tabindex="-1" class="modal fade">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-3" id="exampleModalLabel">高速情報追加</h1>
-      </div>
 
-      <input type="hidden" id="recordIndex" value="@Model.Index">
-      <div style="text-align:center;padding:10px;">
-        <table class="form-table"">
-          <tr>
-            <th style="color:#ff0000;">開始日時</th>
-            <td>@Html.TextBoxFor(model => model.FormattedStartDate, new { @class = "form-control text-box single-line date-control", @id = "startDatetime", type = "datetime-local" })</td>
-            <th style="color:#ff0000;">終了日時</th>
-            <td>@Html.TextBoxFor(model => model.FormattedEndDate, new { @class = "form-control text-box single-line date-control", @id = "endDatetime", type = "datetime-local" })</td>
-          </tr>
-          <tr>
-            <th>開始道路名</th>
-            <td><input type="text" id="startRoadName" name="startRoadName" class="form-control" value="@Model.開始道路名"></td>
-            <th style="color:#ff0000;">開始IC名</th>
-            <td><input type="text" id="startICName" name="startICName" class="form-control" value="@Model.開始IC名"></td>
-          </tr>
-          <tr>
-            <th>終了道路名</th>
-            <td><input type="text" id="endRoadName" name="endRoadName" class="form-control" value="@Model.終了道路名"></td>
-            <th style="color:#ff0000;">終了IC名</th>
-            <td><input type="text" id="endICName" name="endICName" class="form-control" value="@Model.終了IC名"></td>
-          </tr>
-          <tr>
-            <th style="color:#ff0000;">料金</th>
-            <td><input type="text" id="fee" name="fee" class="form-control" style="width:80px;text-align:right;" maxlength="7" value="@Model.料金" onblur="kanmaChange(this)"></td>
-            <th style="color:#ff0000;"></th>
-            <td></td>
-          </tr>
-          <tr>
-            <td colspan="3" style="text-align:right;">
-              <button type="button" class="btn btn-outline-danger" style="width:100px;margin-right:50px;" id="deleteButton" onclick="deleteHighwayList()">削除</button>
-              <button type="button" class="btn btn-outline-success" style="width:200px;" id="saveButton" onclick="saveHighwayList()">登録</button>
-              <button type="button" class="btn btn-outline-success" style="width:200px;" id="updateButton" onclick="saveHighwayList()">更新</button>
-            </td>
-            <td style="text-align:right;">
-                <button type="button" class="btn btn-outline-warning" style="width:100px;" onclick="closeHighwayList(); return false;">閉じる</button>
-            </td>
-          </tr>
-        </table>
-      </div>
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h1 class="modal-title fs-3" id="exampleModalLabel">高速情報追加</h1>
+    </div>
+
+    <input type="hidden" id="recordIndex" value="@Model.Index">
+    <div style="text-align:center;padding:10px;">
+      <table class="form-table" ">
+        <tr>
+          <th style="color:#ff0000;">開始日時</th>
+          <td>@Html.TextBoxFor(model => model.FormattedStartDate, new { @class = "form-control text-box single-line date-control", @id = "startDatetime", type = "datetime-local" })</td>
+          <th style="color:#ff0000;">終了日時</th>
+          <td>@Html.TextBoxFor(model => model.FormattedEndDate, new { @class = "form-control text-box single-line date-control", @id = "endDatetime", type = "datetime-local" })</td>
+        </tr>
+        <tr>
+          <th>開始道路名</th>
+          <td><input type="text" id="startRoadName" name="startRoadName" class="form-control" value="@Model.開始道路名"></td>
+          <th style="color:#ff0000;">開始IC名</th>
+          <td><input type="text" id="startICName" name="startICName" class="form-control" value="@Model.開始IC名"></td>
+        </tr>
+        <tr>
+          <th>終了道路名</th>
+          <td><input type="text" id="endRoadName" name="endRoadName" class="form-control" value="@Model.終了道路名"></td>
+          <th style="color:#ff0000;">終了IC名</th>
+          <td><input type="text" id="endICName" name="endICName" class="form-control" value="@Model.終了IC名"></td>
+        </tr>
+        <tr>
+          <th style="color:#ff0000;">料金</th>
+          <td><input type="text" id="fee" name="fee" class="form-control" style="width:80px;text-align:right;" maxlength="7" value="@Model.料金" onblur="kanmaChange(this)"></td>
+          <th style="color:#ff0000;"></th>
+          <td></td>
+        </tr>
+        <tr>
+          <td colspan="3" style="text-align:right;">
+            <button type="button" class="btn btn-outline-danger" style="width:100px;margin-right:50px;" id="deleteButton" onclick="deleteHighwayList()">削除</button>
+            <button type="button" class="btn btn-outline-success" style="width:200px;" id="saveButton" onclick="saveHighwayList()">登録</button>
+            <button type="button" class="btn btn-outline-success" style="width:200px;" id="updateButton" onclick="saveHighwayList()">更新</button>
+          </td>
+          <td style="text-align:right;">
+            <button type="button" class="btn btn-outline-warning" style="width:100px;" onclick="closeHighwayList(); return false;">閉じる</button>
+          </td>
+        </tr>
+      </table>
     </div>
   </div>
 </div>
+
+
 
 
 <script>
@@ -113,7 +114,7 @@
   });
 
   function closeHighwayList() {
-    $('#ModalHere').find('.modal').modal('hide');
+    $("#ModalHere").dialog('close');
     $("#ModalHere").html('');
   }
 </script>

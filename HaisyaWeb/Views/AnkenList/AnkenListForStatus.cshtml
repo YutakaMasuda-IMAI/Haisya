@@ -151,7 +151,7 @@
               @{
                 V_HaisyaDataList_Local haisyaData = Model.HaisyaDataLists.FirstOrDefault(m => m.Anken_ID == item.Anken_ID);
               }
-              <button type="button" class="btn btn-outline-info" style="width: 50px; padding: 0;" onclick="AnkenRefenceModal(@(item.Anken_ID), @(haisyaData.AnkenDisplay_ID))">選択</button>
+              <button type="button" class="btn btn-outline-info p-0" style="width: 50px;" onclick="AnkenRefenceModal(@(item.Anken_ID), @(haisyaData.AnkenDisplay_ID))">選択</button>
               @*<label style="width: calc(100% - 55px); text-align: center; writing-mode: vertical-lr; vertical-align: middle;">なし</label>*@
             </div>
           </td>

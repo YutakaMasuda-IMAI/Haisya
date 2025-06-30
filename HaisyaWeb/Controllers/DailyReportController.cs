@@ -167,7 +167,7 @@ namespace HaisyaWeb.Controllers
         /// <param name="SelectEndDay"></param>
         /// <param name="SelectTokuisakiID"></param>
         /// <returns></returns>
-        public async Task<IActionResult> DailyReportRegistrationDetail(SearchModelForDailyReportList param)
+        public async Task<IActionResult> DailyReportRegistrationDetail([FromBody] DailyReportRegistrationDetailModel param)
         {
             try
             {
@@ -175,13 +175,13 @@ namespace HaisyaWeb.Controllers
                 V_LoginUser_Local loguinUser = await GetLoginUser();
 
                 using API.WebApp.HaisyaDataApi apiH = new(_mapApiSettiong);
-                IEnumerable<Dto.V_HaisyaDataList_Local> listData = await GetHaisyaDataListFromSearch(param);
+                IEnumerable<Dto.V_HaisyaDataList_Local> listData = await GetHaisyaDataListFromSearch(param.Search);
 
-                V_HaisyaDataList_Local filteredList = listData.Where(item => item.AnkenDisplay_ID == param.AnkenDisplay_ID).FirstOrDefault();
+                V_HaisyaDataList_Local filteredList = listData.Where(item => item.AnkenDisplay_ID == param.Search.AnkenDisplay_ID).FirstOrDefault();
 
                 using API.WebApp.DailyReportDataApi api = new(_mapApiSettiong);
-                DailyReportRegistrationDetailModel DailyReportDetail = await api.GetDailyReportAnken(param.Anken_ID,
-                                    param.AnkenDisplay_ID, param.DriverCd, param.Syaban,
+                DailyReportRegistrationDetailModel DailyReportDetail = await api.GetDailyReportAnken(param.Search.Anken_ID,
+                                    param.Search.AnkenDisplay_ID, param.Search.DriverCd, param.Search.Syaban,
                                     filteredList?.KokyakuId, filteredList?.Driver_ID, filteredList?.Haisya_Kubun,
                                     filteredList?.SyaryoManagement_ID, filteredList?.Haisya_ID,
                                     filteredList?.StartDatetime ?? DateTime.MinValue,
@@ -191,13 +191,13 @@ namespace HaisyaWeb.Controllers
                 {
                     DriveRouteListData = new(),
                     PointList = new(),
-                    SelectedDriveRouteDisplay = new(),
-                    Search = param
+                    //SelectedDriveRouteDisplay = new(),
+                    Search = param.Search,
                 };
 
-                model.Anken_ID = param.Anken_ID;
-                model.AnkenDisplay_ID = param.AnkenDisplay_ID;
-                model.SelectDay = param.SelectDay;
+                model.Search.Anken_ID = param.Search.Anken_ID;
+                model.Search.AnkenDisplay_ID = param.Search.AnkenDisplay_ID;
+                model.Search.SelectDay = param.Search.SelectDay;
                 model.AnkenDetail = DailyReportDetail.AnkenDetail;
                 model.AnkenDisplay = DailyReportDetail.AnkenDisplay;
                 model.DegitakoData = DailyReportDetail.DegitakoData;
@@ -249,6 +249,7 @@ namespace HaisyaWeb.Controllers
                 model.PointKubunCode = await apiM.M_Code_DataList(3);
 
                 model.PointSelectList = await SearchCommonService.GetCodeDataSelectList(_mapApiSettiong, 3);
+                model.FutanKubunList = SearchCommonService.FutanKubunSelect(model.HaisyaDataList.Haisya_Kubun == 2);
 
                 HttpContext.Session.Remove(SessionKeyDaileReport);
                 HttpContext.Session.SetObject(SessionKeyDaileReport, model);
@@ -269,35 +270,40 @@ namespace HaisyaWeb.Controllers
         /// <param name="SelectEndDay"></param>
         /// <param name="SelectTokuisakiID"></param>
         /// <returns></returns>
-        public async Task<IActionResult> DailyReportRegistrationDetailToNippou(SearchModelForDailyReportList param)
+        [HttpPost]
+        public async Task<IActionResult> DailyReportRegistrationDetailToNippou([FromBody] DailyReportRegistrationDetailModel param)
         {
             try
             {
                 using API.WebApp.HaisyaDataApi apiH = new(_mapApiSettiong);
-                IEnumerable<Dto.V_HaisyaDataList_Local> listData = await GetHaisyaDataListFromSearch(param);
+                IEnumerable<Dto.V_HaisyaDataList_Local> listData = await GetHaisyaDataListFromSearch(param.Search);
 
-                V_HaisyaDataList_Local filteredList = listData.Where(item => item.AnkenDisplay_ID == param.AnkenDisplay_ID).FirstOrDefault();
+                V_HaisyaDataList_Local filteredList = listData.Where(item => item.AnkenDisplay_ID == param.Search.AnkenDisplay_ID).FirstOrDefault();
 
                 using API.WebApp.DailyReportDataApi api = new(_mapApiSettiong);
-                DailyReportRegistrationDetailModel DailyReportDetail = await api.GetDailyReportDetail(param.Anken_ID,
-                                    param.AnkenDisplay_ID, param.DriverCd, param.Syaban,
+                DailyReportRegistrationDetailModel DailyReportDetail = await api.GetDailyReportDetail(param.Search.Anken_ID,
+                                    param.Search.AnkenDisplay_ID, param.Search.DriverCd, param.Search.Syaban,
                                     filteredList?.KokyakuId, filteredList?.Driver_ID, filteredList?.Haisya_Kubun,
                                     filteredList?.SyaryoManagement_ID, filteredList?.Haisya_ID,
                                     filteredList?.StartDatetime ?? DateTime.MinValue,
                                     filteredList?.EndDatetime ?? DateTime.MinValue);
 
-                DailyReportRegistrationDetailModel model = new()
-                {
-                    DriveRouteListData = new List<DriveRouteListDisplay_Local>(),
-                    PointList = new List<PointDto_Local>(),
-                    SelectedDriveRouteDisplay = new DriveRouteListDisplay_Local()
-                };
+                DailyReportRegistrationDetailModel model = param;
+                model.DriveRouteListData = new List<DriveRouteListDisplay_Local>();
+                model.PointList = new List<PointDto_Local>();
+
+                //{
+                //    DriveRouteListData = new List<DriveRouteListDisplay_Local>(),
+                //    PointList = new List<PointDto_Local>(),
+                //    Search = param.Search,
+                //    //SelectedDriveRouteDisplay = new DriveRouteListDisplay_Local()
+                //};
 
                 Dto.V_LoginUser_Local loguinUser = await GetLoginUser();
 
-                model.Anken_ID = param.Anken_ID;
-                model.AnkenDisplay_ID = param.AnkenDisplay_ID;
-                model.SelectDay = param.SelectDay;
+                //model.Search.Anken_ID = param.Search.Anken_ID;
+                //model.Search.AnkenDisplay_ID = param.Search.AnkenDisplay_ID;
+                //model.Search.SelectDay = param.Search.SelectDay;
                 model.AnkenDetail = DailyReportDetail.AnkenDetail;
                 model.AnkenDisplay = DailyReportDetail.AnkenDisplay;
                 model.DegitakoData = DailyReportDetail.DegitakoData;
@@ -337,25 +343,7 @@ namespace HaisyaWeb.Controllers
                 model.SyabanNumber = DailyReportDetail.SyabanNumber;
                 model.NippouTollDegitako = new();
 
-                if (model.HaisyaDataList?.Haisya_Kubun != 2)
-                {
-                    model.FutanKubunList = new List<SelectListItem>
-                    {
-                        new() { Value = "0", Text = "" },
-                        new() { Value = "1", Text = "個人負担" },
-                        new() { Value = "2", Text = "会社負担" },
-                        new() { Value = "3", Text = "荷主負担" }
-                    };
-                }
-                else
-                {
-                    model.FutanKubunList = new List<SelectListItem>
-                    {
-                        new() { Value = "0", Text = "" },
-                        new() { Value = "2", Text = "会社負担" },
-                        new() { Value = "3", Text = "荷主負担" }
-                    };
-                }
+
                 if (model.Nippou == null)
                 {
                     model.Nippou = new();
@@ -422,6 +410,7 @@ namespace HaisyaWeb.Controllers
 
                 model.GroupUserSelectList = await SearchCommonService.GetCodeDataSelectList(_mapApiSettiong, 9);
                 model.PointSelectList = await SearchCommonService.GetCodeDataSelectList(_mapApiSettiong, 3);
+                model.FutanKubunList = SearchCommonService.FutanKubunSelect(model.HaisyaDataList.Haisya_Kubun == 2);
 
                 model.OtherPaidDataList = new();
 
@@ -600,18 +589,21 @@ namespace HaisyaWeb.Controllers
         /// </summary>
         /// <param name="EmptyCarModalData"></param>
         /// <returns></returns>        
-        public async Task<IActionResult> EmptyCarModal(string EmptyCarModalData)
+        public async Task<IActionResult> EmptyCarModal([FromBody] DailyReportRegistrationDetailModel EmptyCarModalData)
         {
             try
             {
-                DailyReportRegistrationDetailModel model = new();
+                DailyReportRegistrationDetailModel model = new() { };
 
                 //セッション情報からデータの取得
                 model = HttpContext.Session.GetObject<DailyReportRegistrationDetailModel>(SessionKeyDaileReport);
 
-                if (!string.IsNullOrEmpty(EmptyCarModalData))
+                if (model == null) { throw new Exception("セッション情報が不正です。再度日報画面を開きなおしてください。"); }
+
+                if (EmptyCarModalData != null)
                 {
-                    DailyReportRegistrationDetailModel model2 = JsonConvert.DeserializeObject<DailyReportRegistrationDetailModel>(EmptyCarModalData);
+                    //DailyReportRegistrationDetailModel model2 = JsonConvert.DeserializeObject<DailyReportRegistrationDetailModel>(EmptyCarModalData);
+                    DailyReportRegistrationDetailModel model2 = EmptyCarModalData;
 
                     model.Nippou_Kaiso ??= new();
                     model.NippouKaisoDegitakoIdList ??= new();
@@ -706,7 +698,7 @@ namespace HaisyaWeb.Controllers
         /// <param name="param"></param>
         /// <returns></returns> 
         [HttpPost]
-        public async Task<IActionResult> UpdateOtherPaidData(DailyReportRegistrationDetailModel param)
+        public async Task<IActionResult> UpdateOtherPaidData([FromBody] DailyReportRegistrationDetailModel param)
         {
             try
             {
@@ -714,25 +706,8 @@ namespace HaisyaWeb.Controllers
                 {
                     HaisyaDataList = param.HaisyaDataList
                 };
-                if (model.HaisyaDataList.Haisya_Kubun != 2)
-                {
-                    model.FutanKubunList = new List<SelectListItem>
-                    {
-                        new() { Value = "0", Text = "" },
-                        new() { Value = "1", Text = "個人負担" },
-                        new() { Value = "2", Text = "会社負担" },
-                        new() { Value = "3", Text = "荷主負担" }
-                    };
-                }
-                else
-                {
-                    model.FutanKubunList = new List<SelectListItem>
-                    {
-                        new() { Value = "0", Text = "" },
-                        new() { Value = "2", Text = "会社負担" },
-                        new() { Value = "3", Text = "荷主負担" }
-                    };
-                }
+
+                model.FutanKubunList = SearchCommonService.FutanKubunSelect(model.HaisyaDataList.Haisya_Kubun == 2);
 
                 model.GroupUserSelectList = await SearchCommonService.GetCodeDataSelectList(_mapApiSettiong, 9, false);
 
@@ -770,25 +745,7 @@ namespace HaisyaWeb.Controllers
                         ? new()
                         : param.HighwayData,
                 };
-                if (model.HaisyaDataList.Haisya_Kubun != 2)
-                {
-                    model.FutanKubunList = new List<SelectListItem>
-                    {
-                        new() { Value = "0", Text = "" },
-                        new() { Value = "1", Text = "個人負担" },
-                        new() { Value = "2", Text = "会社負担" },
-                        new() { Value = "3", Text = "荷主負担" }
-                    };
-                }
-                else
-                {
-                    model.FutanKubunList = new List<SelectListItem>
-                    {
-                        new() { Value = "0", Text = "" },
-                        new() { Value = "2", Text = "会社負担" },
-                        new() { Value = "3", Text = "荷主負担" }
-                    };
-                }
+                model.FutanKubunList = SearchCommonService.FutanKubunSelect(model.HaisyaDataList.Haisya_Kubun == 2);
 
                 model.Nippou = param.Nippou;
                 model.NippouTollDegitako = param.NippouToll;
@@ -905,7 +862,7 @@ namespace HaisyaWeb.Controllers
                             走行距離 = d.走行距離,
                         });
                     }
-                
+
                 }
 
                 Dto.V_LoginUser_Local loguinUser = await GetLoginUser();
@@ -1099,7 +1056,7 @@ namespace HaisyaWeb.Controllers
             return await api.GetTNippous();
         }
 
-        public async Task<IActionResult> AnkenPointRegExec(DailyReportRegistrationDetailModel param)
+        public async Task<IActionResult> AnkenPointRegExec([FromBody] DailyReportRegistrationDetailModel param)
         {
             try
             {
@@ -1109,7 +1066,7 @@ namespace HaisyaWeb.Controllers
                     T_Anken_PointList = new(),
                 };
 
-                model.T_Anken.Anken_ID = param.Anken_ID;
+                model.T_Anken.Anken_ID = param.Search.Anken_ID;
                 foreach (var target in param.PointList)
                 {
                     Dto.T_Anken_Point_Local point = new();

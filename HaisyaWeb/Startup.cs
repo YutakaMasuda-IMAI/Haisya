@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
+using Newtonsoft.Json.Serialization;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -38,6 +40,15 @@ namespace HaisyaWeb
 
             services.AddScoped<IViewRenderService, ViewRenderService>();
             services.AddSingleton<IPathProvider, PathProvider>();
+
+
+
+            services.AddControllers().AddNewtonsoftJson(options =>
+            {
+                options.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+                options.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Local;
+            });
+
 
             services.Configure<MapApiSettings>(Configuration.GetSection(MapApiSettings.MapApiSetting));
 
@@ -80,7 +91,7 @@ namespace HaisyaWeb
                     //該当スキームのCookie名、デフォルトは.AspNetCore.Cookies
                     option.Cookie.Name = "HaisyaWeb";
                     //Cookieの中に保存されている認証データの有効期限、ここでは5分以内にサーバーへアクセスがないと認証タイムアウトが発生する
-                    option.ExpireTimeSpan = TimeSpan.FromMinutes(5);
+                    option.ExpireTimeSpan = TimeSpan.FromMinutes(100);
                     //その他の設定に関しては省略する
                 });
 
@@ -128,7 +139,7 @@ namespace HaisyaWeb
             {
                 // Cookie settings
                 options.Cookie.HttpOnly = true;
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(120);
 
                 options.LoginPath = "/Account/Login";
                 //options.AccessDeniedPath = "/Account/AccessDenied";

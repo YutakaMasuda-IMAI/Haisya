@@ -28,114 +28,118 @@
 </style>
 
 
-<div role="dialog" aria-hidden="true" tabindex="-1" class="modal fade" style="z-index: 1240;" data-backdrop="static">
-  <div class="modal-dialog modal-dialog-centered" role="document" style="max-width:750px;">
-    <div class="modal-content">
-      <div class="modal-header" style="background-color: gainsboro;">
-        <h1 class="modal-title fs-3" id="exampleModalLabel">@(Model.Title)</h1>
-        <button type="button" type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
-        <button type="button" type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
-      </div>
-      <div class="model-body">
-        <form id="form1">
-          <div id="hidden" hidden>
-            @Html.HiddenFor(model => Model.CompanyID)
-            @Html.HiddenFor(model => Model.BtnCaption)
-            @Html.HiddenFor(model => Model.Title)
-          </div>
-          <div class="contents-wrap-middle" style="margin: 10px;">
-            <h4 class="">注意</h4>
-            <span>
-              ・一度データを登録すると物理削除は出来ません。「非表示フラグ」を立ててください。
-            </span>
-          </div>
-          <table class="table table-striped-columns table-bordered border-primary" border="1" style="margin: 10px; width:96%;">
-            <thead>
-              <tr style="background-color: aquamarine;">
-                <th align="center" style="text-align: center;">項目名</th>
-                <th align="center" style="text-align: center;">値</th>
-                <th align="center" style="text-align: center;">例</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr hidden>
-                <th width="200px">ログインユーザID</th>
-                <td width="200px">@Html.TextBoxFor(model => Model.LoginUser.LoginUser_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px; padding: 0;" })</td>
-                <td width="300px"></td>
-              </tr>
-              <tr>
-                <th style="color: red;">ユーザー</th>
-                <td>
-                  @Html.DropDownListFor(model => model.LoginUser.User_ID, new SelectList(Model.CompanyUserList, "User_ID", "Display_Name", false), "ユーザを選択", new { @class = "form-control list dropDownList", @style = "padding: 0; width: 100%" })
-                </td>
-                <td></td>
-              </tr>
-              <tr>
-                <th style="color: red;">ログインID</th>
-                <td>@Html.TextBoxFor(model => Model.LoginUser.LoginID, null, new { @class = "form-control text-left", @style = "width: 200px; padding: 0;" })</td>
-                <td></td>
-              </tr>
+@* <div role="dialog" aria-hidden="true" tabindex="-1" class="modal fade" style="z-index: 1240;" data-backdrop="static">
+    max-width:750px;
+</div> *@
 
-              @if (Model.LoginUser.LoginUser_ID == 0)
-              {
-                <tr>
-                  <th style="color: red;">パスワード</th>
-                  <td>
-                    @Html.TextBoxFor(model => Model.LoginUser.Password, null, new { @class = "form-control text-left", @style = "width: 200px; padding: 0;" })
-                    <p id="LoginUser_Password_ValidationMessage" style="margin: 0;"></p>
-                  </td>
-                  <td>「強いです！！」と表示されるまで頑張ってください。</td>
-                </tr>
-              }
+<div class="modal-dialog modal-dialog-centered" role="document" style="">
+  <div class="modal-content">
+@*     <div class="modal-header" style="display:block; background-color: gainsboro;">
+      <h1 class="modal-title fs-3 float-start" id="exampleModalLabel">@(Model.Title)</h1>
+      <button type="button" class="btn btn-primary text-center" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
+      <button type="button" class="btn btn-secondary float-end" onclick="closeModel(); return false;">閉じる</button>
 
+    </div> *@
+    <div class="model-body">
+      @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "form1", @class = "contact-form p-0", @style = "", @onsubmit = "return false;" }))
+      {
+        <div id="hidden" hidden>
+          @Html.HiddenFor(model => Model.CompanyID)
+          @Html.HiddenFor(model => Model.BtnCaption)
+          @Html.HiddenFor(model => Model.Title)
+        </div>
+        <div class="contents-wrap-middle" style="margin: 10px;">
+          <h4 class="">注意</h4>
+          <span>
+            ・一度データを登録すると物理削除は出来ません。「非表示フラグ」を立ててください。
+          </span>
+        </div>
+        <table class="table table-striped-columns table-bordered border-primary" border="1" style="margin: 10px; width:96%;">
+          <thead>
+            <tr style="background-color: aquamarine;">
+              <th align="center" style="text-align: center;">項目名</th>
+              <th align="center" style="text-align: center;">値</th>
+              <th align="center" style="text-align: center;">例</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr hidden>
+              <th width="200px">ログインユーザID</th>
+              <td width="200px">@Html.TextBoxFor(model => Model.LoginUser.LoginUser_ID, null, new { @class = "form-control text-end", @onblur = "", @style = "width: 100px; padding: 0;" })</td>
+              <td width="300px"></td>
+            </tr>
+            <tr>
+              <th style="color: red;">ユーザー</th>
+              <td>
+                @Html.DropDownListFor(model => model.LoginUser.User_ID, new SelectList(Model.CompanyUserList, "User_ID", "Display_Name", false), "ユーザを選択", new { @class = "form-control list dropDownList", @style = "padding: 0; width: 100%" })
+              </td>
+              <td></td>
+            </tr>
+            <tr>
+              <th style="color: red;">ログインID</th>
+              <td>@Html.TextBoxFor(model => Model.LoginUser.LoginID, null, new { @class = "form-control text-left", @style = "width: 200px; padding: 0;" })</td>
+              <td></td>
+            </tr>
+
+            @if (Model.LoginUser.LoginUser_ID == 0)
+            {
               <tr>
-                <th style="color: red;">ログインロック</th>
-                <td>@Html.CheckBoxFor(model => Model.LoginUser.Lock_Flg, new { @class = "form-control text-left form-check-input" })</td>
-                <td>チェックを入れるとログイン出来なくなります。</td>
-              </tr>
-              <tr>
-                <th style="color: red;">権限</th>
+                <th style="color: red;">パスワード</th>
                 <td>
-                  @Html.DropDownListFor(model => model.LoginUser.Role, new SelectList(Model.LoginUserRoleList, "Role", "RoleName", false), "権限を選択", new { @class = "form-control list dropDownList", @style = "padding: 0; width: 100%" })
-                  @Html.ValidationMessageFor(model => model.LoginUser.Role, "", new { id = "SelectBranchID", @class = "text -danger align-middle" })
+                  @Html.TextBoxFor(model => Model.LoginUser.Password, null, new { @class = "form-control text-left", @style = "width: 200px; padding: 0;" })
+                  <p id="LoginUser_Password_ValidationMessage" style="margin: 0;"></p>
                 </td>
-                <td></td>
+                <td>「強いです！！」と表示されるまで頑張ってください。</td>
               </tr>
-              <tr>
-                <th style="color: red;">初期設定エリア</th>
-                <td>
-                  @Html.DropDownListFor(model => model.LoginUser.DefaultArea, new SelectList(Model.AreaList, "Area", "Area", false), "計算エリアを選択", new { @class = "form-control list dropDownList", @style = "padding: 0; width: 100%" })
-                </td>
-                <td width="300px">標準運賃を計算するための初期設定エリアを選択（案件登録画面で変更も可能）</td>
-              </tr>
-              <tr>
-                <th style="color: red;">初期設定車種</th>
-                <td>
-                  @Html.DropDownListFor(model => model.LoginUser.DefaultSyasyu, new SelectList(Model.SyasyuSelectList, "Value", "Text", "Selected"), "車種を選択", new { @class = "form-control list dropDownList", @style = "padding: 0; width: 100%" })
-                </td>
-                <td></td>
-              </tr>
-              <tr>
-                <th style="color: red;">初期設定型</th>
-                <td>
-                  @Html.DropDownListFor(model => model.LoginUser.DefaultKata, new SelectList(Model.KataSelectList, "Value", "Text", "Selected"), "型を選択", new { @class = "form-control list dropDownList", @style = "padding: 0; width: 100%" })
-                </td>
-                <td></td>
-              </tr>
-              @*<tr>
+            }
+
+            <tr>
+              <th style="color: red;">ログインロック</th>
+              <td>@Html.CheckBoxFor(model => Model.LoginUser.Lock_Flg, new { @class = "form-control text-left form-check-input" })</td>
+              <td>チェックを入れるとログイン出来なくなります。</td>
+            </tr>
+            <tr>
+              <th style="color: red;">権限</th>
+              <td>
+                @Html.DropDownListFor(model => model.LoginUser.Role, new SelectList(Model.LoginUserRoleList, "Role", "RoleName", false), "権限を選択", new { @class = "form-control list dropDownList", @style = "padding: 0; width: 100%" })
+                @Html.ValidationMessageFor(model => model.LoginUser.Role, "", new { id = "SelectBranchID", @class = "text -danger align-middle" })
+              </td>
+              <td></td>
+            </tr>
+            <tr>
+              <th style="color: red;">初期設定エリア</th>
+              <td>
+                @Html.DropDownListFor(model => model.LoginUser.DefaultArea, new SelectList(Model.AreaList, "Area", "Area", false), "計算エリアを選択", new { @class = "form-control list dropDownList", @style = "padding: 0; width: 100%" })
+              </td>
+              <td width="300px">標準運賃を計算するための初期設定エリアを選択（案件登録画面で変更も可能）</td>
+            </tr>
+            <tr>
+              <th style="color: red;">初期設定車種</th>
+              <td>
+                @Html.DropDownListFor(model => model.LoginUser.DefaultSyasyu, new SelectList(Model.SyasyuSelectList, "Value", "Text", "Selected"), "車種を選択", new { @class = "form-control list dropDownList", @style = "padding: 0; width: 100%" })
+              </td>
+              <td></td>
+            </tr>
+            <tr>
+              <th style="color: red;">初期設定型</th>
+              <td>
+                @Html.DropDownListFor(model => model.LoginUser.DefaultKata, new SelectList(Model.KataSelectList, "Value", "Text", "Selected"), "型を選択", new { @class = "form-control list dropDownList", @style = "padding: 0; width: 100%" })
+              </td>
+              <td></td>
+            </tr>
+            @*<tr>
       <th>非表示フラグ</th>
       <td class="">@Html.CheckBoxFor(model => Model.LoginUser.Del_Flg, new { @class = "form-control text-left form-check-input" })</td>
       <td>オンにすると、。</td>
     </tr>*@
-              <tr>
-                <th>最終更新日</th>
-                <td>@Convert.ToDateTime(Model.LoginUser.UP_DATE).ToString("yyyy/MM/dd HH:mm:ss")</td>
-                <td hidden>@Html.TextBoxFor(model => Model.LoginUser.UP_DATE, null, new { @class = "form-control text-end" })</td>
-              </tr>
-            </tbody>
-          </table>
-        </form>
-      </div>
+            <tr>
+              <th>最終更新日</th>
+              <td>@Convert.ToDateTime(Model.LoginUser.UP_DATE).ToString("yyyy/MM/dd HH:mm:ss")</td>
+              <td hidden>@Html.TextBoxFor(model => Model.LoginUser.UP_DATE, null, new { @class = "form-control text-end" })</td>
+            </tr>
+          </tbody>
+        </table>
+      }
     </div>
   </div>
 </div>
@@ -145,12 +149,10 @@
 
   $(function () {
 
-    setTimeout(function () {
-      $('.modal-backdrop')
-        .not('.modal-stack')
-        .css('z-index', 1239)
-        .addClass('modal-stack');
-    }, 0);
+    $(".ui-dialog-titlebar").append(
+        '<button type="button" class="btn btn-primary" style="width:100px;" onclick="regExec(); return false;">登録</button>'
+    );
+
 
     $('#LoginUser_Password').on('keyup', function () {
       // 入力値取得
@@ -192,7 +194,7 @@
         console.log(xhr);
         return false;
     }).always(function (xhr, msg) {
-        console.log(xhr, msg);
+        // console.log(xhr, msg);
     });
 
   }

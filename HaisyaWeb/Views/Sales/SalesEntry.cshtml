@@ -987,7 +987,7 @@
                       <td style="border:none;">
                         @if (item.Default_Kubun != 1)
                         {
-                          <button type="button" type="button" class="btn btn-outline-danger deleteRowButton" onclick="deleteFutanRow(this)">削除</button>
+                          <button type="button" class="btn btn-outline-danger deleteRowButton" onclick="deleteFutanRow(this)">削除</button>
                         }
                       </td>
                     </tr>
@@ -1378,7 +1378,7 @@
                           <td>@Html.TextBoxFor(m => item.Route_Teate, "{0:N0}", new { @class = "form-control route-allowance inputtable", data_index = kojinIndex, @id = "routeAllowance", @onblur = "kanmaChange(this);", @style = "text-align:right;", @onchange = "contentChanged=true;" })</td>
                           <td>@Html.TextBoxFor(m => item.Route_OverTime, "{0:N0}", new { @class = "form-control route-overtime inputtable", data_index = kojinIndex, @id = "routeOvertime", @onblur = "kanmaChange(this);", @style = "text-align:right;", @onchange = "contentChanged=true;" })</td>
                           <td>@Html.TextBoxFor(m => item.Route_Midnight, "{0:N0}", new { @class = "form-control route-midnight inputtable", data_index = kojinIndex, @id = "routeMidnight", @onblur = "kanmaChange(this);", @style = "text-align:right;", @onchange = "contentChanged=true;" })</td>
-                          <td style="border:none;"><button type="button" type="button" class="btn btn-outline-danger deleteRowButton">削除</button></td>
+                          <td style="border:none;"><button type="button" class="btn btn-outline-danger deleteRowButton">削除</button></td>
                         </tr>
                         kojinIndex++;
                       }
@@ -1401,7 +1401,7 @@
                     <td><input type="text" id="routeAllowance" name="routeAllowance" value="0" class="form-control route-allowance2" style="text-align:right;" oninput="this.value = this.value.replace(/[^0-9]/g, '');" onblur="kanmaChange(this);" onchange="contentChanged=true;"/></td>
                     <td><input type="text" id="routeOvertime" name="routeOvertime" value="0" class="form-control route-overtime" style="text-align:right;" oninput="this.value = this.value.replace(/[^0-9]/g, '');" onblur="kanmaChange(this);" onchange="contentChanged=true;"/></td>
                     <td><input type="text" id="routeMidnight" name="routeMidnight" value="0" class="form-control route-midnight" style="text-align:right;" oninput="this.value = this.value.replace(/[^0-9]/g, '');" onblur="kanmaChange(this);" onchange="contentChanged=true;"/></td>
-                    <td style="border:none;"><button type="button" type="button" class="btn btn-outline-danger deleteRowButton">削除</button></td>
+                    <td style="border:none;"><button type="button" class="btn btn-outline-danger deleteRowButton">削除</button></td>
                   </tr>
                 </tbody>
               </table>
@@ -1439,7 +1439,7 @@
                       <td style="border:none;">
                         @if (item.Default_Kubun != 1)
                         {
-                          <button type="button" type="button" class="btn btn-outline-danger deleteRowButton" onclick="deleteFutanRow(this)">削除</button>
+                          <button type="button" class="btn btn-outline-danger deleteRowButton" onclick="deleteFutanRow(this)">削除</button>
                         }
                       </td>
                     </tr>

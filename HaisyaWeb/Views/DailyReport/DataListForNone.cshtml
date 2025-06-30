@@ -38,7 +38,7 @@ else
         <th width="40px" rowspan="2">
           <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.TNippou.ApprovalStatus))')">承認</a>
         </th>
-        <th width="40px" rowspan="2">
+        <th width="40px" rowspan="2" class="lh-1">
           <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.TNippou.RenkeiStatus))')">連携<br />結果</a>
         </th>
         <th width="120px" rowspan="2">
@@ -50,7 +50,7 @@ else
         <th width="70px" rowspan="2">
           <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.EndDatetime))')">卸日</a>
         </th>
-        <th width="100px">
+        <th width="100px" class="p-1">
           <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.SYABAN))')">担当車番</a>
         </th>
         <th hidden>
@@ -68,21 +68,21 @@ else
         <th width="80px" rowspan="2">
           <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.Daisuu))')">車種</a>
         </th>
-        <th width="80px">
+        <th width="80px" class="p-1">
           <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.ZanteiAmount))')">暫定金額</a>
         </th>
-        <th width="100px" style="background: Aquamarine">
+        <th width="100px" style="background: Aquamarine" class="p-1">
           <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.Yosya_Display1))')">傭車１</a>
         </th>
       </tr>
       <tr align="center">
-        <th>
+        <th class="p-1">
           <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.Driver_Name))')">担当乗務員</a>
         </th>
-        <th align="center">
+        <th align="center" class="p-1">
           <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.KakuteiAmount))')">確定金額</a>
         </th>
-        <th align="center" style="background: Aquamarine">
+        <th align="center" style="background: Aquamarine" class="p-1">
           <a href="#" onclick="set_sort('@(nameof(HaisyaDataList.Yosya_Display2))')">傭車２</a>
         </th>
       </tr>
@@ -114,7 +114,7 @@ else
           <td class="@(color)" align="center" rowspan="2">
             @item.EndDatetime.ToString("MM/dd")<br> @item.EndDatetime.ToString("HH:mm")
           </td>
-          <td class="@(color)" align="center">
+          <td class="@(color) p-1" align="center">
             @Html.DisplayFor(modelItem => item.SYABAN)
           </td>
           <td class="@(color)" hidden rowspan="2">
@@ -133,21 +133,21 @@ else
             @Html.DisplayFor(modelItem => item.SyasyuDisplay2)<br />
             @Convert.ToInt32(item.Daisuu).ToString("0台")
           </td>
-          <td class="@(color)" align="right">
+          <td class="@(color) p-1" align="right">
             @Convert.ToInt32(item.ZanteiAmount).ToString("#,0")
           </td>
-          <td class="@(color)" align="right">
+          <td class="@(color) p-1" align="right">
             @Html.DisplayFor(modelItem => item.Yosya_Display1)
           </td>
         </tr>
         <tr align="center">
-          <td class="@(color)">
+          <td class="@(color) p-1">
             @Html.DisplayFor(modelItem => item.Driver_Name)
           </td>
-          <td class="@(color)" align="right">
+          <td class="@(color) p-1" align="right">
             @Convert.ToInt32(item.KakuteiAmount).ToString("#,0")
           </td>
-          <td class="@(color)">
+          <td class="@(color) p-1">
             @Html.DisplayFor(modelItem => item.Yosya_Display2)
           </td>
         </tr>

@@ -129,7 +129,7 @@
             @foreach (var item in listData)
             {
               <tr class="anken-data-tree-background @GetStatusClass(item.NippouStatus)" onClick="changeDisplay('@item.Anken_ID', '@item.AnkenDisplay_ID', '@item.Day.ToString("yyyy/MM/dd")', '@item.SYABAN', '@item.Employee_Number')">
-                <td style="width: 15px; padding: 0px;cursor: pointer;">
+                <td class="p-0" style="width: 15px; cursor: pointer;">
                   @if (item == listData.Last())
                   {
                     @:┗
@@ -139,8 +139,8 @@
                     @:┣
                   }
                 </td>
-                <td style="width: 50px; padding: 0px; cursor: pointer;">@item.Day.ToString("MM/dd"):</td>
-                <td style="width: 10px; padding: 0px; cursor: pointer;">
+                <td class="p-0" style="width: 50px; cursor: pointer;">@item.Day.ToString("MM/dd"):</td>
+                <td class="p-0" style="width: 10px; cursor: pointer;">
                   @switch (item.Haisya_Kubun)
                   {
                     case 1:
@@ -163,8 +163,8 @@
                       break;
                   }
                 </td>
-                <td style="width: 50px; padding: 0px; cursor: pointer;">(@item.SYABAN)</td>
-                <td style="padding: 0px; cursor: pointer;">@item.Driver_Name</td>
+                <td class="p-0" style="width: 50px; cursor: pointer;">(@item.SYABAN)</td>
+                <td class="p-0" style="cursor: pointer;">@item.Driver_Name</td>
               </tr>
             }
           </tbody>
@@ -180,22 +180,25 @@
 
 
 <script>
-  var DataDataLists = @Html.Raw(DataDataLists);
-  var SelectDay = @Html.Raw(SelectDay);
-  var SelectEndDay = @Html.Raw(SelectEndDay);
-  var SelectTokuisakiID = @Html.Raw(SelectTokuisakiID);
+  var DataDataLists = JSON.parse(@Html.Raw(DataDataLists));
+  var SelectDay = new Date(@Html.Raw(SelectDay));
+  var SelectEndDay = JSON.parse(@Html.Raw(SelectEndDay));
+  var SelectTokuisakiID = JSON.parse(@Html.Raw(SelectTokuisakiID));
   var Anken_ID = JSON.parse('@Html.Raw(Json.Serialize(Model.Anken_ID))');
   var AnkenDisplay_ID = JSON.parse('@Html.Raw(Json.Serialize(Model.AnkenDisplay_ID))');
   var DriverCd = JSON.parse('@Html.Raw(Json.Serialize(Model.HaisyaDataData?.Employee_Number))');
-  var Syaban = JSON.parse('@Html.Raw(Json.Serialize(Model.HaisyaDataData?.SYABAN))');
-  var SingleSwitch = @Html.Raw(SingleSwitch);;
-  var KokyakuId = @Html.Raw(KokyakuId);
-  var KokyakuName = @Html.Raw(KokyakuName);
-  var SelectTantou = @Html.Raw(SelectTantou);
-  var SelectFilter = @Html.Raw(SelectFilter);
-  var SelectSeikyuTantou = @Html.Raw(SelectSeikyuTantou);
-  var SelectGroup = @Html.Raw(SelectGroup);
-  var IsCollapse = @Html.Raw(IsCollapse);
+  var Syaban = JSON.parse(@Html.Raw(Json.Serialize(Model.HaisyaDataData?.SYABAN)));
+  var SingleSwitch = JSON.parse(@Html.Raw(SingleSwitch));
+  var KokyakuId = JSON.parse(@Html.Raw(KokyakuId));
+  var KokyakuName = JSON.parse(@Html.Raw(KokyakuName));
+  var SelectTantou = '@(@Html.Raw(SelectTantou))';
+  var SelectFilter = JSON.parse(@Html.Raw(SelectFilter));
+  var SelectSeikyuTantou = '@Html.Raw(SelectSeikyuTantou)';
+  var SelectGroup = JSON.parse(@Html.Raw(SelectGroup));
+  var IsCollapse = JSON.parse(@Html.Raw(IsCollapse));
+
+
+
   function getWindowHeight() {
     return window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
   }
@@ -264,12 +267,17 @@
   }
 
   function DailyReportRegistrationDetailDisplay(Anken_ID) {
+
+    CommonWaitStart();
+
     $.ajax({
       url: '@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "DailyReportRegistrationDetail" })',
-      type: 'GET',
-      data: {
-                Anken_ID, AnkenDisplay_ID, DriverCd, Syaban, SelectDay, SelectEndDay, SelectTokuisakiID, SingleSwitch, KokyakuId, KokyakuName, SelectTantou, SelectFilter, SelectSeikyuTantou, SelectGroup, IsCollapse
-      },
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({
+            Search:{Anken_ID,AnkenDisplay_ID,DriverCd,Syaban,SelectDay, SelectEndDay, SelectTokuisakiID,},
+            SingleSwitch, KokyakuId, KokyakuName, SelectTantou, SelectFilter, SelectSeikyuTantou, SelectGroup, IsCollapse
+      }),
       success: function(data) {
         // サーバーから返されたデータを処理する
         // 必要に応じて、HTMLを更新する
@@ -278,33 +286,58 @@
       error: function(xhr, status, error) {
         // エラー処理
         console.error(error);
+      },
+      complete: function() {
+          $("#tblCollapseInfo").collapse('show');
+          $("#distanceContainer").collapse('show');
+          CommonWaitEnd();
       }
     });
 
   };
 
-  function DailyReportRegistrationDetailNippouDisplay(AnkenDisplay_ID) {
+  function DailyReportRegistrationDetailNippouDisplay(paramAnkenDisplay_ID) {
+
+    CommonWaitStart();
+    $("#tblCollapseInfo").collapse('hide');
+    $("#distanceContainer").collapse('hide');
+
     $.ajax({
       url: '@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "DailyReportRegistrationDetailToNippou" })',
-      type: 'GET',
-      data: {
-        Anken_ID, AnkenDisplay_ID, DriverCd, Syaban, SelectDay, SelectEndDay, SelectTokuisakiID
-      },
+      type: 'POST',
+      contentType: 'application/json',
+      data: JSON.stringify({
+        Search:{ Anken_ID, AnkenDisplay_ID:paramAnkenDisplay_ID, DriverCd, Syaban, SelectDay, SelectEndDay, SelectTokuisakiID, },
+        AnkenDegitakoStartId: $('#AnkenDegitakoStartId').val(),
+        AnkenDegitakoStartDatetime: new Date($('#AnkenDegitakoStartDatetime').val()),
+        AnkenDegitakoEndId: $('#AnkenDegitakoEndId').val(),
+        AnkenDegitakoEndDatetime: new Date($('#AnkenDegitakoEndDatetime').val()),
+        AnkenDegitakoDistance: $('#AnkenDegitakoDistance').val(),
+        AnkenDegitakoBreakTime: new Date($('#AnkenDegitakoBreakTime').val()),
+        AnkenDegitakoWorkTime: new Date($('#AnkenDegitakoWorkTime').val()),
+        AnkenDegitakoActualWorkTime: new Date($('#AnkenDegitakoActualWorkTime').val()),
+      }),
       success: function(data) {
         // サーバーから返されたデータを処理する
         // 必要に応じて、HTMLを更新する
         $('#divDaileReortDetail_Nippou').html(data.partialView);
-
+        
       },
       error: function(xhr, status, error) {
         // エラー処理
         console.error(error);
+      },
+      complete: function() {
+        $("#tblCollapseInfo").collapse('hide');
+        $("#distanceContainer").collapse('hide');
+        CommonWaitEnd();
       }
     });
 
   };
 
   function reloadPage() {
+
     var form = $('<form action="' + '@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "DailyReportRegistration" })' + '" method="get"></form>');
     form.append($('<input type="hidden" name="SelectDay" value="' + SelectDay + '">'));
     form.append($('<input type="hidden" name="SelectEndDay" value="' + SelectEndDay + '">'));
@@ -328,6 +361,11 @@
   function ModalClose() {
     $('#ModalHere').find('.modal').modal('hide');
   };
+
+
+  function CloseModal() {
+      CloseDailog2('ModalHere');
+  }
 
 </script>
 

@@ -40,10 +40,10 @@
         <h1 class="modal-title fs-3" id="exampleModalLabel">@(Model.Title)</h1>
         @if (Model.EditEnabled)
         {
-          <button type="button" type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
+          <button type="button" class="btn btn-primary" onclick="regExec(); return false;">@(Model.BtnCaption)</button>
         }
 
-        <button type="button" type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
+        <button type="button" class="btn btn-secondary" onclick="closeModel(); return false;">閉じる</button>
       </div>
       <div class="model-body">
         @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmMain", @class = "contact-form", @style = "padding: 0;", @onsubmit = "return false;" }))
@@ -159,7 +159,7 @@
                   <tr>
                     <th>車種</th>
                     <td colspan="3">
-                      <table width="100%" style="margin: 0px; padding: 0px;">
+                      <table class="p-0 m-0 w-100" style="">
                         <tr>
                           <th style="width: 50px; text-align: right;">車種</th>
                           <td style="width: 80px;">@Html.TextBoxFor(model => Model.CustomerDriverSyaryoData.Syasyu, null, new { @class = "form-control text-left", @style = "width: 100px; margin-right:0px;", @onblur = "" })</td>
@@ -187,7 +187,7 @@
                   <tr>
                     <th style="color: red;">車番</th>
                     <td colspan="3">
-                      <table width="100%" style="margin: 0px; padding: 0px;">
+                      <table class="p-0 m-0 w-100" style="">
                         <tr>
                           <th style="width: 50px; text-align: right;">地域</th>
                           <td style="width: 80px;">@Html.TextBoxFor(model => Model.CustomerDriverSyaryoData.Syaban_Chiiki, null, new { @class = "form-control text-left", @style = "width: 80px; margin-right:0px;", @onblur = "" })</td>

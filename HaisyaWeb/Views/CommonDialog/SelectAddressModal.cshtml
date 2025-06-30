@@ -212,8 +212,8 @@
         <input type="radio" name="tab_name" id="tabCommonDialog3">
         <label class="tab_class" for="tabCommonDialog3">地図選択</label>
         <div class="content_class" style="height: 500px;">
-          <div id="addressList" class="" style="padding: 0; max-height: 500px;"></div>
-          <div id="maptd" class="" style="padding: 0;">
+          <div id="addressList" class="p-0" style="max-height: 500px;"></div>
+          <div id="maptd" class="p-0" style="">
             @if (Model.WebViewFlg == 0)
             {
               <div id="mapHead">
@@ -233,7 +233,7 @@
                   </td>
                 </tr>
               </table>
-              <div id="MapContainerCommon" class="" style="margin: 0; padding: 0; height: calc(100% - 70px);">
+              <div id="MapContainerCommon" class="m-0 p-0" style="height: calc(100% - 70px);">
                 <div id="ZMapCommon" style="background:#00ffff;"></div>
               </div>
             }
@@ -242,7 +242,7 @@
               <table width="100%">
                 <tr>
                   <th width="40px" class="text-end">
-                    <label class="label-Title-Required control-label align-self-center align-middle text-end" style="padding: 0; color: #ff00dc;">住所<br />検索</label>
+                    <label class="label-Title-Required control-label align-self-center align-middle text-end p-0" style="color: #ff00dc;">住所<br />検索</label>
                   </th>
                   <td style="padding-left: 1rem;">
                     <input type="text" id="txtAddress" class="form-control" />
