@@ -286,10 +286,10 @@ namespace WebApplication.Repositories
                 if (nippouKaiso != null)
                 {
                     // End_DateTimeをDateTime型に変換
-                    if (DateTime.TryParse(nippouKaiso.End_Datetime, out DateTime endDateTime))
+                    if (nippouKaiso.End_Datetime != null)
                     {
                         // T_KUDGIVTの終了日時カラムがEnd_DateTime以降のレコードを取得
-                        query = query.Where(k => k.終了日時 >= endDateTime);
+                        query = query.Where(k => k.終了日時 >= nippouKaiso.End_Datetime);
                     }
                     degitakoData = await query.ToListAsync();
                 }
@@ -446,6 +446,34 @@ namespace WebApplication.Repositories
         public async Task<List<int>> GetNippouKaisoDegitako(int Nippou_ID)
         {
             List<int> nippouStayDegotako = await _context.T_Nippou_Kaiso_Degitakos
+            .Where(n => n.Nippou_ID == Nippou_ID)
+            .Select(n => n.KUDGIVT_ID)
+            .ToListAsync();
+
+            return nippouStayDegotako;
+        }
+
+        /// <summary>
+        /// 指定された Nippo_ID に基づいて T_Nippou_Anken エンティティを取得します。
+        /// </summary>
+        /// <param name="Nippou_ID">取得する T_Nippou_Anken エンティティの ID。</param>
+        /// <returns>T_Nippou_Anken エンティティ。</returns>
+        public async Task<T_Nippou_Anken> GetNippouAnken(int Nippou_ID)
+        {
+            T_Nippou_Anken nippouStay = await _context.T_Nippou_Ankens
+                .FirstOrDefaultAsync(n => n.Nippou_ID == Nippou_ID);
+
+            return nippouStay;
+
+        }
+        /// <summary>
+        /// 指定された Nippo_ID に基づいて関連する KUDGIVT_ID のリストを取得します。
+        /// </summary>
+        /// <param name="Nippou_ID">関連する KUDGIVT_ID を取得するための Nippo_ID。</param>
+        /// <returns>KUDGIVT_ID のリスト。</returns>
+        public async Task<List<int>> GetNippouAnkenDegitako(int Nippou_ID)
+        {
+            List<int> nippouStayDegotako = await _context.T_Nippou_Anken_Degitakos
             .Where(n => n.Nippou_ID == Nippou_ID)
             .Select(n => n.KUDGIVT_ID)
             .ToListAsync();
@@ -619,7 +647,7 @@ namespace WebApplication.Repositories
                     Update_Datetime = DateTime.Now,
                     Update_User = loginUserId,
                     DegitakoLink_Result = 1,
-                    Receipt_Date = DateTime.Now
+                    Receipt_Date = DateOnly.FromDateTime(DateTime.Now),
                 };
 
                 await _context.T_Nippous.AddAsync(nippou);
@@ -659,7 +687,7 @@ namespace WebApplication.Repositories
 
             // T_KUDGIVTから対応するデータを取得
             List<T_KUDGIVT> kudgivtData = await _contextKintai.T_KUDGIVTs
-                .Where(k => kudgivtIds.Contains(k.ID))
+                .Where(k => kudgivtIds.AsQueryable().Contains(k.ID))
                 .ToListAsync();
 
             // 追加するレコード
@@ -692,7 +720,7 @@ namespace WebApplication.Repositories
 
             // 削除するレコード
             IEnumerable<T_Nippou_Stay_Degitako> recordsToRemove = existingRecords
-                .Where(r => !kudgivtIds.Contains(r.KUDGIVT_ID));
+                .Where(r => !kudgivtIds.AsQueryable().Contains(r.KUDGIVT_ID));
 
             // 新しいレコードを追加
             await _context.T_Nippou_Stay_Degitakos.AddRangeAsync(recordsToAdd);
@@ -720,7 +748,7 @@ namespace WebApplication.Repositories
 
             // T_KUDGIVTから対応するデータを取得
             List<T_KUDGIVT> kudgivtData = await _contextKintai.T_KUDGIVTs
-                .Where(k => kudgivtIds.Contains(k.ID))
+                .Where(k => kudgivtIds.AsQueryable().Contains(k.ID))
                 .ToListAsync();
 
             // 追加するレコード
@@ -753,7 +781,7 @@ namespace WebApplication.Repositories
 
             // 削除するレコード
             IEnumerable<T_Nippou_Kaiso_Degitako> recordsToRemove = existingRecords
-                .Where(r => !kudgivtIds.Contains(r.KUDGIVT_ID));
+                .Where(r => !kudgivtIds.AsQueryable().Contains(r.KUDGIVT_ID));
 
             // 新しいレコードを追加
             await _context.T_Nippou_Kaiso_Degitakos.AddRangeAsync(recordsToAdd);
@@ -779,7 +807,7 @@ namespace WebApplication.Repositories
 
             if (existingNippouStay != null)
             {
-                if (viewModel.Start_Datetime == "")
+                if (viewModel.Start_Datetime != null)
                 {
                     // 既存のレコードを削除
                     List<T_Nippou_Stay> existingRecords = await _context.T_Nippou_Stays
@@ -806,7 +834,7 @@ namespace WebApplication.Repositories
             }
             else
             {
-                if (viewModel.Start_Datetime != "")
+                if (viewModel.Start_Datetime != null)
                 {
                     T_Nippou_Stay newNippouStay = new T_Nippou_Stay
                     {
@@ -846,7 +874,7 @@ namespace WebApplication.Repositories
 
             if (existingNippouKaiso != null)
             {
-                if (viewModel.Start_Datetime == "")
+                if (viewModel.Start_Datetime == null)
                 {
                     // 既存のレコードを削除
                     List<T_Nippou_Kaiso> existingRecords = await _context.T_Nippou_Kaisos
@@ -875,7 +903,7 @@ namespace WebApplication.Repositories
             }
             else
             {
-                if (viewModel.Start_Datetime != "")
+                if (viewModel.Start_Datetime != null)
                 {
                     // レコードがないと作成
                     T_Nippou_Kaiso newNippouKaiso = new T_Nippou_Kaiso
@@ -902,6 +930,150 @@ namespace WebApplication.Repositories
                 }
             }
 
+            await _context.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// 指定された Nippo_ID に基づいて T_Nippou_Anken エンティティを保存または更新します。
+        /// </summary>
+        /// <param name="nippouId">対象の T_Nippou_Anken エンティティの ID。</param>
+        /// <param name="viewModel">T_Nippou_Anken エンティティの新しいデータ。</param>
+        /// <param name="loginUserId">操作を行うユーザーの ID。</param>
+        /// <returns>非同期操作の結果を示すタスク。</returns>
+        public async Task SaveOrUpdateNippouAnken(int nippouId, T_Nippou_Anken viewModel, int loginUserId)
+        {
+            T_Nippou_Anken existingNippouAnken = await _context.T_Nippou_Ankens
+                .FirstOrDefaultAsync(nk => nk.Nippou_ID == nippouId);
+
+            if (existingNippouAnken != null)
+            {
+                if (viewModel.Start_Datetime == null)
+                {
+                    // 既存のレコードを削除
+                    List<T_Nippou_Anken> existingRecords = await _context.T_Nippou_Ankens
+                        .Where(nk => nk.Nippou_ID == nippouId)
+                        .ToListAsync();
+                    _context.T_Nippou_Ankens.RemoveRange(existingRecords);
+                }
+                else
+                {
+                    // レコードがあると更新 
+                    existingNippouAnken.Day = viewModel.Day;
+                    existingNippouAnken.Start_Datetime = viewModel.Start_Datetime;
+                    existingNippouAnken.End_Datetime = viewModel.End_Datetime;
+
+                    existingNippouAnken.Start_Degitako_Id = viewModel.Start_Degitako_Id;
+                    existingNippouAnken.End_Degitako_Id = viewModel.End_Degitako_Id;
+                    existingNippouAnken.Distance = viewModel.Distance;
+                    existingNippouAnken.Dllowance = viewModel.Dllowance;
+
+                    existingNippouAnken.BreakTime = viewModel.BreakTime;
+                    existingNippouAnken.WorkTime = viewModel.WorkTime;
+                    existingNippouAnken.ActualWorkTime = viewModel.ActualWorkTime;
+
+                    existingNippouAnken.Insert_Datetime = DateTime.Now;
+                    existingNippouAnken.Insert_User = loginUserId;
+                    existingNippouAnken.Update_Datetime = DateTime.Now;
+                    existingNippouAnken.Update_User = loginUserId;
+
+                    _context.T_Nippou_Ankens.Update(existingNippouAnken);
+                }
+            }
+            else
+            {
+                if (viewModel.Start_Datetime != null)
+                {
+                    // レコードがないと作成
+                    T_Nippou_Anken newNippouAnken = new T_Nippou_Anken
+                    {
+                        Nippou_ID = nippouId,
+                        Day = viewModel.Day,
+                        Start_Datetime = viewModel.Start_Datetime,
+                        End_Datetime = viewModel.End_Datetime,
+                        Start_Degitako_Id = viewModel.Start_Degitako_Id,
+                        End_Degitako_Id = viewModel.End_Degitako_Id,
+     
+                        Distance = viewModel.Distance,
+                        Dllowance = viewModel.Dllowance,
+
+                        BreakTime = viewModel.BreakTime,
+                        WorkTime = viewModel.WorkTime,
+                        ActualWorkTime = viewModel.ActualWorkTime,
+
+                        Insert_Datetime = DateTime.Now,
+                        Insert_User = loginUserId,
+                        Update_Datetime = DateTime.Now,
+                        Update_User = loginUserId
+                    };
+
+                    await _context.T_Nippou_Ankens.AddAsync(newNippouAnken);
+                }
+            }
+
+            await _context.SaveChangesAsync();
+        }
+        /// <summary>
+        /// 指定された Nippou_ID に基づいて T_Nippou_Anken_Degitako レコードを更新します。
+        /// 新しい KUDGIVT_ID があれば追加し、存在しない KUDGIVT_ID のレコードは削除します。
+        /// </summary>
+        /// <param name="nippouId">対象の T_Nippou_Anken_Degitako エンティティの ID。</param>
+        /// <param name="kudgivtIds">関連する KUDGIVT_ID のリスト。</param>
+        /// <returns>非同期操作の結果を示すタスク。</returns>
+        public async Task UpdateNippouAnkenDegitako(int nippouId, List<int> kudgivtIds)
+        {
+            // 既存のレコードを取得
+            List<T_Nippou_Anken_Degitako> existingRecords = await _context.T_Nippou_Anken_Degitakos
+                .Where(n => n.Nippou_ID == nippouId)
+                .ToListAsync();
+
+            int startId = kudgivtIds[0];
+            int endId = kudgivtIds.Count > 1 ? kudgivtIds[1] : startId;
+
+            // T_KUDGIVTから対応するデータを取得
+            List<T_KUDGIVT> kudgivtData = await _contextKintai.T_KUDGIVTs
+                .Where(k => k.ID >= startId && k.ID <= endId).ToListAsync();
+            //.Where(k => kudgivtIds.AsQueryable().Contains(k.ID))
+            //.ToListAsync();
+
+            // 追加するレコード
+            IEnumerable<T_Nippou_Anken_Degitako> recordsToAdd = kudgivtData
+                .Where(k => !existingRecords.Any(r => r.KUDGIVT_ID == k.ID))
+                .Select(k => new T_Nippou_Anken_Degitako
+                {
+                    Nippou_ID = nippouId,
+                    KUDGIVT_ID = k.ID,
+                    運行NO = k.運行NO,
+                    読取日 = k.読取日,
+                    事業所名 = k.事業所名,
+                    車輌CD = k.車輌CD,
+                    車輌名 = k.車輌名,
+                    乗務員CD = k.乗務員CD,
+                    乗務員名 = k.乗務員名,
+                    開始日時 = k.開始日時,
+                    イベント名 = k.イベント名,
+                    終了日時 = k.終了日時,
+                    開始走行距離 = k.開始走行距離,
+                    終了走行距離 = k.終了走行距離,
+                    区間時間 = k.区間時間,
+                    区間距離 = k.区間距離,
+                    開始市町村名 = k.開始市町村名,
+                    終了市町村名 = k.終了市町村名,
+                    開始場所名 = k.開始場所名,
+                    終了場所名 = k.終了場所名,
+                    早朝深夜_休憩 = k.早朝深夜_休憩,
+                });
+
+            // 削除するレコード
+            IEnumerable<T_Nippou_Anken_Degitako> recordsToRemove = existingRecords
+                .Where(r => !kudgivtIds.AsQueryable().Contains(r.KUDGIVT_ID));
+
+            // 新しいレコードを追加
+            await _context.T_Nippou_Anken_Degitakos.AddRangeAsync(recordsToAdd);
+
+            // 不要なレコードを削除
+            _context.T_Nippou_Anken_Degitakos.RemoveRange(recordsToRemove);
+
+            // 変更を保存
             await _context.SaveChangesAsync();
         }
 
@@ -950,7 +1122,7 @@ namespace WebApplication.Repositories
                     YosyaDriver_ID = haisyaYosha == null ? 0 : haisyaYosha.YosyaDriver_ID,
                     Yosya_Branch_ID = haisyaYosha == null ? 0 : haisyaYosha.Yosya_Branch_ID,
 
-                    Day = ankenDisplay.StartDatetime,
+                    Day = DateOnly.FromDateTime(ankenDisplay.StartDatetime),
                     Toll_Kubun = item.Toll_Kubun,
                     Start_Name = item.Start_Name,
                     End_Name = item.End_Name,
@@ -1014,7 +1186,7 @@ namespace WebApplication.Repositories
                     YosyaDriver_ID = haisyaYosha == null ? 0 : haisyaYosha.YosyaDriver_ID,
                     Yosya_Branch_ID = haisyaYosha == null ? 0 : haisyaYosha.Yosya_Branch_ID,
 
-                    運行日 = info.開始日時?.Date ?? DateTime.MinValue,
+                    運行日 = DateOnly.FromDateTime(info.開始日時?.Date ?? DateTime.MinValue),
                     開始日時 = info.開始日時,
                     終了日時 = info.終了日時,
                     開始道路番号 = info.開始道路番号,
@@ -1044,7 +1216,7 @@ namespace WebApplication.Repositories
                 //var highwayData = await GetHighwayData(ankenDisplay.Anken_ID, ankenDisplay.StartDatetime, ankenDisplay.EndDatetime);
                 //foreach (var data in highwayData)
                 //{
-                //    if (!KUDGSIRList.Contains(data.ID))
+                //    if (!KUDGSIRList.AsQueryable().Contains(data.ID))
                 //    {
                 //        var newRecord = new T_Nippou_Toll
                 //        {
@@ -1097,9 +1269,9 @@ namespace WebApplication.Repositories
             await _context.SaveChangesAsync();
         }
         /// <summary>
-        /// 日報の仮登録を行います。
+        /// 日報の登録を行います。
         /// </summary>
-        /// <param name="data">仮登録する日報の詳細モデル。</param>
+        /// <param name="data">登録する日報の詳細モデル。</param>
         /// <returns>非同期操作を表すタスク。操作が成功した場合はtrueを返します。</returns>
         public async Task<bool> ProvisionalRegistration(DailyReportRegistrationDetailModel data)
         {
@@ -1108,13 +1280,15 @@ namespace WebApplication.Repositories
             try
             {
                 int nippouId = await UpdateOrInsertNippou(data.Nippou_ID, data.Nippou.RenkeiStatus, data.Nippou.Distance, data.User_ID, data.Nippou.ApprovalStatus, data.AnkenDisplay);
+                await UpdateNippouAnkenDegitako(nippouId, data.NippouAnkenDegitakoIdList);
                 await UpdateNippouStayDegitako(nippouId, data.NippouStayDegitakoIdList);
                 await UpdateNippouKaisoDegitako(nippouId, data.NippouKaisoDegitakoIdList);
+                await SaveOrUpdateNippouAnken(nippouId, data.Nippou_Anken, data.User_ID);
                 await SaveOrUpdateNippouStay(nippouId, data.Nippou_Stay, data.User_ID);
                 await SaveOrUpdateNippouKaiso(nippouId, data.Nippou_Kaiso, data.User_ID);
                 await SaveNippouTollOther(nippouId, data.NippouTollOther, data.User_ID, data.AnkenDisplay);
                 await SaveNippouToll(nippouId, data.NippouToll, data.User_ID, data.AnkenDisplay, data.InitialDisplayNippouToll, data.KUDGSIRIdList);
-                if (data.NippouApproval.Limit_DateTime != DateTime.MinValue)
+                if (data.NippouApproval != null && data.NippouApproval.Limit_DateTime != DateTime.MinValue)
                 {
                     await SaveNippouApproval(nippouId, data.NippouApproval, data.User_ID);
                 }
@@ -1171,6 +1345,8 @@ namespace WebApplication.Repositories
         Task<bool> PostCertificationRequest(CertificationRequestModel data);
         Task<T_Nippou> GetNippou(int AnkenDisplay_ID);
         Task<T_Uriage> GetUriage(int Anken_ID);
+        Task<T_Nippou_Anken> GetNippouAnken(int Nippou_ID);
+        Task<List<int>> GetNippouAnkenDegitako(int Nippou_ID);
         Task<T_Nippou_Stay> GetNippouStay(int Nippou_ID);
         Task<List<int>> GetNippouStayDegitako(int Nippou_ID);
         Task<T_Nippou_Kaiso> GetNippouKaiso(int Nippou_ID);
@@ -1184,6 +1360,7 @@ namespace WebApplication.Repositories
         Task UpdateNippouKaisoDegitako(int nippouId, List<int> kudgivtIds);
         Task SaveOrUpdateNippouStay(int nippouId, T_Nippou_Stay viewModel, int loginUserId);
         Task SaveOrUpdateNippouKaiso(int nippouId, T_Nippou_Kaiso viewModel, int loginUserId);
+        Task SaveOrUpdateNippouAnken(int nippouId, T_Nippou_Anken viewModel, int loginUserId);
         Task SaveNippouTollOther(int nippouId, List<T_Nippou_Toll_Other> nippouTollOthers, int loginUserId, T_Anken_Display ankenDisplay);
         Task SaveNippouToll(int nippouId, List<T_Nippou_Toll> nippouToll, int loginUserId, T_Anken_Display ankenDisplay, List<T_Nippou_Toll> nippouTollFlg, List<int> KUDGSIRList);
         Task<bool> ProvisionalRegistration(DailyReportRegistrationDetailModel data);

@@ -119,7 +119,7 @@ namespace WebApplication.Model
         /// <summary>
         /// ポイント日付
         /// </summary>
-        public DateTime? PointDate { get; set; }
+        public DateOnly? PointDate { get; set; }
 
         /// <summary>
         /// ポイント時間

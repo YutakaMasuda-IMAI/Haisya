@@ -65,7 +65,7 @@ namespace WebApplication.Repositories
         public async Task<List<BillingPaymentHistory>> GetPrintSeikyuList(T_Print_Seikyu PrintSeikyu)
         {
             // 1年前の日付を計算
-            DateTime oneYearAgo = PrintSeikyu.Seikyu_Month.AddYears(-1);
+            DateOnly oneYearAgo = PrintSeikyu.Seikyu_Month.AddYears(-1);
 
             // PrintSeikyuのCustomer_Branch_IDの一致かつ過去1年分のレコードを取得
             List<T_Print_Seikyu> printSeikyuList = await _context.T_Print_Seikyus

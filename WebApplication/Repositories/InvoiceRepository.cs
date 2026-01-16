@@ -43,8 +43,8 @@ namespace WebApplication.Repositories
 
         Task<T_Uriage> GetTUriageById(int uriage_id);
         Task<T_Uriage_Unchin> GetTUriageUnchinById(int uriage_unchin_id);
-        Task<List<T_Uriage_Unchin>> GetTUriageUnchin(int uriage_unchin_id, System.DateTime Seikyu_Month_From, System.DateTime Seikyu_Month_To);
-        Task<List<T_Uriage_Unchin>> GetTUriageUnchin(int Customer_Branch_ID, int Zei_Kubun, int Shime_Day, System.DateTime Seikyu_Month_From, System.DateTime Seikyu_Month_To);
+        Task<List<T_Uriage_Unchin>> GetTUriageUnchin(int uriage_unchin_id, System.DateOnly Seikyu_Month_From, System.DateOnly Seikyu_Month_To);
+        Task<List<T_Uriage_Unchin>> GetTUriageUnchin(int Customer_Branch_ID, int Zei_Kubun, int Shime_Day, System.DateOnly Seikyu_Month_From, System.DateOnly Seikyu_Month_To);
 
         Task<IEnumerable<Data.T_Print_Seikyu>> RegisterPublishAsync(Dto.InvoicePublish dto);
         Task<IEnumerable<Data.T_Print_Seikyu>> RegisterPublishCheckAsync(Dto.InvoiceCheckPublish dto);
@@ -308,7 +308,7 @@ namespace WebApplication.Repositories
         /// <param name="Seikyu_Month_From">前月の初日</param>
         /// <param name="Seikyu_Month_To">当月の最終日</param>
         /// <returns>売上運賃のリスト</returns>
-        public async Task<List<T_Uriage_Unchin>> GetTUriageUnchin(int uriage_unchin_id, System.DateTime Seikyu_Month_From, System.DateTime Seikyu_Month_To)
+        public async Task<List<T_Uriage_Unchin>> GetTUriageUnchin(int uriage_unchin_id, System.DateOnly Seikyu_Month_From, System.DateOnly Seikyu_Month_To)
         {
             IQueryable<T_Uriage_Unchin> query = (from uu in _context.T_Uriage_Unchins.Where(w => (w.Seikyu_Date >= Seikyu_Month_From) && (w.Seikyu_Date <= Seikyu_Month_To) && (w.Del_Flg == false))
                          join uus in _context.T_Uriage_Unchins.Where(w => (w.Seikyu_Date >= Seikyu_Month_From) && (w.Seikyu_Date <= Seikyu_Month_To) && (w.Del_Flg == false))
@@ -331,7 +331,7 @@ namespace WebApplication.Repositories
         /// <param name="Seikyu_Month_From">前月の初日</param>
         /// <param name="Seikyu_Month_To">当月の最終日</param>
         /// <returns>売上運賃のリスト</returns>
-        public async Task<List<T_Uriage_Unchin>> GetTUriageUnchin(int Customer_Branch_ID, int Zei_Kubun, int Shime_Day, System.DateTime Seikyu_Month_From, System.DateTime Seikyu_Month_To)
+        public async Task<List<T_Uriage_Unchin>> GetTUriageUnchin(int Customer_Branch_ID, int Zei_Kubun, int Shime_Day, System.DateOnly Seikyu_Month_From, System.DateOnly Seikyu_Month_To)
         {
             IQueryable<T_Uriage_Unchin> query = (from uu in _context.T_Uriage_Unchins.Where(w => (w.Customer_Branch_ID == Customer_Branch_ID) && (w.Zei_Kubun == Zei_Kubun) && (w.Shime_Day == Shime_Day) && (w.Seikyu_Date >= Seikyu_Month_From) && (w.Seikyu_Date <= Seikyu_Month_To) && (w.Del_Flg == false))
                          select uu
@@ -444,7 +444,7 @@ namespace WebApplication.Repositories
 
                     #region 2．0　登録済確認
                     // 対処済み売上運賃IDか確認(先頭で判断)
-                    if (uriageUnchinIDList.Contains(uriageUnchinGroupAdd[0]))
+                    if (uriageUnchinIDList.AsQueryable().Contains(uriageUnchinGroupAdd[0]))
                     {
                         continue;
                     }
@@ -761,7 +761,7 @@ namespace WebApplication.Repositories
 
                     #region 2．0　登録済確認
                     // 対処済み売上運賃IDか確認(先頭で判断)
-                    if (uriageUnchinIDList.Contains(uriageUnchinGroupAdd[0]))
+                    if (uriageUnchinIDList.AsQueryable().Contains(uriageUnchinGroupAdd[0]))
                     {
                         continue;
                     }
@@ -800,7 +800,7 @@ namespace WebApplication.Repositories
                         Print_Pattern = Print_Pattern,
                         Check_Status = ks.status,
                         Customer_Branch_ID = item.Data.Customer_Branch_ID,
-                        Seikyu_Month = new System.DateTime(item.Month.Year, item.Month.Month, 1),
+                        Seikyu_Month = new System.DateOnly(item.Month.Year, item.Month.Month, 1),
                         Shime_Day = item.Data.Shime_Day,
                         Zei_Kubun = item.Data.Zei_Kubun,
                         Del_Datetime = (dto.InquiryType == Common.InquiryTypes.PREVIEW) ? DateTime.Now : null,  //プレビューの場合は初めから削除

@@ -220,7 +220,7 @@ namespace HaisyaWeb.Models
                 new() { Value = "1", Text = "非課税" }
             };
 
-            public DateTime DisplayDate { get; set; }
+            public DateOnly DisplayDate { get; set; }
 
             public string Remarks { get; set; }
 

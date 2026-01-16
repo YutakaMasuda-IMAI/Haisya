@@ -39,7 +39,7 @@ namespace WebApplication.Repositories
         /// <param name="driverId">ドライバーID。</param>
         /// <param name="date">勤怠日。</param>
         /// <returns>勤怠コミット情報。存在しない場合はnull。</returns>
-        public async Task<T_KINTAI_COMMIT> GetKintaiCommit(int driverId, DateTime date)
+        public async Task<T_KINTAI_COMMIT> GetKintaiCommit(int driverId, DateOnly date)
         {
             T_KINTAI_COMMIT existingSetting = await _contextKintai.T_KINTAI_COMMITs
                 .Where(commit => commit.乗務員CD == driverId && commit.勤怠日 == date)
@@ -56,7 +56,7 @@ namespace WebApplication.Repositories
         /// <param name="leaveReason">休暇理由CD</param>
         /// <param name="UpdateUserId">更新ユーザ</param>
         /// <returns>非同期タスク。</returns>
-        public async Task<Dto.MsterDataCommonResultValDto> UpdateOrCreateVacationSettingAndReasonAsync(int driverId, DateTime date, int leaveKubun, int leaveReason, int UpdateUserId)
+        public async Task<Dto.MsterDataCommonResultValDto> UpdateOrCreateVacationSettingAndReasonAsync(int driverId, DateOnly date, int leaveKubun, int leaveReason, int UpdateUserId)
         {
             Dto.MsterDataCommonResultValDto resultVal = new() { RetrunFlg = false, };
 
@@ -136,7 +136,7 @@ namespace WebApplication.Repositories
         /// <param name="date">勤怠日。</param>
         /// <param name="remarks">更新または作成する備考。</param>
         /// <returns>非同期タスク。</returns>
-        public async Task<Dto.MsterDataCommonResultValDto> UpdateOrCreateRemarkAsync(int driverId, DateTime date, string remarks)
+        public async Task<Dto.MsterDataCommonResultValDto> UpdateOrCreateRemarkAsync(int driverId, DateOnly date, string remarks)
         {
             Dto.MsterDataCommonResultValDto resultVal = new() { RetrunFlg = false, };
 
@@ -198,7 +198,7 @@ namespace WebApplication.Repositories
         /// <param name="driverId">ドライバーID。</param>
         /// <param name="date">勤怠日。</param>
         /// <returns>一覧用備考。存在しない場合はnull。</returns>
-        public async Task<string> GetRemarkAsync(int driverId, DateTime date)
+        public async Task<string> GetRemarkAsync(int driverId, DateOnly date)
         {
             string remark = await _context.T_Haisya_Driver_Day_Remarks
                 .Where(bikou => bikou.Driver_ID == driverId && bikou.Date == date)
@@ -224,7 +224,7 @@ namespace WebApplication.Repositories
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public async Task<M_Holiday> GetHoliday(DateTime date)
+        public async Task<M_Holiday> GetHoliday(DateOnly date)
         {
             return await _contextKintai.M_Holidays.FirstOrDefaultAsync(m => m.Day == date);
         }
@@ -235,7 +235,7 @@ namespace WebApplication.Repositories
         /// <param name="data">休暇設定画面モデル</param>
         /// <param name="databaseCompliantDateTime">勤怠日。</param>
         /// <returns>非同期タスク。</returns>
-        public async Task<bool> PostRegisterHoliday(HaisyaDataModel.AttendanceModalViewModel data, DateTime databaseCompliantDateTime)
+        public async Task<bool> PostRegisterHoliday(HaisyaDataModel.AttendanceModalViewModel data, DateOnly databaseCompliantDateTime)
         {
             // データベーストランザクションの開始
             using IDbContextTransaction transaction = await _context.Database.BeginTransactionAsync();
@@ -266,11 +266,11 @@ namespace WebApplication.Repositories
     public interface IAttendanceRepository
     {
         Task<Data.V_CompanyDriver> GetV_CompanyDriver(int driverId);
-        Task<T_KINTAI_COMMIT> GetKintaiCommit(int driverId, DateTime date);
-        Task<Dto.MsterDataCommonResultValDto> UpdateOrCreateVacationSettingAndReasonAsync(int driverId, DateTime date, int leaveKubun, int leaveReason, int UpdateUserId);
-        Task<Dto.MsterDataCommonResultValDto> UpdateOrCreateRemarkAsync(int driverId, DateTime date, string remarks);
-        Task<string> GetRemarkAsync(int driverId, DateTime date);
-        Task<Data.Kintai.M_Holiday> GetHoliday(DateTime date);
-        Task<bool> PostRegisterHoliday(HaisyaDataModel.AttendanceModalViewModel data, DateTime date);
+        Task<T_KINTAI_COMMIT> GetKintaiCommit(int driverId, DateOnly date);
+        Task<Dto.MsterDataCommonResultValDto> UpdateOrCreateVacationSettingAndReasonAsync(int driverId, DateOnly date, int leaveKubun, int leaveReason, int UpdateUserId);
+        Task<Dto.MsterDataCommonResultValDto> UpdateOrCreateRemarkAsync(int driverId, DateOnly date, string remarks);
+        Task<string> GetRemarkAsync(int driverId, DateOnly date);
+        Task<Data.Kintai.M_Holiday> GetHoliday(DateOnly date);
+        Task<bool> PostRegisterHoliday(HaisyaDataModel.AttendanceModalViewModel data, DateOnly date);
     }
 }

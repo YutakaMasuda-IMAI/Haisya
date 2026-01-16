@@ -165,7 +165,7 @@ namespace HaisyaWeb.API.WebApp
         /// <param name="endDate">終了日</param>
         /// <param name="filter">フィルター</param>
         /// <returns>担当者別配車連絡データの取得</returns>
-        public async Task<List<SyabanRenrakuModel>> GetSyabanRenraku(int companyID, int selectTantou, DateTime selectedDate, DateTime selectedEndDate, int filter)
+        public async Task<List<SyabanRenrakuModel>> GetSyabanRenraku(int companyID, int selectTantou, DateOnly selectedDate, DateOnly selectedEndDate, int filter)
         {
             string url = _baseUrl + string.Format("HaisyaData/GetSyabanRenraku?companyId={0}&selectTantou={1}&selectedDate={2}&selectedEndDate={3}&filter={4}", companyID, selectTantou, selectedDate, selectedEndDate, filter);
             //データ取得 

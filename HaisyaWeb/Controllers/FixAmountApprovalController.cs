@@ -75,7 +75,7 @@ namespace HaisyaWeb.Controllers
 
             // 各項目ごとにnullチェックを行い、nullの場合は初期値を設定
             param.BackMenuAction ??= "DataList";
-            param.SelectDay ??= DateTime.Now.ToString("yyyy/MM/dd");
+            param.SelectDay ??= DateOnly.Parse(DateTime.Now.ToString("yyyy/MM/dd"));
             param.SelectSeikyuTantou ??= await SearchCommonService.GetUserGroupDefaultVal(_mapApiSettiong, loguinUser.Company_ID,
                                 UserGroupLists.Seikyu, loguinUser.User_ID) ?? "ALL";
 
@@ -128,8 +128,8 @@ namespace HaisyaWeb.Controllers
 
                 // 月初
                 string firstDay = null;
-                if (DateTime.TryParse(param.SelectDay, out DateTime dfirstDay))
-                    firstDay = dfirstDay.ToString("yyyy/MM/01");
+                if (param.SelectDay != null)
+                    firstDay = param.SelectDay?.ToString("yyyy/MM/01");
                 string tokuisakiID = "0";
                 string tokuisakiIDTo = "9999999999999";
                 if (param.SelectTokuisakiID != null)

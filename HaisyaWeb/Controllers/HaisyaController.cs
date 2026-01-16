@@ -126,7 +126,7 @@ namespace HaisyaWeb.Controllers
                 int.TryParse(param.SelectTantou, out int tantouId);
 
                 API.WebApp.HaisyaDataApi api = new(_mapApiSettiong);
-                List<SyabanRenrakuModel> renrakuModel = await api.GetSyabanRenraku(loguinUser.Company_ID, tantouId, DateTime.Parse(param.SelectDay), DateTime.Parse(param.SelectEndDay), param.SelectFilter);
+                List<SyabanRenrakuModel> renrakuModel = await api.GetSyabanRenraku(loguinUser.Company_ID, tantouId, (DateOnly)param.SelectDay, (DateOnly)param.SelectEndDay, param.SelectFilter);
                 model.SyabanRenrakuLists = renrakuModel;
 
                 string html = "../Haisya/DataListForNone";
@@ -189,10 +189,10 @@ namespace HaisyaWeb.Controllers
                 model.Search.SelectStatus = param.SelectStatus;
 
 
-                string strDateFrom = DateTime.Parse(param.SelectDay).AddDays(-5).ToString("yyyy/MM/dd");
-                string strDateTo = DateTime.Parse(param.SelectDay).AddDays(model.spaceDay).AddSeconds(-1).ToString("yyyy/MM/dd HH:mm:ss");
+                string strDateFrom = param.SelectDay?.AddDays(-5).ToString("yyyy/MM/dd");
+                string strDateTo = param.SelectDay?.ToDateTime(new TimeOnly(0)).AddDays(model.spaceDay).AddSeconds(-1).ToString("yyyy/MM/dd HH:mm:ss");
                 //乗務員一覧の取得
-                List<Dto.V_CompanyDriver_Local> drivers = await GetDriverDataLists(loguinUser.Company_ID, DateTime.Parse(param.SelectDay), model.Search.SelectTantou);
+                List<Dto.V_CompanyDriver_Local> drivers = await GetDriverDataLists(loguinUser.Company_ID, (DateTime)param.SelectDay?.ToDateTime(new TimeOnly(0)), model.Search.SelectTantou);
                 drivers = drivers.Where(h => h.Driver_ID != 0).ToList();
 
                 model.HaisyaDataLists = new();
@@ -209,11 +209,11 @@ namespace HaisyaWeb.Controllers
                 });
 
                 //配車日
-                model.SelectDay = DateTime.Parse(param.SelectDay);
+                model.SelectDay = (DateOnly)param.SelectDay;
                 //総労働時間取得
                 model.KintaiTotalWorkingTimeLists = await GetKintaiTotalWorkingTimeList(loguinUser.Company_ID, DateTime.Parse(strDateFrom).ToString("yyyy/MM/01"));
                 //勤怠確定情報取得
-                model.KintaiCommitLists = await GetKintaiCommitLists(loguinUser.Company_ID, param.SelectDay, DateTime.Parse(strDateTo).AddSeconds(1).ToString("yyyy/MM/dd"));
+                model.KintaiCommitLists = await GetKintaiCommitLists(loguinUser.Company_ID, param.SelectDay?.ToString("yyyy/MM/dd"), DateTime.Parse(strDateTo).AddSeconds(1).ToString("yyyy/MM/dd"));
                 // 休暇マスタ
                 model.LeaveList = await GetLeaveLists(loguinUser.Company_ID);
                 //休日情報の取得
@@ -272,7 +272,7 @@ namespace HaisyaWeb.Controllers
                     //
                     dto.V_Ankens = model.HaisyaDataLists.Where(h => h.Driver_ID == item.Driver_ID
                                                                     && h.DriverSyaryo_ID == item.DriverSyaryo_ID
-                                                                     && h.Day == model.SelectDay).ToList();
+                                                                     && h.Day == model.SelectDay.ToDateTime(new TimeOnly(0))).ToList();
 
                     model.DriverDataLists.Add(dto);
                 });
@@ -544,19 +544,19 @@ namespace HaisyaWeb.Controllers
                 List<Dto.M_Role_Local> roleList = await GetRoleInfo(GetType().Name, "Haisya");
 
                 DataListModel model = await CreateModel(param);
-                string strDateFrom = param.SelectDay;
-                string strDateTo = DateTime.Parse(param.SelectDay).AddDays(1).AddSeconds(-1).ToString("yyyy/MM/dd HH:mm:ss");
+                string strDateFrom = param.SelectDay?.ToString("yyyy/MM/dd");
+                string strDateTo = param.SelectDay?.ToDateTime(new TimeOnly(0)).AddDays(1).AddSeconds(-1).ToString("yyyy/MM/dd HH:mm:ss");
                 model.EditEnabled = roleList.Count != 0 && roleList.First().Enabled;
                 model.Search.SelectTantou = param.SelectTantou;
 
                 API.WebApp.MasterDataApi masterApi = new(_mapApiSettiong);
                 API.WebApp.AnkenDataApi ankenApi = new(_mapApiSettiong);
 
-                List<Dto.V_CompanyDriver_Local> drivers = await GetDriverDataLists(loguinUser.Company_ID, DateTime.Parse(param.SelectDay), model.Search.SelectTantou);
+                List<Dto.V_CompanyDriver_Local> drivers = await GetDriverDataLists(loguinUser.Company_ID, (DateTime)param.SelectDay?.ToDateTime(new TimeOnly(0)), model.Search.SelectTantou);
                 drivers = drivers.Where(h => h.Driver_ID != 0).ToList();
 
                 //配車日
-                model.SelectDay = DateTime.Parse(param.SelectDay);
+                model.SelectDay = (DateOnly)param.SelectDay;
                 model.HaisyaDataLists = new();
 
                 List<Dto.V_HaisyaDataList_Local> haisyaList = await GetHaisyaDataLists(loguinUser.Company_ID, null, strDateFrom, strDateTo);
@@ -576,7 +576,7 @@ namespace HaisyaWeb.Controllers
                     //案件情報の設定
                     dto.V_Ankens = haisyaList.Where(h => h.Driver_ID == item.Driver_ID
                                                 && h.DriverSyaryo_ID == item.DriverSyaryo_ID
-                                                 && h.Day == model.SelectDay).ToList();
+                                                 && h.Day == model.SelectDay.ToDateTime(new TimeOnly(0))).ToList();
                     //出勤情報の設定
                     T_Kintai_Commit_Local kintai = kintaiDataList?.Find(k => k.乗務員CD == item.Employee_Number && k.勤怠日 == model.SelectDay);
                     if (kintai != null)
@@ -685,8 +685,8 @@ namespace HaisyaWeb.Controllers
             param ??= new()
             {
                 SelectGroup = 3,
-                SelectDay = DateTime.Now.ToString("yyyy/MM/dd"),
-                SelectEndDay = DateTime.Now.ToString("yyyy/MM/dd"),
+                SelectDay = DateOnly.Parse(DateTime.Now.ToString("yyyy/MM/dd")),
+                SelectEndDay = DateOnly.Parse(DateTime.Now.ToString("yyyy/MM/dd")),
                 SelectTantou = await SearchCommonService.GetUserGroupDefaultVal(_mapApiSettiong, loguinUser.Company_ID,
                                                 UserGroupLists.Haisya, loguinUser.User_ID) ?? "ALL",
             };
@@ -1285,7 +1285,7 @@ namespace HaisyaWeb.Controllers
                         Company_ID = loginUser.Company_ID,
                         PrintDate = syabanRenrakuModel2[i].PrintDate,
                         Group_ID = syabanRenrakuModel2[i].Group_ID,
-                        Day = syabanRenrakuModel2[i].Day.TryParseDate(out var dt) ? dt.Value : DateTime.MinValue,
+                        Day = syabanRenrakuModel2[i].Day.TryParseDate(out var dt) ? DateOnly.FromDateTime(dt.Value) : DateOnly.MinValue,
                         // 顧客担当ID
                         Tantou_ID = syabanRenrakuModel2[i].TantouId,
                         Customer_Branch_ID = syabanRenrakuModel2[i].CustomerBranchId,

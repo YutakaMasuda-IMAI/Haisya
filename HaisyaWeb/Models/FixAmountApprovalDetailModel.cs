@@ -71,7 +71,7 @@ namespace HaisyaWeb.Models
                     new SelectListItem { Value = "1", Text = "非課税" }
                 };
 
-            public DateTime DisplayDate { get; set; }
+            public DateOnly DisplayDate { get; set; }
             public int ShimeDay { get; set; }
             public int CustomerId { get; set; }
             public string Customer_Name { get; set; }

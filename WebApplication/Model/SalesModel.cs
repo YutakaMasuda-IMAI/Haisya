@@ -576,7 +576,7 @@ namespace WebApplication.Model
         /// <summary>
         /// 配車日
         /// </summary>
-        public DateTime? Haisya_Date { get; set; }
+        public DateOnly? Haisya_Date { get; set; }
 
         /// <summary>
         /// 日報 ID

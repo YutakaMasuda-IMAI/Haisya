@@ -158,7 +158,7 @@ namespace HaisyaWeb.Controllers
             SearchModelForSalesList param = new()
             {
                 SelectGroup = 0,
-                SelectDay = DateTime.Now.ToString("yyyy/MM/dd"),
+                SelectDay = DateOnly.Parse(DateTime.Now.ToString("yyyy/MM/dd")),
             };
             
             param.SelectTantou ??= "ALL";
@@ -200,7 +200,7 @@ namespace HaisyaWeb.Controllers
                 // ログインユーザー取得
                 Dto.V_LoginUser_Local loguinUser = await GetLoginUser();
 
-                IEnumerable<Dto.V_AnkenDataList_Local> list = await GetAnkenDataList(DateTime.Parse(param.SelectDay).ToString("yyyy/MM/dd"), null, null, loguinUser.Company_ID, 0, 0, 0);
+                IEnumerable<Dto.V_AnkenDataList_Local> list = await GetAnkenDataList(param.SelectDay?.ToString("yyyy/MM/dd"), null, null, loguinUser.Company_ID, 0, 0, 0);
 
                 List<AnkenDataList> listData = new();
 
@@ -228,7 +228,7 @@ namespace HaisyaWeb.Controllers
 
                     if (param.SelectDay != null)
                     {
-                        listData = listData.Where(m => m.START_PointDate == DateTime.Parse(param.SelectDay)).ToList();
+                        listData = listData.Where(m => m.START_PointDate == (DateTime)param.SelectDay?.ToDateTime(new TimeOnly(0))).ToList();
                     }
                 }
 
@@ -260,7 +260,7 @@ namespace HaisyaWeb.Controllers
                 // ログインユーザー取得
                 Dto.V_LoginUser_Local loguinUser = await GetLoginUser();
 
-                IEnumerable<Dto.M_Customer_Local> list = await GetTokuisakiDataList(DateTime.Parse(param.SelectDay).ToString("yyyy/MM/dd"), null, null, loguinUser.Company_ID, 0);
+                IEnumerable<Dto.M_Customer_Local> list = await GetTokuisakiDataList(param.SelectDay?.ToString("yyyy/MM/dd"), null, null, loguinUser.Company_ID, 0);
 
                 List<TokuisakiList> listData = new();
 
@@ -297,7 +297,7 @@ namespace HaisyaWeb.Controllers
                 // ログインユーザー取得
                 Dto.V_LoginUser_Local loguinUser = await GetLoginUser();
 
-                IEnumerable<Dto.M_Customer_Local> list = await GetTokuisakiDataList(DateTime.Parse(param.SelectDay).ToString("yyyy/MM/dd"), null, null, loguinUser.Company_ID, 0);
+                IEnumerable<Dto.M_Customer_Local> list = await GetTokuisakiDataList(param.SelectDay?.ToString("yyyy/MM/dd"), null, null, loguinUser.Company_ID, 0);
 
                 List<TokuisakiList> listData = new();
 
@@ -512,7 +512,7 @@ namespace HaisyaWeb.Controllers
         /// <param name="date">清算日付（オプション）</param>
         /// <param name="Senzoku_ID">専属ID</param>
         /// <returns>専属月清算用のビュー</returns>
-        public async Task<IActionResult> GetMonthlySettlementData(DateTime? date, int Senzoku_ID)
+        public async Task<IActionResult> GetMonthlySettlementData(DateOnly? date, int Senzoku_ID)
         {
             try
             {
@@ -530,11 +530,11 @@ namespace HaisyaWeb.Controllers
 
                 List<int> uriageIds = SenzokuData.SenzokuDataList.Select(x => x.Uriage.Uriage_ID).ToList();
                 SenzokuData.TotalUriageUnsyuList = SenzokuData.TotalUriageUnsyuList.Where(x => uriageIds.Contains(x.UriageId)).ToList();
-                SenzokuData.SeikyuDate = date ?? DateTime.Now;
+                SenzokuData.SeikyuDate = date ?? DateOnly.FromDateTime(DateTime.Now);
                 SenzokuData.BurdenList = await masterDataApi.GetBurdenList(loguinUser.Company_ID);
                 SenzokuData.User_ID = loguinUser.User_ID;
                 SenzokuData.Company_ID = loguinUser.Company_ID;
-                SenzokuData.OperationDateCount = SenzokuData.SenzokuDataList.Where(x => x.Uriage.Uriage_ID > 0).Select(data => data.Uriage?.Haisya_Date.Date).Distinct().Count();
+                SenzokuData.OperationDateCount = SenzokuData.SenzokuDataList.Where(x => x.Uriage.Uriage_ID > 0).Select(data => data.Uriage?.Haisya_Date).Distinct().Count();
 
                 // 専属月清算用のビューを返す
                 return await PartialViewAsJson("MonthlySettlementData", SenzokuData, true);
@@ -584,7 +584,7 @@ namespace HaisyaWeb.Controllers
                 {
                     //専属月額の場合、Uriage_IDではなく、SENZOKU_IDとして使用
                     SenzokuModel SenzokuData = await api.GetSenzoku(data.Uriage_ID); // SENZOKU_IDが前ページから送られてく
-                    SenzokuData.SeikyuDate = DateTime.TryParse(data.Search.SelectDay, out DateTime selectDay) ? selectDay : DateTime.Now;
+                    SenzokuData.SeikyuDate = data.Search.SelectDay ?? DateOnly.FromDateTime(DateTime.Now);
                     // 専属月清算用のビューを返す
 
                     if (data.Search != null)
@@ -742,9 +742,9 @@ namespace HaisyaWeb.Controllers
                         mm = int.Parse(start.PointTime.Substring(3, 2));
                     }
 
-                    SalesData.StartDateTime = new DateTime(((DateTime)(start.PointDate)).Year,
-                                                ((DateTime)(start.PointDate)).Month,
-                                                ((DateTime)(start.PointDate)).Day,
+                    SalesData.StartDateTime = new DateTime(((DateOnly)start.PointDate).Year,
+                                                ((DateOnly)start.PointDate).Month,
+                                                ((DateOnly)start.PointDate).Day,
                                                 HH,
                                                 mm,
                                                 0);
@@ -763,9 +763,9 @@ namespace HaisyaWeb.Controllers
                     }
 
 
-                    SalesData.EndDateTime = new DateTime(((DateTime)(end.PointDate)).Year,
-                                                ((DateTime)(end.PointDate)).Month,
-                                                ((DateTime)(end.PointDate)).Day,
+                    SalesData.EndDateTime = new DateTime(((DateOnly)start.PointDate).Year,
+                                                ((DateOnly)start.PointDate).Month,
+                                                ((DateOnly)start.PointDate).Day,
                                                 HH,
                                                 mm,
                                                 0);
@@ -920,7 +920,7 @@ namespace HaisyaWeb.Controllers
 				{
                     foreach (T_Uriage_Shitabarai_Local uriageShitabarai in SalesData.UriageShitabarai)
                     {
-                        var commitShitabarai = SalesData.CommitShitabarai.Where(w => (w.Customer_Branch_ID == uriageShitabarai.Yosya_Branch_ID) && (w.Shime_Datetime >= uriageShitabarai.Shiharai_Date)).FirstOrDefault();
+                        var commitShitabarai = SalesData.CommitShitabarai.Where(w => (w.Customer_Branch_ID == uriageShitabarai.Yosya_Branch_ID) && (w.Shime_Datetime >= uriageShitabarai.Shiharai_Date.ToDateTime(TimeOnly.MinValue))).FirstOrDefault();
                         if (commitShitabarai?.Shitabarai_Commit_ID > 0)
                         {
                             uriageShitabarai.IsCreditSlip = true;
@@ -952,8 +952,8 @@ namespace HaisyaWeb.Controllers
                 {
                     SalesData.Search = new SalesPaymentModel.SearchModelForSalesPaymentList()
                     {
-                        SelectDay = DateTime.Now.ToString("yyyy/MM/dd"),
-                        SelectEndDay = DateTime.Now.ToString("yyyy/MM/dd"),
+                        SelectDay = DateOnly.FromDateTime(DateTime.Now),
+                        SelectEndDay = DateOnly.FromDateTime(DateTime.Now),
                     };
                 }
 

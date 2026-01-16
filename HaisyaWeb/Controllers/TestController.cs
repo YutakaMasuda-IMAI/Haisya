@@ -117,7 +117,7 @@ namespace HaisyaWeb.Controllers
                 param = new()
                 {
                     SelectGroup = 0,
-                    SelectDay = DateTime.Now.ToString("yyyy/MM/dd"),
+                    SelectDay = DateOnly.FromDateTime(DateTime.Now),
                 };
             }
             if (param.SelectTantou == null) { param.SelectTantou = "ALL"; }
@@ -159,7 +159,7 @@ namespace HaisyaWeb.Controllers
 
                 if (param == null) { return null; }
 
-                IEnumerable<Dto.V_AnkenDataList_Local> list = await GetAnkenDataList(DateTime.Parse(param.SelectDay).ToString("yyyy/MM/dd"), null, null, 1, 0, 0);
+                IEnumerable<Dto.V_AnkenDataList_Local> list = await GetAnkenDataList(param.SelectDay?.ToString("yyyy/MM/dd"), null, null, 1, 0, 0);
 
                 List<AnkenDataList> listData = new();
 
@@ -190,7 +190,7 @@ namespace HaisyaWeb.Controllers
 
                 if (param.SelectDay != null)
                 {
-                    listData = listData.Where(m => m.START_PointDate == DateTime.Parse(param.SelectDay)).ToList();
+                    listData = listData.Where(m => m.START_PointDate == (DateTime)param.SelectDay?.ToDateTime(new TimeOnly(0))).ToList();
                 }
 
                 model.DataDataLists = listData;

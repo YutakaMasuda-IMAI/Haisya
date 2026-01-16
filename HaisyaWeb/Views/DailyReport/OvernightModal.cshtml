@@ -13,36 +13,55 @@
       align-items: center;
     }
 
-    .form-switch {
+    .form-check.form-switch {
       display: inline-block;
       vertical-align: middle;
       align-content: center;
     }
 
-    .custom-checkbox {
-      transform: scale(1.5);
-      margin: 0;
-    }
-
     .td-list {
       background-color: #FFD800;
     }
+
+    .stay-degitako-list {
+      margin: 0;
+      border-spacing: 0;
+    }
+
+      .stay-degitako-list thead {
+        position: sticky;
+        top: -5.0px;
+        left: 0;
+      }
+
+      .stay-degitako-list thead {
+        border-right: 1px solid #999;
+        border-bottom: 1px solid #999;
+        z-index: 1;
+      }
+
   </style>
   <link href="~/css/Entry.css" rel="stylesheet" />
 </head>
-<div role="dialog" id="addRireki" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h1 class="modal-title fs-3" id="exampleModalLabel">泊まり設定</h1>
-        <div class="buttons">
-          <button type="button" class="btn btn-outline-danger" style="width:100px;margin-right:50px;" type="button" id="deleteButton" onclick="deleteData()">削除</button>
-          <button type="button" class="btn btn-outline-success" style="width:200px;" type="button" id="saveButton" onclick="initializeSaveButton()">登録</button>
-          <button type="button" class="btn btn-outline-warning" style="width: 100px; margin-left:100px;margin-right:15px;" type="button" onclick="closeModal()">閉じる</button>
-        </div>
+
+<div hidden>
+  @Html.HiddenFor(m => Model.IsEdit)
+</div>
+
+<div class="modal-dialog" role="document">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h1 class="modal-title fs-3" id="exampleModalLabel">泊まり設定</h1>
+      <span class="" style="width: 100px;"></span>
+      <div class="buttons ms-4">
+        <button type="button" class="btn btn-outline-danger" style="width:100px;margin-right:50px;" id="deleteButton" onclick="deleteData();return false;">削除</button>
+        <button type="button" class="btn btn-outline-success" style="width:200px;" id="saveButton" onclick="initializeSaveButton();return false;">登録</button>
+        <button type="button" class="btn btn-outline-warning" style="width: 100px; margin-left:100px;margin-right:15px;" onclick="CloseModal();return false;">閉じる</button>
       </div>
-      <div class="modal-body">
-        <form id="overnightForm" style="width: 100%;">
+    </div>
+    <div class="modal-body">
+      <form id="overnightForm" class="w-100" style="">
+        <div class="overnight-list">
           <div class="table-div">
             <table class="no-line">
               <tr>
@@ -57,134 +76,143 @@
             <table class="no-line">
               <tr>
                 <th style="width:150px;">開始日時</th>
-                <td style="width:200px;"><div id="startDatetime">@(Model.Nippou_Stay != null ? Model.Nippou_Stay.Start_Datetime : "")</div></td>
-                <td style="width:auto;"><div id="startPlace">@(Model.Nippou_Stay != null ? Model.Nippou_Stay.Start_ShikuName : "")</div></td>
+                <td style="width:200px;"><div id="overnight-startDatetime">@(Model.Nippou_Stay != null ? Model.Nippou_Stay.Start_Datetime : "")</div></td>
+                <td style="width:auto;"><div id="overnight-startPlace">@(Model.Nippou_Stay != null ? Model.Nippou_Stay.Start_ShikuName : "")</div></td>
               </tr>
               <tr>
                 <th style="width:150px;">終了日時</th>
-                <td style="width:200px;"><div id="endDatetime">@(Model.Nippou_Stay != null ? Model.Nippou_Stay.End_Datetime : "")</div></td>
-                <td style="width:auto;"><div id="endPlace">@(Model.Nippou_Stay != null ? Model.Nippou_Stay.End_ShikuName : "")</div></td>
+                <td style="width:200px;"><div id="overnight-endDatetime">@(Model.Nippou_Stay != null ? Model.Nippou_Stay.End_Datetime : "")</div></td>
+                <td style="width:auto;"><div id="overnight-endPlace">@(Model.Nippou_Stay != null ? Model.Nippou_Stay.End_ShikuName : "")</div></td>
               </tr>
             </table>
             <table class="no-line">
               <tr>
                 <th style="width:150px;">休息</th>
-                <td style="width:200px;"><div id="restTime">@Model.FormattedIntervalTime</div></td>
+                <td style="width:200px;"><div id="overnight-restTime">@Model.FormattedIntervalTime</div></td>
                 <th style="width:120px;">手当費用</th>
-                <td style="width:auto;"><input type="text" id="dllowance" name="dllowance" class="form-control" style="width: 100px;text-align:right;" value="@Model.Nippou_Stay?.Dllowance.ToString("N0")" maxlength="7" oninput="filterDigitsOnly(this);" onblur="kanmaChange(this);" }) onkeydown="disableEnterKey(event)" /></td>
+                <td style="width:auto;"><input type="text" id="stay-dllowance" name="dllowance" class="form-control" style="width: 100px;text-align:right;" value="@Model.Nippou_Stay?.Dllowance.ToString("N0")" maxlength="7" oninput="filterDigitsOnly(this);" onblur="kanmaChange(this);" }) onkeydown="disableEnterKey(event)" /></td>
               </tr>
             </table>
           </div>
-          @if (Model.DegitakoData != null && Model.DegitakoData.Count > 0)
-          {
-            <div class="table-div overnight-list" style="width: 100%; margin-top: 20px;">
-              <table class="list">
-                <thead>
-                  <tr>
-                    <th class="td-list" style="width:60px;" rowspan="2">選択</th>
-                    <th class="td-list" style="width:90px;" colspan="1">開始日時</th>
-                    <th class="td-list" style="width:10px;" rowspan="2">イベント名</th>
-                    <th class="td-list" style="width:60px;" colspan="1">区間時間</th>
-                    <th class="td-list" style="width:120px;" colspan="1">開始市町村名</th>
-                    <th class="td-list" style="width:auto;" colspan="1">開始場所名</th>
-                    <th class="td-list" style="width:60px;" colspan="1">休憩</th>
-                    <th class="td-list" style="width:100px;" rowspan="2">車輌名</th>
+        </div>
+        
+        @if (Model.DegitakoData != null && Model.DegitakoData.Count > 0)
+        {
+          <div class="table-div overnight-list" style="width: 100%; margin-top: 20px;max-height: 480px; overflow-y:auto;">
+            <table class="list stay-degitako-list">
+              <thead>
+                <tr>
+                  <th class="td-list" style="width:60px;" rowspan="2">選択</th>
+                  <th class="td-list" style="width:90px;" colspan="1">開始日時</th>
+                  <th class="td-list" style="width:10px;" rowspan="2">イベント名</th>
+                  <th class="td-list" style="width:60px;" colspan="1">区間時間</th>
+                  <th class="td-list" style="width:120px;" colspan="1">開始市町村名</th>
+                  <th class="td-list" style="width:auto;" colspan="1">開始場所名</th>
+                  <th class="td-list" style="width:60px;" colspan="1">休憩</th>
+                  <th class="td-list" style="width:100px;" rowspan="2">車輌名</th>
+                </tr>
+                <tr>
+                  <th class="td-list">終了日時</th>
+                  <th class="td-list">区間距離</th>
+                  <th class="td-list">終了市町村名</th>
+                  <th class="td-list">終了場所名</th>
+                  <th class="td-list">夜間休憩</th>
+                </tr>
+              </thead>
+              <tbody>
+                @{
+                  var index = 0;
+                }
+                @foreach (var item in Model.DegitakoData.OrderBy(m => m.ID))
+                {
+                  <tr data-index="@index" data-id="@(item.ID)" style="@(item.イベント名 == "休憩" || item.イベント名 == "休息" ? "" : "background-color: lightgray"); border-bottom: 0.05em dashed #cfcfcf;">
+                    <th hidden><input type="hidden" class="import-id" value="@item.取り込みID" /></th>
+                    <th hidden><input type="hidden" class="id" value="@item.ID" /></th>
+
+                    <th style="text-align:center;" rowspan="2">
+                      @if (item.イベント名 == "休憩" || item.イベント名 == "休息")
+                      {
+                        <div class="form-check form-switch" style="text-align: center;">
+                          <input class="form-check-input custom-checkbox2" type="checkbox">
+                        </div>
+                      }
+                    </th>
+
+                    <td style="text-align:center;" class="start-datetime">@Convert.ToDateTime(item.開始日時).ToString("yyyy/MM/dd HH:mm")</td>
+                    <td rowspan="2" style="text-align:center;">
+                      @Html.DisplayFor(modelItem => item.イベント名)
+                    </td>
+                    <td style="text-align:right;" class="rest-time">@Html.DisplayFor(modelItem => item.区間時間)</td>
+                    <td style="text-align:left;" class="start-place">@Html.DisplayFor(modelItem => item.開始市町村名)</td>
+                    <td style="text-align:left;">@Html.DisplayFor(modelItem => item.開始場所名)</td>
+                    <td style="text-align:center;">
+                      @if (item.日勤_休憩 != null)
+                      {
+                        var val = HaisyaWeb.Common.DateTimeConverter.GetTimeForString(item.日勤_休憩.ToString());
+                        @Html.DisplayFor(modelItem => val)
+                      }
+                    </td>
+                    <td rowspan="2" style="text-align: left;">
+                      @Html.DisplayFor(modelItem => item.車輌名)
+                    </td>
                   </tr>
-                  <tr>
-                    <th class="td-list">終了日時</th>
-                    <th class="td-list">区間距離</th>
-                    <th class="td-list">終了市町村名</th>
-                    <th class="td-list">終了場所名</th>
-                    <th class="td-list">夜間休憩</th>
+                  <tr style="@(item.イベント名 == "休憩" || item.イベント名 == "休息" ? "" : "background-color: lightgray;") border-bottom: 1px solid #000000">
+                    <td style="text-align:center;" class="end-datetime">@Convert.ToDateTime(item.終了日時).ToString("yyyy/MM/dd HH:mm")</td>
+                    <td style="text-align:right;" class="sect-dist">@Html.DisplayFor(modelItem => item.区間距離)</td>
+                    <td style="text-align:left;" class="end-place">@Html.DisplayFor(modelItem => item.終了市町村名)</td>
+                    <td style="text-align:left;">@Html.DisplayFor(modelItem => item.終了場所名)</td>
+                    <td style="text-align:center;">
+                      @if (item.早朝深夜_休憩 != null)
+                      {
+                        var val = HaisyaWeb.Common.DateTimeConverter.GetTimeForString(item.早朝深夜_休憩.ToString());
+                        @Html.DisplayFor(modelItem => val)
+                      }
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  @{ var index = 0; }
-                  @foreach (var item in Model.DegitakoData)
-                  {
-                    <tr data-index="@index" style="@(item.イベント名 == "休憩" || item.イベント名 == "休息" ? "" : "background-color: lightgray;") border-bottom: 0.05em dashed #cfcfcf;">
-                      <th hidden><input type="hidden" value="@item.ID" /></th>
-                      <th style="text-align:center;" rowspan="2">
-                        @if (item.イベント名 == "休憩" || item.イベント名 == "休息")
-                        {
-                          <div class="form-check form-switch" style="text-align: center;">
-                            <input class="form-check-input custom-checkbox" type="checkbox">
-                          </div>
-                        }
-                      </th>
+                  index++;
+                }
+              </tbody>
+            </table>
+          </div>
 
-                      <td style="text-align:center;">@Convert.ToDateTime(item.開始日時).ToString("yyyy/MM/dd HH:mm")</td>
-                      <td rowspan="2" style="text-align:center;">
-                        @Html.DisplayFor(modelItem => item.イベント名)
-                      </td>
-                      <td style="text-align:right;">@Html.DisplayFor(modelItem => item.区間時間)</td>
-                      <td style="text-align:left;">@Html.DisplayFor(modelItem => item.開始市町村名)</td>
-                      <td style="text-align:left;">@Html.DisplayFor(modelItem => item.開始場所名)</td>
-                      <td style="text-align:center;">
-                        @if (item.日勤_休憩 != null)
-                        {
-                          var val = HaisyaWeb.Common.DateTimeConverter.GetTimeForString(item.日勤_休憩.ToString());
-                          @Html.DisplayFor(modelItem => val)
-                        }
-                      </td>
-                      <td rowspan="2" style="text-align: left;">
-                        @Html.DisplayFor(modelItem => item.車輌名)
-                      </td>
-                    </tr>
-                    <tr style="@(item.イベント名 == "休憩" || item.イベント名 == "休息" ? "" : "background-color: lightgray;") border-bottom: 1px solid #000000">
-                      <td style="text-align:center;">@Convert.ToDateTime(item.終了日時).ToString("yyyy/MM/dd HH:mm")</td>
-                      <td style="text-align:right;">@Html.DisplayFor(modelItem => item.区間距離)</td>
-                      <td style="text-align:left;">@Html.DisplayFor(modelItem => item.終了市町村名)</td>
-                      <td style="text-align:left;">@Html.DisplayFor(modelItem => item.終了場所名)</td>
-                      <td style="text-align:center;">
-                        @if (item.早朝深夜_休憩 != null)
-                        {
-                          var val = HaisyaWeb.Common.DateTimeConverter.GetTimeForString(item.早朝深夜_休憩.ToString());
-                          @Html.DisplayFor(modelItem => val)
-                        }
-                      </td>
-                    </tr>
-                    index++;
-                  }
-                </tbody>
-              </table>
-            </div>
+        }
 
-          }
-
-        </form>
-      </div>
+      </form>
     </div>
   </div>
 </div>
 
 
 <script>
+
+  var nippouStayDegitakoIds = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouStayDegitakoIdList))');
+
   // 選択された行を格納する配列
-  var selectedRows = [];
+  var selectedRowsForStay = [];
+
   $(function() {
 
-    initializeSwitches();
+    initializeSwitchesForStay();
 
-    function initializeSwitches() {
-      var nippouStayDegitakoIds = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouStayDegitakoIdList))');
+    function initializeSwitchesForStay() {
 
       if (!nippouStayDegitakoIds || nippouStayDegitakoIds.length === 0) {
         return;
       }
-      $(".overnight-list tbody tr:nth-child(odd)").each(function() {
+      $(".stay-degitako-list tbody tr:nth-child(odd)").each(function() {
         var row = $(this);
-        var id = row.find("input[type='hidden']").val();
+        var id = row.find(".id").val();
+        console.log(id);
         var rowId = row.data('index');
         if (nippouStayDegitakoIds.includes(Number(id))) {
           row.find(".form-check-input").prop("checked", true);
           row.addClass("selected");
-          selectedRows.push(rowId);
+          selectedRowsForStay.push(rowId);
         }
       });
 
-      if (selectedRows.length > 1) {
-        updateDisplayData();
+      if (selectedRowsForStay.length > 1) {
+        updateDisplayDataForStay();
       }
     }
 
@@ -193,71 +221,71 @@
       var row = $(this).closest("tr");
       var rowId = row.data('index');
       if ($(this).is(":checked")) {
-        selectedRows.push(rowId);
+        selectedRowsForStay.push(rowId);
       } else {
-        selectedRows = selectedRows.filter(function(id) {
+        selectedRowsForStay = selectedRowsForStay.filter(function(id) {
           return id !== rowId;
         });
       }
-      updateDisplayData();
+      updateDisplayDataForStay();
     });
 
-    function updateDisplayData() {
+    function updateDisplayDataForStay() {
 
-      if (selectedRows.length === 1) {
+      if (selectedRowsForStay.length === 1) {
 
-        var rowId = selectedRows[0];
-        var row = $(".modal-body tbody tr[data-index='" + rowId + "']");
+        var rowId = selectedRowsForStay[0];
+        var row = $(".stay-degitako-list tbody tr[data-index='" + rowId + "']");
 
-        var startDatetime = new Date(row.find("td:nth-child(3)").text());
-        var endDatetime = new Date(row.next().find("td:nth-child(1)").text());
-        var startPlace = row.find("td:nth-child(6)").text();
-        var endPlace = row.next().find("td:nth-child(3)").text();
-        restTime = calculateRestTime(row);
+        var startDatetime = new Date(row.find(".start-datetime").text());
+        var endDatetime = new Date(row.next().find(".end-datetime").text());
+        var startPlace = row.find(".start-place").text();
+        var endPlace = row.next().find(".end-place").text();
+        var restTime = calculaterestTime(row);
 
         // 表示データの更新
-        $("#startDatetime").text(startDatetime.toLocaleString());
-        $("#endDatetime").text(endDatetime.toLocaleString());
-        $("#startPlace").text(startPlace);
-        $("#endPlace").text(endPlace);
-        $("#restTime").text(formatRestTime(restTime));
+        $("#overnight-startDatetime").text(startDatetime.toLocaleString());
+        $("#overnight-endDatetime").text(endDatetime.toLocaleString());
+        $("#overnight-startPlace").text(startPlace);
+        $("#overnight-endPlace").text(endPlace);
+        $("#overnight-restTime").text(formatrestTime(restTime));
 
-      } else if (selectedRows.length > 1) {
-        var minStartDatetime = new Date(9999, 11, 31, 23, 59, 59);
-        var maxEndDatetime = new Date(0, 0, 0, 0, 0, 0);
+      } else if (selectedRowsForStay.length > 1) {
+        var minstartDatetime = new Date(9999, 11, 31, 23, 59, 59);
+        var maxendDatetime = new Date(0, 0, 0, 0, 0, 0);
         var startPlace = "";
         var endPlace = "";
         var restTime = 0;
 
-        selectedRows.forEach(function(rowId) {
-          var row = $(".modal-body tbody tr[data-index='" + rowId + "']");
-          var rowStartDatetime = new Date(row.find( "td:nth-child(3)").text());
-          var rowEndDatetime = new Date(row.next().find( "td:nth-child(1)").text());
-          if (rowStartDatetime < minStartDatetime) {
-            minStartDatetime = rowStartDatetime;
-            startPlace = row.find("td:nth-child(6)").text();
+        selectedRowsForStay.forEach(function(rowId) {
+          var row = $(".stay-degitako-list tbody tr[data-index='" + rowId + "']");
+          var rowstartDatetime = new Date(row.find( ".start-datetime").text());
+          var rowendDatetime = new Date(row.next().find( ".end-datetime").text());
+          if (rowstartDatetime < minstartDatetime) {
+            minstartDatetime = rowstartDatetime;
+            startPlace = row.find(".start-place").text();
           }
 
-          if (rowEndDatetime > maxEndDatetime) {
-            maxEndDatetime = rowEndDatetime;
-            endPlace = row.next().find("td:nth-child(3)").text();
+          if (rowendDatetime > maxendDatetime) {
+            maxendDatetime = rowendDatetime;
+            endPlace = row.next().find(".start-datetime").text();
           }
-          restTime += calculateRestTime(row);
+          restTime += calculaterestTime(row);
         });
 
         // 表示データの更新
-        $("#startDatetime").text(minStartDatetime.toLocaleString());
-        $("#endDatetime").text(maxEndDatetime.toLocaleString());
-        $("#startPlace").text(startPlace);
-        $("#endPlace").text(endPlace);
-        $("#restTime").text(formatRestTime(restTime));
+        $("#overnight-startDatetime").text(minstartDatetime.toLocaleString());
+        $("#overnight-endDatetime").text(maxendDatetime.toLocaleString());
+        $("#overnight-startPlace").text(startPlace);
+        $("#overnight-endPlace").text(endPlace);
+        $("#overnight-restTime").text(formatrestTime(restTime));
       } else {
         // 表示データのクリア
-        $("#startDatetime").text("");
-        $("#endDatetime").text("");
-        $("#startPlace").text("");
-        $("#endPlace").text("");
-        $("#restTime").text("");
+        $("#overnight-startDatetime").text("");
+        $("#overnight-endDatetime").text("");
+        $("#overnight-startPlace").text("");
+        $("#overnight-endPlace").text("");
+        $("#overnight-restTime").text("");
       }
 
       function convertTimeToMinutes(timeString) {
@@ -271,9 +299,9 @@
         return totalMinutes;
       }
 
-      function calculateRestTime(row) {
-        const time1 = convertTimeToMinutes(row.find("td:nth-child(3)").text());
-        const time2 = convertTimeToMinutes(row.next().find("td:nth-child(1)").text());
+      function calculaterestTime(row) {
+        const time1 = convertTimeToMinutes(row.find(".start-datetime").text());
+        const time2 = convertTimeToMinutes(row.next().find(".end-datetime").text());
 
         // 片方が0の場合は、もう片方の値のみを使用
         if (time1 === 0) {
@@ -287,13 +315,13 @@
     }
   });
 
-  function formatRestTime(minutes) {
+  function formatrestTime(minutes) {
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
     return `${hours.toString().padStart(2, '0')}:${remainingMinutes.toString().padStart(2, '0')}`;
   }
 
-  function parseRestTime(timeString) {
+  function parserestTime(timeString) {
     const [hours, minutes] = timeString.split(':').map(Number);
     return hours * 60 + minutes;
   }
@@ -302,7 +330,8 @@
     if (!validateOvernightForm()) {
       return; // 必須フィールドが空の場合は処理を中断
     }
-    let degitakoDataList = JSON.parse('@Html.Raw(Json.Serialize(Model.DegitakoData))');
+
+    let degitakoDataList = JSON.parse('@Html.Raw(Json.Serialize(Model.DegitakoData.OrderBy(m => m.ID)))');
     // 更新後のModel.nippou_Stay_Degitakoを格納する配列
     var updatedNippouStayDegitako = [];
 
@@ -310,7 +339,7 @@
     var checkedIndices = [];
 
     // 各行について処理を行う
-    $("tbody tr").each(function(index) {
+    $(".stay-degitako-list tbody tr").each(function(index) {
       var row = $(this);
       var id = row.data('index');
 
@@ -327,16 +356,18 @@
       updatedNippouStayDegitako.push(item);
     });
 
-    $('#Nippou_Stay_Start_Datetime').val($('#startDatetime').text());
-    $('#Nippou_Stay_End_Datetime').val($('#endDatetime').text());
-    $('#Nippou_Stay_Start_ShikuName').val($('#startPlace').text());
-    $('#Nippou_Stay_End_ShikuName').val($('#endPlace').text());
-    $('#Nippou_Stay_Interval_Time').val(parseRestTime($('#restTime').text()));
-    $('#Nippou_Stay_Dllowance').val($('#dllowance').val());
+    $('#Nippou_Stay_Start_Datetime').val($('#overnight-startDatetime').text());
+    $('#Nippou_Stay_End_Datetime').val($('#overnight-endDatetime').text());
+    $('#Nippou_Stay_Start_ShikuName').val($('#overnight-startPlace').text());
+    $('#Nippou_Stay_End_ShikuName').val($('#overnight-endPlace').text());
+    $('#Nippou_Stay_Interval_Time').val(parserestTime($('#overnight-restTime').text()));
+    $('#Nippou_Stay_Dllowance').val($('#stay-dllowance').val());
     $('#Nippou_Stay_Day').val('@Model.HaisyaDataList.Day.ToString("yyyy/MM/dd")');
     $('#NippouStayDegitakoIdList').val(updatedNippouStayDegitako);
 
-    closeModal();
+    $('#disp-OvernightMoney').text(kanmaChange2($('#stay-dllowance').val()));
+
+    CloseModal();
   }
 
 
@@ -349,25 +380,19 @@
     $('#Nippou_Stay_Dllowance').val(null);
     $('#NippouStayDegitakoIdList').val(null);
 
-    closeModal();
-  }
-
-  function closeModal() {
-    $('#ModalHere').find('.modal').modal('hide');
-    $("#ModalHere").html('');
-    selectedRows = [];
+    CloseModal();
   }
 
 
   function validateOvernightForm() {
     let isValid = true;
 
-    if ($(".form-check-input:checked").length < 1) {
+    if ($(".stay-degitako-list .form-check-input:checked").length < 1) {
       alertError("デジタコ情報を選択してください。", "入力エラー");
       isValid = false;
     }
 
-    if ($('#dllowance').val().trim() === "") {
+    if ($('#stay-dllowance').val().trim() === "") {
       alertError("手当費用を入力してください。", "入力エラー");
       isValid = false;
     }
@@ -375,7 +400,7 @@
     return isValid;
   }
   // 料金入力にカンマを追加する処理
-  $("#dllowance").on("input", function() {
+  $("#stay-dllowance").on("input", function() {
     var value = $(this).val().replace(/,/g, ''); // カンマを一度除去してから
     if (!isNaN(value) && value !== "") {
       var formattedValue = Number(value).toLocaleString(); // カンマ区切りを追加

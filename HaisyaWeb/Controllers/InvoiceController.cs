@@ -264,7 +264,7 @@ namespace HaisyaWeb.Controllers
             {
                 PrintDate = ParseDate(data.Publish_date).Value,
                 Month = ParseSelectDate(data.Year_month),
-                PrintToDate = ParseDate(data.Sale_date) ?? DateTime.Now.Date,
+                PrintToDate = ParseDate(data.Sale_date) ?? DateOnly.FromDateTime(DateTime.Now),
                 Data = New<T>(si)
             }).ToList();
 
@@ -426,7 +426,7 @@ namespace HaisyaWeb.Controllers
         /// </summary>
         /// <param name="s">日付文字列</param>
         /// <returns>パースされた日付</returns>
-        protected static DateTime? ParseDate(string s)
+        protected static DateOnly? ParseDate(string s)
             => string.IsNullOrWhiteSpace(s) ? null : new(Convert.ToInt32(s[..4]), Convert.ToInt32(s[5..7]), Convert.ToInt32(s[8..10]));
 
         /// <summary>
@@ -434,11 +434,11 @@ namespace HaisyaWeb.Controllers
         /// </summary>
         /// <param name="s">日付文字列</param>
         /// <returns>パースされた日付</returns>
-        private static DateTime ParseSelectDate(string s)
+        private static DateOnly ParseSelectDate(string s)
         {
             int yyyy = Convert.ToInt32(s[..4]);
             int mm = Convert.ToInt32(s[5..7]);
-            DateTime d = new DateTime(yyyy, mm, 1);
+            DateOnly d = new DateOnly(yyyy, mm, 1);
             return d;
         }
 

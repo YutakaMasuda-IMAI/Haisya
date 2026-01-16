@@ -18,7 +18,7 @@ namespace HaisyaWeb.Models
         {
             public int spaceDay { get; set; } = 3;
             public int Company_ID { get; set; }
-            public DateTime SelectDay { get; set; }
+            public DateOnly SelectDay { get; set; }
 
             /// <summary>
             /// 画面再描画間隔

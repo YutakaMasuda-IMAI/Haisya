@@ -157,8 +157,8 @@ namespace HaisyaWeb.Controllers
 
             // デフォルトの検索パラメーターを設定
             param ??= new();
-            param.SelectDay ??= DateTime.Now.ToString("yyyy/MM/dd");
-            param.SelectEndDay ??= DateTime.Now.ToString("yyyy/MM/dd");
+            param.SelectDay ??= DateOnly.FromDateTime(DateTime.Now);
+            param.SelectEndDay ??= DateOnly.FromDateTime(DateTime.Now);
             param.SelectTantou ??= await SearchCommonService.GetUserGroupDefaultVal(_mapApiSettiong, loguinUser.Company_ID,
                                                 UserGroupLists.Haisya, loguinUser.User_ID) ?? "ALL";
             param.SelectStatus ??= new int[] { 0, 1, 2, 3, };
@@ -244,12 +244,9 @@ namespace HaisyaWeb.Controllers
                     seikyuTantou = int.Parse(param.SelectSeikyuTantou);
                 }
 
-                DateTime? date2 = null;
+                DateOnly? date2 = null;
                 // param.SelectEndDayの値を確認
-                if (DateTime.TryParse(param.SelectEndDay, out DateTime parsedFromDate))
-                {
-                    date2 = DateTime.Parse(param.SelectEndDay);
-                }
+                if (param.SelectEndDay != null) { date2 = param.SelectEndDay; }
 
                 IEnumerable<Dto.V_UriageDataList> list = null;
 
@@ -260,7 +257,7 @@ namespace HaisyaWeb.Controllers
                     tokuisakiID = param.SelectTokuisakiID;
                 }
 
-                list = await GetUriageDataList(loguinUser.Company_ID, uriageKubun, tourokuKubun, param.SelectDay, param.SelectEndDay, tokuisakiID, tokuisakiID, "", "", 0, "1900/01/01", seikyuTantou, haisyaTantou, driverId);
+                list = await GetUriageDataList(loguinUser.Company_ID, uriageKubun, tourokuKubun, param.SelectDay?.ToString("yyyy/MM/dd"), param.SelectEndDay?.ToString("yyyy/MM/dd"), tokuisakiID, tokuisakiID, "", "", 0, "1900/01/01", seikyuTantou, haisyaTantou, driverId);
 
                 List<Dto.T_Nippou_Local> tNippous = await GetTNippous();
 

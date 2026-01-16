@@ -150,7 +150,7 @@ namespace WebApplication.Model
             List<Data.M_DefaultMoney> m_DefaultMoney = await _context.M_DefaultMoneys.Where(m => m.Area == m_Area.Area && m.SyasyuSize == syasyuSize).ToListAsync();
             if (m_DefaultMoney.Count == 0) { throw new Exception("標準運賃（距離単価）マスタに対象車種のデータがありません。"); }
             // 燃料単価
-            Data.M_FuelCost m_FuelCost = await _context.M_FuelCosts.OrderByDescending(m => m.FromDate).FirstOrDefaultAsync(m => m.Company_ID == CompanyID && m.FromDate <= DateTime.Parse("2999/01/01"));
+            Data.M_FuelCost m_FuelCost = await _context.M_FuelCosts.OrderByDescending(m => m.FromDate).FirstOrDefaultAsync(m => m.Company_ID == CompanyID && m.FromDate <= DateOnly.Parse("2999/01/01"));
             if (m_FuelCost == null) { throw new Exception("燃料単価マスタにデータがありません。"); }
             // 原価　車輌距離単価
             List<Data.M_SyaryoCost> m_SyaryoCostList = await _context.M_SyaryoCosts.Where(m => m.Company_ID == CompanyID && m.Syasyu == syasyu && m.Kata == kata).ToListAsync();

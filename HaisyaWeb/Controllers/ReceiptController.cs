@@ -96,8 +96,8 @@ namespace HaisyaWeb.Controllers
             SearchModelForDailyReportList param = new()
             {
                 SelectGroup = 0,
-                SelectDay = DateTime.Now.ToString("yyyy/MM/dd"),
-                SelectEndDay = DateTime.Now.ToString("yyyy/MM/dd"),
+                SelectDay = DateOnly.Parse(DateTime.Now.ToString("yyyy/MM/dd")),
+                SelectEndDay = DateOnly.Parse(DateTime.Now.ToString("yyyy/MM/dd")),
                 SelectTantou = await SearchCommonService.GetUserGroupDefaultVal(_mapApiSettiong, loguinUser.Company_ID,
                                                 UserGroupLists.Haisya, loguinUser.User_ID) ?? "ALL",
                 SelectSeikyuTantou = await SearchCommonService.GetUserGroupDefaultVal(_mapApiSettiong, loguinUser.Company_ID,
@@ -160,21 +160,18 @@ namespace HaisyaWeb.Controllers
                     customerID = CustomerBranch.Customer_ID;
                 }
                 // 対象日付をパースしてフォーマットを整える
-                DateTime date1 = DateTime.Parse(param.SelectDay);
-                DateTime? date2 = null;
+                DateOnly date1 = (DateOnly)param.SelectDay;
+                DateOnly? date2 = null;
                 // param.SelectEndDayの値を確認
-                if (DateTime.TryParse(param.SelectEndDay, out DateTime parsedFromDate))
-                {
-                    date2 = DateTime.Parse(param.SelectEndDay);
-                }
+                if (param.SelectEndDay != null) { date2 = param.SelectEndDay; }
 
                 IEnumerable<Dto.V_HaisyaDataList_Local> list = null;
 
-                list = await GetHaisyaDataList(DateTime.Parse(param.SelectDay).ToString("yyyy/MM/dd"), null, null, loguinUser.Company_ID, customerID, 0);
+                list = await GetHaisyaDataList(param.SelectDay?.ToString("yyyy/MM/dd"), null, null, loguinUser.Company_ID, customerID, 0);
 
                 if (date2 != null)
                 {
-                    list = await GetHaisyaDataList(null, DateTime.Parse(param.SelectDay).ToString("yyyy/MM/dd"), DateTime.Parse(param.SelectEndDay).ToString("yyyy/MM/dd"), loguinUser.Company_ID, customerID, 0);
+                    list = await GetHaisyaDataList(null, param.SelectDay?.ToString("yyyy/MM/dd"), param.SelectEndDay?.ToString("yyyy/MM/dd"), loguinUser.Company_ID, customerID, 0);
                 }
 
                 List<HaisyaDataList> listData = new();
@@ -357,7 +354,7 @@ namespace HaisyaWeb.Controllers
                 // ankenDisplay_IDがなければT_Nippouに初期値設定
                 if (t_Nippou.Receipt == 1)
                 {
-                    t_Nippou.Receipt_Date = DateTime.Today;
+                    t_Nippou.Receipt_Date = DateOnly.FromDateTime(DateTime.Today);
                     t_Nippou.Commnet = null;
                     t_Nippou.ApprovalStatus = 0;
                     t_Nippou.RenkeiStatus = 0;
@@ -365,7 +362,7 @@ namespace HaisyaWeb.Controllers
                 else
                 {
                     //null にできないので仮
-                    t_Nippou.Receipt_Date = new DateTime(1900, 1, 1);
+                    t_Nippou.Receipt_Date = new DateOnly(1900, 1, 1);
                 }
 
                 using API.WebApp.NippouDataApi api = new(_mapApiSettiong);

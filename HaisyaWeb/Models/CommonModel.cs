@@ -12,9 +12,9 @@ namespace HaisyaWeb.Models
     public class CommonModel
     {
         [Display(Name = "年月日")]
-        public virtual string SelectDay { get; set; }
+        public virtual DateOnly? SelectDay { get; set; }
         [Display(Name = "年月日")]
-        public string SelectEndDay { get; set; }
+        public DateOnly? SelectEndDay { get; set; }
 
         [Required]
         [Display(Name = "配車担当")]
@@ -34,7 +34,7 @@ namespace HaisyaWeb.Models
 
         [Display(Name = "年月")]
         [Column(TypeName = "date")]
-        public DateTime SelectMonth { get; set; }
+        public DateOnly SelectMonth { get; set; }
 
         [Display(Name = "締日")]
         public string SelectShimebi { get; set; }

@@ -1345,7 +1345,7 @@ namespace HaisyaWeb.Controllers
         /// <param name="seikyuMonth">year and month of seikyu</param>
         /// <param name="shimeDay">締日</param>
         /// <returns>list data nyukin</returns>
-        public async Task<IEnumerable<T_Nyukin_Local>> GetNyukinDataListBySeikyuId(int seikyuId, DateTime seikyuMonth, int shimeDay)
+        public async Task<IEnumerable<T_Nyukin_Local>> GetNyukinDataListBySeikyuId(int seikyuId, DateOnly seikyuMonth, int shimeDay)
         {
             IEnumerable<T_Nyukin_Local> nyukinDataList = new List<T_Nyukin_Local>();
             try

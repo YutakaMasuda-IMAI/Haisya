@@ -202,7 +202,9 @@ namespace HaisyaWeb.Models
         public class SearchModelForShitabaraiCheckDataList : CommonModel
         {
             [Required]
-            public override string SelectDay { get; set; } = $"{DateTime.Now:yyyy年MM月}";
+            [Display(Name = "年月")]
+            [DisplayFormat(DataFormatString = "{0:yyyy年MM月}")]
+            public override DateOnly? SelectDay { get; set; }
 
             new public string SelectTantou { get; set; }
 

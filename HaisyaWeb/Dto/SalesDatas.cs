@@ -272,7 +272,7 @@ namespace HaisyaWeb.Dto
         /// 会社ID
         /// </summary>
         public int Company_ID { get; set; }
-        public DateTime SeikyuDate { get; set; }
+        public DateOnly SeikyuDate { get; set; }
     }
 
     public partial class PostUriageDataModel : WebApplication.Model.PostUriageDataModel

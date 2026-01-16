@@ -70,7 +70,7 @@ namespace HaisyaWeb.Controllers.Anken
             SearchModelForAnkenList param = new()
             {
                 SelectGroup = 1,
-                SelectDay = DateTime.Now.ToString("yyyy/MM/dd"),
+                SelectDay = DateOnly.Parse(DateTime.Now.ToString("yyyy/MM/dd")),
                 SelectTantou = await SearchCommonService.GetUserGroupDefaultVal(_mapApiSettiong, loguinUser.Company_ID,
                                                 UserGroupLists.Haisya, loguinUser.User_ID) ?? "ALL",
             };
@@ -125,7 +125,7 @@ namespace HaisyaWeb.Controllers.Anken
 
                 if (param == null) { return null; }
 
-                IEnumerable<Dto.V_AnkenDataList_Local> listData = await GetAnkenDataList(DateTime.Parse(param.SelectDay).ToString("yyyy/MM/dd"), null, null);
+                IEnumerable<Dto.V_AnkenDataList_Local> listData = await GetAnkenDataList(param.SelectDay?.ToString("yyyy/MM/dd"), null, null);
 
                 if (listData != null)
                 {
@@ -146,7 +146,7 @@ namespace HaisyaWeb.Controllers.Anken
 
                     if (param.SelectDay != null)
                     {
-                        listData = listData.Where(m => m.START_PointDate == DateTime.Parse(param.SelectDay)).ToList();
+                        listData = listData.Where(m => m.START_PointDate == param.SelectDay?.ToDateTime(new TimeOnly(0))).ToList();
                     }
                 }
 
@@ -154,7 +154,7 @@ namespace HaisyaWeb.Controllers.Anken
 
                 //配車データの取得
                 using API.WebApp.HaisyaDataApi apiH = new(_mapApiSettiong);
-                model.HaisyaDataLists = await apiH.GetHaisyaDataList(loguinUser.Company_ID, param.SelectDay, null,null, 0, 0 , 0);
+                model.HaisyaDataLists = await apiH.GetHaisyaDataList(loguinUser.Company_ID, param.SelectDay?.ToString("yyyy/MM/dd"), null,null, 0, 0 , 0);
 
                 return await PartialViewAsJson("AnkenListForStatus", model, true);
             }

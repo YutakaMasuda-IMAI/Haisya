@@ -6,8 +6,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace WebApplication.Data;
 
-[Table("T_Nippou_Kaiso")]
-public partial class T_Nippou_Kaiso
+[Table("T_Nippou_Anken")]
+public partial class T_Nippou_Anken
 {
     [Key]
     public int Nippou_ID { get; set; }
@@ -20,29 +20,9 @@ public partial class T_Nippou_Kaiso
     [Column(TypeName = "datetime")]
     public DateTime? End_Datetime { get; set; }
 
-    /// <summary>
-    /// 開始市町村名
-    /// </summary>
-    [StringLength(255)]
-    public string Start_ShikuName { get; set; }
+    public int? Start_Degitako_Id { get; set; }
 
-    /// <summary>
-    /// 終了市町村名
-    /// </summary>
-    [StringLength(255)]
-    public string End_ShikuName { get; set; }
-
-    /// <summary>
-    /// 開始場所名
-    /// </summary>
-    [StringLength(255)]
-    public string Start_PointName { get; set; }
-
-    /// <summary>
-    /// 終了場所名
-    /// </summary>
-    [StringLength(255)]
-    public string End_PointName { get; set; }
+    public int? End_Degitako_Id { get; set; }
 
     /// <summary>
     /// 区間距離
@@ -52,8 +32,14 @@ public partial class T_Nippou_Kaiso
     [Column(TypeName = "money")]
     public decimal Dllowance { get; set; }
 
-    [StringLength(255)]
-    public string Commnet { get; set; }
+    [Column(TypeName = "datetime")]
+    public DateTime? BreakTime { get; set; }
+
+    [Column(TypeName = "datetime")]
+    public DateTime? WorkTime { get; set; }
+
+    [Column(TypeName = "datetime")]
+    public DateTime? ActualWorkTime { get; set; }
 
     [Column(TypeName = "datetime")]
     public DateTime? Insert_Datetime { get; set; }

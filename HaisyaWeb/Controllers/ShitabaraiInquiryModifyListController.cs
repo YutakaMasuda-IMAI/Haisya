@@ -77,7 +77,7 @@ namespace HaisyaWeb.Controllers
 
             SearchDataList param = Search ?? new()
             {
-                SelectDay = DateTime.Now.ToString("yyyy/MM/dd"),
+                SelectDay = DateOnly.FromDateTime(DateTime.Now),
                 SelectZeiKubun = 0,
                 SelectHakkouKubun = 1,
                 SelectKingakuHenkou = 1,
@@ -174,8 +174,8 @@ namespace HaisyaWeb.Controllers
 
                 // 月初
                 string firstDay = null;
-                if (DateTime.TryParse(param.SelectDay, out DateTime dfirstDay))
-                    firstDay = dfirstDay.ToString("yyyy/MM/01");
+                if (param.SelectDay != null)
+                    firstDay = param.SelectDay?.ToString("yyyy/MM/01");
 
                 // データの取得（APIコール）
                 IEnumerable<Dto.V_ShitabaraiCheckDataList_Local> list = await GetShitabaraiCheckDataList(

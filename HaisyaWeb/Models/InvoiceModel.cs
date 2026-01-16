@@ -249,7 +249,7 @@ namespace HaisyaWeb.Models
             /// <summary>
             /// 請求月
             /// </summary>
-            public DateTime Seikyu_Month { get; set; }
+            public DateOnly Seikyu_Month { get; set; }
 
             /// <summary>
             /// 締め日
@@ -288,17 +288,17 @@ namespace HaisyaWeb.Models
             /// <summary>
             /// 請求期間開始
             /// </summary>
-            public DateTime From_Date { get; set; }
+            public DateOnly From_Date { get; set; }
 
             /// <summary>
             /// 請求期間終了
             /// </summary>
-            public DateTime To_Date { get; set; }
+            public DateOnly To_Date { get; set; }
 
             /// <summary>
             /// 指定期間終了
             /// </summary>
-            public DateTime? SeikyuDate_To { get; set; }
+            public DateOnly? SeikyuDate_To { get; set; }
 
             /// <summary>
             /// 年度末印刷フラグ

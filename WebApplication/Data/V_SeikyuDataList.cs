@@ -73,7 +73,7 @@ namespace WebApplication.Data
         /// <summary>
         /// 請求月
         /// </summary>
-        public DateTime Seikyu_Month { get; set; }
+        public DateOnly Seikyu_Month { get; set; }
 
         /// <summary>
         /// 印刷日時
@@ -83,12 +83,12 @@ namespace WebApplication.Data
         /// <summary>
         /// 印刷日
         /// </summary>
-        public DateTime? Print_Date { get; set; }
+        public DateOnly? Print_Date { get; set; }
 
         /// <summary>
         /// 印刷終了日
         /// </summary>
-        public DateTime? Print_To_Date { get; set; }
+        public DateOnly? Print_To_Date { get; set; }
 
         /// <summary>
         /// 明細数
@@ -146,19 +146,19 @@ namespace WebApplication.Data
         /// 開始日
         /// </summary>
         [Column(TypeName = "date")]
-        public DateTime? FROM_DATE { get; set; }
+        public DateOnly? FROM_DATE { get; set; }
 
         /// <summary>
         /// 終了日
         /// </summary>
         [Column(TypeName = "date")]
-        public DateTime? TO_DATE { get; set; }
+        public DateOnly? TO_DATE { get; set; }
 
         /// <summary>
         /// 請求日終了
         /// </summary>
         [Column(TypeName = "date")]
-        public DateTime? SEIKYUDATE_TO { get; set; }
+        public DateOnly? SEIKYUDATE_TO { get; set; }
 
         /// <summary>
         /// 年度末フラグ

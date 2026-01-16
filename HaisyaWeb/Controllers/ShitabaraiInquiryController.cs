@@ -261,8 +261,8 @@ namespace HaisyaWeb.Controllers
 
             // 月初
             string firstDay = null;
-            if (DateTime.TryParse(s.SelectDay, out DateTime dfirstDay))
-                firstDay = dfirstDay.ToString("yyyy/MM/01");
+            if (s.SelectDay != null)
+                firstDay = s.SelectDay?.ToString("yyyy/MM/01");
 
             DataListModel result = new DataListModel()
             {
@@ -319,15 +319,15 @@ namespace HaisyaWeb.Controllers
             return result;
         }
 
-        private static DateTime? ParseDate(string s)
+        private static DateOnly? ParseDate(string s)
             => string.IsNullOrWhiteSpace(s) ? null : new(Convert.ToInt32(s[..4]), Convert.ToInt32(s[5..7]), Convert.ToInt32(s[8..10]));
-        private static DateTime ParseSelectDate(string s)
+        private static DateOnly ParseSelectDate(string s)
         {
             int yyyy = Convert.ToInt32(s[..4]);
             int mm = Convert.ToInt32(s[5..7]);
-            DateTime d = new DateTime(yyyy, mm, 1);//.AddDays(DateTime.Now.Day - 1);
+            DateOnly d = new DateOnly(yyyy, mm, 1);//.AddDays(DateTime.Now.Day - 1);
             if (d.Month != mm)
-                d = new DateTime(yyyy, mm, 1).AddMonths(1).AddDays(-1);
+                d = new DateOnly(yyyy, mm, 1).AddMonths(1).AddDays(-1);
             return d;
         }
 
@@ -378,7 +378,7 @@ namespace HaisyaWeb.Controllers
                 {
                     printDate = ParseDate(data.Publish_day).Value,
                     shitabaraiMonth = ParseSelectDate(data.Select_day),
-                    printToDate = ParseDate(data.Shitabarai_day_to) ?? DateTime.Now.Date,
+                    printToDate = ParseDate(data.Shitabarai_day_to) ?? DateOnly.FromDateTime(DateTime.Now),
                     ShitabaraiCheckData = new V_ShitabaraiCheckDataList_Local()
                     {
                         Shime_Day = si.Shime_Day,

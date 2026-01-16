@@ -195,6 +195,11 @@ namespace HaisyaWeb.Models
 
             public int User_ID { get; set; }
 
+            /// <summary>
+            /// 変更画面区分：false:新規登録、true:編集
+            /// </summary>
+            public bool IsEdit { get; set; } = false;
+
             // <summary>検索項目</summary>
             public SearchModelForDailyReportList Search { get; set; }
 
@@ -225,27 +230,7 @@ namespace HaisyaWeb.Models
             public int Company_ID { get; set; }
             public string PageType { set; get; } = "Anken";
 
-            #region 案件のデジタコ選択
-            /// <summary>開始日時（デジタコ選択による）</summary>
-            public int AnkenDegitakoStartId { get; set; }
-            public DateTime AnkenDegitakoStartDatetime { get; set; }
-
-            /// <summary>終了日時（デジタコ選択による）</summary>
-            public int AnkenDegitakoEndId { get; set; }
-            public DateTime AnkenDegitakoEndDatetime { get; set; }
-
-            /// <summary>走行距離（デジタコ選択による）</summary>
-            public double AnkenDegitakoDistance { get; set; }
-
-            /// <summary>休憩時間（デジタコ選択による）</summary>
-            public DateTime AnkenDegitakoBreakTime { get; set; }
-
-            /// <summary>労働時間（デジタコ選択による）</summary>
-            public DateTime AnkenDegitakoWorkTime { get; set; }
-
-            /// <summary>実労働時間（デジタコ選択による）</summary>
-            public DateTime AnkenDegitakoActualWorkTime { get; set; }
-            #endregion 案件のデジタコ選択
+ 
 
             public V_HaisyaDataList_Local HaisyaDataList { get; set; }
 
@@ -289,6 +274,7 @@ namespace HaisyaWeb.Models
             public List<T_KUDGIVT_Local> DegitakoData { get; set; }
             public List<T_KUDGSIR_Local> HighwayData { get; set; }
             public List<int> KUDGSIRIdList { get; set; }
+            public T_Nippou_Anken_Local Nippou_Anken { get; set; }
             public T_Nippou_Stay_Local Nippou_Stay { get; set; }
             public T_Nippou_Kaiso_Local Nippou_Kaiso { get; set; }
             public List<T_Nippou_Stay_Degitako_Local> Nippou_Stay_Degitako { get; set; }
@@ -301,6 +287,8 @@ namespace HaisyaWeb.Models
             public List<int> NippouStayDegitakoIdList { get; set; }
 
             public List<int> NippouKaisoDegitakoIdList { get; set; }
+
+            public List<int> NippouAnkenDegitakoIdList { get; set; }
 
             public T_Nippou_Approval_Local NippouApproval { set; get; }
 

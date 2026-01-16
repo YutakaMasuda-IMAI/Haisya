@@ -99,12 +99,12 @@ function pwCheckStrength(password) {
  * @param {any} inputAns
  */
 function kanmaChange(inputAns) {
-    console.log(inputAns);
+    //console.log(inputAns);
     let inputAnsValue = inputAns.value;
-    console.log(inputAnsValue);
+    //console.log(inputAnsValue);
     let numberAns = inputAnsValue.replace(/[^0-9]/g, "").replace(/^0+/, "");
     kanmaAns = numberAns.replace(/(\d)(?=(\d\d\d)+(?!\d))/g, '$1,');
-    console.log(kanmaAns);
+    //console.log(kanmaAns);
     /*if (kanmaAns.match(/[^0-9]/g)) {*/
     inputAns.value = kanmaAns;
     return true;

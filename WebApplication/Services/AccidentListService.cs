@@ -62,7 +62,7 @@ namespace WebApplication.Services
 			{
                 if (groupUserLocal.Del_Flg)
                     continue;
-                if (!Group_ID_list.Contains(groupUserLocal.Group_ID))
+                if (!Group_ID_list.AsQueryable().Contains(groupUserLocal.Group_ID))
                     Group_ID_list.Add(groupUserLocal.Group_ID);
             }
 
@@ -80,10 +80,10 @@ namespace WebApplication.Services
                 foreach (int jikoWorkFlowID in Jiko_WorkFlow_ID_list)
                 {
                     T_Jiko_WorkFlow_Route jikoWorkFlowRoute = await _accidentListRepository.GetTJikoWorkFlowRoute(jikoWorkFlowID);
-                    if (!Group_ID_list.Contains(jikoWorkFlowRoute.Jiko_WorkFlow_Group_ID))
+                    if (!Group_ID_list.AsQueryable().Contains(jikoWorkFlowRoute.Jiko_WorkFlow_Group_ID))
                         continue;
 
-                    if (!Jiko_ID_list.Contains(jikoWorkFlowRoute.Jiko_ID))
+                    if (!Jiko_ID_list.AsQueryable().Contains(jikoWorkFlowRoute.Jiko_ID))
                         Jiko_ID_list.Add(jikoWorkFlowRoute.Jiko_ID);
                 }
             }
@@ -95,7 +95,7 @@ namespace WebApplication.Services
                     List<T_Jiko_WorkFlow_Route> jikoWorkFlowRoute_list = await _accidentListRepository.GetTJikoWorkFlowRouteByGroupId(groupID);
                     foreach (T_Jiko_WorkFlow_Route jikoWorkFlowRouteLocal in jikoWorkFlowRoute_list)
                     {
-                        if (!Jiko_ID_list.Contains(jikoWorkFlowRouteLocal.Jiko_ID))
+                        if (!Jiko_ID_list.AsQueryable().Contains(jikoWorkFlowRouteLocal.Jiko_ID))
                             Jiko_ID_list.Add(jikoWorkFlowRouteLocal.Jiko_ID);
                     }
                 }

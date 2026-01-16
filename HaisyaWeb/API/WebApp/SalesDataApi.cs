@@ -69,7 +69,7 @@ namespace HaisyaWeb.API.WebApp
         /// <param name="Senzoku_ID"></param>
         /// <param name="date"></param>
         /// <returns>M_Customer_Local</returns>
-        public async Task<Dto.SenzokuModel> GetSenzokuData(int Senzoku_ID, DateTime? date)
+        public async Task<Dto.SenzokuModel> GetSenzokuData(int Senzoku_ID, DateOnly? date)
         {
             string url = _baseUrl + string.Format("Sales/GetSenzokuDat?Senzoku_ID={0}&date={1}", Senzoku_ID, date);
             //データ取得 

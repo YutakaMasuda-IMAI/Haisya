@@ -181,8 +181,8 @@
                       for (int j = 0; j < haisyaOfDriver.Count(); j++)
                       {
                         var HaisyaDisplay = haisyaOfDriver.ElementAt(j);
-                        double sminuites = (HaisyaDisplay.StartDatetime - Model.SelectDay).TotalMinutes;
-                        double eminuites = (HaisyaDisplay.EndDatetime - Model.SelectDay).TotalMinutes;
+                        double sminuites = (HaisyaDisplay.StartDatetime - Model.SelectDay.ToDateTime(new TimeOnly(0))).TotalMinutes;
+                        double eminuites = (HaisyaDisplay.EndDatetime - Model.SelectDay.ToDateTime(new TimeOnly(0))).TotalMinutes;
                         if (sminuites == 0 && eminuites == 0)
                         {
                           sminuites = 0;
@@ -243,8 +243,8 @@
                       var kintaiCommits = Model.KintaiCommitLists.Where(h => h.乗務員CD == drivers.ElementAt(i).Employee_Number && h.勤務区分 == 2);
                       foreach (var kintaiCommit in kintaiCommits)
                       {
-                        var sminuites = (kintaiCommit.勤怠日 - Model.SelectDay).TotalMinutes;
-                        var eminuites = (kintaiCommit.勤怠日.AddDays(1).AddMinutes(-1) - Model.SelectDay).TotalMinutes;
+                        var sminuites = (kintaiCommit.勤怠日.ToDateTime(TimeOnly.MinValue) - Model.SelectDay.ToDateTime(TimeOnly.MinValue)).TotalMinutes;
+                        var eminuites = (kintaiCommit.勤怠日.AddDays(1).ToDateTime(TimeOnly.MinValue).AddMinutes(-1) - Model.SelectDay.ToDateTime(TimeOnly.MinValue)).TotalMinutes;
                         var left = spanLeft + sminuites / spaceMinutes * spanMinute;
                         left = left < spanLeft ? spanLeft : left;
                         var right = spanLeft + eminuites / spaceMinutes * spanMinute;

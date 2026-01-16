@@ -255,7 +255,7 @@ namespace WebApplication.Controllers.DB
                 if (UserID == 0) { throw new Exception("パラメーターエラー：CompanyID"); }
 
                 data = await _context.M_CompanyUser_Groups.Select(s => s)
-                                    .Where(t1 => _context.M_CompanyUser_GroupUsers.Where(m => m.User_ID == UserID).Select(m => m.Group_ID).Contains(t1.Group_ID)).ToListAsync();
+                                    .Where(t1 => _context.M_CompanyUser_GroupUsers.Where(m => m.User_ID == UserID).Select(m => m.Group_ID).AsQueryable().Contains(t1.Group_ID)).ToListAsync();
 
                 return new OkObjectResult(data);
             }
@@ -423,8 +423,8 @@ namespace WebApplication.Controllers.DB
                 if (UserID > 0)
                 {
                     IQueryable<int> subquery = _context.M_CompanyUser_GroupUsers.Where(m => m.User_ID == UserID).Select(m => m.Group_ID);
-                    IQueryable<int> subquery2 = _context.M_CompanyDriver_Syaryos.Where(m => subquery.Contains(m.Group_ID) && ((m.End_Date == null ? DateTime.Parse("2999/01/01") : m.End_Date) >= DateTime.Now)).Select(m => m.Driver_ID);
-                    list = list.Where(m => subquery2.Contains(m.Driver_ID));
+                    IQueryable<int> subquery2 = _context.M_CompanyDriver_Syaryos.Where(m => subquery.AsQueryable().Contains(m.Group_ID) && ((m.End_Date == null ? DateTime.Parse("2999/01/01") : m.End_Date) >= DateTime.Now)).Select(m => m.Driver_ID);
+                    list = list.Where(m => subquery2.AsQueryable().Contains(m.Driver_ID));
                 }
 
                 List<Data.M_CompanyDriver> result = await list.OrderBy(m => m.Employee_Number).ToListAsync();
@@ -1619,7 +1619,7 @@ namespace WebApplication.Controllers.DB
 
                 string[] target = AreaList.Split(",");
 
-                data = await _context.M_PostCodes.Where(m => target.Contains(m.KEN)).ToListAsync();
+                data = await _context.M_PostCodes.Where(m => target.AsQueryable().Contains(m.KEN)).ToListAsync();
                 return new OkObjectResult(data);
             }
             catch (Exception ex)
@@ -1968,7 +1968,7 @@ namespace WebApplication.Controllers.DB
                 if (YosyaFlg > 0)
                 {
                     IQueryable<int> subquery = _context.M_Customers.Where(m => m.Yosya_Flg == 1).Select(m => m.Customer_ID);
-                    dataList = dataList.Where(m => subquery.Contains(m.Customer_ID));
+                    dataList = dataList.Where(m => subquery.AsQueryable().Contains(m.Customer_ID));
                 }
 
                 if (Cd != null && Cd.Length > 0)
@@ -3879,7 +3879,7 @@ namespace WebApplication.Controllers.DB
         /// <param name="YosyaID"></param>
         /// <returns></returns>
         [HttpGet("GetSenzokuDriverList")]
-        public async Task<IEnumerable<Data.M_Senzoku_Driver>> GetSenzokuDriverList(int CompanyID, DateTime? targetMonth)
+        public async Task<IEnumerable<Data.M_Senzoku_Driver>> GetSenzokuDriverList(int CompanyID, DateOnly? targetMonth)
         {
             try
             {
@@ -3888,7 +3888,7 @@ namespace WebApplication.Controllers.DB
                 if (targetMonth != null)
                 {
                     list = list.Where(m => (m.To_Date == null ||
-                                            (m.To_Date != null && ((DateTime)m.To_Date).AddMonths(-1) >= targetMonth)));
+                                            (m.To_Date != null && (m.To_Date.Value.AddMonths(-1) >= targetMonth))));
                 }
 
                 //list = list.Where(m => m.To_Date == null ||
@@ -3913,7 +3913,7 @@ namespace WebApplication.Controllers.DB
         /// <param name="YosyaID"></param>
         /// <returns></returns>
         [HttpGet("GetSenzokuDriverViewList")]
-        public async Task<IEnumerable<Data.V_Senzoku_Driver>> GetSenzokuDriverViewList(int CompanyID, DateTime? targetMonth, int SenzokuDriverID = 0)
+        public async Task<IEnumerable<Data.V_Senzoku_Driver>> GetSenzokuDriverViewList(int CompanyID, DateOnly? targetMonth, int SenzokuDriverID = 0)
         {
             try
             {
@@ -3924,9 +3924,9 @@ namespace WebApplication.Controllers.DB
                 if (targetMonth != null)
                 {
                     list = list.Where(m => m.To_Date == null ||
-                                            (m.To_Date != null && (((DateTime)m.To_Date).AddMonths(-1) >= (DateTime)targetMonth)));
+                                            (m.To_Date != null && (m.To_Date.Value.AddMonths(-1) >= targetMonth)));
                     list = list.Where(m => m.To_Date == null ||
-                                            (m.To_Date != null && (((DateTime)m.To_Date) >= (DateTime)targetMonth)));
+                                            (m.To_Date != null && ((m.To_Date) >= targetMonth)));
                     ////&& DateTime.Parse(((DateTime)m.To_Date).ToString("yyyy/MM/01")) >= (DateTime)targetMonth
 
                 }

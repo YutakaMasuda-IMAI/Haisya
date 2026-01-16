@@ -56,6 +56,10 @@ namespace WebApplication.Services
 
             List<T_KUDGIVT> DegitakoData = await _dailyReportRegistrationDetailRepository.GetDegitakoData(AnkenDisplay_ID, DriverCd, Syaban, StartDatetime, EndDatetime);
 
+            T_Nippou_Anken nippouAnken = await _dailyReportRegistrationDetailRepository.GetNippouAnken(nippou.Nippou_ID) ?? new T_Nippou_Anken();
+
+            List<int> nippouAnkenDegitakoIdList = await _dailyReportRegistrationDetailRepository.GetNippouAnkenDegitako(nippou.Nippou_ID) ?? new List<int>();
+
             int nippouId = nippou != null ? nippou.Nippou_ID : 0;
 
             return new DailyReportRegistrationDetailModel
@@ -70,6 +74,9 @@ namespace WebApplication.Services
                 DegitakoData = DegitakoData,
                 Nippou_ID = nippouId,
                 Nippou = nippou,
+                Nippou_Anken = nippouAnken,
+                NippouAnkenDegitakoIdList = nippouAnkenDegitakoIdList,
+
             };
         }
 
@@ -92,17 +99,17 @@ namespace WebApplication.Services
                             int? KokyakuId, int? Driver_ID, int? Haisya_Kubun, 
                             int? SyaryoManagement_ID, int? Haisya_ID, DateTime StartDatetime, DateTime EndDatetime)
         {
-            T_Nippou nippou = await _dailyReportRegistrationDetailRepository.GetNippou(AnkenDisplay_ID) ??  new T_Nippou();
+            T_Nippou nippou = await _dailyReportRegistrationDetailRepository.GetNippou(AnkenDisplay_ID) ?? new T_Nippou();
 
-            T_Uriage uriage = await _dailyReportRegistrationDetailRepository.GetUriage(Anken_ID) ??  new T_Uriage();
+            //T_Uriage uriage = await _dailyReportRegistrationDetailRepository.GetUriage(Anken_ID) ??  new T_Uriage();
 
-            T_Anken Anken = await _dailyReportRegistrationDetailRepository.GetAnken(Anken_ID);
+            //T_Anken Anken = await _dailyReportRegistrationDetailRepository.GetAnken(Anken_ID);
 
-            T_Anken_Display AnkenDisplay = await _dailyReportRegistrationDetailRepository.GetAnkenDisplay(AnkenDisplay_ID);
+            //T_Anken_Display AnkenDisplay = await _dailyReportRegistrationDetailRepository.GetAnkenDisplay(AnkenDisplay_ID);
 
-            T_Anken_Detail AnkenDetail = await _dailyReportRegistrationDetailRepository.GetAnkenDetail(Anken_ID, Anken.Anken_Latest_Order);
+            //T_Anken_Detail AnkenDetail = await _dailyReportRegistrationDetailRepository.GetAnkenDetail(Anken_ID, Anken.Anken_Latest_Order);
 
-            List<T_Anken_Point> AnkenPoints = await _dailyReportRegistrationDetailRepository.GetAnkenPoint(Anken_ID, Anken.Anken_Latest_Order);
+            //List<T_Anken_Point> AnkenPoints = await _dailyReportRegistrationDetailRepository.GetAnkenPoint(Anken_ID, Anken.Anken_Latest_Order);
 
             string SeikyuRemarks = await _dailyReportRegistrationDetailRepository.GetSeikyuRemarks(KokyakuId);
 
@@ -115,6 +122,10 @@ namespace WebApplication.Services
             List<T_KUDGIVT> DegitakoData = await _dailyReportRegistrationDetailRepository.GetDegitakoData(AnkenDisplay_ID, DriverCd, Syaban, StartDatetime, EndDatetime);
 
             List<T_KUDGSIR> HighwayData = await _dailyReportRegistrationDetailRepository.GetHighwayData(AnkenDisplay_ID, DriverCd, Syaban, StartDatetime, EndDatetime);
+
+            //T_Nippou_Anken nippouAnken = await _dailyReportRegistrationDetailRepository.GetNippouAnken(nippou.Nippou_ID) ?? new T_Nippou_Anken();
+
+            //List<int> nippouAnkenDegitakoIdList = await _dailyReportRegistrationDetailRepository.GetNippouAnkenDegitako(nippou.Nippou_ID) ?? new List<int>();
 
             T_Nippou_Stay nippouStay = await _dailyReportRegistrationDetailRepository.GetNippouStay(nippou.Nippou_ID) ??  new T_Nippou_Stay();
 
@@ -134,10 +145,10 @@ namespace WebApplication.Services
 
             return new DailyReportRegistrationDetailModel
             {
-                AnkenDisplay = AnkenDisplay,
-                AnkenDetail = AnkenDetail,
-                PointLists = AnkenPoints,
-                Uriage = uriage,
+                //AnkenDisplay = AnkenDisplay,
+                //AnkenDetail = AnkenDetail,
+                //PointLists = AnkenPoints,
+                //Uriage = uriage,
                 TollSeikyuKubun = TollSeikyuKubun,
                 DisplayName = DisplayName,
                 SeikyuRemarks = SeikyuRemarks,
@@ -146,6 +157,8 @@ namespace WebApplication.Services
                 HighwayData = HighwayData,
                 Nippou_ID = nippouId,
                 Nippou = nippou,
+                //Nippou_Anken = nippouAnken,
+                //NippouAnkenDegitakoIdList = nippouAnkenDegitakoIdList,
                 Nippou_Stay = nippouStay,
                 NippouStayDegitakoIdList = nippouStayDegitakoIdList,
                 Nippou_Kaiso = nippouKaiso,

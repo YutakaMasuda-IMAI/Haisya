@@ -74,7 +74,7 @@ namespace WebApplication.Model
             public string Remark { get; set; }
             public bool EditEnabled { get; set; }
             public bool EditEnabledForKintai { get; set; }
-            public DateTime Date { get; set; }
+            public DateOnly Date { get; set; }
             public int UpdateUserId { get; set; }
         }
 
@@ -86,9 +86,9 @@ namespace WebApplication.Model
         /// <returns>配車リスト</returns>
         public IEnumerable<T_Haisya> GetHaisyaList(string targetDate, int companyId)
         {
-            IQueryable<T_Haisya> builderHaisya = _context.T_Haisyas.Where(h => h.Day == DateTime.Parse(targetDate));
+            IQueryable<T_Haisya> builderHaisya = _context.T_Haisyas.Where(h => h.Day == DateOnly.Parse(targetDate));
             List<T_Haisya> driverList = _context.T_Haisyas.Where(d => d.Company_ID == companyId).ToList();
-            builderHaisya = builderHaisya.Where(h => driverList.Select(d => d.Driver_ID).Contains(h.Driver_ID));
+            builderHaisya = builderHaisya.Where(h => driverList.Select(d => d.Driver_ID).AsQueryable().Contains(h.Driver_ID));
             return builderHaisya.ToList();
         }
 
@@ -249,7 +249,7 @@ namespace WebApplication.Model
         public async Task<HaisyaDataModelDto> GetHaisyaDataListDetail(string targetDate, int companyId, int Driver_ID = 0)
         {
             HaisyaDataModelDto result = new();
-            List<T_Haisya> builderHaisya = await _context.T_Haisyas.Where(h => h.Day == DateTime.Parse(targetDate)).ToListAsync();
+            List<T_Haisya> builderHaisya = await _context.T_Haisyas.Where(h => h.Day == DateOnly.Parse(targetDate)).ToListAsync();
 
             return result;
         }

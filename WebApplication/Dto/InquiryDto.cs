@@ -32,7 +32,7 @@ namespace WebApplication.Dto
         /// <summary>
         /// 発行日
         /// </summary>
-        public DateTime PublishDate { get; set; }
+        public DateOnly PublishDate { get; set; }
 
         /// <summary>
         /// 年度末発行フラグ
@@ -60,17 +60,17 @@ namespace WebApplication.Dto
         /// <summary>
         /// 月
         /// </summary>
-        public DateTime Month { get; set; }
+        public DateOnly Month { get; set; }
 
         /// <summary>
         /// 印刷日
         /// </summary>
-        public DateTime PrintDate { get; set; }
+        public DateOnly PrintDate { get; set; }
 
         /// <summary>
         /// 印刷終了日
         /// </summary>
-        public DateTime PrintToDate { get; set; }
+        public DateOnly PrintToDate { get; set; }
     }
 
     /// <summary>

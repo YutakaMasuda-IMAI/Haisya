@@ -200,7 +200,7 @@ namespace WebApplication.Controllers.DB
         {
             try
             {
-                IQueryable<Data.T_Haisya_Driver_Day_Remark> query = _context.T_Haisya_Driver_Day_Remarks.Where(m => m.Date == DateTime.Parse(targetDay));
+                IQueryable<Data.T_Haisya_Driver_Day_Remark> query = _context.T_Haisya_Driver_Day_Remarks.Where(m => m.Date == DateOnly.Parse(targetDay));
                 if (DriverId > 0) query.Where(m => m.Driver_ID == DriverId);
                 List<Data.T_Haisya_Driver_Day_Remark> resultVal = await query.ToListAsync();
                 return new OkObjectResult(resultVal);
@@ -385,7 +385,7 @@ namespace WebApplication.Controllers.DB
 
             try
             {
-                resultVal = await _context.T_Haisya_Arounds.Where(m => m.Day == DateTime.Parse(targetDate) && m.Company_ID == companyId).ToListAsync();
+                resultVal = await _context.T_Haisya_Arounds.Where(m => m.Day == DateOnly.Parse(targetDate) && m.Company_ID == companyId).ToListAsync();
 
             }
             catch (Exception ex)

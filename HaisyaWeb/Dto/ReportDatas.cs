@@ -199,7 +199,7 @@ namespace HaisyaWeb.Dto
     {
         public int seikyuId { set; get; } = 0;
         public int checkSeikyuId { set; get; } = 0;
-        public DateTime seikyuMonth { set; get; } = DateTime.MinValue;
+        public DateOnly seikyuMonth { set; get; } = DateOnly.MinValue;
         public int shimeDay { set; get; } = 0;
         public int customerBranchID { set; get; } = 0;
         public int zeiKubun { set; get; } = 0;
@@ -209,7 +209,7 @@ namespace HaisyaWeb.Dto
                                 
             this.seikyuId = int.Parse(data.GetValueOrDefault("seikyuId", "0"));
             this.checkSeikyuId = int.Parse(data.GetValueOrDefault("checkSeikyuId", "0"));
-            this.seikyuMonth = DateTime.Parse(data.GetValueOrDefault("seikyuMonth", "1900-01-01"));
+            this.seikyuMonth = DateOnly.Parse(data.GetValueOrDefault("seikyuMonth", "1900-01-01"));
             this.shimeDay = int.Parse(data.GetValueOrDefault("shimeDay", "0"));
             this.customerBranchID = int.Parse(data.GetValueOrDefault("customerBranchId", "0"));
             this.zeiKubun = int.Parse(data.GetValueOrDefault("zeiKubun", "0"));

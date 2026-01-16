@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 
 namespace HaisyaWeb.Dto
 {
+    public partial class T_Nippou_Anken_Local : WebApplication.Data.T_Nippou_Anken { }
     public partial class T_Nippou_Stay_Local : WebApplication.Data.T_Nippou_Stay { }
     public partial class T_Nippou_Kaiso_Local : WebApplication.Data.T_Nippou_Kaiso { }
     public partial class T_Nippou_Stay_Degitako_Local : WebApplication.Data.T_Nippou_Stay_Degitako { }

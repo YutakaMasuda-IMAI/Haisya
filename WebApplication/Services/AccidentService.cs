@@ -64,7 +64,7 @@ namespace WebApplication.Services
 
             // 最新の承認データがログイン者のグループであるか判定
             WorkFlow latestApproval = JikoWorkFlowList
-            .Where(w => w.WorkFlowStatus != null && w.WorkFlowStatus.Approval_User_ID == 0 && loggedInUserGroupIdList.Contains(w.WorkFlowRoute.Jiko_WorkFlow_Group_ID))
+            .Where(w => w.WorkFlowStatus != null && w.WorkFlowStatus.Approval_User_ID == 0 && loggedInUserGroupIdList.AsQueryable().Contains(w.WorkFlowRoute.Jiko_WorkFlow_Group_ID))
             .FirstOrDefault();
 
             // 最新の承認データに対してグループ所属してなければ押下不可

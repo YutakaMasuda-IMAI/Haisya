@@ -8,7 +8,7 @@
 </head>
 
 
-@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAnken", @class = "contact-form p-0", @style = "min-width: 1400px;", @onsubmit = "return false;" }))
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmAnken", @class = "contact-form p-0", @style = "min-width: 1200px;", @onsubmit = "return false;" }))
 {
   <div>
     <div hidden>
@@ -50,12 +50,12 @@
               </thead>
               <tbody class="root-list-body">
                 <tr style="height:28px;">
-                  <td class="" style=""><div id="disp-AnkenDegitakoStartDatetime" class="text-center routedisplay ms-0" style="" /></td>
-                  <td class="" style=""><div id="disp-AnkenDegitakoEndDatetime" class="text-center routedisplay ms-0" style="" /></td>
-                  <td class="" style=""><div id="disp-AnkenDegitakoWorkTime" class="text-center routedisplay ms-0" style="" /></td>
-                  <td class="" style=""><div id="disp-AnkenDegitakoActualWorkTime" class="text-center routedisplay ms-0" style="" /></td>
-                  <td class="" style=""><div id="disp-AnkenDegitakoBreakTime" class="text-center routedisplay ms-0" style="" /></td>
-                  <td class="" style=""><div id="disp-AnkenDegitakoDistance" class="text-center routedisplay ms-0" style="" /></td>
+                  <td class="" style=""><div id="disp-Nippou_Anken_Start_Datetime" class="text-center routedisplay ms-0" style="" /></td>
+                  <td class="" style=""><div id="disp-Nippou_Anken_End_Datetime" class="text-center routedisplay ms-0" style="" /></td>
+                  <td class="" style=""><div id="disp-Nippou_Anken_WorkTime" class="text-center routedisplay ms-0" style="" /></td>
+                  <td class="" style=""><div id="disp-Nippou_Anken_ActualWorkTime" class="text-center routedisplay ms-0" style="" /></td>
+                  <td class="" style=""><div id="disp-Nippou_Anken_BreakTime" class="text-center routedisplay ms-0" style="" /></td>
+                  <td class="" style=""><div id="disp-Nippou_Anken_Distance" class="text-center routedisplay ms-0" style="" /></td>
                 </tr>
               </tbody>
             </table>
@@ -95,7 +95,7 @@
                 @if (Model.DegitakoData != null)
                 {
                   var indexAnken = 0;
-                  @foreach (var item in Model.DegitakoData.OrderBy(m => m.取り込みID))
+                  @foreach (var item in Model.DegitakoData.OrderBy(m => m.ID))
                   {
                     decimal ido = decimal.Parse(item.開始GPS緯度 ?? "0");
                     decimal keido = decimal.Parse(item.開始GPS経度 ?? "0");
@@ -112,7 +112,9 @@
                     data-degitako-start-basyo="@(item.開始場所名)"
                     data-degitako-start-gps-ido="@((double)ido)"
                     data-degitako-start-gps-keido="@((double)keido)">
-                      <tr data-index="@indexAnken" style="border-bottom: 0.05em dashed #cfcfcf; @(background) ">
+                      <tr data-index="@indexAnken" data-id="@(item.ID)" style="border-bottom: 0.05em dashed #cfcfcf; @(background) ">
+                        <th hidden><input type="hidden" class="import-id" value="@item.取り込みID" /></th>
+                        <th hidden><input type="hidden" class="id" value="@item.ID" /></th>
                         <td rowspan="2" style="text-align: center;">
                           <div class="form-check form-switch" style="place-self: center;">
                             <input class="form-check-input custom-checkbox anken-check" style="width:5em; height:2em;" type="checkbox">
@@ -194,336 +196,239 @@
 
 <script>
 
-    var selectedRowsAnken = [];
+  var nippouAnkenDegitakoIds = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouAnkenDegitakoIdList))');
 
-    $(async function () {
+	var selectedRowsAnken = [];
 
-        $(".ex-AnkenPoint-tr").draggable({
-        helper: function (event) {
-          const html = $(event.currentTarget).html();
-          const width = $(event.currentTarget).width();
-          //alert(html);
-          return $(`<div class="anken-list" style="background-color: yellow ;border-radius: 10px; border: 1px solid #5AC472; width:${width}px; background: #ffffff; cursor: move"><table class="" style="background-color: yellow ;">${html}</table></div>`)
-        },
+	$(async function() {
+
+    initializeSwitchesForAnken();
+
+    function initializeSwitchesForAnken() {
+
+      if (!nippouAnkenDegitakoIds || nippouAnkenDegitakoIds.length === 0) {
+        return;
+      }
+
+      let nippouAnkenDegitakoSelectIds = [];
+      nippouAnkenDegitakoSelectIds[0] = Number($('#Nippou_Anken_Start_Degitako_Id').val());
+      nippouAnkenDegitakoSelectIds[1] = Number($('#Nippou_Anken_End_Degitako_Id').val());
+
+      $("#table-degitako-anken tbody tr:nth-child(odd)").each(function() {
+        var row = $(this);
+        var id = row.find(".id").val();
+        var rowId = row.data('index');
+        if (nippouAnkenDegitakoSelectIds.includes(Number(id))) {
+          row.find(".form-check-input").prop("checked", true);
+          row.addClass("selected");
+          selectedRowsAnken.push(rowId);
+        }
       });
 
-        $('.drop-area').droppable({
-        drop: async function (event, ui) {
-          await pointDrop(event, ui);
-        },
-        over: async function (event, ui) {
-          await pointDropOver(event, ui);
-        },
-        out: async function (event, ui) {
-          await pointDropOut(event, ui);
-        },
-      });
+      updateDisplayDataAnken();
 
-        // 切り替えボタンのクリックイベントハンドラ
-        $(".anken-check").click(function() {
-            var row = $(this).closest("tr");
-            var rowId = row.data('index');
-            if ($(this).is(":checked")) {
-                // 最大2行まで選択可能
-                if (selectedRowsAnken.length >= 2) {
-                    $(this).prop("checked", false);
-                    return;
-                }
-                selectedRowsAnken.push(rowId);
-            } else {
-                selectedRowsAnken = selectedRowsAnken.filter(function(id) {
-                    return id !== rowId;
-                });
-            }
-            updateDisplayDataAnken();
-        });
-
-
-        $(".degitako-check").click(function(){
-          DegitakoDataDisplayChange();
-        });
-
-        DegitakoDataDisplayChange();
-    });
-
-  /**
-   * デジタコデータから案件ポイントへのドロップ処理
-   * @@param event
-   * @@param ui
-   */
-  async function pointDrop(event, ui) {
-
-    var id = event.target.id;
-
-    if (id.indexOf('area') == 0) {
-      alertError('ドラッグ＆ドロップが正しく行えませんでした。処理を中断します。');
-      return false;
     }
 
-    var lowId = id.replace('drop-area-','');
-
-    var area = $("#" + id).css("background-color", "white");
-
-    let deg_id = ui.draggable.data('degitako-id');
-
-    let sId = 'PointList_' + lowId;
-    $('#SetPointId').val(sId);
-
-    let datetime = ui.draggable.data('degitako-start-datetime');
-    let shiku = ui.draggable.data('degitako-start-shiku');
-    let basyo = ui.draggable.data('degitako-start-basyo');
-    let gps_ido = ui.draggable.data('degitako-start-gps-ido');
-    let gps_keido = ui.draggable.data('degitako-start-gps-keido');
-
-    $('#SetPointDatetime').val(datetime);
-
-    //alert(i);
-    //alert(id + ';;;' + datetime + ';;;' + shiku + ';;;' + basyo + ';;;' + gps_ido + ';;;' + gps_keido);
-
-    GetAddress(i, gps_ido, gps_keido);
-  };
-
-  /**
-   * デジタコデータから案件ポイントへのドロップオーバー処理
-   * @@param event
-   * @@param ui
-   */
-  async function pointDropOver(event, ui) {
-    const i = $(this).data('pointlist-i');
-    var id = event.target.id;
-    var area = $("#" + id).css("background-color", "red");
-  };
-
-  /**
-   * デジタコデータから案件ポイントへのドロップオーバーアウト処理
-   * @@param event
-   * @@param ui
-   */
-  async function pointDropOut(event, ui) {
-    const i = $(this).data('pointlist-i');
-    var id = event.target.id;
-    var area = $("#" + id).css("background-color", "white");
-  };
-
-  /**
-  * 地図のセンターの住所情報をゼンリンAPIより取得
-  * @@param s
-  * @@param i
-  */
-  async function GetAddress(id, lat, lng) {
 
 
-    ///処理中ダイアログ
-    Swal.fire({
-      title: '住所データ読込中'
-      , html: 'ゼンリン地図APIで住所情報取得中です。<br /> 表示されるまでそのままお待ちください。<br /> 場所が密集地の場合、読み込みに時間がかかります。'
-      , allowOutsideClick: true     //枠外をクリックしても画面を閉じない
-      , showConfirmButton: false
-      , didOpen: () => {
-        Swal.showLoading();
-      }
-    });
 
-    $('#PointList_' + id + '__Lat').val(lat);
-    $('#PointList_' + id + '__Lng').val(lng);
-
-    let slatlon = String(lng) + ',' + String(lat);
-    //alert(slatlon);
-    $.post('@Url.RouteUrl("Default", new { controller = "Map", Action = "MapGetAddressFromPosition" })',
-      {
-        position: String(slatlon),
-        modal_flg: 1,
-        datum: '@(HaisyaWeb.Common.SystemConstants.Zenrin_datum.世界測地系)',
-        range: 100,
-      })
-      .done(function (response) {
-
-          if (response.errorMessage != null) {
-              alertError(`【エラー】${response.errorMessage}`);
-              return false;
-          } else {
-
-            $("#ModalHere").html(response.partialView);
-            $("#ModalHere").find('.modal').modal('show');
-
-            //完了ダイアログ
-            Swal.fire({
-              title: '処理終了'
-              , html: '処理を終了しました。'
-              , type: 'info'
-              , timer: 1
-            });
+		// 切り替えボタンのクリックイベントハンドラ
+		$(".anken-check").click(function() {
+			var row = $(this).closest("tr");
+			var rowId = row.data('index');
+			if ($(this).is(":checked")) {
+				// 最大2行まで選択可能
+				if (selectedRowsAnken.length >= 2) {
+					$(this).prop("checked", false);
+					return;
+				}
+				selectedRowsAnken.push(rowId);
+			} else {
+				selectedRowsAnken = selectedRowsAnken.filter(function(id) {
+					return id !== rowId;
+				});
+			}
+			updateDisplayDataAnken();
+		});
 
 
-            return;
-          }
-      })
-      .fail(function (xhr) {
-        alertError(xhr, "【ネットワークエラー】");
-          console.log(xhr);
-        return false;
-      })
-      .always(function (xhr, msg) {
-      /*    console.log(xhr, msg);*/
-      });
-    return false;
-  };
+		$(".degitako-check").click(function() {
+			DegitakoDataDisplayChange();
+		});
 
-  /**
-   *　住所検索用画面（モーダル）からの選択時処理
-   * @@param address_code
-   * @@param BuildingZid
-   * @@param BuildingZid_Attr
-   * @@param buildingName
-   * @@param address
-   * @@param post_code
-   * @@param address_level
-   * @@param address2
-   * @@param address3
-   * @@param address4
-   */
-  function SetAddressData(address_code, BuildingZid, BuildingZid_Attr, buildingName, address, post_code, address_level, address2, address3, address4) {
+		DegitakoDataDisplayChange();
+	});
 
-    let sId = $('#SetPointId').val();
-    let sDatetime = $('#SetPointDatetime').val();
 
-    alert(sDatetime);
+	/**
+	 *
+	 */
+	function updateDisplayDataAnken() {
 
-    var date = new Date(sDatetime);
-    alert(date);
+		if (selectedRowsAnken.length === 2) {
+			let minStartDatetime = new Date(9999, 11, 31, 23, 59, 59);
+			let maxEndDatetime = new Date(0, 0, 1, 0, 0, 0);
+			let totalDistance = 0.0;
+			let totalBreakTime = new Date(0, 0, 1, 0, 0, 0);
+			let totalWorkTime = new Date(0, 0, 1, 0, 0, 0);
+			let actualWorkTime = new Date(0, 0, 1, 0, 0, 0);
 
-    $('#ModalHere').find('.modal').modal('hide');
-    $('#ModalHere').html('');
+			let startRowId = Math.min(selectedRowsAnken[0], selectedRowsAnken[selectedRowsAnken.length - 1]);
+      let endRowId = Math.max(selectedRowsAnken[0], selectedRowsAnken[selectedRowsAnken.length - 1]);
 
-    $('#' + sId + '__PointDateTime').val(sDatetime);
+      let startId = $("#table-degitako-anken tbody tr[data-index='" + startRowId + "']").find(".id").val();
+      let endId = $("#table-degitako-anken tbody tr[data-index='" + endRowId + "']").find(".id").val();
 
-    $('#' + sId + '__BuildingName').val(buildingName);
-    $('#' + sId + '__Address').val(address);
-    $('#' + sId + '__Post_code').val(post_code);
-    $('#' + sId + '__Address_Code').val(address_code);
-    $('#' + sId + '__BuildingZid').val(BuildingZid);
-    $('#' + sId + '__BuildingZid_Attr').val(BuildingZid_Attr);
-    $('#' + sId + '__Address_Level').val(address_level);
-    $('#' + sId + '__Address2').val(address2);
-    $('#' + sId + '__Address3').val(address3);
-    $('#' + sId + '__Address4').val(address4);
+      for (let rowId = startRowId; rowId <= endRowId; rowId++) {
+				// alert(rowId);
+				let row = $("#table-degitako-anken tbody tr[data-index='" + rowId + "']");
+				let rowStartDatetime = new Date(row.find(".start-datetime").text());
+				let rowEndDatetime = new Date(row.next().find(".end-datetime").text());
+				totalDistance += Number(row.next().find(".sect-dist").text());
+				let rowBreakTime = row.find(".breaktime").text().trim();
+				if (rowBreakTime.length > 1) {
+					totalBreakTime.setHours(totalBreakTime.getHours() + Number(rowBreakTime.substring(0, 2)));
+					totalBreakTime.setMinutes(totalBreakTime.getMinutes() + Number(rowBreakTime.substring(3, 5)));
+				}
 
-    document.getElementById(sId + '__PointDateTime').value = formatDate4(date);
+				if (rowStartDatetime < minStartDatetime) {
+					minStartDatetime = rowStartDatetime;
+					startPlace = row.find(".start-place").text();
+				}
+				if (rowEndDatetime > maxEndDatetime) {
+					maxEndDatetime = rowEndDatetime;
+					endPlace = row.next().find(".end-place").text();
+				}
 
-  };
+			}
+
+			// 勤務時間を計算
+			let diffInMilliseconds = maxEndDatetime - minStartDatetime;
+			let diffInSeconds = diffInMilliseconds / 1000;
+			let diffInMinutes = diffInSeconds / 60;
+			totalWorkTime.setMinutes(totalWorkTime.getMinutes() + diffInMinutes);
+
+			// 実労働時間を計算
+			diffInMilliseconds = totalWorkTime - totalBreakTime;
+			diffInSeconds = diffInMilliseconds / 1000;
+			diffInMinutes = diffInSeconds / 60;
+			actualWorkTime.setMinutes(actualWorkTime.getMinutes() + diffInMinutes);
+
+			// 距離は少数第一で切り捨て
+			totalDistance = parseFloat(totalDistance.toFixed(1));
+
+			$("#Nippou_Anken_Start_Degitako_Id").val(startId);
+			$("#Nippou_Anken_Start_Datetime").val(minStartDatetime);
+			$("#Nippou_Anken_End_Degitako_Id").val(endId);
+			$("#Nippou_Anken_End_Datetime").val(maxEndDatetime);
+			$("#Nippou_Anken_Distance").val(totalDistance);
+			$("#Nippou_Anken_BreakTime").val(totalBreakTime);
+			$("#Nippou_Anken_WorkTime").val(totalWorkTime);
+			$("#Nippou_Anken_ActualWorkTime").val(actualWorkTime);
+
+			$("#disp-Nippou_Anken_Start_Datetime").text(formatDate4(minStartDatetime));
+			$("#disp-Nippou_Anken_End_Datetime").text(formatDate4(maxEndDatetime));
+			$("#disp-Nippou_Anken_WorkTime").text(formatDate5(totalWorkTime));
+			$("#disp-Nippou_Anken_ActualWorkTime").text(formatDate5(actualWorkTime));
+			$("#disp-Nippou_Anken_BreakTime").text(formatDate5(totalBreakTime));
+			$("#disp-Nippou_Anken_Distance").text(parseFloat(totalDistance.toFixed(2)) + "km");
+
+
+		} else {
+			$("#Nippou_Anken_Start_Degitako_Id").val("");
+			$("#Nippou_Anken_Start_Datetime").val("");
+			$("#Nippou_Anken_End_Degitako_Id").val("");
+			$("#Nippou_Anken_End_Datetime").val("");
+			$("#Nippou_Anken_Distance").val(0);
+			$("#Nippou_Anken_BreakTime").val("");
+			$("#Nippou_Anken_WorkTime").val("");
+			$("#Nippou_Anken_ActualWorkTime").val("");
+
+			$("#disp-Nippou_Anken_Start_Datetime").text("");
+			$("#disp-Nippou_Anken_End_Datetime").text("");
+			$("#disp-Nippou_Anken_WorkTime").text("");
+			$("#disp-Nippou_Anken_ActualWorkTime").text("");
+			$("#disp-Nippou_Anken_BreakTime").text("");
+			$("#disp-Nippou_Anken_Distance").text("");
+		}
+	}
 
   /**
    * 
    */
-  function updateDisplayDataAnken() {
-      
-    if (selectedRowsAnken.length === 2) {
-        let minStartDatetime = new Date(9999, 11, 31, 23, 59, 59);
-        let maxEndDatetime = new Date(0, 0, 1, 0, 0, 0);
-        let totalDistance = 0.0;
-        let totalBreakTime = new Date(0, 0, 1, 0, 0, 0);
-        let totalWorkTime = new Date(0, 0, 1, 0, 0, 0);
-        let actualWorkTime = new Date(0, 0, 1, 0, 0, 0);
+	function DegitakoDataDisplayChange() {
 
-        let startId = Math.min(selectedRowsAnken[0], selectedRowsAnken[selectedRowsAnken.length - 1]);
-        let endId = Math.max(selectedRowsAnken[0], selectedRowsAnken[selectedRowsAnken.length - 1]);
-        for (let rowId = startId; rowId <= endId; rowId++) {
-            // alert(rowId);
-            let row = $("#table-degitako-anken tbody tr[data-index='" + rowId + "']");
-            let rowStartDatetime = new Date(row.find(".start-datetime").text());
-            let rowEndDatetime = new Date(row.next().find(".end-datetime").text());
-            totalDistance += Number(row.next().find(".sect-dist").text());
-            let rowBreakTime  = row.find(".breaktime").text().trim();
-            if (rowBreakTime.length > 1) {
-                totalBreakTime.setHours(totalBreakTime.getHours() + Number(rowBreakTime.substring(0, 2)));
-                totalBreakTime.setMinutes(totalBreakTime.getMinutes() + Number(rowBreakTime.substring(3, 5)));
-            } 
+		let checkY = $('#check-yesterday').prop('checked');
+		let checkT = $('#check-tommorow').prop('checked');
 
-            if (rowStartDatetime < minStartDatetime) {
-                minStartDatetime = rowStartDatetime;
-                startPlace = row.find(".start-place").text();
-            }
-            if (rowEndDatetime > maxEndDatetime) {
-                maxEndDatetime = rowEndDatetime;
-                endPlace = row.next().find(".end-place").text();
-            }
+		let tableElem = document.getElementById('table-degitako-anken');
 
+		let tbodyElems = tableElem.tBodies;
+
+		const startDate = formatDate3(new Date($('#AnkenDisplay_StartDatetime').val()));
+		const endDate = formatDate3(new Date($('#AnkenDisplay_EndDatetime').val()));
+
+		Array.from(tbodyElems).forEach((tbody, index) => {
+			let row = $("#table-degitako-anken tbody[data-index='" + index + "']");
+			var start = formatDate3(new Date(row.data('degitako-start-datetime')));
+			if (start < startDate) {
+				tbody.style.display = (checkY) ? "" : "none";
+			}
+			if (start > endDate) {
+				tbody.style.display = (checkT) ? "" : "none";
+			}
+		});
+
+
+	}
+
+
+    /**
+   *
+   */
+  function btnOnClickForNoRegAnkenData() {
+
+    if (selectedRowsAnken.length != 2) {
+        alertCustomInputError("デジタコが正しく選択されていません。<br /> 案件の開始終了のデジタコを選択してください。");
+        return false;
+    }
+
+    let degitakoDataList = JSON.parse('@Html.Raw(Json.Serialize(Model.DegitakoData.OrderBy(m => m.ID)))');
+
+    let updatedNippouAnkenDegitako = [];
+    let nippouAnkenDegitakoIdList = [];
+
+    // switchボタンがオンになっているレコードのインデックスを格納する配列
+    let checkedIndices = [];
+
+    // 各行について処理を行う
+    $("#table-degitako-anken tbody tr").each(function(index) {
+        let row = $(this);
+        let id = row.data('index');
+
+        // switchボタンがオンになっている場合
+        if (row.find(".form-check-input").is(":checked")) {
+            // そのインデックスを記録
+            checkedIndices.push(id);
         }
+    });
 
-        // 勤務時間を計算
-        let diffInMilliseconds  = maxEndDatetime - minStartDatetime;
-        let diffInSeconds = diffInMilliseconds / 1000;
-        let diffInMinutes = diffInSeconds / 60;
-        totalWorkTime.setMinutes(totalWorkTime.getMinutes() + diffInMinutes);
-           
-        // 実労働時間を計算
-        diffInMilliseconds = totalWorkTime - totalBreakTime;
-        diffInSeconds = diffInMilliseconds / 1000;
-        diffInMinutes = diffInSeconds / 60;
-        actualWorkTime.setMinutes(actualWorkTime.getMinutes() + diffInMinutes);
+    // 記録したインデックスに対応するModel.DegitakoDataのデータを追加
+    checkedIndices.forEach(function(index) {
+        let item = degitakoDataList[index];
+        updatedNippouAnkenDegitako.push(item);
+        let item2 = degitakoDataList[index].id;
+        nippouAnkenDegitakoIdList.push(item2);
+    });
 
-        // 距離は少数第一で切り捨て
-        totalDistance = parseFloat(totalDistance.toFixed(1));
+    $('#NippouAnkenDegitakoIdList').val(nippouAnkenDegitakoIdList);
 
-        $("#AnkenDegitakoStartId").val(startId);
-        $("#AnkenDegitakoStartDatetime").val(minStartDatetime);
-        $("#AnkenDegitakoEndId").val(endId);
-        $("#AnkenDegitakoEndDatetime").val(maxEndDatetime);
-        $("#AnkenDegitakoDistance").val(totalDistance);
-        $("#AnkenDegitakoBreakTime").val(totalBreakTime);
-        $("#AnkenDegitakoWorkTime").val(totalWorkTime);
-        $("#AnkenDegitakoActualWorkTime").val(actualWorkTime);
+    DailyReportRegistrationDetailNippouDisplay($('#Search_AnkenDisplay_ID').val());
 
-        $("#disp-AnkenDegitakoStartDatetime").text(formatDate4(minStartDatetime));
-        $("#disp-AnkenDegitakoEndDatetime").text(formatDate4(maxEndDatetime));
-        $("#disp-AnkenDegitakoWorkTime").text(formatDate5(totalWorkTime));
-        $("#disp-AnkenDegitakoActualWorkTime").text(formatDate5(actualWorkTime));
-        $("#disp-AnkenDegitakoBreakTime").text(formatDate5(totalBreakTime));
-        $("#disp-AnkenDegitakoDistance").text(parseFloat(totalDistance.toFixed(2)) + "km");
+    // $("#tblCollapseInfo").collapse('hide');
+    // $("#distanceContainer").collapse('hide');
 
-
-    }
-    else {
-        $("#AnkenDegitakoStartId").val("");
-        $("#AnkenDegitakoStartDatetime").val("");
-        $("#AnkenDegitakoEndId").val("");
-        $("#AnkenDegitakoEndime").val("");
-        $("#AnkenDegitakoDistance").val(0);
-        $("#AnkenDegitakoBreakTime").val("");
-        $("#AnkenDegitakoWorkTime").val("");
-        $("#AnkenDegitakoActualWorkTime").val("");
-
-        $("#disp-AnkenDegitakoStartDatetime").text("");
-        $("#disp-AnkenDegitakoEndDatetime").text("");
-        $("#disp-AnkenDegitakoWorkTime").text("");
-        $("#disp-AnkenDegitakoActualWorkTime").text("");
-        $("#disp-AnkenDegitakoBreakTime").text("");
-        $("#disp-AnkenDegitakoDistance").text("");
-    }
+    return false;
   }
-
-
-  function DegitakoDataDisplayChange() {
-
-      let checkY = $('#check-yesterday').prop('checked');
-      let checkT = $('#check-tommorow').prop('checked');
- 
-      let tableElem = document.getElementById('table-degitako-anken');
-
-      let tbodyElems = tableElem.tBodies;
-
-      const startDate = formatDate3(new Date($('#AnkenDisplay_StartDatetime').val()));
-      const endDate = formatDate3(new Date($('#AnkenDisplay_EndDatetime').val()));
-
-      Array.from(tbodyElems).forEach((tbody, index) => {
-        let row = $("#table-degitako-anken tbody[data-index='" + index + "']");
-        var start = formatDate3(new Date(row.data('degitako-start-datetime')));
-        if (start < startDate) { tbody.style.display = (checkY) ? "" : "none"; }
-        if (start > endDate) { tbody.style.display = (checkT) ? "" : "none"; }
-      });
-
-
-  }
-
 
 </script>

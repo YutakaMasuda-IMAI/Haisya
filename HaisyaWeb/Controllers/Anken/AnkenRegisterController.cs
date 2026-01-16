@@ -121,12 +121,12 @@ namespace HaisyaWeb.Controllers.Anken
                 model = await CreateModel();
                 await GetEditData(param.Anken_ID_KakoSelect, model);
                 model.SelectDay = param.SelectDay;
-                if (DateTime.TryParse(model.SelectDay, out DateTime date))
+                if (model.SelectDay != null)
                 {
                     foreach (var target in model.PointList)
                     {
-                        target.PointDate = date;
-                        target.PointDateTime = DateTime.Parse((DateTime.Parse(model.SelectDay)).ToString("yyyy/MM/dd") + ' ' + target.PointTime);
+                        target.PointDate = model.SelectDay?.ToDateTime(new TimeOnly(0));
+                        target.PointDateTime = DateTime.Parse(model.SelectDay?.ToString("yyyy/MM/dd") + ' ' + target.PointTime);
                     }
                 }
 
@@ -235,7 +235,7 @@ namespace HaisyaWeb.Controllers.Anken
                     for (int i = 0; i < model.PointList.Count; i++)
                     {
                         model.PointList[i].PointDateTime = DateTime.Parse(param.SelectDay + " 00:00");
-                        model.PointList[i].PointDate = DateTime.Parse(param.SelectDay);
+                        model.PointList[i].PointDate = param.SelectDay?.ToDateTime(new TimeOnly(0));
                         model.PointList[i].PointTime = "00:00";
                     }
                 }
@@ -1021,10 +1021,10 @@ namespace HaisyaWeb.Controllers.Anken
             Dto.T_Anken_Display_Local data = new();
 
             data.Anken_ID = AnkenID;
-            data.Day = (DateTime)startP.PointDate;
+            data.Day = (DateOnly)startP.PointDate;
             data.Display_Kubun = 2;
-            data.StartDatetime = DateTime.Parse(((DateTime)startP.PointDate).ToString("yyyy/MM/dd") + ' ' + startP.PointTime);
-            data.EndDatetime = DateTime.Parse(((DateTime)startE.PointDate).ToString("yyyy/MM/dd") + ' ' + startE.PointTime);
+            data.StartDatetime = DateTime.Parse(startP.PointDate?.ToString("yyyy/MM/dd") + ' ' + startP.PointTime);
+            data.EndDatetime = DateTime.Parse(startP.PointDate?.ToString("yyyy/MM/dd") + ' ' + startE.PointTime);
 
             data.Start_Point_Kubun = startP.Kubun;
             data.Start_BuildingName = startP.BuildingName;

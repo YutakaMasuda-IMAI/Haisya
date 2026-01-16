@@ -64,7 +64,7 @@ namespace HaisyaWeb.Controllers
 
             // 各項目ごとにnullチェックを行い、nullの場合は初期値を設定
             param.BackMenuAction ??= "DataList";
-            param.SelectMonth = param.SelectMonth.Year > 2000 ? param.SelectMonth : DateTime.Parse(DateTime.Now.ToString("yyyy/MM/01"));
+            param.SelectMonth = param.SelectMonth.Year > 2000 ? param.SelectMonth : DateOnly.FromDateTime(DateTime.Now);
             param.SelectZeiKubun = param.SelectZeiKubun > 0 ? param.SelectZeiKubun : 0;
             param.SelectHakkouKubun = param.SelectHakkouKubun > 0 ? param.SelectHakkouKubun : 0;
             param.SelectKingakuHenkou = param.SelectKingakuHenkou > 0 ? param.SelectKingakuHenkou : 0;

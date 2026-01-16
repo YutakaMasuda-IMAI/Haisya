@@ -2,6 +2,7 @@
 using HaisyaWeb.Models;
 using HaisyaWeb.Service;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -118,7 +119,7 @@ namespace HaisyaWeb.Controllers
                 if (param == null) { throw new Exception("パラメーターエラー：SearchModelForDailyReportList"); }
                 if (param.SelectDay == null) { throw new Exception("パラメーターエラー：SelectDay"); }
 
-                string targetDate = DateTime.Parse(param.SelectDay).ToString("yyyy/MM/dd");
+                string targetDate = param.SelectDay?.ToString("yyyy/MM/dd");
 
                 model.Search = new SearchModelForDailyReportList
                 {
@@ -225,6 +226,8 @@ namespace HaisyaWeb.Controllers
                 model.SyabanNumber = DailyReportDetail.SyabanNumber;
                 model.Nippou_ID = DailyReportDetail.Nippou_ID;
                 model.Nippou = DailyReportDetail.Nippou;
+                model.Nippou_Anken = DailyReportDetail.Nippou_Anken;
+                model.NippouAnkenDegitakoIdList = DailyReportDetail.NippouAnkenDegitakoIdList;
 
                 ////////////////////////////////T_Anken_PointList///////////////////////////////////
                 #region T_Anken_PointList
@@ -275,6 +278,10 @@ namespace HaisyaWeb.Controllers
         {
             try
             {
+                Dto.V_LoginUser_Local loguinUser = await GetLoginUser();
+
+                if (param == null) { throw new Exception("パラメーターエラー"); }
+
                 using API.WebApp.HaisyaDataApi apiH = new(_mapApiSettiong);
                 IEnumerable<Dto.V_HaisyaDataList_Local> listData = await GetHaisyaDataListFromSearch(param.Search);
 
@@ -299,7 +306,7 @@ namespace HaisyaWeb.Controllers
                 //    //SelectedDriveRouteDisplay = new DriveRouteListDisplay_Local()
                 //};
 
-                Dto.V_LoginUser_Local loguinUser = await GetLoginUser();
+                
 
                 //model.Search.Anken_ID = param.Search.Anken_ID;
                 //model.Search.AnkenDisplay_ID = param.Search.AnkenDisplay_ID;
@@ -328,6 +335,7 @@ namespace HaisyaWeb.Controllers
                 //model.Syasyu = DailyReportDetail.AnkenDetail.Syasyu;
                 //model.Kata = DailyReportDetail.AnkenDetail.Kata;
                 model.Nippou_ID = DailyReportDetail.Nippou_ID;
+                //model.Nippou_Anken = DailyReportDetail.Nippou_Anken;
                 model.Nippou_Stay = DailyReportDetail.Nippou_Stay;
                 model.Nippou_Kaiso = DailyReportDetail.Nippou_Kaiso;
                 model.Nippou_Stay_Degitako = DailyReportDetail.Nippou_Stay_Degitako;
@@ -374,7 +382,7 @@ namespace HaisyaWeb.Controllers
                             ID = d.ID,
                             読取日 = d.読取日,
                             事業所CD = d.事業所CD,
-                            運行日 = d.運行日?.Date ?? DateTime.MinValue,
+                            運行日 = d.運行日 ?? DateOnly.FromDateTime(DateTime.MinValue),
                             事業所名 = d.事業所名,
                             車輌CD = d.車輌CD,
                             車輌名 = d.車輌名,
@@ -436,12 +444,9 @@ namespace HaisyaWeb.Controllers
             List<Dto.V_HaisyaDataList_Local> list = null;
 
             // 検索日付が範囲指定の場合
-            DateTime? dateEnd = null;
+            DateOnly? dateEnd = null;
             // param.SelectEndDayの値を確認
-            if (DateTime.TryParse(param.SelectEndDay, out DateTime parsedFromDate))
-            {
-                dateEnd = DateTime.Parse(param.SelectEndDay);
-            }
+            if (param.SelectEndDay != null) { dateEnd = param.SelectEndDay; }
 
             int customerID = 0;
             if (!string.IsNullOrEmpty(param.SelectTokuisakiID) && int.TryParse(param.SelectTokuisakiID, out int parsedCustomerID))
@@ -453,13 +458,13 @@ namespace HaisyaWeb.Controllers
             if (dateEnd != null)
             {
                 list = await apiH.GetHaisyaDataList(loguinUser.Company_ID,
-                                null, DateTime.Parse(param.SelectDay).ToString("yyyy/MM/dd"), ((DateTime)dateEnd).ToString("yyyy/MM/dd"),
+                                null, param.SelectDay?.ToString("yyyy/MM/dd"), dateEnd?.ToString("yyyy/MM/dd"),
                                 customerID);
             }
             else
             {
                 list = await apiH.GetHaisyaDataList(loguinUser.Company_ID,
-                                DateTime.Parse(param.SelectDay).ToString("yyyy/MM/dd"), null, null, customerID);
+                                param.SelectDay?.ToString("yyyy/MM/dd"), null, null, customerID);
             }
 
             return list;
@@ -536,21 +541,27 @@ namespace HaisyaWeb.Controllers
         /// </summary>
         /// <param name="OvernightModalData"></param>
         /// <returns></returns>
-        public async Task<IActionResult> OvernightModal(string OvernightModalData)
+        public async Task<IActionResult> OvernightModal([FromBody] DailyReportRegistrationDetailModel OvernightModalData)
         {
             try
             {
-                DailyReportRegistrationDetailModel model = new()
-                {
-                    Nippou_Stay = new(),
-                };
+                // ログインユーザー取得
+                Dto.V_LoginUser_Local loguinUser = await GetLoginUser();
+
+                if (OvernightModalData == null) { throw new Exception("パラメーターエラー"); }
+
+                DailyReportRegistrationDetailModel model = new() { };
 
                 //セッション情報からデータの取得
                 model = HttpContext.Session.GetObject<DailyReportRegistrationDetailModel>(SessionKeyDaileReport);
+                if (model == null) { throw new Exception("セッション情報が不正です。再度日報画面を開きなおしてください。"); }
 
-                if (!string.IsNullOrEmpty(OvernightModalData))
+                if (OvernightModalData != null)
                 {
-                    DailyReportRegistrationDetailModel model2 = JsonConvert.DeserializeObject<DailyReportRegistrationDetailModel>(OvernightModalData);
+                    //DailyReportRegistrationDetailModel model2 = JsonConvert.DeserializeObject<DailyReportRegistrationDetailModel>(OvernightModalData);
+                    DailyReportRegistrationDetailModel model2 = OvernightModalData;
+
+                    model.IsEdit = model2.NippouStayDegitakoIdList.Count > 0;
 
                     model.Nippou_Stay ??= new();
                     model.NippouStayDegitakoIdList ??= new();
@@ -593,6 +604,11 @@ namespace HaisyaWeb.Controllers
         {
             try
             {
+                // ログインユーザー取得
+                Dto.V_LoginUser_Local loguinUser = await GetLoginUser();
+
+                if (EmptyCarModalData == null) { throw new Exception("パラメーターエラー"); }
+
                 DailyReportRegistrationDetailModel model = new() { };
 
                 //セッション情報からデータの取得
@@ -605,6 +621,8 @@ namespace HaisyaWeb.Controllers
                     //DailyReportRegistrationDetailModel model2 = JsonConvert.DeserializeObject<DailyReportRegistrationDetailModel>(EmptyCarModalData);
                     DailyReportRegistrationDetailModel model2 = EmptyCarModalData;
 
+                    model.IsEdit = model2.NippouKaisoDegitakoIdList.Count > 0;
+
                     model.Nippou_Kaiso ??= new();
                     model.NippouKaisoDegitakoIdList ??= new();
 
@@ -612,7 +630,7 @@ namespace HaisyaWeb.Controllers
                     model.Nippou_Kaiso.End_Datetime = model2.Nippou_Kaiso.End_Datetime;
                     model.Nippou_Kaiso.Start_ShikuName = model2.Nippou_Kaiso.Start_ShikuName;
                     model.Nippou_Kaiso.End_ShikuName = model2.Nippou_Kaiso.End_ShikuName;
-                    model.Nippou_Kaiso.Distance = model2.Nippou_Kaiso.Distance;
+                    model.Nippou_Kaiso.Distance = model2.Nippou_Kaiso.Distance ?? 0;
                     model.Nippou_Kaiso.Dllowance = model2.Nippou_Kaiso.Dllowance;
                     model.Nippou_Kaiso.Commnet = model2.Nippou_Kaiso.Commnet;
                     model.NippouKaisoDegitakoIdList = model2.NippouKaisoDegitakoIdList;
@@ -762,7 +780,7 @@ namespace HaisyaWeb.Controllers
                             ID = d.ID,
                             読取日 = d.読取日,
                             事業所CD = d.事業所CD,
-                            運行日 = d.運行日 ?? new DateTime(),
+                            運行日 = d.運行日 ?? DateOnly.FromDateTime(DateTime.MinValue),
                             事業所名 = d.事業所名,
                             車輌CD = d.車輌CD,
                             車輌名 = d.車輌名,
@@ -809,20 +827,24 @@ namespace HaisyaWeb.Controllers
         /// <param name="data"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<IActionResult> ProvisionalRegistration(string data)
+        public async Task<IActionResult> ProvisionalRegistration([FromBody] DailyReportRegistrationDetailModel param)
         {
             try
             {
                 DailyReportRegistrationDetailModel model;
 
-                if (string.IsNullOrEmpty(data))
-                {
-                    // highwayDataがnullまたは空文字列の場合の処理
-                    model = new DailyReportRegistrationDetailModel(); // 空のモデルを作成するか、適切な初期値を設定する
-                }
-                else
-                {
-                    model = JsonConvert.DeserializeObject<DailyReportRegistrationDetailModel>(data);
+                if (param == null) { throw new Exception("パラメーターエラー"); }
+
+                //if (param.HighwayData == null || param.HighwayData.Count == 0)
+                //{
+                //    // highwayDataがnullまたは空文字列の場合の処理
+                //    model = new DailyReportRegistrationDetailModel(); // 空のモデルを作成するか、適切な初期値を設定する
+                //}
+                //else
+                //{
+                    model = param;
+                    int iStart = model.NippouAnkenDegitakoIdList[0];
+                    int iEnd = model.NippouAnkenDegitakoIdList[1];
                     //デジタコ連携のデータをT_Nippou_Tollに追加
                     foreach (var d in model.NippouTollDegitako)
                     {
@@ -863,7 +885,13 @@ namespace HaisyaWeb.Controllers
                         });
                     }
 
-                }
+
+                    if (model.NippouApproval.Limit_DateTime.Year == 1)
+                    {
+                        model.NippouApproval = null;
+                    }
+
+                    //}
 
                 Dto.V_LoginUser_Local loguinUser = await GetLoginUser();
                 model.User_ID = loguinUser.User_ID;
@@ -871,6 +899,8 @@ namespace HaisyaWeb.Controllers
                 using API.WebApp.DailyReportDataApi api = new(_mapApiSettiong);
                 var result = await api.ProvisionalRegistration(model);
                 return Json(new { data = result });
+
+                //return Json(new { data = "" });
             }
             catch (Exception e)
             {
@@ -891,8 +921,8 @@ namespace HaisyaWeb.Controllers
             SearchModelForDailyReportList param = new()
             {
                 SelectGroup = 0,
-                SelectDay = DateTime.Now.ToString("yyyy/MM/dd"),
-                SelectEndDay = DateTime.Now.ToString("yyyy/MM/dd"),
+                SelectDay =  DateOnly.Parse(DateTime.Now.ToString("yyyy/MM/dd")),
+                SelectEndDay = DateOnly.Parse(DateTime.Now.ToString("yyyy/MM/dd")),
                 SelectTantou = await SearchCommonService.GetUserGroupDefaultVal(_mapApiSettiong, loguinUser.Company_ID,
                                                 UserGroupLists.Haisya, loguinUser.User_ID) ?? "ALL",
                 SelectSeikyuTantou = await SearchCommonService.GetUserGroupDefaultVal(_mapApiSettiong, loguinUser.Company_ID,
@@ -953,12 +983,9 @@ namespace HaisyaWeb.Controllers
                 Dto.V_LoginUser_Local loguinUser = await GetLoginUser();
 
                 // 日付範囲指定の場合
-                DateTime? dateEnd = null;
+                DateOnly? dateEnd = null;
                 // param.SelectEndDayの値を確認
-                if (DateTime.TryParse(param.SelectEndDay, out DateTime parsedFromDate))
-                {
-                    dateEnd = parsedFromDate;
-                }
+                if (param.SelectEndDay != null) { dateEnd = param.SelectEndDay; }
 
                 IEnumerable<Dto.V_HaisyaDataList_Local> list = null;
 
@@ -967,12 +994,12 @@ namespace HaisyaWeb.Controllers
                 if (dateEnd != null)
                 {
                     list = await apiH.GetHaisyaDataList(loguinUser.Company_ID,
-                                    null, DateTime.Parse(param.SelectDay).ToString("yyyy/MM/dd"), ((DateTime)dateEnd).ToString("yyyy/MM/dd"), customerID);
+                                    null, param.SelectDay?.ToString("yyyy/MM/dd"), dateEnd?.ToString("yyyy/MM/dd"), customerID);
                 }
                 else
                 {
                     list = await apiH.GetHaisyaDataList(loguinUser.Company_ID,
-                                    DateTime.Parse(param.SelectDay).ToString("yyyy/MM/dd"), null, null, customerID);
+                                    param.SelectDay?.ToString("yyyy/MM/dd"), null, null, customerID);
                 }
 
                 List<T_Nippou_Local> tNippous = await GetTNippous();

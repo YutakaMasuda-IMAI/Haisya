@@ -267,7 +267,7 @@ namespace WebApplication.Repositories
         /// <param name="Shiharai_Month_From">前月の初日</param>
         /// <param name="Shiharai_Month_To">当月の最終日</param>
         /// <returns>List<T_Uriage_Shitabarai></returns>
-        public async Task<List<T_Uriage_Shitabarai>> GetTUriageShitabarai(int Customer_Branch_ID, int Zei_Kubun, int Shime_Day, System.DateTime Shiharai_Month_From, System.DateTime Shiharai_Month_To)
+        public async Task<List<T_Uriage_Shitabarai>> GetTUriageShitabarai(int Customer_Branch_ID, int Zei_Kubun, int Shime_Day, System.DateOnly Shiharai_Month_From, System.DateOnly Shiharai_Month_To)
         {
             IQueryable<T_Uriage_Shitabarai> query = (from uu in _context.T_Uriage_Shitabarais
                          .Where(w => (w.Yosya_Branch_ID == Customer_Branch_ID) && (w.Zei_Kubun == Zei_Kubun) && (w.Shime_Day == Shime_Day) 
@@ -1278,7 +1278,7 @@ namespace WebApplication.Repositories
                             Print_Pattern = Print_Pattern,
                             Check_Kubun = ks.kubun,
                             Yosya_Branch_ID = item.ShitabaraiCheckData.Yosya_Branch_ID ?? 0,
-                            Shiharai_Month = new System.DateTime(item.shitabaraiMonth.Year, item.shitabaraiMonth.Month, 1),
+                            Shiharai_Month = new System.DateOnly(item.shitabaraiMonth.Year, item.shitabaraiMonth.Month, 1),
                             Shime_Day = item.ShitabaraiCheckData.Shime_Day ?? 0,
                             Zei_Kubun = item.ShitabaraiCheckData.Zei_Kubun ?? 0,
                             Del_Datetime = (dto.inquiryType == (int)Common.InquiryTypes.PREVIEW) ? DateTime.Now : null,  //プレビューの場合は初めから削除
@@ -1433,7 +1433,7 @@ namespace WebApplication.Repositories
                             Print_Pattern = Print_Pattern,
                             Check_Kubun = ks.kubun,
                             Yosya_Branch_ID = item.ShitabaraiCheckData.Yosya_Branch_ID ?? 0,
-                            Shiharai_Month = new System.DateTime(item.shitabaraiMonth.Year, item.shitabaraiMonth.Month, 1),
+                            Shiharai_Month = new System.DateOnly(item.shitabaraiMonth.Year, item.shitabaraiMonth.Month, 1),
                             Shime_Day = item.ShitabaraiCheckData.Shime_Day ?? 0,
                             Zei_Kubun = item.ShitabaraiCheckData.Zei_Kubun ?? 0,
                             Del_Datetime = (dto.inquiryType == (int)Common.InquiryTypes.PREVIEW) ? DateTime.Now : null,  //プレビューの場合は初めから削除
@@ -1834,7 +1834,7 @@ namespace WebApplication.Repositories
         Task<List<T_Check_Shitabarai_Detail>> GetTCheckShitabaraiDetailListById(int checkShitabaraiId);
 
         Task<T_Uriage_Shitabarai> GetTUriageShitabaraiById(int uriageShiharaiID);
-        Task<List<T_Uriage_Shitabarai>> GetTUriageShitabarai(int Customer_Branch_ID, int Zei_Kubun, int Shime_Day, System.DateTime Shitabarai_Month_From, System.DateTime Shitabarai_Month_To);
+        Task<List<T_Uriage_Shitabarai>> GetTUriageShitabarai(int Customer_Branch_ID, int Zei_Kubun, int Shime_Day, System.DateOnly Shitabarai_Month_From, System.DateOnly Shitabarai_Month_To);
 
         Task<T_Anken_Detail> GetTAnkenDetailByID(int ankenID);
         Task<M_Syaryo> GetMSyaryoByNippouID(int nippouID);

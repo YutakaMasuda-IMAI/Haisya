@@ -62,7 +62,7 @@ namespace WebApplication.Controllers.DB
             try
             {
                 if (day == null) { return null; }
-                DateTime date = DateTime.Parse(day);
+                DateOnly date = DateOnly.Parse(day);
                 IQueryable<T_Kintai> query = _context.T_Kintais.Where(m => m.Day == date);
                 if (DriverID > 0) query = query.Where(m => m.Driver_ID == DriverID);
                 return await query.ToListAsync();
@@ -132,7 +132,7 @@ namespace WebApplication.Controllers.DB
                     builder = builder.Where(m => m.乗務員CD == DriverID);    //// m.Driver_ID == DriverID
                 }
 
-                builder = builder.Where(m => DateTime.Parse(dateFrom) <= m.勤怠日 && DateTime.Parse(dateTo) >= m.勤怠日);
+                builder = builder.Where(m => DateOnly.Parse(dateFrom) <= m.勤怠日 && DateOnly.Parse(dateTo) >= m.勤怠日);
 
                 List<T_KINTAI_COMMIT> result = await builder.ToListAsync();
 
@@ -254,7 +254,7 @@ namespace WebApplication.Controllers.DB
 
                 if (dateFrom != null && dateTo != null)
                 {
-                    queryBuilder = queryBuilder.Where(m => m.Day >= DateTime.Parse(dateFrom) && m.Day <= DateTime.Parse(dateTo));
+                    queryBuilder = queryBuilder.Where(m => m.Day >= DateOnly.Parse(dateFrom) && m.Day <= DateOnly.Parse(dateTo));
                 }
 
                 return await queryBuilder.ToListAsync();
@@ -276,7 +276,7 @@ namespace WebApplication.Controllers.DB
         /// <param name="employeeNumber">従業員番号</param>
         /// <returns>休暇設定画面の情報</returns>
         [HttpGet("GetAttendanceModalViewModel")]
-        public async Task<HaisyaDataModel.AttendanceModalViewModel> GetAttendanceModalViewModel(int userId, DateTime date, int employeeNumber)
+        public async Task<HaisyaDataModel.AttendanceModalViewModel> GetAttendanceModalViewModel(int userId, DateOnly date, int employeeNumber)
         {
             try
             {

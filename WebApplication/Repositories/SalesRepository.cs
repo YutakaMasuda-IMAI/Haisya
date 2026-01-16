@@ -1621,7 +1621,7 @@ namespace WebApplication.Repositories
             foreach (var commitShitabarai in maxCommitShitabarais)
             {
                 // 使用中のCustomer_Branch_IDの有無、支払日が締日より前か判定
-                IEnumerable<T_Uriage_Shitabarai> exsist = uriageShiharais.Where(x => (x.Yosya_Branch_ID == commitShitabarai.Key.Customer_Branch_ID) && (x.Shiharai_Date <= commitShitabarai.MAX_Shime_Datetime));
+                IEnumerable<T_Uriage_Shitabarai> exsist = uriageShiharais.Where(x => (x.Yosya_Branch_ID == commitShitabarai.Key.Customer_Branch_ID) && (x.Shiharai_Date <= DateOnly.FromDateTime(commitShitabarai.MAX_Shime_Datetime)));
 				if (exsist.Count() > 0)
 				{
                     List<T_Commit_Shitabarai> commitShitabaraiAdd = await _context.T_Commit_Shitabarais

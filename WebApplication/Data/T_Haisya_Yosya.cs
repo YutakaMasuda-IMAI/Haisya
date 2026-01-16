@@ -4,35 +4,53 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-#nullable disable
+namespace WebApplication.Data;
 
-namespace WebApplication.Data
+[PrimaryKey("Haisya_ID", "Yosya_Sort")]
+[Table("T_Haisya_Yosya")]
+public partial class T_Haisya_Yosya
 {
-    [Table("T_Haisya_Yosya")]
-    public partial class T_Haisya_Yosya
-    {
-        [Key]
-        public int Haisya_ID { get; set; }
-        [Key]
-        public int Yosya_Sort { get; set; }
-        public int Yosya_Count { get; set; }
-        public int Yosya_Branch_ID { get; set; }
-        public int Yosya_Tantou_ID { get; set; }
-        public int YosyaDriver_ID { get; set; }
-        public int YosyaDriverSyaryo_ID { get; set; }
-        public int Unso_Flg { get; set; }
-        public int Yosya_Shiharai_Kubun { get; set; }
-        [Column(TypeName = "money")]
-        public decimal Yosya_Shiharai_Money { get; set; }
-        [StringLength(30)]
-        public string Yosya_No2_Company_Name { get; set; }
-        [StringLength(30)]
-        public string Yosya_No2_Driver_Name { get; set; }
-        [StringLength(5)]
-        public string Yosya_No2_Car_Number { get; set; }
-        [StringLength(15)]
-        public string Yosya_No2_Phone { get; set; }
-        [StringLength(30)]
-        public string Yosya_No2_Syasyu { get; set; }
-    }
+    [Key]
+    public int Haisya_ID { get; set; }
+
+    [Key]
+    public int Yosya_Sort { get; set; }
+
+    /// <summary>
+    /// 第何傭車数
+    /// </summary>
+    public int Yosya_Count { get; set; }
+
+    public int Yosya_Branch_ID { get; set; }
+
+    public int Yosya_Tantou_ID { get; set; }
+
+    public int YosyaDriver_ID { get; set; }
+
+    public int YosyaDriverSyaryo_ID { get; set; }
+
+    public int Unso_Flg { get; set; }
+
+    /// <summary>
+    /// 1:暫定,0:確定
+    /// </summary>
+    public int Yosya_Shiharai_Kubun { get; set; }
+
+    [Column(TypeName = "money")]
+    public decimal Yosya_Shiharai_Money { get; set; }
+
+    [StringLength(30)]
+    public string Yosya_No2_Company_Name { get; set; }
+
+    [StringLength(30)]
+    public string Yosya_No2_Driver_Name { get; set; }
+
+    [StringLength(5)]
+    public string Yosya_No2_Car_Number { get; set; }
+
+    [StringLength(15)]
+    public string Yosya_No2_Phone { get; set; }
+
+    [StringLength(30)]
+    public string Yosya_No2_Syasyu { get; set; }
 }

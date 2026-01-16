@@ -114,7 +114,7 @@ namespace HaisyaWeb.Controllers
                 // グループ選択を0に設定（デフォルトの設定）
                 SelectGroup = 0,
                 // 日付選択を現在の日付に設定（フォーマット: yyyy/MM/dd）
-                SelectDay = DateTime.Now.ToString("yyyy/MM/dd"),
+                SelectDay = DateOnly.Parse(DateTime.Now.ToString("yyyy/MM/dd")),
             };
             // 担当者がnullの場合、デフォルトで"ALL"を設定
             param.SelectTantou ??= "ALL";
@@ -171,7 +171,7 @@ namespace HaisyaWeb.Controllers
                 Dto.V_LoginUser_Local loguinUser = await GetLoginUser();
 
                 // 指定された日付に基づいて案件データのリストを取得
-                IEnumerable<Dto.V_HaisyaDataList_Local> list = await GetHaisyaDataList(DateTime.Parse(param.SelectDay).ToString("yyyy/MM/dd"), null, null, loguinUser.Company_ID, 0, 0);
+                IEnumerable<Dto.V_HaisyaDataList_Local> list = await GetHaisyaDataList(param.SelectDay?.ToString("yyyy/MM/dd"), null, null, loguinUser.Company_ID, 0, 0);
 
                 List<HaisyaDataList> listData = new();
 

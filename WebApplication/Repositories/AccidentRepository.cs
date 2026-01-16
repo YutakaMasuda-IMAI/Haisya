@@ -138,7 +138,7 @@ namespace WebApplication.Repositories
 
             // groupIdsに一致するユーザーを取得
             List<M_CompanyUser> users = await _context.M_CompanyUsers
-                .Where(user => _context.M_CompanyUser_GroupUsers.Any(groupUser => groupUser.User_ID == user.User_ID && groupIds.Contains(groupUser.Group_ID)))
+                .Where(user => _context.M_CompanyUser_GroupUsers.Any(groupUser => groupUser.User_ID == user.User_ID && groupIds.AsQueryable().Contains(groupUser.Group_ID)))
                 .ToListAsync();
             if (users != null)
             {
@@ -283,7 +283,7 @@ namespace WebApplication.Repositories
                         .Any(status =>
                             status.Jiko_WorkFlow_ID == route.Jiko_WorkFlow_ID &&
                             (status.Approval_Kubun == 0 || status.Approval_Kubun == 3) && // 承認区分が 0 または 3 のステータスを対象
-                            groupIds.Contains(route.Jiko_WorkFlow_Group_ID)), // ログインユーザー所属のグループIDに含むかを確認
+                            groupIds.AsQueryable().Contains(route.Jiko_WorkFlow_Group_ID)), // ログインユーザー所属のグループIDに含むかを確認
 
                     //Display_Name プロパティに表示名を設定
                     //1.処理中（status.Approval_User_ID == 0）個所がログインユーザーのGroupに所属するか確認
@@ -294,7 +294,7 @@ namespace WebApplication.Repositories
                        _context.T_Jiko_WorkFlow_Statuses
                       .Where(status => status.Jiko_WorkFlow_ID == route.Jiko_WorkFlow_ID &&
                             (status.Approval_User_ID == 0) && // 処理中の箇所がログインユーザーのGroupに所属するか確認
-                            groupIds.Contains(route.Jiko_WorkFlow_Group_ID) // グループIDに一致するユーザーをフィルタリング
+                            groupIds.AsQueryable().Contains(route.Jiko_WorkFlow_Group_ID) // グループIDに一致するユーザーをフィルタリング
                        )
                       .Select(status => _context.M_CompanyUsers.Where(e => e.Del_Flg == false)
                           .Where(user => user.User_ID == User_ID)
@@ -337,7 +337,7 @@ namespace WebApplication.Repositories
         public async Task<List<M_CompanyUser_GroupUser>> GetGroupUsersByGroupIdsAsync(List<int> groupIds)
         {
             return await _context.M_CompanyUser_GroupUsers
-                .Where(gu => groupIds.Contains(gu.Group_ID))
+                .Where(gu => groupIds.AsQueryable().Contains(gu.Group_ID))
                 .ToListAsync();
         }
 
@@ -512,7 +512,7 @@ namespace WebApplication.Repositories
                         .Any(status =>
                             status.Jiko_WorkFlow_ID == route.Jiko_WorkFlow_ID &&
                             (status.Approval_User_ID == 0) &&
-                            groupIds.Contains(route.Jiko_WorkFlow_Group_ID)); // ログインユーザー所属のグループIDに含むかを確認
+                            groupIds.AsQueryable().Contains(route.Jiko_WorkFlow_Group_ID)); // ログインユーザー所属のグループIDに含むかを確認
 
                     string Display_Name = "";
                     //Display_Name プロパティに表示名を設定
@@ -524,7 +524,7 @@ namespace WebApplication.Repositories
                        _context.T_Jiko_WorkFlow_Routes
                       .Where(route => route.Jiko_WorkFlow_ID == status.Jiko_WorkFlow_ID &&
                             (status.Approval_User_ID == 0) && // 処理中の箇所がログインユーザーのGroupに所属するか確認
-                            groupIds.Contains(route.Jiko_WorkFlow_Group_ID) // グループIDに一致するユーザーをフィルタリング
+                            groupIds.AsQueryable().Contains(route.Jiko_WorkFlow_Group_ID) // グループIDに一致するユーザーをフィルタリング
                        )
                       .Select(status => _context.M_CompanyUsers.Where(e => e.Del_Flg == false)
                           .Where(user => user.User_ID == User_ID)

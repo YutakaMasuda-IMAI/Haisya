@@ -145,3 +145,8 @@ table.list td.noborder {
     color: white;
     white-space: nowrap;
 }
+
+.custom-checkbox2 {
+    transform: scale(1.5);
+    margin: 0;
+}

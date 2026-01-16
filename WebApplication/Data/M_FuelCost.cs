@@ -4,21 +4,21 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-#nullable disable
+namespace WebApplication.Data;
 
-namespace WebApplication.Data
+[PrimaryKey("Company_ID", "Branch_ID", "FromDate")]
+[Table("M_FuelCost")]
+public partial class M_FuelCost
 {
-    [Table("M_FuelCost")]
-    public partial class M_FuelCost
-    {
-        [Key]
-        public int Company_ID { get; set; }
-        [Key]
-        public int Branch_ID { get; set; }
-        [Key]
-        [Column(TypeName = "date")]
-        public DateTime FromDate { get; set; }
-        [Column(TypeName = "money")]
-        public decimal FuelAmount { get; set; }
-    }
+    [Key]
+    public int Company_ID { get; set; }
+
+    [Key]
+    public int Branch_ID { get; set; }
+
+    [Key]
+    public DateOnly FromDate { get; set; }
+
+    [Column(TypeName = "money")]
+    public decimal FuelAmount { get; set; }
 }

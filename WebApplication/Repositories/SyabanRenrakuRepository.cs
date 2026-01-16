@@ -152,7 +152,7 @@ namespace WebApplication.Repositories
             foreach (var record in existingRecords)
                 record.Del_Datetime = DateTime.Now;
 
-            haisyaSyabanRenraku.PrintDate = DateTime.Today;
+            haisyaSyabanRenraku.PrintDate = DateOnly.FromDateTime(DateTime.Today);
             haisyaSyabanRenraku.Del_Datetime = null;
             _context.T_Haisya_SyabanRenrakus.Add(haisyaSyabanRenraku);
 
@@ -320,7 +320,7 @@ namespace WebApplication.Repositories
                         T_Print_Parameter pp = new T_Print_Parameter
                         {
                             Tokun = "",     // [NOT NULL] column
-                            Limit_Date = m.HaisyaSyabanRenraku.Day.AddDays(2),
+                            Limit_Date = m.HaisyaSyabanRenraku.Day.AddDays(2).ToDateTime(TimeOnly.MinValue),
                             Print_Kubun = 2,
                             Data_ID = m.HaisyaSyabanRenraku.SyabanRenraku_ID,
                             Insert_User = m.HaisyaSyabanRenraku.Insert_User,
@@ -350,7 +350,7 @@ namespace WebApplication.Repositories
                             {
                                 // レコードが存在する場合は更新
                                 existingRemark.Remarks = remarks;
-                                existingRemark.Update_Datetime = m.HaisyaSyabanRenraku.PrintDate;
+                                existingRemark.Update_Datetime = m.HaisyaSyabanRenraku.PrintDate.ToDateTime(TimeOnly.MinValue);
                                 existingRemark.Update_User = m.HaisyaSyabanRenraku.Insert_User;
                                 await UpdateHaisyaSyabanRenrakuRemarkAsync(existingRemark);
                             }
@@ -361,7 +361,7 @@ namespace WebApplication.Repositories
                                 {
                                     AnkenDisplay_ID = ankenDisplayId,
                                     Remarks = remarks,
-                                    Insert_Datetime = m.HaisyaSyabanRenraku.PrintDate,
+                                    Insert_Datetime = m.HaisyaSyabanRenraku.PrintDate.ToDateTime(TimeOnly.MinValue),
                                     Insert_User = m.HaisyaSyabanRenraku.Insert_User
                                 };
                                 await InsertHaisyaSyabanRenrakuRemarkAsync(newRemark);

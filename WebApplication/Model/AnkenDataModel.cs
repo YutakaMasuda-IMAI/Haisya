@@ -33,7 +33,7 @@ namespace WebApplication.Model
             if (data.T_Anken.Anken_ID == 0)
             {
                 flgNew = true;
-                DateTime targetDate = (DateTime)data.T_Anken_PointList[0].PointDate;
+                DateOnly targetDate = (DateOnly)data.T_Anken_PointList[0].PointDate;
                 string ankenNo = GetAnkenNo(targetDate);
                 data.T_Anken.Anken_No = ankenNo;
                 data.T_Anken.Anken_Latest_Order = ankenOrder;
@@ -534,7 +534,7 @@ namespace WebApplication.Model
         /// </summary>
         /// <param name="tsumiDate"></param>
         /// <returns></returns>
-        public string GetAnkenNo(DateTime tsumiDate)
+        public string GetAnkenNo(DateOnly tsumiDate)
         {
             try
             {
@@ -681,7 +681,7 @@ namespace WebApplication.Model
                 DateOnly date = DateOnly.Parse(itemDate);
 
                 //スタート時の日付の取得
-                DateTime dateStart = (DateTime)ankenDto.T_Anken_PointList.OrderBy(m => m.Point_Order).First().PointDate;
+                DateOnly dateStart = (DateOnly)ankenDto.T_Anken_PointList.OrderBy(m => m.Point_Order).First().PointDate;
 
                 //AnkenId、Anken_Orderの初期化
                 ankenDto.T_Anken.Anken_ID = 0;
@@ -705,18 +705,18 @@ namespace WebApplication.Model
                 //日付の変更
                 foreach (var target in ankenDto.T_Anken_PointList)
                 {
-                    TimeSpan difference = (DateTime)target.PointDate - (DateTime)dateStart;
-                    target.PointDate = DateTime.Parse(date.AddDays(difference.Days).ToString());
+                    TimeSpan difference = target.PointDate.Value.ToDateTime(TimeOnly.MinValue) - dateStart.ToDateTime(TimeOnly.MinValue);
+                    target.PointDate = date.AddDays(difference.Days);
                 }
 
                 foreach (var target in ankenDto.T_Anken_DisplayList)
                 {
-                    target.Day = (DateTime)dateStart;
+                    target.Day = dateStart;
 
-                    TimeSpan difference = (DateTime)target.StartDatetime - (DateTime)dateStart;
+                    TimeSpan difference = target.StartDatetime - dateStart.ToDateTime(TimeOnly.MinValue);
                     target.StartDatetime = DateTime.Parse(date.AddDays(difference.Days).ToString());
 
-                    difference = (DateTime)target.EndDatetime - (DateTime)dateStart;
+                    difference = target.EndDatetime - dateStart.ToDateTime(TimeOnly.MinValue);
                     target.EndDatetime = DateTime.Parse(date.AddDays(difference.Days).ToString());
 
                 }

@@ -53,7 +53,7 @@ namespace HaisyaWeb
             services.Configure<MapApiSettings>(Configuration.GetSection(MapApiSettings.MapApiSetting));
 
             //// セッションを使う
-            services.AddSession(options => { options.Cookie.Name = "HaisyaSession"; options.IdleTimeout = TimeSpan.FromMinutes(5); });
+            services.AddSession(options => { options.Cookie.Name = "HaisyaSession"; options.IdleTimeout = TimeSpan.FromMinutes(120); });
 
             services.AddRazorPages();
             services.AddRazorPages().AddRazorRuntimeCompilation();

@@ -66,17 +66,17 @@ namespace WebApplication.Dto
         /// <summary>
         /// 支払月
         /// </summary>
-        public DateTime shitabaraiMonth { get; set; }
+        public DateOnly shitabaraiMonth { get; set; }
 
         /// <summary>
         /// 印刷日
         /// </summary>
-        public DateTime printDate { get; set; }
+        public DateOnly printDate { get; set; }
 
         /// <summary>
         /// 印刷終了日
         /// </summary>
-        public DateTime printToDate { get; set; }
+        public DateOnly printToDate { get; set; }
 #pragma warning restore IDE1006 // Naming Styles
     }
 }

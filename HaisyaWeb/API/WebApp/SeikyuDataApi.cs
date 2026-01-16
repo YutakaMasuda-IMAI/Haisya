@@ -64,7 +64,7 @@ namespace HaisyaWeb.API.WebApp
         /// <param name="seikyuMonth">year and month of seikyu</param>
         /// <param name="shimeDay">締日</param>
         /// <returns>list data nyukin</returns>
-        public async Task<List<T_Nyukin_Local>> GetNyuukinDataListBySeikyuID(int seikyuId, DateTime seikyuMonth, int shimeDay)
+        public async Task<List<T_Nyukin_Local>> GetNyuukinDataListBySeikyuID(int seikyuId, DateOnly seikyuMonth, int shimeDay)
         {
             string url = _baseUrl + string.Format("SeikyuData/GetT_NyukinBySeikyuId?Seikyu_ID={0}&Seikyu_Month={1}&Shime_Day={2}",
                 seikyuId,

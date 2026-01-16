@@ -113,12 +113,12 @@
                 <td class="w-20">
                   <h3 id="labelTitle" class="heading-40">@(Model.Anken_ID > 0 ? "案件変更登録" : "案件新規登録")</h3>
                 </td>
-                <td class="w-30" style="padding: 0 20px;">
+                <td class="" style="padding: 0 20px; width: 200px;">
                   <div class="d-inline-flex h-100 w-100 p-0" style="">
                     <input type="text" name="dummy" class="d-none" style="">
                     @if (Model.Anken_ID > 0)
                     {
-                      <button type="button" id="btnAnkenCopy" class="btn btn-outline-info ms-2 w-40" style="margin: 5px 0 5px 0;" onclick="BtnAnkenCopyOnClick(); return false;">コピー</button>
+                      <button type="button" id="btnAnkenCopy" class="btn btn-outline-info ms-2" style="margin: 5px 0 5px 0;width: 150px;" onclick="BtnAnkenCopyOnClick(); return false;">コピー</button>
                     }
                     else
                     {
@@ -131,9 +131,9 @@
                   <div class="d-inline-flex h-100 w-100 p-0" style="">
                     @if (Model.Anken_ID > 0)
                     {
-                      <button type="button" id="btnRegExec" name="btnRegExec" value="Update" class="btn btn-outline-danger w-30" style="margin: 5px 0 5px 0;" onclick="btnRegExecOnclick('Update'); return false;">更新</button>
-                      <button type="button" id="btnRegExec" name="btnRegExec" value="AddNew" class="btn btn-outline-primary w-30 ms-2" style="margin: 5px 0 5px 0;" onclick="btnRegExecOnclick('AddNew'); return false;">履歴登録</button>
-                      <button type="button" id="btnAnkneRireki" name="btnRegExec" class="btn btn-outline-success w-30 ms-2" style="margin: 5px 0 5px 0;" onclick="btnShowAnkenRirekiOnclick(); return false;">変更履歴</button>
+                      <button type="button" id="btnRegExec" name="btnRegExec" value="Update" class="btn btn-outline-danger" style="margin: 5px 0 5px 0;width: 150px;" onclick="btnRegExecOnclick('Update'); return false;">更新</button>
+                      <button type="button" id="btnRegExec" name="btnRegExec" value="AddNew" class="btn btn-outline-primary ms-5" style="margin: 5px 0 5px 0;width: 150px;" onclick="btnRegExecOnclick('AddNew'); return false;">履歴登録</button>
+                      <button type="button" id="btnAnkneRireki" name="btnRegExec" class="btn btn-outline-success ms-5" style="margin: 5px 0 5px 0;width: 150px;" onclick="btnShowAnkenRirekiOnclick(); return false;">変更履歴</button>
                     }
                     else
                     {

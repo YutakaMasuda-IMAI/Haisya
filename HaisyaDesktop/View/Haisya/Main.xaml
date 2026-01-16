@@ -202,9 +202,9 @@
                         HorizontalScrollBarVisibility="Visible" VerticalScrollBarVisibility="Auto" 
                         >
 
-                <i:Interaction.Behaviors>
-                  <behaviors:DragAcceptBehavior Description="{Binding Description}" />
-                </i:Interaction.Behaviors>
+                <!--<i:Interaction.Behaviors>
+                <behaviors:DragAcceptBehavior Description="{Binding Description}" />
+                </i:Interaction.Behaviors>-->
                 
                 <DataGrid.CellStyle>
                   <Style TargetType="DataGridCell">
@@ -1008,9 +1008,9 @@
 
                         <TextBlock Text="{Binding TsumiAddress}" DockPanel.Dock="Top" Style="{StaticResource ListViewItemTextBlock}" Margin="50,0,0,0"  />
                       </DockPanel>
-                      <i:Interaction.Behaviors>
+                      <!--<i:Interaction.Behaviors>
                         <behaviors:DragStartBehavior AllowedEffects="Copy" DragDropData="{Binding}" />
-                      </i:Interaction.Behaviors>
+                      </i:Interaction.Behaviors>-->
                     </Grid>
                   </DataTemplate>
                 </ListBox.ItemTemplate>

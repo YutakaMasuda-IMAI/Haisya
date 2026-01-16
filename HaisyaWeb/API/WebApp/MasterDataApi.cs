@@ -1679,7 +1679,7 @@ namespace HaisyaWeb.API.WebApp
         /// </summary>
         /// <param name="CompanyID"></param>
         /// <returns></returns>
-        public async Task<List<V_Senzoku_Driver_Local>> GetSenzokuDriverViewList(int CompanyID, DateTime? targetMonth)
+        public async Task<List<V_Senzoku_Driver_Local>> GetSenzokuDriverViewList(int CompanyID, DateOnly? targetMonth)
         {
             string url = string.Format("MasterData/GetSenzokuDriverViewList?CompanyID={0}", CompanyID.ToString());
             if (targetMonth != null) { url += string.Format("&targetMonth={0}", targetMonth); }
@@ -1693,7 +1693,7 @@ namespace HaisyaWeb.API.WebApp
         /// <param name="CompanyID"></param>
         /// <param name="SenzokuDriverID"></param>
         /// <returns></returns>
-        public async Task<V_Senzoku_Driver_Local> GetSenzokuDriverViewData(int CompanyID, DateTime? targetMonth, int SenzokuDriverID)
+        public async Task<V_Senzoku_Driver_Local> GetSenzokuDriverViewData(int CompanyID, DateOnly? targetMonth, int SenzokuDriverID)
         {
             string url = string.Format("MasterData/GetSenzokuDriverViewList?CompanyID={0}", CompanyID.ToString());
             if (targetMonth != null) { url += string.Format("&targetMonth={0}", targetMonth); }

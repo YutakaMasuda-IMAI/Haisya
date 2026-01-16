@@ -4,15 +4,13 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-#nullable disable
+namespace WebApplication.Data.Kintai;
 
-namespace WebApplication.Data.Kintai
+[Keyless]
+public partial class Q_F_事業所名
 {
-    [Keyless]
-    public partial class Q_F_事業所名
-    {
-        [StringLength(30)]
-        public string 事業所名 { get; set; }
-        public long? SORT { get; set; }
-    }
+    [StringLength(30)]
+    public string 事業所名 { get; set; }
+
+    public long? SORT { get; set; }
 }

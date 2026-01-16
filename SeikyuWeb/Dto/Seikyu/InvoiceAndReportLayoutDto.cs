@@ -16,7 +16,7 @@ namespace SeikyuWeb.Dto.Seikyu
         /// <summary>
         /// レポートレイアウトリスト
         /// </summary>
-        public List<ReportLayoutDto> reportLayout { get; set; }
+        public List<ReportLayoutDto.ReportLayoutDto> reportLayout { get; set; }
         /// <summary>
         /// ポータル情報IDリスト（JSONに含めない）
         /// </summary>

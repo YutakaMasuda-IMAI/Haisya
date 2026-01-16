@@ -489,11 +489,11 @@ namespace WebApplication.Controllers.DB
             {
                 if (groupKubun == 9)
                 {
-                    data = await _context.T_Points.Where(m => m.User_ID == userId || _context.M_CompanyUser_GroupUsers.Where(m => m.User_ID == userId).Select(m => m.Group_ID).Contains(m.Group_ID)).ToListAsync();
+                    data = await _context.T_Points.Where(m => m.User_ID == userId || _context.M_CompanyUser_GroupUsers.Where(m => m.User_ID == userId).Select(m => m.Group_ID).AsQueryable().Contains(m.Group_ID)).ToListAsync();
                 }
                 else if (groupKubun == 2)
                 {
-                    data = await _context.T_Points.Where(m => m.User_ID == 0 || _context.M_CompanyUser_GroupUsers.Where(m => m.User_ID == userId).Select(m => m.Group_ID).Contains(m.Group_ID)).ToListAsync();
+                    data = await _context.T_Points.Where(m => m.User_ID == 0 || _context.M_CompanyUser_GroupUsers.Where(m => m.User_ID == userId).Select(m => m.Group_ID).AsQueryable().Contains(m.Group_ID)).ToListAsync();
                 }
                 else
                 {

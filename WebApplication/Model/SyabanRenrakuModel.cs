@@ -90,7 +90,7 @@ namespace WebApplication.Model
         /// <summary>
         /// 印刷日
         /// </summary>
-        public DateTime PrintDate { get; set; }
+        public DateOnly PrintDate { get; set; }
 
         /// <summary>
         /// 担当 ID

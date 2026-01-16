@@ -27,6 +27,15 @@
     @Html.TextBoxFor(model => Model.OroshiTaskTime)
     @Html.TextBoxFor(model => Model.PageType)
     <input hidden id="SetAddressItem" />
+
+    @Html.TextBoxFor(model => Model.Nippou.Nippou_ID)
+    @Html.TextBoxFor(model => Model.Nippou.Anken_ID)
+    @Html.TextBoxFor(model => Model.Nippou.AnkenDisplay_ID)
+    @Html.TextBoxFor(model => Model.Nippou.ApprovalStatus)
+    @Html.TextBoxFor(model => Model.Nippou.Receipt)
+    @Html.TextBoxFor(model => Model.Nippou.Receipt_Date)
+    @Html.TextBoxFor(model => Model.Nippou.RenkeiStatus)
+
     @Html.TextBoxFor(model => Model.Nippou_Stay.Start_Datetime)
     @Html.TextBoxFor(model => Model.Nippou_Stay.End_Datetime)
     @Html.TextBoxFor(model => Model.Nippou_Stay.Start_ShikuName)
@@ -35,6 +44,7 @@
     @Html.TextBoxFor(model => Model.Nippou_Stay.Dllowance)
     @Html.TextBoxFor(model => Model.Nippou_Stay.Day)
     @Html.TextBoxFor(model => Model.NippouStayDegitakoIdList)
+
     @Html.TextBoxFor(model => Model.Nippou_Kaiso.Start_Datetime)
     @Html.TextBoxFor(model => Model.Nippou_Kaiso.End_Datetime)
     @Html.TextBoxFor(model => Model.Nippou_Kaiso.Start_ShikuName)
@@ -44,6 +54,7 @@
     @Html.TextBoxFor(model => Model.Nippou_Kaiso.Commnet)
     @Html.TextBoxFor(model => Model.Nippou_Kaiso.Day)
     @Html.HiddenFor(model => Model.NippouKaisoDegitakoIdList)
+
     @Html.HiddenFor(model => Model.KUDGSIRIdList)
 
     @Html.HiddenFor(model => Model.Search.SelectDay)
@@ -67,14 +78,18 @@
     @Html.HiddenFor(Model => Model.AnkenDisplay.EndDatetime)
 
     @* デジタコ選択　案件開始終了 *@
-    @Html.HiddenFor(Model => Model.AnkenDegitakoStartId)
-    @Html.HiddenFor(Model => Model.AnkenDegitakoStartDatetime)
-    @Html.HiddenFor(Model => Model.AnkenDegitakoEndId)
-    @Html.HiddenFor(Model => Model.AnkenDegitakoEndDatetime)
-    @Html.HiddenFor(Model => Model.AnkenDegitakoDistance)
-    @Html.HiddenFor(Model => Model.AnkenDegitakoBreakTime)
-    @Html.HiddenFor(Model => Model.AnkenDegitakoWorkTime)
-    @Html.HiddenFor(Model => Model.AnkenDegitakoActualWorkTime)
+    @Html.TextBoxFor(model => Model.Nippou_Anken.Start_Datetime)
+    @Html.TextBoxFor(model => Model.Nippou_Anken.End_Datetime)
+    @Html.TextBoxFor(model => Model.Nippou_Anken.Start_Degitako_Id)
+    @Html.TextBoxFor(model => Model.Nippou_Anken.End_Degitako_Id)
+    @Html.TextBoxFor(model => Model.Nippou_Anken.Distance)
+    @Html.TextBoxFor(model => Model.Nippou_Anken.Dllowance)
+    @Html.TextBoxFor(model => Model.Nippou_Anken.BreakTime)
+    @Html.TextBoxFor(model => Model.Nippou_Anken.WorkTime)
+    @Html.TextBoxFor(model => Model.Nippou_Anken.ActualWorkTime)
+    @Html.TextBoxFor(model => Model.Nippou_Anken.Day)
+    @Html.HiddenFor(model => Model.NippouAnkenDegitakoIdList)
+    
   </div>
 
   <div class="anken-detail">
@@ -301,6 +316,7 @@
   } else {
     OtherPaidData = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouTollOther))') || [];
   }
+
   var NippouApproval = JSON.parse('@Html.Raw(Json.Serialize(Model.NippouApproval))');
   var NippouStay = JSON.parse('@Html.Raw(Json.Serialize(Model.Nippou_Stay))');
   var NippouKaiso = JSON.parse('@Html.Raw(Json.Serialize(Model.Nippou_Kaiso))');
@@ -310,23 +326,22 @@
   var InitialDisplayNippouToll = JSON.parse('@Html.Raw(Json.Serialize(Model.InitialDisplayNippouToll))') || [];
   var HighwayData = JSON.parse('@Html.Raw(Json.Serialize(Model.HighwayData))') || [];
 
-  function btnOnClickForNoRegAnkenData() {
 
-    if (selectedRowsAnken.length != 2) {
-        alertCustomInputError("デジタコが正しく選択されていません。<br /> 案件の開始終了のデジタコを選択してください。");
-        return false;
-    }
+  $(document).ready(function() {
 
-    DailyReportRegistrationDetailNippouDisplay($('#Search_AnkenDisplay_ID').val());
+      let id = $('#Nippou_Nippou_ID').val();
+      if (id > 0) {
+          // 修正
+        DailyReportRegistrationDetailNippouDisplay($('#Nippou_AnkenDisplay_ID').val());
+      }
 
-    // $("#tblCollapseInfo").collapse('hide');
-    // $("#distanceContainer").collapse('hide');
-    
-    return false;
-  }
+  });
 
+  /**
+   *  案件修正ボタン押下時の処理
+   */
   async function submitAnkenEdit() {
-    var modelUriage_ID = @Html.Raw(Json.Serialize(Model.Uriage?.Uriage_ID ?? 0));
+    var modelUriage_ID = JSON.parse(@Html.Raw(Json.Serialize(Model.Uriage?.Uriage_ID ?? 0)));
     var form = document.createElement('form');
     form.action = '@Url.RouteUrl("Default", new { controller = "AnkenRegister", Action = "Index" })';
     form.method = 'POST';
@@ -342,7 +357,9 @@
   }
 
   
-
+  /**
+   * 案件の積み卸し場所、積み卸し区分の入力チェック
+   */
   function varidationCheckForAnken() {
 
     let flgResult = false;
@@ -383,6 +400,9 @@
     return false;
   };
 
+  /**
+   * 戻るボタン押下時の処理
+   */
   function BackMenuOnClick() {
     let form = document.createElement('form');
     form.id = "formBackMenu";
@@ -410,7 +430,10 @@
     form.submit();
   };
 
-  // 変更内容があるかどうかのデータチェック
+
+  /**
+   * 変更内容があるかどうかのデータチェック
+   */
   function DataCheck() {
     let nippouKaisoDegitakoIdList = $('#NippouKaisoDegitakoIdList').val() || [];
     if (!Array.isArray(nippouKaisoDegitakoIdList)) {
@@ -542,131 +565,131 @@
     return true;
   }
 
-  function ProvisionalRegistration(ApprovalStatus = 0) {
-    let nippouKaisoDegitakoIdList = $('#NippouKaisoDegitakoIdList').val() || [];
-    if (!Array.isArray(nippouKaisoDegitakoIdList)) {
-      nippouKaisoDegitakoIdList = [nippouKaisoDegitakoIdList];
-    }
+  // function ProvisionalRegistration(ApprovalStatus = 0) {
+  //   let nippouKaisoDegitakoIdList = $('#NippouKaisoDegitakoIdList').val() || [];
+  //   if (!Array.isArray(nippouKaisoDegitakoIdList)) {
+  //     nippouKaisoDegitakoIdList = [nippouKaisoDegitakoIdList];
+  //   }
 
-    const nippouKaisoDegitakoIdListInt = nippouKaisoDegitakoIdList
-      .map(function (item) {
-        return parseInt(item, 10);
-      })
-      .filter(function (item) {
-        return !isNaN(item);
-      });
+  //   const nippouKaisoDegitakoIdListInt = nippouKaisoDegitakoIdList
+  //     .map(function (item) {
+  //       return parseInt(item, 10);
+  //     })
+  //     .filter(function (item) {
+  //       return !isNaN(item);
+  //     });
 
-    let nippouStayDegitakoIdList = $('#NippouStayDegitakoIdList').val() || [];
-    if (!Array.isArray(nippouStayDegitakoIdList)) {
-      nippouStayDegitakoIdList = [nippouStayDegitakoIdList];
-    }
+  //   let nippouStayDegitakoIdList = $('#NippouStayDegitakoIdList').val() || [];
+  //   if (!Array.isArray(nippouStayDegitakoIdList)) {
+  //     nippouStayDegitakoIdList = [nippouStayDegitakoIdList];
+  //   }
 
-    const nippouStayDegitakoIdListInt = nippouStayDegitakoIdList
-      .map(function (item) {
-        return parseInt(item, 10);
-      })
-      .filter(function (item) {
-        return !isNaN(item);
-      });
+  //   const nippouStayDegitakoIdListInt = nippouStayDegitakoIdList
+  //     .map(function (item) {
+  //       return parseInt(item, 10);
+  //     })
+  //     .filter(function (item) {
+  //       return !isNaN(item);
+  //     });
 
-    let KUDGSIRIdList = $('#KUDGSIRIdList').val() || [];
-    if (!Array.isArray(KUDGSIRIdList)) {
-      KUDGSIRIdList = [KUDGSIRIdList];
-    }
+  //   let KUDGSIRIdList = $('#KUDGSIRIdList').val() || [];
+  //   if (!Array.isArray(KUDGSIRIdList)) {
+  //     KUDGSIRIdList = [KUDGSIRIdList];
+  //   }
 
-    const KUDGSIRIdListInt = KUDGSIRIdList
-      .map(function (item) {
-        return parseInt(item, 10);
-      })
-      .filter(function (item) {
-        return !isNaN(item);
-      });
-    const data = {
-      Nippou_ID: @Html.Raw(Json.Serialize(Model.Nippou_ID)),
-      HaisyaDataList: @Html.Raw(Json.Serialize(Model.HaisyaDataList)),
-      NippouTollOther: OtherPaidData,
-      NippouToll: NippouToll,
-      Nippou_Stay: {
-        Start_Datetime: $('#Nippou_Stay_Start_Datetime').val(),
-        End_Datetime: $('#Nippou_Stay_End_Datetime').val(),
-        Start_ShikuName: $('#Nippou_Stay_Start_ShikuName').val(),
-        End_ShikuName: $('#Nippou_Stay_End_ShikuName').val(),
-        Interval_Time: parseInt($('#Nippou_Stay_Interval_Time').val()),
-        Dllowance: ($('#Nippou_Stay_Dllowance').val() || 0)
-      },
-      NippouStayDegitakoIdList: nippouStayDegitakoIdListInt,
-      Nippou_Kaiso: {
-        Start_Datetime: $('#Nippou_Kaiso_Start_Datetime').val(),
-        End_Datetime: $('#Nippou_Kaiso_End_Datetime').val(),
-        Start_ShikuName: $('#Nippou_Kaiso_Start_ShikuName').val(),
-        End_ShikuName: $('#Nippou_Kaiso_End_ShikuName').val(),
-        Commnet: $('#Nippou_Kaiso_Commnet').val(),
-        Distance: parseInt($('#Nippou_Kaiso_Distance').val()),
-        Dllowance: ($('#Nippou_Kaiso_Dllowance').val() || 0)
-      },
-      NippouKaisoDegitakoIdList: nippouKaisoDegitakoIdListInt,
-      KUDGSIRIdList: KUDGSIRIdListInt,
-      InitialDisplayNippouToll: InitialDisplayNippouToll,
-      AnkenDisplay: @Html.Raw(Json.Serialize(Model.AnkenDisplay)),
-      Nippou: {
-        RenkeiStatus: $('#digitalTachograph').is(':checked') ? 0 : 1,
-        ApprovalStatus: ApprovalStatus,
-        Nippou_ID: @Html.Raw(Json.Serialize(Model.Nippou_ID)),
-        Anken_ID: @Html.Raw(Json.Serialize(Model.Nippou.Anken_ID)),
-        AnkenDisplay_ID: @Html.Raw(Json.Serialize(Model.Nippou.AnkenDisplay_ID)),
-        Distance: $('#Nippou_Distance').val(),
-      }
-    }
+  //   const KUDGSIRIdListInt = KUDGSIRIdList
+  //     .map(function (item) {
+  //       return parseInt(item, 10);
+  //     })
+  //     .filter(function (item) {
+  //       return !isNaN(item);
+  //     });
+  //   const data = {
+  //     Nippou_ID: @Html.Raw(Json.Serialize(Model.Nippou_ID)),
+  //     HaisyaDataList: @Html.Raw(Json.Serialize(Model.HaisyaDataList)),
+  //     NippouTollOther: OtherPaidData,
+  //     NippouToll: NippouToll,
+  //     Nippou_Stay: {
+  //       Start_Datetime: $('#Nippou_Stay_Start_Datetime').val(),
+  //       End_Datetime: $('#Nippou_Stay_End_Datetime').val(),
+  //       Start_ShikuName: $('#Nippou_Stay_Start_ShikuName').val(),
+  //       End_ShikuName: $('#Nippou_Stay_End_ShikuName').val(),
+  //       Interval_Time: parseInt($('#Nippou_Stay_Interval_Time').val()),
+  //       Dllowance: ($('#Nippou_Stay_Dllowance').val() || 0)
+  //     },
+  //     NippouStayDegitakoIdList: nippouStayDegitakoIdListInt,
+  //     Nippou_Kaiso: {
+  //       Start_Datetime: $('#Nippou_Kaiso_Start_Datetime').val(),
+  //       End_Datetime: $('#Nippou_Kaiso_End_Datetime').val(),
+  //       Start_ShikuName: $('#Nippou_Kaiso_Start_ShikuName').val(),
+  //       End_ShikuName: $('#Nippou_Kaiso_End_ShikuName').val(),
+  //       Commnet: $('#Nippou_Kaiso_Commnet').val(),
+  //       Distance: parseInt($('#Nippou_Kaiso_Distance').val()),
+  //       Dllowance: ($('#Nippou_Kaiso_Dllowance').val() || 0)
+  //     },
+  //     NippouKaisoDegitakoIdList: nippouKaisoDegitakoIdListInt,
+  //     KUDGSIRIdList: KUDGSIRIdListInt,
+  //     InitialDisplayNippouToll: InitialDisplayNippouToll,
+  //     AnkenDisplay: @Html.Raw(Json.Serialize(Model.AnkenDisplay)),
+  //     Nippou: {
+  //       RenkeiStatus: $('#digitalTachograph').is(':checked') ? 0 : 1,
+  //       ApprovalStatus: ApprovalStatus,
+  //       Nippou_ID: @Html.Raw(Json.Serialize(Model.Nippou_ID)),
+  //       Anken_ID: @Html.Raw(Json.Serialize(Model.Nippou.Anken_ID)),
+  //       AnkenDisplay_ID: @Html.Raw(Json.Serialize(Model.Nippou.AnkenDisplay_ID)),
+  //       Distance: $('#Nippou_Distance').val(),
+  //     }
+  //   }
 
-    $.post('@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "ProvisionalRegistration" })',
-      {
-        data: JSON.stringify(data)
-      })
-      .done(function (response) {
-        if (response.message != null) {
-          alert("【エラー】" + response.message);
-          return false;
-        } else {
-          showChangeTransitionDialog(Anken_ID)
-          return false;
-        }
-      })
-      .fail(function (xhr) {
-        console.log(xhr);
-      })
-      .always(function (xhr, msg) {
-      });
-  };
+  //   $.post('@Url.RouteUrl("Default", new { controller = "DailyReport", Action = "ProvisionalRegistration" })',
+  //     {
+  //       data: JSON.stringify(data)
+  //     })
+  //     .done(function (response) {
+  //       if (response.message != null) {
+  //         alert("【エラー】" + response.message);
+  //         return false;
+  //       } else {
+  //         showChangeTransitionDialog(Anken_ID)
+  //         return false;
+  //       }
+  //     })
+  //     .fail(function (xhr) {
+  //       console.log(xhr);
+  //     })
+  //     .always(function (xhr, msg) {
+  //     });
+  // };
 
-  function ApprovalRegistration() {
+  // function ApprovalRegistration() {
     
 
-    var comment = $('#Nippou_Kaiso_Commnet').val();
-    var dllowance = $('#Nippou_Stay_Dllowance').val();
-    let Distance = $('#Nippou_Distance').val();
-    if ($('#digitalTachograph').is(':checked')) {
-      if (!comment || !dllowance) {
-        alertError('泊まり設定　または　空車回送設定を行ってください');
-        return;
-      }
-    } else {
-      if (!Distance) {
-        alertError('日報情報の走行距離を入力してください');
-        return;
-      }
-    }
+  //   var comment = $('#Nippou_Kaiso_Commnet').val();
+  //   var dllowance = $('#Nippou_Stay_Dllowance').val();
+  //   let Distance = $('#Nippou_Distance').val();
+  //   if ($('#digitalTachograph').is(':checked')) {
+  //     if (!comment || !dllowance) {
+  //       alertError('泊まり設定　または　空車回送設定を行ってください');
+  //       return;
+  //     }
+  //   } else {
+  //     if (!Distance) {
+  //       alertError('日報情報の走行距離を入力してください');
+  //       return;
+  //     }
+  //   }
 
-    alertYesNoMsg("確認", "承認登録します。よろしいですか。", "question", "はい", "いいえ")
-    .then(function (result) {
-      if (result) {
-        ProvisionalRegistration(1)
+  //   alertYesNoMsg("確認", "承認登録します。よろしいですか。", "question", "はい", "いいえ")
+  //   .then(function (result) {
+  //     if (result) {
+  //       ProvisionalRegistration(1)
 
-      } else {
-      }
+  //     } else {
+  //     }
 
-    })
-    .catch(function (error) {
-      console.error('Error in alertThreeButtonsMsg:', error);
-    });
-  }
+  //   })
+  //   .catch(function (error) {
+  //     console.error('Error in alertThreeButtonsMsg:', error);
+  //   });
+  // }
 </script>

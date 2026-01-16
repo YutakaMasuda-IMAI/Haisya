@@ -70,8 +70,8 @@ namespace HaisyaWeb.API.WebApp
             int? invoice_person,
             int? customer_id1,
             int? customer_id2,
-            DateTime publish_date,
-            DateTime? sale_date)
+            DateOnly publish_date,
+            DateOnly? sale_date)
             => await GetDataList(company_id, year_month, closing_days, invoice_person, customer_id1, customer_id2, publish_date, sale_date,
                 "InvoiceData/GetInvoiceDataList",
                 _fill_label_callback);
@@ -95,8 +95,8 @@ namespace HaisyaWeb.API.WebApp
             int? invoice_person,
             int? customer_id1,
             int? customer_id2,
-            DateTime publish_date,
-            DateTime? sale_date)
+            DateOnly publish_date,
+            DateOnly? sale_date)
             => GetDataList<V_InvoiceCheckDataList_Local>(company_id, year_month, closing_days, invoice_person, customer_id1, customer_id2, publish_date, sale_date,
                 "InvoiceData/GetInvoiceCheckDataList",
                 _fill_label_callback);
@@ -123,8 +123,8 @@ namespace HaisyaWeb.API.WebApp
             int? invoice_person,
             int? customer_id1,
             int? customer_id2,
-            DateTime publish_date,
-            DateTime? sale_date,
+            DateOnly publish_date,
+            DateOnly? sale_date,
             string api_url,
             Action<T> callback)
             where T : V_InvoiceDataList_Local

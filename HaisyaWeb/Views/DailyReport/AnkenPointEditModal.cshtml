@@ -1,0 +1,223 @@
+﻿
+
+<style>
+
+</style>
+
+<div class="modal-dialog" role="document">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h1 class="modal-title fs-3" id="exampleModalLabel">空車回送登録処理</h1>
+			<span class="" style="width: 100px;"></span>
+			<div class="buttons ms-4">
+				<button type="button" class="btn btn-outline-danger" style="width:100px;margin-right:50px;" id="deleteButton" onclick="deleteData();return false;">削除</button>
+				<button type="button" class="btn btn-outline-success" style="width:200px;" id="saveButton" onclick="initializeSaveButton();return false;">登録</button>
+				<button type="button" class="btn btn-outline-warning" style="width: 100px; margin-left:100px;margin-right:15px;" onclick="CloseModal();return false;">閉じる</button>
+			</div>
+		</div>
+		<div class="modal-body">
+
+		</div>
+	</div>
+</div>
+
+
+
+<script>
+
+	$(async function() {
+
+		$(".ex-AnkenPoint-tr").draggable({
+			helper: function(event) {
+				const html = $(event.currentTarget).html();
+				const width = $(event.currentTarget).width();
+				//alert(html);
+				return $(
+					`<div class="anken-list" style="background-color: yellow ;border-radius: 10px; border: 1px solid #5AC472; width:${width}px; background: #ffffff; cursor: move"><table class="" style="background-color: yellow ;">${html}</table></div>`
+				)
+			},
+		});
+
+		$('.drop-area').droppable({
+			drop: async function(event, ui) {
+				await pointDrop(event, ui);
+			},
+			over: async function(event, ui) {
+				await pointDropOver(event, ui);
+			},
+			out: async function(event, ui) {
+				await pointDropOut(event, ui);
+			},
+		});
+
+	});
+
+	/**
+	 * デジタコデータから案件ポイントへのドロップ処理
+	 * @@param event
+	 * @@param ui
+	 */
+	async function pointDrop(event, ui) {
+
+		var id = event.target.id;
+
+		if (id.indexOf('area') == 0) {
+			alertError('ドラッグ＆ドロップが正しく行えませんでした。処理を中断します。');
+			return false;
+		}
+
+		var lowId = id.replace('drop-area-', '');
+
+		var area = $("#" + id).css("background-color", "white");
+
+		let deg_id = ui.draggable.data('degitako-id');
+
+		let sId = 'PointList_' + lowId;
+		$('#SetPointId').val(sId);
+
+		let datetime = ui.draggable.data('degitako-start-datetime');
+		let shiku = ui.draggable.data('degitako-start-shiku');
+		let basyo = ui.draggable.data('degitako-start-basyo');
+		let gps_ido = ui.draggable.data('degitako-start-gps-ido');
+		let gps_keido = ui.draggable.data('degitako-start-gps-keido');
+
+		$('#SetPointDatetime').val(datetime);
+
+		//alert(i);
+		//alert(id + ';;;' + datetime + ';;;' + shiku + ';;;' + basyo + ';;;' + gps_ido + ';;;' + gps_keido);
+
+		GetAddress(i, gps_ido, gps_keido);
+	};
+
+	/**
+	 * デジタコデータから案件ポイントへのドロップオーバー処理
+	 * @@param event
+	 * @@param ui
+	 */
+	async function pointDropOver(event, ui) {
+		const i = $(this).data('pointlist-i');
+		var id = event.target.id;
+		var area = $("#" + id).css("background-color", "red");
+	};
+
+	/**
+	 * デジタコデータから案件ポイントへのドロップオーバーアウト処理
+	 * @@param event
+	 * @@param ui
+	 */
+	async function pointDropOut(event, ui) {
+		const i = $(this).data('pointlist-i');
+		var id = event.target.id;
+		var area = $("#" + id).css("background-color", "white");
+	};
+
+	/**
+	 * 地図のセンターの住所情報をゼンリンAPIより取得
+	 * @@param s
+	 * @@param i
+	 */
+	async function GetAddress(id, lat, lng) {
+
+
+		///処理中ダイアログ
+		Swal.fire({
+			title: '住所データ読込中',
+			html: 'ゼンリン地図APIで住所情報取得中です。<br /> 表示されるまでそのままお待ちください。<br /> 場所が密集地の場合、読み込みに時間がかかります。',
+			allowOutsideClick: true //枠外をクリックしても画面を閉じない
+				,
+			showConfirmButton: false,
+			didOpen: () => {
+				Swal.showLoading();
+			}
+		});
+
+		$('#PointList_' + id + '__Lat').val(lat);
+		$('#PointList_' + id + '__Lng').val(lng);
+
+		let slatlon = String(lng) + ',' + String(lat);
+		//alert(slatlon);
+		$.post(
+				'@Url.RouteUrl("Default", new { controller = "Map", Action = "MapGetAddressFromPosition" })', {
+					position: String(slatlon),
+					modal_flg: 1,
+					datum: '@(HaisyaWeb.Common.SystemConstants.Zenrin_datum.世界測地系)',
+					range: 100,
+				})
+			.done(function(response) {
+
+				if (response.errorMessage != null) {
+					alertError(`【エラー】${response.errorMessage}`);
+					return false;
+				} else {
+
+					$("#ModalHere").html(response.partialView);
+					$("#ModalHere").find('.modal').modal('show');
+
+					//完了ダイアログ
+					Swal.fire({
+						title: '処理終了',
+						html: '処理を終了しました。',
+						type: 'info',
+						timer: 1
+					});
+
+
+					return;
+				}
+			})
+			.fail(function(xhr) {
+				alertError(xhr, "【ネットワークエラー】");
+				console.log(xhr);
+				return false;
+			})
+			.always(function(xhr, msg) {
+				/*    console.log(xhr, msg);*/
+			});
+		return false;
+	};
+
+	/**
+	 *　住所検索用画面（モーダル）からの選択時処理
+	 * @@param address_code
+	 * @@param BuildingZid
+	 * @@param BuildingZid_Attr
+	 * @@param buildingName
+	 * @@param address
+	 * @@param post_code
+	 * @@param address_level
+	 * @@param address2
+	 * @@param address3
+	 * @@param address4
+	 */
+	function SetAddressData(address_code, BuildingZid, BuildingZid_Attr,
+		buildingName, address, post_code, address_level, address2, address3, address4) {
+
+		let sId = $('#SetPointId').val();
+		let sDatetime = $('#SetPointDatetime').val();
+
+		alert(sDatetime);
+
+		var date = new Date(sDatetime);
+		alert(date);
+
+		$('#ModalHere').find('.modal').modal('hide');
+		$('#ModalHere').html('');
+
+		$('#' + sId + '__PointDateTime').val(sDatetime);
+
+		$('#' + sId + '__BuildingName').val(buildingName);
+		$('#' + sId + '__Address').val(address);
+		$('#' + sId + '__Post_code').val(post_code);
+		$('#' + sId + '__Address_Code').val(address_code);
+		$('#' + sId + '__BuildingZid').val(BuildingZid);
+		$('#' + sId + '__BuildingZid_Attr').val(BuildingZid_Attr);
+		$('#' + sId + '__Address_Level').val(address_level);
+		$('#' + sId + '__Address2').val(address2);
+		$('#' + sId + '__Address3').val(address3);
+		$('#' + sId + '__Address4').val(address4);
+
+		document.getElementById(sId + '__PointDateTime').value = formatDate4(date);
+
+	};
+
+</script>

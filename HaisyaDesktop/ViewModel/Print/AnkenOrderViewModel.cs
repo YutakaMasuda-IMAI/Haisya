@@ -147,11 +147,11 @@ namespace HaisyaDesktop.ViewModel.Print
 
             if (point.PointTime == "00:00")
             {
-                sVal = DateTime.Parse(((DateTime)point.PointDate).ToString("yyyy/MM/dd") + " 　" + point.PointTime).ToString("yyyy年MM月dd日 dddd");
+                sVal = DateTime.Parse(point.PointDate?.ToString("yyyy/MM/dd") + " 　" + point.PointTime).ToString("yyyy年MM月dd日 dddd");
             }
             else
             {
-                DateTime dt = DateTime.Parse(((DateTime)point.PointDate).ToString("yyyy/MM/dd") + " 　" + point.PointTime);
+                DateTime dt = DateTime.Parse(point.PointDate?.ToString("yyyy/MM/dd") + " 　" + point.PointTime);
                 if (dt.ToString("mm") == "00")
                 {
                     sVal = dt.ToString("yyyy年MM月dd日   dddd   HH時");

@@ -454,7 +454,7 @@ namespace WebApplication.Services
 
             // Haisya_Dateの日数をカウント（重複を除外）
             int operationDateCount = SenzokuDataList?
-                .Select(data => data.Uriage?.Haisya_Date.Date)
+                .Select(data => data.Uriage?.Haisya_Date)
                 .Distinct()
                 .Count() ?? 0;
 
@@ -476,11 +476,11 @@ namespace WebApplication.Services
             List<TotalUriageUnsyu> totalUriageUnsyuList = new List<TotalUriageUnsyu>();
 
             // 日付ごとの乗務員数を計算
-            Dictionary<DateTime, int> dateDriverCounts = SenzokuDataList?
+            Dictionary<DateOnly, int> dateDriverCounts = SenzokuDataList?
                 .Where(data => data.UriageUnsyu != null && data.AnkenData != null && data.Uriage != null)
-                .GroupBy(data => data.Uriage.Haisya_Date.Date)
+                .GroupBy(data => data.Uriage.Haisya_Date)
                 .ToDictionary(g => g.Key, g => g.Select(d => d.UriageUnsyu.Driver_ID).Distinct().Count())
-                ?? new Dictionary<DateTime, int>();
+                ?? new Dictionary<DateOnly, int>();
 
             if (groupedUriageUnsyuData != null)
             {
@@ -491,7 +491,7 @@ namespace WebApplication.Services
 
                     // 稼働日数の計算
                     decimal total_Date_Count = group.Where(x => x.Uriage != null)
-                    .GroupBy(data => data.Uriage.Haisya_Date.Date)
+                    .GroupBy(data => data.Uriage.Haisya_Date)
                     .Sum(dateGroup =>
                     {
                         int driversCount = dateDriverCounts[dateGroup.Key];

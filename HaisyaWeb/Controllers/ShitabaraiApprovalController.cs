@@ -71,7 +71,7 @@ namespace HaisyaWeb.Controllers
             // 初期パラメータ設定
             SearchModelForShitabaraiCheckDataList param = new()
             {
-                SelectDay = DateTime.Now.ToString("yyyy/MM/dd"),
+                SelectDay = DateOnly.FromDateTime(DateTime.Now),
                 SelectZeiKubun = 0,
                 PublishDay = DateTime.Now.ToString("yyyy/MM/dd"),
             };
@@ -123,8 +123,8 @@ namespace HaisyaWeb.Controllers
 
             // 月初
             string firstDay = null;
-            if (DateTime.TryParse(search2.SelectDay, out DateTime dfirstDay))
-                firstDay = dfirstDay.ToString("yyyy/MM/01");
+            if (search2.SelectDay != null)
+                firstDay = search2.SelectDay?.ToString("yyyy/MM/01");
 
             IEnumerable<V_ShitabaraiCheckDataList_Local> shitabaraiCheckDataList = await GetShitabaraiCheckDataList(
                     loguinUser.Company_ID,

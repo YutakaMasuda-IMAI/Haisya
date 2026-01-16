@@ -91,7 +91,7 @@ namespace HaisyaWeb.Controllers.Anken
         /// <param name="SenzokuID"></param>
         /// <param name="SenzokuDriverID"></param>
         /// <returns></returns>
-        public async Task<IActionResult> JsonGetSenzokuAnkenList(DateTime SelectMonth, int SenzokuID, int SenzokuDriverID)
+        public async Task<IActionResult> JsonGetSenzokuAnkenList(DateOnly SelectMonth, int SenzokuID, int SenzokuDriverID)
         {
 
             try
@@ -146,14 +146,14 @@ namespace HaisyaWeb.Controllers.Anken
 
                 SenzokuSelectDriverModel model = new()
                 {
-                    SelectMonth = DateTime.Parse(dt.ToString("yyyy/MM/01")),
+                    SelectMonth = DateOnly.Parse(dt.ToString("yyyy/MM/01")),
                     BackMenuAction = "Home",
                 };
 
                 if (param != null && param.SelectDay != null)
                 {
                     if (param.SelectMonth.Year > 2000) model.SelectMonth = param.SelectMonth;
-                    if (param.SelectMonth.Year <= 2000) model.SelectMonth = DateTime.Parse(DateTime.Parse(param.SelectDay).ToString("yyyy/MM/01"));
+                    if (param.SelectMonth.Year <= 2000) model.SelectMonth = DateOnly.Parse(param.SelectDay?.ToString("yyyy/MM/01"));
                     model.SelectDay = param.SelectDay;
                     model.SelectTantou = param.SelectTantou;
                     model.SelectSyasyu = param.SelectSyasyu;
@@ -175,7 +175,7 @@ namespace HaisyaWeb.Controllers.Anken
         /// </summary>
         /// <param name="selectMonth"></param>
         /// <returns></returns>
-        public async Task<IActionResult> JsonGetSenzokuDriverList(DateTime selectMonth)
+        public async Task<IActionResult> JsonGetSenzokuDriverList(DateOnly selectMonth)
         {
             SenzokuSelectDriverModel model = new();
 
